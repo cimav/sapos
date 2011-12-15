@@ -1,0 +1,7 @@
+%h2 Cursos Externos
+#external-courses-area
+= link_to 'Agregar curso externo', '#', :id=>'a-new-external-course'
+:javascript
+  $(function() {
+    loadExternalCoursesTable()
+  });

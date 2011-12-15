@@ -1,0 +1,13 @@
+-if @staff.external_courses.count > 0
+  %table.external_courses
+    %tbody
+      %tr.header
+        %th Titulo
+        %th Inicio
+        %th Lugar
+    - @staff.external_courses.order("start_date DESC").each_with_index do |external_course, index|
+      %tr.external-course-item{:id=>"tr_external_course_#{external_course.id}", :external_course_id=>external_course.id}
+        %td= external_course.title
+        %td.centered= l external_course.start_date, :format => :long
+        %td= external_course.location
+

@@ -1,0 +1,13 @@
+-if @staff.lab_practices.count > 0
+  %table.lab_practices
+    %tbody
+      %tr.header
+        %th Titulo
+        %th Inicio
+        %th Lugar
+    - @staff.lab_practices.order("start_date DESC").each_with_index do |lab_practice, index|
+      %tr.lab-practice-item{:id=>"tr_lab_practice_#{lab_practice.id}", :lab_practice_id=>lab_practice.id}
+        %td= lab_practice.title
+        %td.centered= l lab_practice.start_date, :format => :long
+        %td= lab_practice.location
+

@@ -159,4 +159,58 @@ class StaffsController < ApplicationController
     render :layout => false
   end
 
+  def new_external_course
+    @staff = Staff.find(params[:id])
+    render :layout => 'standalone'
+  end
+
+  def create_external_course
+    @staff = Staff.find(params[:staff_id])
+    if @staff.update_attributes(params[:staff])
+      flash[:notice] = "Nuevo external_courseio creado."
+    else
+      flash[:error] = "Error al crear el external_courseio."
+    end
+    render :layout => 'standalone'
+  end
+
+  def edit_external_course
+    @staff = Staff.find(params[:id])
+    @external_course = ExternalCourse.find(params[:external_course_id])
+    render :layout => false
+  end
+
+  def external_courses_table
+    @staff = Staff.find(params[:id])
+    render :layout => false
+  end
+
+  def new_lab_practice
+    @staff = Staff.find(params[:id])
+    render :layout => 'standalone'
+  end
+
+  def create_lab_practice
+    @staff = Staff.find(params[:staff_id])
+    if @staff.update_attributes(params[:staff])
+      flash[:notice] = "Nueva practica creado."
+    else
+      flash[:error] = "Error al crear la practica"
+    end
+    render :layout => 'standalone'
+  end
+
+  def edit_lab_practice
+    @staff = Staff.find(params[:id])
+    @lab_practice = LabPractice.find(params[:lab_practice_id])
+    render :layout => false
+  end
+
+  def lab_practices_table
+    @staff = Staff.find(params[:id])
+    render :layout => false
+  end
+
+
+
 end

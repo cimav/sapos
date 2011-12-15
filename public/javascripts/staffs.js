@@ -24,10 +24,14 @@ $(document).ready(function() {
 $('#item-edit-form')
   .live("ajax:beforeSend", function(evt, xhr, settings) {
     hideCurrentSeminar();
+    hideCurrentExternalCourse();
+    hideCurrentLabPractice();
   })
   .live('ajax:success', function(evt, data, status, xhr) {
     var r = $.parseJSON(xhr.responseText);
     loadSeminarsTable();
+    loadExternalCoursesTable();
+    loadLabPracticesTable();
   });
 
 
@@ -89,6 +93,128 @@ $(".seminar-item").live("click", function() {
       });
     });
     current_seminar_edit = 0;
+  }
+});
+
+// External Courses
+var current_external_course_edit = 0;
+function loadExternalCoursesTable() {
+  staff_id = $('#staff_id').val();
+  url = location.pathname + '/' + staff_id + '/cursos-externos';
+  $.get(url, {}, function(html) {
+    $("#external-courses-area").html(html);
+  });
+  $("#new-external-course-dialog").remove();
+  $('#content-panel').append('<div title="Nuevo curso" id="new-external-course-dialog"><iframe width="550" height="440" src="/docentes/' + staff_id + '/nuevo_curso_externo" scrolling="no"></iframe></div>');
+  $("#new-external-course-dialog").dialog({ autoOpen: false, width: 640, height: 550, modal:true });
+  $("#a-new-external-course").live("click", function() {
+    $("#new-external-course-dialog").dialog('open');
+  });
+}
+
+function hideCurrentExternalCourse() {
+  if (current_external_course_edit != 0) {
+    $("#div_"+current_external_course_edit).slideUp("fast", function() {
+      $('#tr_external_course_'+current_external_course_edit).animate({ backgroundColor: "white" }, 1000, function() {
+        $('#tr_external_course_'+current_external_course_edit).removeClass("selected");
+      });
+    });
+  }
+}
+
+$(".external-course-item").live("click", function() {
+  staff_id = $('#staff_id').val();
+  var external_course_id = $('#'+this.id).attr('external_course_id');
+  var tr_external_course_id = this.id;
+  if (current_external_course_edit != external_course_id) {
+    if (current_external_course_edit != 0) {
+      current_external_course_edit2 = current_external_course_edit;
+      $("#div_"+current_external_course_edit).slideUp("fast", function() {
+        $("#edit-external_course_"+current_external_course_edit2).remove();
+        $('#tr_external_course_'+current_external_course_edit2).animate({ backgroundColor: "white" }, 1000, function() {
+          $('#tr_external_course_'+current_external_course_edit2).removeClass("selected");
+        });
+      });
+    }
+
+    url = location.pathname + '/' + staff_id + '/curso-externo/' + external_course_id;
+    $("<tr class=\"edit-external_course\" id=\"edit-external_course_" + external_course_id + "\"><td colspan=\"5\"><div class=\"edit-external_course-div\" id=\"div_"+external_course_id+"\"></div></td></tr>").insertAfter($('#'+this.id));
+    $.get(url, {}, function(html) {
+      $('#'+tr_external_course_id).animate({ backgroundColor: "#dddddd" }, 1000);
+      $("#div_"+external_course_id).hide().html(html).slideDown("fast", function() {
+        $('#'+tr_external_course_id).addClass("selected");
+      });
+    });
+    current_external_course_edit = external_course_id;
+  } else {
+    $("#div_"+external_course_id).slideUp("fast", function() {
+      $(".edit-external_course").remove();
+      $('#'+tr_external_course_id).animate({ backgroundColor: "white" }, 1000, function() {
+        $('#'+tr_external_course_id).removeClass("selected");
+      });
+    });
+    current_external_course_edit = 0;
+  }
+});
+
+// Lab Practices
+var current_lab_practice_edit = 0;
+function loadLabPracticesTable() {
+  staff_id = $('#staff_id').val();
+  url = location.pathname + '/' + staff_id + '/practicas-laboratorio';
+  $.get(url, {}, function(html) {
+    $("#lab-practices-area").html(html);
+  });
+  $("#new-lab-practice-dialog").remove();
+  $('#content-panel').append('<div title="Nueva práctica" id="new-lab-practice-dialog"><iframe width="550" height="440" src="/docentes/' + staff_id + '/nueva_practica_laboratorio" scrolling="no"></iframe></div>');
+  $("#new-lab-practice-dialog").dialog({ autoOpen: false, width: 640, height: 550, modal:true });
+  $("#a-new-lab-practice").live("click", function() {
+    $("#new-lab-practice-dialog").dialog('open');
+  });
+}
+
+function hideCurrentLabPractice() {
+  if (current_lab_practice_edit != 0) {
+    $("#div_"+current_lab_practice_edit).slideUp("fast", function() {
+      $('#tr_lab_practice_'+current_lab_practice_edit).animate({ backgroundColor: "white" }, 1000, function() {
+        $('#tr_lab_practice_'+current_lab_practice_edit).removeClass("selected");
+      });
+    });
+  }
+}
+
+$(".lab-practice-item").live("click", function() {
+  staff_id = $('#staff_id').val();
+  var lab_practice_id = $('#'+this.id).attr('lab_practice_id');
+  var tr_lab_practice_id = this.id;
+  if (current_lab_practice_edit != lab_practice_id) {
+    if (current_lab_practice_edit != 0) {
+      current_lab_practice_edit2 = current_lab_practice_edit;
+      $("#div_"+current_lab_practice_edit).slideUp("fast", function() {
+        $("#edit-lab_practice_"+current_lab_practice_edit2).remove();
+        $('#tr_lab_practice_'+current_lab_practice_edit2).animate({ backgroundColor: "white" }, 1000, function() {
+          $('#tr_lab_practice_'+current_lab_practice_edit2).removeClass("selected");
+        });
+      });
+    }
+
+    url = location.pathname + '/' + staff_id + '/practica-laboratorio/' + lab_practice_id;
+    $("<tr class=\"edit-lab_practice\" id=\"edit-lab_practice_" + lab_practice_id + "\"><td colspan=\"5\"><div class=\"edit-lab_practice-div\" id=\"div_"+lab_practice_id+"\"></div></td></tr>").insertAfter($('#'+this.id));
+    $.get(url, {}, function(html) {
+      $('#'+tr_lab_practice_id).animate({ backgroundColor: "#dddddd" }, 1000);
+      $("#div_"+lab_practice_id).hide().html(html).slideDown("fast", function() {
+        $('#'+tr_lab_practice_id).addClass("selected");
+      });
+    });
+    current_lab_practice_edit = lab_practice_id;
+  } else {
+    $("#div_"+lab_practice_id).slideUp("fast", function() {
+      $(".edit-lab_practice").remove();
+      $('#'+tr_lab_practice_id).animate({ backgroundColor: "white" }, 1000, function() {
+        $('#'+tr_lab_practice_id).removeClass("selected");
+      });
+    });
+    current_lab_practice_edit = 0;
   }
 });
 

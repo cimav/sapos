@@ -30,6 +30,12 @@ Sapos::Application.routes.draw do
   match 'docentes/create_external_course' => 'staffs#create_external_course'
   match 'docentes/update_external_course' => 'staffs#update_external_course'
   match 'docentes/:id/curso-externo/:external_course_id' => 'staffs#edit_external_course'
+  match 'docentes/:id/practicas-laboratorio' => 'staffs#lab_practices_table'
+  match 'docentes/:id/nueva_practica_laboratorio' => 'staffs#new_lab_practice'
+  match 'docentes/create_lab_practice' => 'staffs#create_lab_practice'
+  match 'docentes/update_lab_practice' => 'staffs#update_lab_practice'
+  match 'docentes/:id/practica-laboratorio/:lab_practice_id' => 'staffs#edit_lab_practice'
+
 
 
   match 'internados/busqueda' => 'internships#live_search'

@@ -6,6 +6,12 @@ class Staff < ActiveRecord::Base
   has_many :seminars
   accepts_nested_attributes_for :seminars
 
+  has_many :external_courses
+  accepts_nested_attributes_for :external_courses
+
+  has_many :lab_practices
+  accepts_nested_attributes_for :lab_practices
+
 
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact

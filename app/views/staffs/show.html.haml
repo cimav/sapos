@@ -81,9 +81,10 @@
       = render :partial => 'seminars', :locals => {:staff => @staff, :f => f}
 
     #cursos
-      %h2 Cursos Externos
+      = render :partial => 'external_courses', :locals => {:staff => @staff, :f => f}
+
     #practicas
-      %h2 Practicas de Laboratorio
+      = render :partial => 'lab_practices', :locals => {:staff => @staff, :f => f}
 
     #contacto
       %h2 Contacto

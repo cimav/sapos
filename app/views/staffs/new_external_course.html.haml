@@ -1,0 +1,41 @@
+= form_for(@staff, :url => { :action => "create_external_course" }) do |f|
+  = hidden_field_tag 'staff_id', @staff.id
+  = hidden_field_tag 'staff[external_courses_attributes][0][staff_id]', @staff.id
+  = fields_for "staff[external_courses_attributes][0]" do |fields|
+    #external-course-new
+      %h3 Curso Externo
+
+      %div{:id => "field_staff_external_courses_0_title", :class => 'field'}
+        = fields.label :title, 'Nombre'
+        = fields.text_field :title
+
+      %div{:id => "field_staff_external_courses_0_location", :class => 'field'}
+        = fields.label :location, 'Lugar'
+        = fields.text_field :location
+
+      %div{:id => "field_staff_external_courses_0_institution_id", :class => 'field'}
+        = fields.label :institution_id, 'Institución'
+        = fields.collection_select :institution_id, Institution.order(:name), :id, :name, options = {:prompt => "Selecciona una institución"}
+
+      %div{:id => "field_staff_external_courses_0_start_date", :class => 'field'}
+        = fields.label :start_date, 'Inicio'
+        = fields.datetime_select :start_date
+  
+      %div{:id => "field_staff_external_courses_0_end_date", :class => 'field'}
+        = fields.label :end_date, 'Fin'
+        = fields.datetime_select :end_date
+
+      %div{:id => "field_staff_external_courses_0_hours", :class => 'field'}
+        = fields.label :hours, 'Horas'
+        = fields.text_field :hours
+
+      %div{:id => "field_staff_external_courses_0_participants", :class => 'field'}
+        = fields.label :participants, 'Núm. participantes'
+        = fields.text_field :participants
+
+      %div{:id => "field_staff_external_courses_0_information", :class => 'field'}
+        = fields.label :information, 'Información'
+        = fields.text_area :information
+
+      #dialog-submit-button-area
+        = fields.submit "Crear nuevo curso"
