@@ -3,6 +3,7 @@ db/*.sqlite3
 log/*.log
 tmp/
 private/*
+public/stylesheets/compiled/screen.css
 public/images/student/
 public/images/staff/
 public/images/institution/
