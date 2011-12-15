@@ -75,7 +75,7 @@
         = f.select :status,  Staff::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
 
     #estudiantes
-      %h2 Estudiantes
+      = render :partial => 'students', :locals => {:staff => @staff, :f => f}
 
     #seminarios
       = render :partial => 'seminars', :locals => {:staff => @staff, :f => f}

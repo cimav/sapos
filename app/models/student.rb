@@ -4,6 +4,9 @@ class Student < ActiveRecord::Base
   belongs_to :program
   belongs_to :campus
 
+  belongs_to :staff_supervisor, :foreign_key => "supervisor", :class_name => "Staff"
+  belongs_to :staff_co_supervisor, :foreign_key => "co_supervisor", :class_name => "Staff"
+
   belongs_to :state
   belongs_to :country
 
@@ -24,6 +27,7 @@ class Student < ActiveRecord::Base
 
   has_many :term_students
   accepts_nested_attributes_for :term_students
+
 
   validates :first_name, :presence => true
   validates :last_name, :presence => true

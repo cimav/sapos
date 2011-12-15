@@ -1,0 +1,60 @@
+-if @staff.supervised.where(:status => Student::ACTIVE).count > 0 || @staff.co_supervised.where(:status => Student::ACTIVE).count > 0
+  %h2 Estudiantes activos
+  %table.formatted-table.students_active
+    %tbody
+      %tr.header
+        %th Nombre
+        %th Programa
+        %th Campus
+        %th Inicio
+        %th Asesor
+        %th Co-Asesor
+      - @staff.supervised.where(:status => Student::ACTIVE).order("start_date").each_with_index do |supervised, index|
+        %tr.active-student-item{:id=>"active_student_#{supervised.id}", :student_id=>supervised.id}
+          %td= supervised.full_name
+          %td= supervised.program.name
+          %td= supervised.campus.name rescue ''
+          %td= l supervised.start_date, :format => :short
+          %td= supervised.staff_supervisor.full_name rescue ''
+          %td= supervised.staff_co_supervisor.full_name rescue ''
+      - @staff.co_supervised.where(:status => Student::ACTIVE).order("start_date").each_with_index do |supervised, index|
+        %tr.active-student-item{:id=>"active_student_#{supervised.id}", :student_id=>supervised.id}
+          %td= supervised.full_name
+          %td= supervised.program.name
+          %td= supervised.campus.name
+          %td= l supervised.start_date, :format => :short
+          %td= supervised.staff_supervisor.full_name rescue ''
+          %td= supervised.staff_co_supervisor.full_name rescue ''
+
+-if @staff.supervised.where(:status => Student::GRADUATED).count > 0 || @staff.co_supervised.where(:status => Student::GRADUATED).count > 0
+  %h2 Estudiantes graduados
+  %table.formatted-table.students_graduated
+    %tbody
+      %tr.header
+        %th Nombre
+        %th Programa
+        %th Campus
+        %th Inicio
+        %th Defensa Tesis
+        %th Asesor
+        %th Co-Asesor
+      - @staff.supervised.where(:status => Student::GRADUATED).order("start_date").each_with_index do |supervised, index|
+        %tr.active-student-item{:id=>"active_student_#{supervised.id}", :student_id=>supervised.id}
+          %td= supervised.full_name
+          %td= supervised.program.name
+          %td= supervised.campus.name rescue ''
+          %td= l supervised.start_date, :format => :short
+          %td= l supervised.thesis.defence_date, :format => :short
+          %td= supervised.staff_supervisor.full_name rescue ''
+          %td= supervised.staff_co_supervisor.full_name rescue ''
+      - @staff.co_supervised.where(:status => Student::GRADUATED).order("start_date").each_with_index do |supervised, index|
+        %tr.active-student-item{:id=>"active_student_#{supervised.id}", :student_id=>supervised.id}
+          %td= supervised.full_name
+          %td= supervised.program.name
+          %td= supervised.campus.name rescue ''
+          %td= l supervised.start_date, :format => :short
+          %td= l supervised.thesis.defence_date, :format => :short
+          %td= supervised.staff_supervisor.full_name rescue ''
+          %td= supervised.staff_co_supervisor.full_name rescue ''
+
+

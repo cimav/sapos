@@ -75,7 +75,7 @@ es:
   date:      
     formats:
       default: "%d-%m-%Y"
-      short: "%b %d"
+      short: "%b %d %Y"
       long: "%B %d, %Y"
 
     day_names: [Domingo, Lunes, Martes, Miercoles, Jueves, Viernes, Sabado]
@@ -90,7 +90,7 @@ es:
   time:
     formats:
       default: "%a, %d %b %Y %H:%M:%S %z"
-      short: "%d %b %H:%M"
+      short: "%b %d %Y %H:%M"
       long: "%B %d, %Y %H:%M"
     am: "am"
     pm: "pm"

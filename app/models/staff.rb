@@ -12,6 +12,11 @@ class Staff < ActiveRecord::Base
   has_many :lab_practices
   accepts_nested_attributes_for :lab_practices
 
+  has_many :internships
+
+  has_many :supervised, :class_name => "Student", :foreign_key => :supervisor
+  has_many :co_supervised, :class_name => "Student", :foreign_key => :co_supervisor
+
 
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact
