@@ -46,7 +46,32 @@ class InternshipsController < ApplicationController
       @internships = @internships.where("status IN (#{s.join(',')})")
     end
 
-    render :layout => false
+    respond_with do |format|
+      format.html do
+        render :layout => false
+      end
+      format.xls do
+        rows = Array.new
+        @internships.collect do |s|
+          rows << {'Nombre' => s.first_name,
+                   'Apellidos' => s.last_name,
+                   'Sexo' => s.gender,
+                   'Email' => s.email,
+                   'Fecha Nacimiento' => s.date_of_birth,
+                   'Tipo' => s.internship_type.name,
+                   'Institucion' => (s.institution.name rescue ''),
+                   'Inicio' => s.start_date,
+                   'Fin' => s.end_date,
+                   'Asesor' => (s.staff.full_name rescue ''),
+                   'Tesis' => s.thesis_title,
+                   'Actividades' => s.activities
+                   }
+        end
+        column_order = ["Nombre", "Apellidos", "Sexo","Email", "Fecha de Nacimiento", "Tipo", "Institucion", "Inicio", "Fin", "Asesor", "Tesis", "Actividades"]
+        to_excel(rows, column_order, "Estudiantes", "Estudiantes")
+      end
+    end
+
   end
 
   def show
