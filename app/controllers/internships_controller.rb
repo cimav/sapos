@@ -68,7 +68,7 @@ class InternshipsController < ApplicationController
                    }
         end
         column_order = ["Nombre", "Apellidos", "Sexo","Email", "Fecha de Nacimiento", "Tipo", "Institucion", "Inicio", "Fin", "Asesor", "Tesis", "Actividades"]
-        to_excel(rows, column_order, "Estudiantes", "Estudiantes")
+        to_excel(rows, column_order, "ServiciosCIMAV", "ServiciosCIMAV")
       end
     end
 
