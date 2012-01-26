@@ -13,12 +13,22 @@
         - conditions = ['term_id = ?', @tc.term_id]
       - students_available = TermStudent.find(:all, :conditions => conditions).collect {|i| [i.student.full_name_with_card, i.id]}
 
+      - in_program_options = ""
       - if students_available.count > 0 
-        %div{:id => "field_term_course_term_course_students_attributes_0_term_student_id", :class => 'field'}
-          = fields.label :term_student_id, 'Estudiante'
-          = fields.select :term_student_id, students_available
+        - in_program_options = "<optgroup label=\"Inscritos en #{@program.name}\">"
+        - students_available.each do |student|
+          - in_program_options += "<option value=\"#{student[1]}\">#{student[0]}</option>"
 
-        #dialog-submit-button-area
-          = fields.submit "Agregar estudiante al curso"
-      - else
-        #add-student-to-course-note Todos los estudiantes del periodo ya estan en este curso
+      - other_program_options = ""
+      - Term.where("id <> #{@tc.id} AND status = #{Term::OPEN}").each do |other_term|
+        - other_program_options += "<optgroup label=\"OTRO PROGRAMA: Periodo: #{other_term.name} #{other_term.program.name}\">"
+        - other_term.term_students.each do |ts|
+          - other_program_options += "<option value=\"#{ts.id}\">#{ts.student.full_name_with_card}</option>"
+
+      - options = in_program_options + other_program_options
+      %div{:id => "field_term_course_term_course_students_attributes_0_term_student_id"}
+        = fields.label :term_student_id, 'Estudiante'
+        = fields.select :term_student_id, options.html_safe
+
+      #dialog-submit-button-area
+        = fields.submit "Agregar estudiante al curso"
