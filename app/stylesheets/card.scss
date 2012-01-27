@@ -6,7 +6,7 @@
 @import "partials/students";
 
 body {
-  background: #fff url(http://127.0.0.1:3000/images/pdf-ls-bg.jpg) bottom left no-repeat;
+  background: #fff url(http://posgrado.cimav.edu.mx/images/pdf-ls-bg.jpg) bottom left no-repeat;
   height: 1000px;
 }
 
@@ -43,9 +43,10 @@ body {
 
 #card_program {
   font-size: 33px;
-  line-height: 33px;
+  line-height: 35px;
   font-weight: bold;
-  height: 56px;
+  color: $blue-strong;
+  height: 100px;
 }
 
 #card_card {
