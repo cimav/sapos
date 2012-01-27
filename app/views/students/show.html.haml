@@ -22,6 +22,8 @@
       %h1= "#{@student.first_name} #{@student.last_name}"
       .comment= "Matrícula: #{@student.card}"
       .comment= @student.program.name
+      .resource-card
+        = link_to 'Credencial', "/estudiantes/#{@student.id}/credencial.pdf", :id=>'a-id-card'
     .resource-save
       = f.submit 'Actualizar'
 
