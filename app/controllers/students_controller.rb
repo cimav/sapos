@@ -328,4 +328,24 @@ class StudentsController < ApplicationController
     end
   end
 
+  def id_card
+    @student = Student.find(params[:id])
+    respond_with do |format|
+      format.html do
+        render :layout => false
+      end
+      format.pdf do
+        institution = Institution.find(1)
+        @logo = institution.image_url(:medium).to_s
+        @is_pdf = true
+        html = render_to_string(:layout => false , :action => "id_card.html.haml")
+        kit = PDFKit.new(html, :page_size => 'Letter', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
+        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/card.css"
+        filename = "ID-#{@student.card}.pdf"
+        send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+        return # to avoid double render call
+      end
+    end
+  end
+
 end

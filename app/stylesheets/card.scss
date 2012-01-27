@@ -1,0 +1,114 @@
+@import "compass/reset";
+@import "partials/mixins";
+@import "partials/config";
+@import "partials/general";
+@import "partials/mime";
+@import "partials/students";
+
+body {
+  background: #fff url(http://127.0.0.1:3000/images/pdf-ls-bg.jpg) bottom left no-repeat;
+  height: 1000px;
+}
+
+.pb_before { page-break-before:always !important; }
+.pb_after  { page-break-after:always !important; }
+.pbi_avoid { page-break-inside:avoid !important; }
+
+#id_card {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  table#cont {
+    width: 100%;
+    tr {
+      td.photo {
+        padding-left: 40px;
+        padding-right: 40px;
+        width: 400px;
+        img {
+          border: 20px solid $light-grey;
+          @include rounded(10px);
+        }
+      }
+    }
+  }
+}
+
+#card_name,
+#card_last_name {
+  color: $red;
+  font-size: 70px;
+  font-weight: bold;
+  height: 75px;
+}
+
+#card_program {
+  font-size: 33px;
+  line-height: 33px;
+  font-weight: bold;
+  height: 56px;
+}
+
+#card_card {
+  font-size: 30px;
+  height: 40px;
+}
+
+#card_start_date {
+  font-size: 30px;
+  height: 40px;
+}
+
+#card_student {
+  font-size: 40px;
+  height: 60px;
+  letter-spacing: 2px;
+  color: $grey;
+}
+
+table#card-back {
+  margin-top: 500px;
+  margin-left: 50px;
+  width: 100%;
+  tr {
+    td {
+      vertical-align:top;
+      &.sep-logo {
+        text-align: center;
+      }
+    }
+  }
+}
+table#student-data {
+  margin-left: 50px;
+  tr {
+    td {
+      vertical-align:top;
+      padding: 10px;
+      font-size: 28px;
+      height: 36px;
+      div {   
+        height: 36px;
+      }
+    }
+  }
+}
+
+.separator {
+  height: 40px;
+  border-bottom: 1px solid #000;
+}
+
+.cimav-data {
+  padding-top: 40px;
+  div {
+    font-size: 25px;
+    height: 25px;
+    &.registro {
+      margin-top: 40px;
+    }
+  }
+}
+
+.back-name {
+  font-weight: bold;
+}
