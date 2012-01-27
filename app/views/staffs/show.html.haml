@@ -54,6 +54,11 @@
         .field#field_staff_institution_id
           = f.label :institution_id, 'Institucion'
           = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"}
+      - else
+        .field#field_staff_last_name
+          = f.label :employee_number, 'Número de Empleado'
+          = f.text_field :employee_number
+
       
       .field#field_staff_gender 
         = f.label :gender, 'Sexo'
