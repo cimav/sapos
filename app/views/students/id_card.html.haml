@@ -12,9 +12,6 @@
             %table
               %tr
                 %td
-                  #card_student= "ESTUDIANTE"
-              %tr
-                %td
                   #card_name= @student.first_name
               %tr
                 %td
@@ -28,6 +25,9 @@
               %tr
                 %td
                   #card_start_date= "Fecha de Ingreso: #{l @student.start_date, :format => :long}"
+        %tr
+          %td{:colspan => 2}
+            #card_student= "ESTUDIANTE"
     .pb_before
       %table#card-back
         %tr

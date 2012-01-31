@@ -7,7 +7,6 @@
 
 body {
   background: #fff url(http://posgrado.cimav.edu.mx/images/pdf-ls-bg.jpg) bottom left no-repeat;
-  height: 1000px;
 }
 
 .pb_before { page-break-before:always !important; }
@@ -17,16 +16,18 @@ body {
 #id_card {
   padding-top: 40px;
   padding-bottom: 40px;
+  width: 100%;
   table#cont {
     width: 100%;
     tr {
       td.photo {
         padding-left: 40px;
         padding-right: 40px;
-        width: 400px;
+        width: 300px;
         img {
           border: 20px solid $light-grey;
           @include rounded(10px);
+          width: 300px;
         }
       }
     }
@@ -36,9 +37,10 @@ body {
 #card_name,
 #card_last_name {
   color: $red;
-  font-size: 70px;
+  font-size: 50px;
   font-weight: bold;
-  height: 75px;
+  height: 55px;
+  line-height: 50px;
 }
 
 #card_program {
@@ -60,18 +62,22 @@ body {
 }
 
 #card_student {
-  font-size: 40px;
-  height: 60px;
-  letter-spacing: 2px;
-  color: $grey;
+  margin-top: 110px;
+  width: 100%;
+  font-size: 50px;
+  text-align: left;
+  background-color: $blue-strong;
+  color: #fff;
+  font-weight: bold;
+  padding: 40px;
 }
 
 table#card-back {
-  margin-top: 500px;
   margin-left: 50px;
   width: 100%;
   tr {
     td {
+      padding-top: 40px;
       vertical-align:top;
       &.sep-logo {
         text-align: center;
@@ -102,10 +108,10 @@ table#student-data {
 .cimav-data {
   padding-top: 40px;
   div {
-    font-size: 25px;
-    height: 25px;
+    font-size: 20px;
+    height: 20px;
     &.registro {
-      margin-top: 40px;
+      margin-top: 30px;
     }
   }
 }
