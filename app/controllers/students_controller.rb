@@ -332,7 +332,7 @@ class StudentsController < ApplicationController
     @is_pdf = false
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
     @ts = TermStudent.where(:student_id => params[:id], :term_id => params[:term_id]).first
-    @grades = TermStudent.find_by_sql(["SELECT courses.code, courses.name, grade FROM term_students INNER JOIN term_course_students ON term_students.id = term_course_students.term_student_id  INNER JOIN term_courses ON term_course_id = term_courses.id INNER JOIN courses ON courses.id = term_courses.course_id WHERE student_id = :student_id AND term_students.term_id = :term_id ORDER BY courses.name", {:student_id => params[:id], :term_id => params[:term_id]}])
+    @grades = TermStudent.find_by_sql(["SELECT courses.code, courses.name, grade FROM term_students INNER JOIN term_course_students ON term_students.id = term_course_students.term_student_id  INNER JOIN term_courses ON term_course_id = term_courses.id INNER JOIN courses ON courses.id = term_courses.course_id WHERE student_id = :student_id AND term_students.term_id = :term_id AND term_course_students.status = :status ORDER BY courses.name", {:student_id => params[:id], :term_id => params[:term_id], :status => TermCourseStudent::ACTIVE}])
     respond_with do |format|
       format.html do
         render :layout => false
