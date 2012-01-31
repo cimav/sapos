@@ -1,0 +1,81 @@
+- if @is_pdf 
+  = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
+  %h1= @student.full_name
+  %h4= @student.program.name
+#tc-header
+  #tc-title
+    %h4= "Ciclo Escolar: #{@ts.term.name} (#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
+
+- if !@is_pdf 
+  .pdf-link= link_to "PDF", :controller => "students", :action => "term_grades", :id => @ts.student_id, :term_id => @ts.term_id, :format => 'pdf'
+
+%table#grades_table
+  %tr
+    %th.centered= "Clave"
+    %th= "Materia"
+    %th.centered= "Calificación"
+    %th.centered= "Periodo"
+    %th.centered= "Asignatura"
+  - c = 0
+  - total = 0
+  - @grades.each do |g|
+    - total += g.grade
+    - c += 1
+    - if c % 2 == 0 
+      - klass = 'row-even'
+    - else
+      - klass = 'row-odd'
+    %tr{:class => klass}
+      %td.centered= g.code
+      %td= g.name
+      %td.centered= g.grade
+      %td.centered= @ts.term.name
+      %td.centered= "OBLIGATORIA"
+  - if c == 0
+    - avg = 0
+  - else
+    - avg = total / c 
+
+  - c += 1
+  - if c % 2 == 0 
+    - klass = 'row-even'
+  - else
+    - klass = 'row-odd'
+  %tr{:class => klass}
+    %td= " "
+    %td= " "
+    %td.centered= "."
+    %td= " "
+    %td= " "
+
+  - c += 1
+  - if c % 2 == 0
+    - klass = 'row-even'
+  - else
+    - klass = 'row-odd'
+  %tr{:class => klass}
+    %td= " "
+    %td= " "
+    %td.centered= "."
+    %td= " "
+    %td= " "
+
+  - c += 1
+  - if c % 2 == 0 
+    - klass = 'row-even'
+  - else
+    - klass = 'row-odd'
+  %tr{:class => klass}
+    %td
+    %td
+      %strong= "PROMEDIO"
+    %td.centered
+      %strong= sprintf( "%0.02f", avg)
+    %td
+    %td
+
+
+- if @is_pdf 
+  #grades_footer
+    #scholar_control_name= "LCI. Tania D. Prieto Vara"
+    #scholar_control_label= "Servicios Escolares"

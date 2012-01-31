@@ -8,3 +8,16 @@
 body {
   font-size: 80%;
 }
+
+#grades_table {
+  margin-top: 20px;  
+  margin-bottom: 60px;  
+}
+
+#grades_footer {
+  margin-top: 20px;  
+  border-top: 1px solid $black;
+  width: 300px;
+  margin: 0 auto;
+  text-align: center;
+}

@@ -328,6 +328,29 @@ class StudentsController < ApplicationController
     end
   end
 
+  def term_grades
+    @is_pdf = false
+    @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    @ts = TermStudent.where(:student_id => params[:id], :term_id => params[:term_id]).first
+    @grades = TermStudent.find_by_sql(["SELECT courses.code, courses.name, grade FROM term_students INNER JOIN term_course_students ON term_students.id = term_course_students.term_student_id  INNER JOIN term_courses ON term_course_id = term_courses.id INNER JOIN courses ON courses.id = term_courses.course_id WHERE student_id = :student_id AND term_students.term_id = :term_id ORDER BY courses.name", {:student_id => params[:id], :term_id => params[:term_id]}])
+    respond_with do |format|
+      format.html do
+        render :layout => false
+      end
+      format.pdf do
+        institution = Institution.find(1)
+        @logo = institution.image_url(:medium).to_s
+        @is_pdf = true
+        html = render_to_string(:layout => false , :action => "term_grades.html.haml")
+        kit = PDFKit.new(html, :page_size => 'Letter')
+        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        filename = "boleta-#{@ts.student_id}-#{@ts.term_id}.pdf"
+        send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+        return # to avoid double render call
+      end
+    end
+  end
+
   def id_card
     @student = Student.find(params[:id])
     respond_with do |format|

@@ -35,7 +35,8 @@
       %li= link_to "Avances", "#avances"
       %li= link_to "Tesis", "#tesis"
       %li= link_to "Archivos", "#archivos"
-      %li= link_to "Horario", "#horario"
+      %li= link_to "Horarios", "#horario"
+      %li= link_to "Calificaciones", "#calificaciones"
       %li= link_to "Notas", "#notas"
 
     #detalles
@@ -166,6 +167,9 @@
 
     #horario 
       = render :partial => 'schedule', :locals => {:student => @student}
+
+    #calificaciones 
+      = render :partial => 'term_grades_index', :locals => {:student => @student}
 
     #archivos
       %h2 Archivos

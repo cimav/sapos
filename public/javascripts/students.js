@@ -88,3 +88,17 @@ function loadStudentSchedule(term_id) {
   });
 }
 
+// Grades
+$('#grades_term_id').live("change", function() {
+  loadStudentGrades($('#grades_term_id').val());
+});
+
+function loadStudentGrades(term_id) {
+  student_id = $('#student_id').val();
+  url = location.pathname + '/' + student_id + '/boleta/' + term_id;
+  $.get(url, {}, function(html) {
+    $("#student-grades-area").html(html);
+  });
+}
+
+

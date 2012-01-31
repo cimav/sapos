@@ -1,0 +1,9 @@
+#student-term_grades-header
+  #student-term_grades-title
+    %h2 Calificaciones
+  %table#student-term_grades-filter
+    %tbody
+      %tr
+        %td#student-term_grades-terms-dropdown= select "grades", "term_id", student.term_students.collect {|i| [i.term.name, i.term.id]}, :prompt => 'Selecciona un periodo'
+
+#student-grades-area

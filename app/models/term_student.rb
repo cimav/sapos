@@ -8,6 +8,7 @@ class TermStudent < ActiveRecord::Base
   PENDING  = 2
   INACTIVE = 3
 
+
   STATUS = {ACTIVE   => 'Activo',
             PENDING  => 'Con pendientes',
             INACTIVE => 'Baja'}
