@@ -13,8 +13,8 @@ body {
 .pbi_avoid { page-break-inside:avoid !important; }
 
 #id_card {
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 30px;
+  padding-bottom: 30px;
   width: 100%;
   table#cont {
     width: 100%;
@@ -22,11 +22,11 @@ body {
       td.photo {
         padding-left: 50px;
         padding-right: 50px;
-        width: 400px;
+        width: 350px;
         img {
           border: 20px solid $blue-strong;
           @include rounded(10px);
-          width: 400px;
+          width: 350px;
         }
       }
     }
