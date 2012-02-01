@@ -6,7 +6,6 @@
 @import "partials/students";
 
 body {
-  background: #fff url(http://posgrado.cimav.edu.mx/images/pdf-ls-bg.jpg) bottom left no-repeat;
 }
 
 .pb_before { page-break-before:always !important; }
@@ -21,13 +20,13 @@ body {
     width: 100%;
     tr {
       td.photo {
-        padding-left: 40px;
-        padding-right: 40px;
-        width: 300px;
+        padding-left: 50px;
+        padding-right: 50px;
+        width: 400px;
         img {
-          border: 20px solid $light-grey;
+          border: 20px solid $blue-strong;
           @include rounded(10px);
-          width: 300px;
+          width: 400px;
         }
       }
     }
@@ -37,39 +36,39 @@ body {
 #card_name,
 #card_last_name {
   color: $red;
-  font-size: 50px;
+  font-size: 60px;
   font-weight: bold;
-  height: 55px;
-  line-height: 50px;
+  height: 65px;
+  line-height: 60px;
 }
 
 #card_program {
-  font-size: 33px;
-  line-height: 35px;
+  font-size: 43px;
+  line-height: 45px;
   font-weight: bold;
   color: $blue-strong;
-  height: 100px;
+  height: 110px;
 }
 
 #card_card {
-  font-size: 30px;
-  height: 40px;
+  font-size: 40px;
+  height: 50px;
 }
 
 #card_start_date {
-  font-size: 30px;
-  height: 40px;
+  font-size: 40px;
+  height: 50px;
 }
 
 #card_student {
   margin-top: 110px;
   width: 100%;
-  font-size: 50px;
+  font-size: 60px;
   text-align: left;
   background-color: $blue-strong;
   color: #fff;
   font-weight: bold;
-  padding: 40px;
+  padding: 50px;
 }
 
 table#card-back {
@@ -91,10 +90,10 @@ table#student-data {
     td {
       vertical-align:top;
       padding: 10px;
-      font-size: 28px;
-      height: 36px;
+      font-size: 40px;
+      height: 46px;
       div {   
-        height: 36px;
+        height: 46px;
       }
     }
   }
@@ -108,8 +107,8 @@ table#student-data {
 .cimav-data {
   padding-top: 40px;
   div {
-    font-size: 20px;
-    height: 20px;
+    font-size: 40px;
+    height: 46px;
     &.registro {
       margin-top: 30px;
     }

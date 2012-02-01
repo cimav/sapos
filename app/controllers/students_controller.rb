@@ -362,7 +362,7 @@ class StudentsController < ApplicationController
         @logo = institution.image_url(:medium).to_s
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "id_card.html.haml")
-        kit = PDFKit.new(html, :page_size => 'Letter', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
+        kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
         kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/card.css"
         filename = "ID-#{@student.card}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
