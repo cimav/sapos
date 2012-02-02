@@ -3,7 +3,7 @@
   = hidden_field_tag 'program[terms_attributes][0][program_id]', @program.id
   = fields_for "program[terms_attributes][0]" do |fields|
     #term-new
-      %h3 Nuevo Periodo
+      %h3 Nuevo Ciclo Escolar
 
       %div{:id => "field_program_terms_0_code", :class => 'field'}
         = fields.label :code, 'Clave'
@@ -22,4 +22,4 @@
         = fields.date_select :end_date
 
       #dialog-submit-button-area
-        = fields.submit "Crear nuevo periodo"
+        = fields.submit "Crear nuevo ciclo escolar"

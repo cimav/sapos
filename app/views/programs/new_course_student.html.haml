@@ -1,6 +1,6 @@
 #schedule-header
   %h3= @tc.course.name
-  #schedule-term= "Periodo: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
+  #schedule-term= "Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
 = form_for(@program, :url => { :action => "create_course_student" }) do |f|
   = hidden_field_tag 'term_course_id', @tc.id
   = hidden_field_tag 'term_course[term_course_students_attributes][0][term_course_id]', @tc.id
@@ -21,7 +21,7 @@
 
       - other_program_options = ""
       - Term.where("id <> #{@tc.id} AND status = #{Term::OPEN}").each do |other_term|
-        - other_program_options += "<optgroup label=\"OTRO PROGRAMA: Periodo: #{other_term.name} #{other_term.program.name}\">"
+        - other_program_options += "<optgroup label=\"[OTRO PROGRAMA] Ciclo: #{other_term.name} #{other_term.program.name}\">"
         - other_term.term_students.each do |ts|
           - other_program_options += "<option value=\"#{ts.id}\">#{ts.student.full_name_with_card}</option>"
 

@@ -1,6 +1,6 @@
 #schedule-header
   %h3= @tc.course.name
-  #schedule-term= "Periodo: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
+  #schedule-term= "Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
 = form_for(@program, :url => { :action => "create_schedule" }) do |f|
   = hidden_field_tag 'term_course_id', @tc.id
   = hidden_field_tag 'term_course[term_course_schedules_attributes][0][term_course_id]', @tc.id

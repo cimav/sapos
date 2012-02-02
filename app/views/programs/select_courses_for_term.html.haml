@@ -2,7 +2,7 @@
   = hidden_field_tag :program_id, @program.id
   = hidden_field_tag :term_id, @term.id
   %h3= @program.name
-  #schedule-term= "Periodo: #{@term.name} (#{l @term.start_date, :format => :long} – #{l @term.end_date, :format => :long})"
+  #schedule-term= "Ciclo Escolar: #{@term.name} (#{l @term.start_date, :format => :long} – #{l @term.end_date, :format => :long})"
   - current_term = 0
   %table.courses-assign
     %thead.fixed-header

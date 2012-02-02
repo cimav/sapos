@@ -4,6 +4,6 @@
   %table#student-term_grades-filter
     %tbody
       %tr
-        %td#student-term_grades-terms-dropdown= select "grades", "term_id", student.term_students.collect {|i| [i.term.name, i.term.id]}, :prompt => 'Selecciona un periodo'
+        %td#student-term_grades-terms-dropdown= select "grades", "term_id", student.term_students.collect {|i| [i.term.name, i.term.id]}, :prompt => 'Selecciona un ciclo escolar'
 
 #student-grades-area

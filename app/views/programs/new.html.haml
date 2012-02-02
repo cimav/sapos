@@ -26,11 +26,11 @@
         = f.select :level,  Program::LEVEL.invert.sort {|a,b| a[1] <=> b[1] }
 
       .field#field_program_terms_duration
-        = f.label :terms_duration, 'Duración del periodo'
+        = f.label :terms_duration, 'Duración del ciclo escolar'
         = f.select :terms_duration,  Program::TERM.invert.sort {|a,b| a[1] <=> b[1] }
 
       .field#field_program_terms_qty
-        = f.label :terms_qty, 'Cantidad de periodos'
+        = f.label :terms_qty, 'Cantidad de ciclos'
         = f.select :terms_qty, (1..12).to_a
 
 
