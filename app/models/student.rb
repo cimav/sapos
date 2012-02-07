@@ -81,7 +81,11 @@ class Student < ActiveRecord::Base
   end
 
   def full_name
-    "#{first_name} #{last_name}" rescue ''
+    "#{last_name} #{last_name}" rescue ''
+  end
+
+  def full_name_by_last
+    "#{last_name} #{first_name}" rescue ''
   end
 
   def full_name_with_card

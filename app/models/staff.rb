@@ -39,6 +39,10 @@ class Staff < ActiveRecord::Base
   def full_name
     "#{first_name} #{last_name}" rescue ''
   end
+
+  def full_name_by_last
+    "#{last_name} #{first_name}" rescue ''
+  end
   
   def add_extra
     self.build_contact()
