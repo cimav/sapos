@@ -1,0 +1,100 @@
+- if !@is_pdf
+  #tc-header
+    #tc-title
+      %h4= @tc.course.name
+      %div Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})
+    #tc-options
+      = link_to 'Estudiantes', '#', :id=>'a-tc-students'
+      = link_to 'Horario', '#', :id=>'a-tc-schedule'
+      = link_to 'Asistencia', '#', :id=>'a-tc-attendee', :class=>'tc-selected'
+    
+  %h3 Listas de asistencia
+  .pdf-link= link_to "PDF", :controller => "programs", :action => "attendee_table", :id => @tc.term.program.id, :term_id => @tc.term_id, :course_id => @tc.course_id ,:format => 'pdf'
+
+- students = {}
+- @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).each_with_index do |tc_student, index|
+  - students[tc_student.term_student.student.card] = tc_student.term_student.student.full_name_by_last
+- students = students.sort_by { |card, name| name }
+
+- current_staff = 0
+- days = []
+- duration = 0
+- aux_schedule = nil
+- @tc.term_course_schedules.where(:status => TermCourseSchedule::ACTIVE).order("staff_id").order("start_date").order("day").order("start_hour").each_with_index do |schedule, index|
+  - if current_staff != schedule.staff_id
+    - if current_staff > 0 
+      %table{:class => "attendee_list"}
+        %tr
+          %th Matricula
+          %th Nombre
+          - day = aux_schedule.start_date
+          - while day <= aux_schedule.end_date
+            - if days.include?(day.wday)
+              %th.daymon #{l day, :format => :day_mon}
+            - day = day.next
+        - students.each do|card,name|
+          %tr
+            %td #{card} 
+            %td #{name}
+            - day = aux_schedule.start_date
+            - while day <= aux_schedule.end_date
+              - if days.include?(day.wday)
+                %td 
+              - day = day.next
+      - if @is_pdf
+        %strong
+          = ". Asistencia"
+          = "&nbsp;&nbsp;".html_safe
+          = "/ Retardo "
+          = "&nbsp;&nbsp;".html_safe
+          = "X  Falta"
+    - days = []
+    - current_staff = schedule.staff_id
+    - if @is_pdf
+      .pb_before 
+        = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
+    %h2 Materia: [#{@tc.course.code}] #{@tc.course.name}
+    %div 
+      %strong Programa Académico: 
+      = @tc.term.program.name
+      = "&nbsp;&nbsp;&nbsp;&nbsp;".html_safe
+      %strong Ciclo Escolar: 
+      = "#{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
+    %div 
+      %strong Docente: 
+      = schedule.staff.full_name rescue ''
+      - if schedule.start_date != @tc.term.start_date || schedule.end_date != @tc.term.end_date
+        = "&nbsp;&nbsp;".html_safe
+        = "(#{l schedule.start_date, :format => :long} - #{l schedule.end_date, :format => :long})"
+    - aux_schedule = schedule
+  - days << schedule.day
+
+- if current_staff > 0
+  %table{:class => "attendee_list"}
+    %tr
+      %th Matricula
+      %th Nombre
+      - day = aux_schedule.start_date
+      - while day <= aux_schedule.end_date
+        - if days.include?(day.wday)
+          %th.daymon #{l day, :format => :day_mon}
+        - day = day.next
+    - students.each do|card,name|
+      %tr
+        %td #{card}
+        %td #{name}
+        - day = aux_schedule.start_date
+        - while day <= aux_schedule.end_date
+          - if days.include?(day.wday)
+            %td
+          - day = day.next
+  - if @is_pdf 
+    %strong
+      = ". Asistencia"
+      = "&nbsp;&nbsp;".html_safe
+      = "/ Retardo "
+      = "&nbsp;&nbsp;".html_safe
+      = "X  Falta"
+
+  
+

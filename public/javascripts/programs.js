@@ -343,6 +343,10 @@ $('#a-tc-students').live('click', function() {
   loadStudents();
 });
 
+$('#a-tc-attendee').live('click', function() {
+  loadAttendee();
+});
+
 // Enrollment
 $('#enrollment_term_id').live("change", function() {
   loadEnrollment();
@@ -428,3 +432,19 @@ $(".enrollment-item").live("click", function() {
     current_enrollment_edit = 0;
   }
 });
+
+// Attendee
+function loadAttendee() {
+  term_id = $('#tc_term_id').val();
+  course_id = $('#tc_course_id').val();
+  program_id = $('#program_id').val();
+  if ((term_id > 0) && (course_id > 0)) {
+    url = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/asistencia";
+    $.get(url, {}, function(html) {
+      $("#program-area").html(html);
+    });
+  } else {
+      $("#program-area").html('');
+  }
+}
+

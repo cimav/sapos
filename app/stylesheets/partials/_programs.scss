@@ -266,3 +266,25 @@ table.plan-coreq {
   text-align: center;
   padding: 40px;
 }
+
+table.attendee_list {
+  border-collapse: collapse;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  tr {
+    th {
+      border: 1px solid $grey;
+      background: $blue-strong;
+      color: $white;
+      font-weight: bold;
+      padding: 4px;
+      &.daymon {
+        font-size: 80%;
+      }
+    }
+    td {
+      border: 1px solid $grey;
+      padding: 4px;
+    }
+  }
+}

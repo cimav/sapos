@@ -76,6 +76,7 @@ es:
     formats:
       default: "%d-%m-%Y"
       short: "%b %d %Y"
+      day_mon: "%b %d"
       long: "%B %d, %Y"
 
     day_names: [Domingo, Lunes, Martes, Miercoles, Jueves, Viernes, Sabado]

@@ -102,6 +102,7 @@ Sapos::Application.routes.draw do
   match 'programas/:id/create_enrollment' => 'programs#create_enrollment'
   match 'programas/:id/update_enrollment' => 'programs#update_enrollment'
   match 'programas/:id/periodo/:term_id/inscripcion/:term_student_id' => 'programs#edit_enrollment'
+  match 'programas/:id/periodo/:term_id/curso/:course_id/asistencia' => 'programs#attendee_table'
 
   scope(:path_names => { :new => "nuevo", :edit => "editar" }) do
     resources :students, :path => "estudiantes"

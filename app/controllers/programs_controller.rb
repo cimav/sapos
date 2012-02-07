@@ -1,7 +1,7 @@
 # coding: utf-8
 class ProgramsController < ApplicationController
   before_filter :auth_required
-  respond_to :html, :xml, :json
+  respond_to :html, :xml, :json, :pdf
 
   def index
   end
@@ -391,5 +391,27 @@ class ProgramsController < ApplicationController
       end
     end
   end
+
+  def attendee_table
+    @is_pdf = false
+    @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+
+    respond_with do |format|
+      format.html do
+        render :layout => false
+      end
+      format.pdf do
+        @is_pdf = true
+        html = render_to_string(:layout => false , :action => "attendee_table.html.haml")
+        kit = PDFKit.new(html, :page_size => 'Letter', :orientation => 'Landscape')
+        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        filename = "asistencia-#{@tc.id}.pdf"
+        send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+        return # to avoid double render call
+      end
+    end
+
+  end
+
 
 end

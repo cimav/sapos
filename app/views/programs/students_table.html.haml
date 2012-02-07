@@ -5,6 +5,7 @@
   #tc-options
     = link_to 'Estudiantes', '#', :id=>'a-tc-students', :class=>'tc-selected'
     = link_to 'Horario', '#', :id=>'a-tc-schedule'
+    = link_to 'Asistencia', '#', :id=>'a-tc-attendee'
     
 
 -if @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).count > 0 

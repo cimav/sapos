@@ -2,4 +2,23 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  date:
+    formats:
+      default: "%d-%m-%Y"
+      short: "%b %d %Y"
+      day_mon: "%b %d"
+      long: "%B %d, %Y"
+
+    order:
+      - :day
+      - :month
+      - :year
+
+  time:
+    formats:
+      default: "%a, %d %b %Y %H:%M:%S %z"
+      short: "%b %d %Y %H:%M"
+      long: "%B %d, %Y %H:%M"
+    am: "am"
+    pm: "pm"
+
