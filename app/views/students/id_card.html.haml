@@ -25,10 +25,13 @@
               %tr
                 %td
                   #card_start_date= "Fecha de Ingreso: #{l @student.start_date, :format => :long}"
+              %tr
+                %td
+                  #card_valid= "Vigencia: Julio 30, 2012"
         %tr
           %td{:colspan => 2}
             #card_student= "ESTUDIANTE"
-    .pb_before
+    .pb_before2
       %table#card-back
         %tr
           %td.sep-logo
@@ -41,13 +44,13 @@
                 %td= "Tipo de sangre:"
                 %td= @student.blood_type
               %tr
-                %td= "Correo Electrónico:"
+                %td= "Correo:"
                 %td= @student.email
               %tr
                 %td= "Teléfono:"
                 %td= @student.contact.home_phone
               %tr
-                %td= "Teléfono Celular:"
+                %td= "Tel. Celular:"
                 %td= @student.contact.mobile_phone
               %tr
                 %td= "Dirección:"
@@ -64,9 +67,7 @@
               %tr
                 %td.cimav-data{:colspan => 2}
                   %div= "Centro de Investigación en Materiales Avanzados, S.C."
-                  %div= "Miguel de Cervantes 120"
-                  %div= "Complejo Industrial Chihuahua"
-                  %div= "Chihuahua, Chih. México"
-                  %div= "31109"
+                  %div= "Miguel de Cervantes 120, Complejo Industrial Chihuahua"
+                  %div= "Chihuahua, Chih. México. 31109"
                   %div= "Tels. +52 (614) 439-1161, 439-1158"
                   %div.registro= "Registro Institucional SEP: 18 - 00114"
