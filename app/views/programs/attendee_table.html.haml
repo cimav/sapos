@@ -53,13 +53,13 @@
     - if @is_pdf
       .pb_before 
         = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
-    %h2 Materia: [#{@tc.course.code}] #{@tc.course.name}
-    %div 
-      %strong Programa Académico: 
-      = @tc.term.program.name
-      = "&nbsp;&nbsp;&nbsp;&nbsp;".html_safe
-      %strong Ciclo Escolar: 
-      = "#{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
+      %h2 Materia: [#{@tc.course.code}] #{@tc.course.name}
+      %div 
+        %strong Programa Académico: 
+        = @tc.term.program.name
+        = "&nbsp;&nbsp;&nbsp;&nbsp;".html_safe
+        %strong Ciclo Escolar: 
+        = "#{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
     %div 
       %strong Docente: 
       = schedule.staff.full_name rescue ''
