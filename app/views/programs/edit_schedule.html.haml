@@ -41,7 +41,7 @@
     = fields.hidden_field :status
 
     %div{:id => "field_terms_courses_term_course_schedules_attributes_0_staff_id", :class => 'field'}
-      = fields.label :start_date, 'Docente'
+      = fields.label :staff_id, 'Docente'
       = fields.grouped_collection_select :staff_id, @institutions, :staffs, :name, :id, :full_name, options = {:prompt => "Selecciona el docente"}
 
     %div{:id => "field_terms_courses_term_course_schedules_attributes_0_day", :class => 'field'}
