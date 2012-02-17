@@ -1,0 +1,70 @@
+%html
+  %head
+    %title= 'ID CARD'
+  %body
+    #id_card
+      = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-card.jpg", :style => "margin-bottom: 20px; width: 100%;"
+      %table#cont
+        %tr
+          %td.photo
+            = image_tag "http://posgrado.cimav.edu.mx#{@internship.image_url.to_s}"
+          %td
+            %table
+              %tr
+                %td
+                  #card_name= @internship.first_name
+              %tr
+                %td
+                  #card_last_name= @internship.last_name
+              %tr
+                %td
+                  #card_card= "ID: #{@internship.id}"
+              %tr
+                %td
+                  #card_start_date= "Fecha de Ingreso: #{l @internship.start_date, :format => :long}"
+              %tr
+                %td
+                  #card_valid= "Vigencia: #{l @internship.end_date, :format => :long}"
+        %tr
+          %td{:colspan => 2}
+            #card_student= @internship.internship_type.name
+    .pb_before2
+      %table#card-back
+        %tr
+          %td.sep-logo
+            = image_tag "http://posgrado.cimav.edu.mx/images/card-sep.jpg"
+          %td
+            %table#student-data
+              %tr
+                %td.back-name{:colspan => 2}= @internship.full_name
+              %tr
+                %td= "Tipo de sangre:"
+                %td= @internship.blood_type
+              %tr
+                %td= "Correo:"
+                %td= @internship.email
+              %tr
+                %td= "Teléfono:"
+                %td= @internship.contact.home_phone
+              %tr
+                %td= "Tel. Celular:"
+                %td= @internship.contact.mobile_phone
+              %tr
+                %td= "Dirección:"
+                %td
+                  .address1= @internship.contact.address1
+                  .address2= @internship.contact.address2
+                  .city= "#{@internship.contact.city}, #{@internship.contact.state.name rescue ''}"
+                  .country= @internship.contact.country.name rescue ''
+                  .zip= @internship.contact.zip
+              %tr
+                %td.separator{:colspan => 2}
+              %tr
+                %td.empty{:colspan => 2}
+              %tr
+                %td.cimav-data{:colspan => 2}
+                  %div= "Centro de Investigación en Materiales Avanzados, S.C."
+                  %div= "Miguel de Cervantes 120, Complejo Industrial Chihuahua"
+                  %div= "Chihuahua, Chih. México. 31109"
+                  %div= "Tels. +52 (614) 439-1161, 439-1158"
+                  %div.registro= "Registro Institucional SEP: 18 - 00114"

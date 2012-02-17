@@ -95,7 +95,7 @@ class InternshipsController < ApplicationController
     @internship = Internship.new(params[:internship])
 
     if @internship.save
-      flash[:notice] = "Docente creado."
+      flash[:notice] = "Servicio creado."
 
       respond_with do |format|
         format.html do
@@ -130,7 +130,7 @@ class InternshipsController < ApplicationController
     @internship = Internship.find(params[:id])
 
     if @internship.update_attributes(params[:internship])
-      flash[:notice] = "Docente actualizado."
+      flash[:notice] = "Servicio actualizado."
       respond_with do |format|
         format.html do
           if request.xhr?
@@ -205,6 +205,26 @@ class InternshipsController < ApplicationController
 
   def delete_file
   end
+
+
+  def id_card
+    @internship = Internship.find(params[:id])
+    respond_with do |format|
+      format.html do
+        render :layout => false
+      end
+      format.pdf do
+        @is_pdf = true
+        html = render_to_string(:layout => false , :action => "id_card.html.haml")
+        kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
+        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/card.css"
+        filename = "INTERN-#{@internship.id}.pdf"
+        send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+        return # to avoid double render call
+      end
+    end
+  end
+
 
 
 end

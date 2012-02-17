@@ -48,6 +48,7 @@ Sapos::Application.routes.draw do
   match 'internados/:id/archivo/:file_id' => 'internships#file'
   match 'internados/upload_file' => 'internships#upload_file'
   match 'internados/delete_file' => 'internships#delete_file'
+  match 'internados/:id/credencial' => 'internships#id_card'
 
   resources :internship_files
 
