@@ -41,10 +41,13 @@ class Student < ActiveRecord::Base
   ACTIVE    = 1
   GRADUATED = 2
   INACTIVE  = 3
+  UNREGISTERED = 4
 
   STATUS = {ACTIVE    => 'Activo',
             GRADUATED => 'Graduado',
-            INACTIVE  => 'Baja'}
+            INACTIVE  => 'Baja temporal',
+            UNREGISTERED  => 'Baja definitiva'
+           }
 
   def status_type
     STATUS[status]
