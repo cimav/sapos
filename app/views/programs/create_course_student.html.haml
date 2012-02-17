@@ -1,5 +1,5 @@
 :javascript
   $(document).ready(function() {
-    parent.loadStudents();
+    parent.loadStudents('#{params[:new_student_term_course_group]}');
     parent.$("#add-student-to-course-dialog").dialog('close');
   });

@@ -149,7 +149,7 @@ class ProgramsController < ApplicationController
   end
 
   def courses_dropdown
-    @term_course = TermCourse.where('term_id = :t', {:t => params[:term_id]})
+    @term_course = TermCourse.where('term_id = :t', {:t => params[:term_id]}).group('course_id')
     @term = Term.find(params[:term_id])
     render :layout => false
   end
@@ -193,7 +193,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             render :json => json
           else 
-            redirect_to @cs
+            redirect_to @ts
           end
         end
       end
@@ -207,7 +207,7 @@ class ProgramsController < ApplicationController
             json[:errors] = @cs.errors
             render :json => json, :status => :unprocessable_entity
           else 
-            redirect_to @cs
+            redirect_to @ts
           end
         end
       end
@@ -215,8 +215,17 @@ class ProgramsController < ApplicationController
   end
 
   def schedule_table
-    @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
-    render :layout => false
+    if !params[:group].blank?
+      @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
+    else
+      @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+      params[:group] = @tc.group
+    end
+    if @tc
+      render :layout => false
+    else
+      render :inline => 'Error'
+    end
   end
 
   def select_courses_for_term
@@ -239,7 +248,13 @@ class ProgramsController < ApplicationController
 
   def new_schedule
     @program = Program.find(params[:id])
-    @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+    if !params[:group].blank?
+      @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
+    else
+      @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+      params[:group] = @tc.group
+    end
+
     @staffs = Staff.order('first_name').includes(:institution)
     @institutions = Institution.order('name')
     render :layout => 'standalone'
@@ -276,6 +291,7 @@ class ProgramsController < ApplicationController
           if request.xhr?
             json = {}
             json[:flash] = flash
+            json[:group] = @cs.term_course.group
             render :json => json
           else 
             redirect_to @cs
@@ -300,13 +316,27 @@ class ProgramsController < ApplicationController
   end
 
   def students_table
-    @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
-    render :layout => false
+    if !params[:group].blank?
+      @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
+    else 
+      @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+      params[:group] = @tc.group
+    end
+    if @tc
+      render :layout => false
+    else
+      render :inline => 'Error'
+    end
   end
 
   def new_course_student
     @program = Program.find(params[:id])
-    @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+    if !params[:group].blank?
+      @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
+    else
+      @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+      params[:group] = @tc.group
+    end
     render :layout => 'standalone'
   end
 
@@ -336,6 +366,7 @@ class ProgramsController < ApplicationController
           if request.xhr?
             json = {}
             json[:flash] = flash
+            json[:group] = @cs.term_course.group
             render :json => json
           else 
             redirect_to @cs
@@ -369,6 +400,7 @@ class ProgramsController < ApplicationController
           if request.xhr?
             json = {}
             json[:flash] = flash
+            json[:group] = @cs.term_course.group
             render :json => json
           else 
             redirect_to @cs
@@ -394,7 +426,16 @@ class ProgramsController < ApplicationController
 
   def attendee_table
     @is_pdf = false
-    @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+
+    if !params[:group].blank?
+      @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
+    else
+      @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+      params[:group] = @tc.group
+    end
+    if !@tc
+      render :inline => 'Error'
+    end
 
     respond_with do |format|
       format.html do
@@ -413,5 +454,42 @@ class ProgramsController < ApplicationController
 
   end
 
+  def new_group
+    @institutions = Institution.order('name')
+    @tc = TermCourse.new
+    @tc.term_id = params[:term_id]
+    @tc.course_id = params[:course_id]
+    render :layout => 'standalone'
+  end
+
+  def create_group
+    @tc = TermCourse.new
+    if @tc.update_attributes(params[:term_course])
+      flash[:notice] = "Grupo creado."
+    else
+      flash[:error] = "Error al crear grupo."
+    end
+    render :layout => 'standalone'
+  end
+
+  def update_staff_to_group
+    @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
+    render :layout => 'standalone'
+  end
+
+  def update_group
+    @tc = TermCourse.find(params[:term_course][:id])
+    if @tc.update_attributes(params[:term_course])
+      flash[:notice] = "El titular del grupo ha sido actualizado."
+    else
+      flash[:error] = "Error al cambiar al titular del grupo."
+    end
+    render :layout => 'standalone'
+  end
+
+  def groups_dropdown
+    @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+    render :layout => false
+  end
 
 end

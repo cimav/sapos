@@ -1,0 +1,7 @@
+:javascript
+  $(document).ready(function() {
+    parent.loadGroupsDropdown('#{@tc.group}');
+    parent.loadStudents('#{@tc.group}');
+    parent.$("#update-group-dialog").dialog('close');
+    parent.showFlash('#{flash[:notice]}', 'success');
+  });

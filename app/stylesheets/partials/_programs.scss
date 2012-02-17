@@ -183,6 +183,7 @@ table.plan-coreq {
   margin-bottom: 20px;
   height: 32px;
   margin-top: 20px;
+  height: 60px;
 
   #tc-title {
     width: 500px;
@@ -214,6 +215,10 @@ table.plan-coreq {
 }
 
 #schedule-term {
+  font-size: 90%;
+  color: $grey;
+}
+#schedule-term-group {
   font-size: 90%;
   color: $grey;
   margin-bottom: 10px;
@@ -287,4 +292,8 @@ table.attendee_list {
       padding: 4px;
     }
   }
+}
+
+#update-staff-group {
+  font-size: 80%;
 }

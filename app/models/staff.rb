@@ -17,6 +17,7 @@ class Staff < ActiveRecord::Base
   has_many :supervised, :class_name => "Student", :foreign_key => :supervisor
   has_many :co_supervised, :class_name => "Student", :foreign_key => :co_supervisor
 
+  has_many :term_courses
 
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact

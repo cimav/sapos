@@ -1,12 +1,5 @@
 - if !@is_pdf
-  #tc-header
-    #tc-title
-      %h4= @tc.course.name
-      %div Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})
-    #tc-options
-      = link_to 'Estudiantes', '#', :id=>'a-tc-students'
-      = link_to 'Horario', '#', :id=>'a-tc-schedule'
-      = link_to 'Asistencia', '#', :id=>'a-tc-attendee', :class=>'tc-selected'
+  = render :partial => 'term_course_header', :locals => {:tc => @tc, :selected => 'attendee'}
     
   %h3 Listas de asistencia
   .pdf-link= link_to "PDF", :controller => "programs", :action => "attendee_table", :id => @tc.term.program.id, :term_id => @tc.term_id, :course_id => @tc.course_id ,:format => 'pdf'

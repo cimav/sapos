@@ -27,7 +27,7 @@
         var $form = $(this);
         var res = $.parseJSON(xhr.responseText);
         parent.showFlash(res['flash']['notice'], 'success');
-        parent.loadSchedule();
+        parent.loadSchedule(res['group']);
     })
     .live('ajax:complete', function(evt, xhr, status) {
     })

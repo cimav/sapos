@@ -1,0 +1,5 @@
+= "Grupo: "
+- items = TermCourse.where("term_id = :t AND course_id = :c", {:t => params[:term_id], :c => params[:course_id]}).collect {|i| [ i.group + ': ' + Staff.find(i.staff_id).full_name, i.group]}
+- items += [['Agregar nuevo grupo', 0]] if (@tc.term.status == Term::OPEN)
+= select "tc", "group", items, :selected => params[:group]
+= link_to 'Cambiar titular del curso', '#', :id => 'update-staff-group' if (@tc.term.status == Term::OPEN)

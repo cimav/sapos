@@ -1,12 +1,4 @@
-#tc-header
-  #tc-title
-    %h4= @tc.course.name
-    %div Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})
-  #tc-options
-    = link_to 'Estudiantes', '#', :id=>'a-tc-students', :class=>'tc-selected'
-    = link_to 'Horario', '#', :id=>'a-tc-schedule'
-    = link_to 'Asistencia', '#', :id=>'a-tc-attendee'
-    
+= render :partial => 'term_course_header', :locals => {:tc => @tc, :selected => 'students'}
 
 -if @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).count > 0 
   %table.tc-students
@@ -24,4 +16,4 @@
           %td= tc_student.grade
 
 - if @tc.term.status == Term::OPEN
-  = link_to 'Agregar estudiante', '#', :id=>'add-student-to-course'
+  = link_to 'Agregar estudiante', '#', :id => 'add-student-to-course'

@@ -11,7 +11,7 @@
         var $form = $(this);
         var res = $.parseJSON(xhr.responseText);
         parent.showFlash(res['flash']['notice'], 'success');
-        parent.loadStudents();
+        parent.loadStudents(res['group']);
     })
     .live('ajax:complete', function(evt, xhr, status) {
     })
@@ -23,7 +23,7 @@
     .live('ajax:success', function(evt, data, status, xhr) {
       var res = $.parseJSON(xhr.responseText);
       parent.showFlash(res['flash']['notice'], 'success');
-      parent.loadStudents();
+      parent.loadStudents(res['group']);
     })
 
     .live('ajax:beforeSend', function(ev, xhr, settings) {

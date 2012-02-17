@@ -1,5 +1,5 @@
 :javascript
   $(document).ready(function() {
-    parent.loadSchedule();
+    parent.loadSchedule('#{params[:new_schedule_term_course_group]}');
     parent.$("#new-schedule-dialog").dialog('close');
   });

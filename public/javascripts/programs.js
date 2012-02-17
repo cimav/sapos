@@ -1,4 +1,5 @@
 var model_name = 'program';
+var current_option = 'students';
 function initializeSearchForm() {
   // Do nothing
 }
@@ -145,17 +146,18 @@ $(".term-item").live("click", function() {
 
 // Schedule
 var current_schedule_edit = 0;
-function loadSchedule() {
+function loadSchedule(g) {
   term_id = $('#tc_term_id').val();
   course_id = $('#tc_course_id').val();
   program_id = $('#program_id').val();
+  if (null === g) g = '';
   if ((term_id > 0) && (course_id > 0)) {
-    url = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/horario";
+    url = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/horario/" + g;
     $.get(url, {}, function(html) {
       $("#program-area").html(html);
     });
     $("#new-schedule-dialog").remove();
-    url_dialog = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/nueva_sesion";
+    url_dialog = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/nueva_sesion/" + g;
     $('#content-panel').append('<div title="Agregar sesión" id="new-schedule-dialog"><iframe width="550" height="340" src="' + url_dialog + '" scrolling="no"></iframe></div>');
     $("#new-schedule-dialog").dialog({ autoOpen: false, width: 640, height: 450, modal:true });
     $("#a-new-schedule").live("click", function() {
@@ -220,17 +222,18 @@ $(".schedule-item").live("click", function() {
 });
 
 // Students
-function loadStudents() {
+function loadStudents(g) {
   term_id = $('#tc_term_id').val();
   course_id = $('#tc_course_id').val();
   program_id = $('#program_id').val();
+  if (null === g) g = '';
   if ((term_id > 0) && (course_id > 0)) {
-    url = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/estudiantes";
+    url = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/estudiantes/" + g;
     $.get(url, {}, function(html) {
       $("#program-area").html(html);
     });
     $("#add-student-to-course-dialog").remove();
-    url_dialog = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/agregar_estudiante";
+    url_dialog = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/agregar_estudiante/" + g;
     $('#content-panel').append('<div title="Agregar estudiante a curso" id="add-student-to-course-dialog"><iframe width="550" height="340" src="' + url_dialog + '" scrolling="no"></iframe></div>');
     $("#add-student-to-course-dialog").dialog({ autoOpen: false, width: 640, height: 450, modal:true });
     $("#add-student-to-course").live("click", function() {
@@ -321,7 +324,7 @@ $('#tc_course_id').live("change", function() {
   if ($('#tc_course_id').val() == 0) {
     openAssignCoursesDialog();
   } else {
-    loadStudents();
+    loadStudents(null);
   }
 });
     
@@ -336,15 +339,18 @@ function openAssignCoursesDialog() {
 }
 
 $('#a-tc-schedule').live('click', function() {
-  loadSchedule();
+  loadSchedule($('#tc_group').val());
+  current_option = 'schedule';
 });
 
 $('#a-tc-students').live('click', function() {
-  loadStudents();
+  loadStudents($('#tc_group').val());
+  current_option = 'students';
 });
 
 $('#a-tc-attendee').live('click', function() {
-  loadAttendee();
+  loadAttendee($('#tc_group').val());
+  current_option = 'attendee';
 });
 
 // Enrollment
@@ -434,17 +440,72 @@ $(".enrollment-item").live("click", function() {
 });
 
 // Attendee
-function loadAttendee() {
+function loadAttendee(g) {
   term_id = $('#tc_term_id').val();
   course_id = $('#tc_course_id').val();
   program_id = $('#program_id').val();
+  if (null === g) g = '';
   if ((term_id > 0) && (course_id > 0)) {
-    url = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/asistencia";
+    url = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/asistencia/" + g;
     $.get(url, {}, function(html) {
       $("#program-area").html(html);
     });
   } else {
       $("#program-area").html('');
   }
+}
+
+
+// Change group 
+$('#tc_group').live("change", function() {
+  if ($('#tc_group').val() == 0) {
+    openNewGroupDialog();
+  } else {
+    if (current_option == 'students') {
+      loadStudents($('#tc_group').val());
+    } else if (current_option == 'schedule') {
+      loadSchedule($('#tc_group').val());
+    } else if (current_option == 'attendee') {
+      loadAttendee($('#tc_group').val());
+    }
+  }
+});
+
+function openNewGroupDialog() {
+  term_id = $('#tc_term_id').val();
+  course_id = $('#tc_course_id').val();
+  program_id = $('#program_id').val();
+
+  $("#new-group-dialog").remove();
+  url = '/programas/' + program_id + '/periodo/' + term_id + '/curso/' + course_id + '/nuevo_grupo';
+  $('#content-panel').append('<div title="Nuevo grupo" id="new-group-dialog"><iframe width="550" height="140" src="' + url + '" scrolling="no"></iframe></div>');
+  $("#new-group-dialog").dialog({ autoOpen: true, width: 590, height: 250, modal:true });
+}
+
+function loadGroupsDropdown(g) {
+  program_id = $('#program_id').val();
+  term_id = $('#tc_term_id').val();
+  course_id = $('#tc_course_id').val();
+  url = '/programas/' + program_id + '/periodo/' + term_id + '/curso/' + course_id + '/groups_dropdown/' + g;
+  $.get(url, {}, function(html) {
+    $("#groups-dropdown").html(html);
+  });
+}
+
+// Update staff to group
+$("#update-staff-group").live("click", function() {
+  openUpdateStaffGroupDialog();
+});
+
+function openUpdateStaffGroupDialog() {
+  term_id = $('#tc_term_id').val();
+  course_id = $('#tc_course_id').val();
+  program_id = $('#program_id').val();
+  g = $('#tc_group').val();
+
+  $("#update-group-dialog").remove();
+  url = '/programas/' + program_id + '/periodo/' + term_id + '/curso/' + course_id + '/grupo/' + g + '/cambiar_titular';
+  $('#content-panel').append('<div title="Cambiar titular" id="update-group-dialog"><iframe width="550" height="140" src="' + url + '" scrolling="no"></iframe></div>');
+  $("#update-group-dialog").dialog({ autoOpen: true, width: 590, height: 250, modal:true });
 }
 

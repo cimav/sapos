@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111213232820) do
+ActiveRecord::Schema.define(:version => 20120215224108) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -423,9 +423,12 @@ ActiveRecord::Schema.define(:version => 20111213232820) do
     t.integer  "status",     :default => 1
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "staff_id"
+    t.string   "group"
   end
 
   add_index "term_courses", ["course_id"], :name => "index_term_courses_on_course_id"
+  add_index "term_courses", ["staff_id"], :name => "index_term_courses_on_staff_id"
   add_index "term_courses", ["term_id"], :name => "index_term_courses_on_term_id"
 
   create_table "term_students", :force => true do |t|
