@@ -1,5 +1,4 @@
 var model_name = 'student';
-// ** On change Program
 var advprev = 0;
 
 $('#program').live("change", function() {
@@ -14,8 +13,7 @@ $('#supervisor').live("change", function() {
   liveSearch();
 });
 
-// ** On change Status
-$('.status-cbs').live("click", function() {
+$('#status').live("change", function() {
   liveSearch();
 });
 

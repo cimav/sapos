@@ -24,6 +24,40 @@ class StudentsController < ApplicationController
       @students = @students.where("(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]}) 
     end
 
+    if params[:status] == 'todos_activos' then
+      @students = @students.where("status = #{Student::ACTIVE}")
+    end
+
+    if params[:status] == 'activos_inscritos' then
+      @students = @students.where("status = #{Student::ACTIVE} AND students.id IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
+    end
+
+    if params[:status] == 'activos_no_inscritos' then
+      @students = @students.where("status = #{Student::ACTIVE} AND students.id NOT IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
+    end
+
+
+    if params[:status] == 'todos_egresados' then
+      @students = @students.where("status IN (#{Student::GRADUATED}, #{Student::FINISH})")
+    end
+
+    if params[:status] == 'egresados_graduados' then
+      @students = @students.where("status = #{Student::GRADUATED}")
+    end
+
+    if params[:status] == 'egresados_no_graduados' then
+      @students = @students.where("status = #{Student::FINISH}")
+    end
+
+    if params[:status] == 'baja_temporal' then
+      @students = @students.where("status = #{Student::INACTIVE}")
+    end
+
+    if params[:status] == 'baja_definitiva' then
+      @students = @students.where("status = #{Student::UNREGISTERED}")
+    end
+
+
     if !params[:q].blank?
       @students = @students.where("(CONCAT(first_name,' ',last_name) LIKE :n OR card LIKE :n)", {:n => "%#{params[:q]}%"}) 
     end

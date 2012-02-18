@@ -40,7 +40,7 @@ class Thesis < ActiveRecord::Base
     if self.status == CONCLUDED
       s = Student.find(self.student_id)
       s.end_date = self.defence_date
-      s.status = Student::GRADUATED
+      s.status = Student::FINISH
       s.save
     end
   end

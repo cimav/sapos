@@ -20,20 +20,21 @@
       - @supervisors.each do |supervisor|
         - supervisor_options += "<option value=\"#{supervisor.id}\">#{supervisor.full_name}</option>" 
       = select_tag "supervisor", supervisor_options.html_safe
+
+      - status_options = "<option value=\"0\">Todos los estados</option>"
+      - status_options += "<option value=\"todos_activos\">Todos los activos</option>"
+      - status_options += "<option value=\"activos_inscritos\">Activos inscritos</option>"
+      - status_options += "<option value=\"activos_no_inscritos\">Activos no inscritos</option>"
+      - status_options += "<option value=\"todos_egresados\">Todos los egresados</option>"
+      - status_options += "<option value=\"egresados_graduados\">Egresados graduados</option>"
+      - status_options += "<option value=\"egresados_no_graduados\">Egresados no graduados</option>"
+      - status_options += "<option value=\"baja_temporal\">Baja temporal</option>"
+      - status_options += "<option value=\"baja_definitiva\">Baja definitiva</option>"
+      = select_tag "status", status_options.html_safe
+
   
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
      
-      .cbs
-        %span 
-          = check_box_tag 'status_activos', '1', true, :class => 'status-cbs'
-          = label_tag 'status_activos', 'Activos'
-        %span 
-          = check_box_tag 'status_egresados', '2', false, :class => 'status-cbs'
-          = label_tag 'status_egresados', 'Egresados'
-        %span   
-          = check_box_tag 'status_bajas', '3', false, :class => 'status-cbs'
-          = label_tag 'status_bajas', 'Bajas'
-  
   #items-list.panel-items
   
   .panel-add

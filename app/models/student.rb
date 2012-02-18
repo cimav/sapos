@@ -42,8 +42,10 @@ class Student < ActiveRecord::Base
   GRADUATED = 2
   INACTIVE  = 3
   UNREGISTERED = 4
+  FINISH = 5
 
   STATUS = {ACTIVE    => 'Activo',
+            FINISH => 'Egresado no graduado',
             GRADUATED => 'Graduado',
             INACTIVE  => 'Baja temporal',
             UNREGISTERED  => 'Baja definitiva'
