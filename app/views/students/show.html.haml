@@ -57,12 +57,7 @@
       %h3 Datos Academicos
       .field#field_student_status
         = f.label :status, 'Estado'
-        - status_options = "<option value=\"#{Student::ACTIVE}\">#{Student::STATUS[Student::ACTIVE]}</option>"
-        - status_options += "<option value=\"#{Student::FINISH}\">#{Student::STATUS[Student::FINISH]}</option>"
-        - status_options += "<option value=\"#{Student::GRADUATED}\">#{Student::STATUS[Student::GRADUATED]}</option>"
-        - status_options += "<option value=\"#{Student::INACTIVE}\">#{Student::STATUS[Student::INACTIVE]}</option>"
-        - status_options += "<option value=\"#{Student::UNREGISTERED}\">#{Student::STATUS[Student::UNREGISTERED]}</option>"
-        = f.select :status, status_options.html_safe
+        = f.select :status, Student::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
 
       .field#field_student_supervisor
         = f.label :supervisor, 'Asesor'
