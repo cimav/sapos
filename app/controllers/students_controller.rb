@@ -312,7 +312,7 @@ class StudentsController < ApplicationController
     courses = Hash.new
     @min_hour = 24
     @max_hour = 1
-    @ts.term_course_student.each do |c|
+    @ts.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |c|
       c.term_course.term_course_schedules.where(:status => TermCourseSchedule::ACTIVE).each do |session_item|
         hstart = session_item.start_hour.hour
         hend = session_item.end_hour.hour - 1
