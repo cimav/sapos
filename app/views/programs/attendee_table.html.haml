@@ -2,7 +2,7 @@
   = render :partial => 'term_course_header', :locals => {:tc => @tc, :selected => 'attendee'}
     
   %h3 Listas de asistencia
-  .pdf-link= link_to "PDF", :controller => "programs", :action => "attendee_table", :id => @tc.term.program.id, :term_id => @tc.term_id, :course_id => @tc.course_id ,:format => 'pdf'
+  .pdf-link= link_to "PDF", :controller => "programs", :action => "attendee_table", :id => @tc.term.program.id, :term_id => @tc.term_id, :course_id => @tc.course_id, :group => @tc.group ,:format => 'pdf'
 
 - students = {}
 - @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).each_with_index do |tc_student, index|
