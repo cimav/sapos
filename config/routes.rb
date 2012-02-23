@@ -59,6 +59,8 @@ Sapos::Application.routes.draw do
   match 'campus/busqueda' => 'campus#live_search'
   match 'campus/:id/cambiar_logo' => 'campus#change_image'
   match 'campus/upload_image' => 'campus#upload_image'
+	
+	match 'departamentos/busqueda' => 'departments#live_search'
 
   match 'aulas/busqueda' => 'classrooms#live_search'
   
@@ -126,6 +128,7 @@ Sapos::Application.routes.draw do
     resources :laboratories, :path => "laboratorios"
     resources :scholarship_categories, :path => "becas"
     resources :users, :path => "usuarios"
+		resources :departments, :path => "departamentos"
   end
 
   match '/auth/admin/callback', :to => 'sessions#authenticate'

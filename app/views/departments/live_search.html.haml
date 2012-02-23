@@ -1,0 +1,11 @@
+%ul.panel-list
+  - c = 0
+  - @departments.each do |department|
+    - c += 1
+    %li 
+      - link_to department, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html' do
+        .title= department.full_name rescue department.name
+        .comment= department.description
+#counter
+  .inner= "#{c} departamentos"
+

@@ -1,0 +1,23 @@
+- form_for @department, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
+  .resource-header
+    .resource-title
+      %h1= "#{@department.full_name}"
+      .comment= @department.description
+    .resource-save
+      = f.submit 'Actualizar'
+
+  #resource-tabs
+    %ul
+      %li.first-tab= link_to "Detalles", "#detalles"
+
+    #detalles
+      %h2 Detalles
+
+      .field#field_department_name
+        = f.label :name, mark_required(@department, :name) + 'Nombre' 
+        = f.text_field :name 
+
+      .field#field_department_description
+        = f.label :description, mark_required(@department, :description) + 'Descripción'
+        = f.text_field :description
+
