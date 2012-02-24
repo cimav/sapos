@@ -1,0 +1,15 @@
+- @include_js = ['internship_types']
+- @page_title = 'Servicios CIMAV'
+- @nav_icon = 'internship_types'
+#items-panel.side-panel.inst-side-panel
+  .panel-search
+    
+    - form_tag internship_types_path, :id => 'live-search', :method => 'get', :remote => true do
+      = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
+     
+  #items-list.panel-items
+  
+  .panel-add
+    = link_to  'Agregar nuevo tipo de servicio', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
+
+#content-panel.main-panel
