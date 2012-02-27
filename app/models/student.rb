@@ -13,11 +13,11 @@ class Student < ActiveRecord::Base
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact
 
-  has_one :scholarship
-  accepts_nested_attributes_for :scholarship
-
   has_one :thesis
   accepts_nested_attributes_for :thesis
+
+  has_many :scholarship
+  accepts_nested_attributes_for :scholarship
 
   has_many :advance
   accepts_nested_attributes_for :advance

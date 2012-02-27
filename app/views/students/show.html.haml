@@ -154,9 +154,7 @@
         = render :partial => 'shared/contact', :locals => {:table => 'student', :fields => contact_fields, :countries => @countries, :states => @states}
  
     #beca
-      %h2 Beca
-      = f.fields_for :scholarship do |scholarship_fields|
-        = render :partial => 'scholarship', :locals => {:fields => scholarship_fields}
+      = render :partial => 'scholarship', :locals => {:student => @student}
 
     #avances 
       = render :partial => 'advances', :locals => {:student => @student, :staffs => @staffs, :f => f}

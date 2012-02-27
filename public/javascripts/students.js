@@ -1,5 +1,6 @@
 var model_name = 'student';
 var advprev = 0;
+var schprev = 0;
 
 $('#program').live("change", function() {
   liveSearch();
@@ -35,6 +36,12 @@ $('#advance-select').live("change", function() {
   $('#advance-' + advprev).hide();
   $('#advance-' + $('#advance-select').val()).show();
   advprev = $('#advance-select').val();
+});
+
+$('#scholarship-select').live("change", function() {
+  $('#scholarship-' + schprev).hide();
+  $('#scholarship-' + $('#scholarship-select').val()).show();
+  schprev = $('#scholarship-select').val();
 });
 
 $(document).ready(function() {
