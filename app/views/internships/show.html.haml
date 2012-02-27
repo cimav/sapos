@@ -4,7 +4,7 @@
     $(function() {
       $('#resource-tabs').tabs();
       $("#change-img-dialog").remove();
-      $('#content-panel').append('<div title="Cambiar fotografía" id="change-img-dialog"><iframe width="430" height="450" src="/servicios/#{@internship.id}/cambiar_foto" scrolling="no"></iframe></div>');
+      $('#content-panel').append('<div title="Cambiar fotografía" id="change-img-dialog"><iframe width="430" height="450" src="/internados/#{@internship.id}/cambiar_foto" scrolling="no"></iframe></div>');
       $("#change-img-dialog").dialog({ autoOpen: false, width: 470, height: 550, modal:true });   
       $("#a-change-image").live("click", function() {
         $("#change-img-dialog").dialog('open');
