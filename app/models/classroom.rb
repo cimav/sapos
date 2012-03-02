@@ -1,6 +1,6 @@
 # coding: utf-8
 class Classroom < ActiveRecord::Base
-  has_one :term_course_schedule
+  has_many :term_course_schedule
 
   validates :name, :presence => true
   validates :code, :presence => true

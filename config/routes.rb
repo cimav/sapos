@@ -65,6 +65,7 @@ Sapos::Application.routes.draw do
 	match 'departamentos/busqueda' => 'departments#live_search'
 
   match 'aulas/busqueda' => 'classrooms#live_search'
+  match 'aulas/horario/:id' => 'classrooms#schedule_table'
   
   match 'becas/busqueda' => 'scholarship_categories#live_search'
   match 'becas/:id/tipos' => 'scholarship_categories#types_table'
