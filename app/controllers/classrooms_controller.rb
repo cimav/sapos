@@ -107,7 +107,7 @@ class ClassroomsController < ApplicationController
 			@start_date 	= "#{@start_year}-#{@start_month}-#{@start_day}"
 			@end_date 		= "#{@end_year}-#{@end_month}-#{@end_day}"
 			
-			@tcs					= TermCourseSchedule.where("classroom_id = :classroom_id AND (start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:classroom_id => params[:id],:start_date => @start_date,:end_date => @end_date});
+			@tcs					= TermCourseSchedule.where("classroom_id = :classroom_id AND ((start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date))",{:classroom_id => params[:id],:start_date => @start_date,:end_date => @end_date});
 
 			@schedule = Hash.new
     	(4..22).each do |i|
@@ -166,7 +166,7 @@ class ClassroomsController < ApplicationController
         	html = render_to_string(:layout => false , :action => "schedule_table.html.haml")
         	kit = PDFKit.new(html, :page_size => 'Letter')
         	kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
-        	filename = "horario-#{@tcs.classroom.id}-#{@tcs.term_courses.term.id}.pdf"
+        	filename = "horario-#{@tcs[0].classroom.id}-#{@tcs[0].term_course.term.id}.pdf"
         	send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         	return # to avoid double render call
 				end   

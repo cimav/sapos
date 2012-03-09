@@ -9,6 +9,7 @@ $(document).ready(function() {
   liveSearch();
 });
 
+
 $('#search-classroom-schedule').live("click",function(){
 	url = location.pathname + '/horario/' + $('#classroom_id').val()
 	var start_day 	= $('#start_date_start_year1994_3i').val();
@@ -50,5 +51,4 @@ $('#search-classroom-schedule').live("click",function(){
 				$('#classroom-schedule-area').html(html);
 	});
 });
-
 

@@ -1,10 +1,10 @@
-- if @is_pdf 
+-# if @is_pdf 
   = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
   %h1= @tcs[0].classroom.code
   %div= @tcs[0].classroom.name
 #tc-header
   #tc-title
-    - if @is_pdf 
+    -# if @is_pdf 
       %div= "Horario: #{@tcs[0].classroom.name} (#{l @tcs[0].start_date, :format => :long} – #{l @tcs[0].end_date, :format => :long})"
 
 - if !@is_pdf 

@@ -1,18 +1,24 @@
 #classroom-schedule-header
   #classroom-schedule-title
     %h2 Horario
-  %table#classroom-schedule-filter
-    %tbody
-      %tr
-        %td#classroom-schedule-terms-dropdown
-          = hidden_field_tag :classroom_id, classroom.id
-          %div{:id => "field_classroom_schedule_start_date", :class => 'field'}
-            = label :start_date, 'Fecha de inicio'
-            = date_select :start_date, :start_year => 1994
-    
-          %div{:id => "field_classroom_schedule_end_date", :class => 'field'}
-            = label :end_date, 'Fecha de termino'
-            = date_select :end_date, :start_year => 1994
-            = link_to '  Buscar','#', :id=>'search-classroom-schedule'
+  %center
+    %table{:width=>"800px"}
+      %tbody
+        %tr
+          %td{:align=>"right"}
+            = hidden_field_tag :classroom_id, classroom.id
+            = "Fecha de inicio:"
+          %td
+            %div{:id => "field_classroom_schedule_start_date", :class => 'field'}
+              = date_select :start_date, :start_year => 1994
+          %td{:align=>"right"}
+            = "Fecha final:"
+          %td
+            %div{:id => "field_classroom_schedule_end_date", :class => 'field'}
+              = date_select :end_date, :start_year => 1994
+          %td
+            =link_to '  Buscar','#', :id=>'search-classroom-schedule'
+            =# %button{:id=>'search-classroom-schedule'}
+            =# "Buscar"
 
 #classroom-schedule-area
