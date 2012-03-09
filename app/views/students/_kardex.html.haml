@@ -1,0 +1,45 @@
+- if @is_pdf 
+  = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
+  %center
+    %h3= "KARDEX DE CALIFICACIONES"
+  %h4= "Matrícula: #{@student.card}"
+  %h4= "Nombre: #{@student.full_name}"
+  %h4= "Programa: #{@student.program.name}"
+
+- if !@is_pdf 
+  .pdf-link= link_to "PDF", :controller => "students", :action => "kardex", :id=> @student.id, :format => 'pdf'
+
+- counter = 0
+- counter_grade = 0
+- sum = 0
+%table#grades_table  
+  %tr
+    %th.centered= "Nombre de la Materia"
+    %th.centered= "Ciclo"
+    %th.centered= "Calificación"
+    - @student.term_students.each do |te|
+      - te.term_course_student.each do |tcs|
+        - counter += 1
+        - if counter % 2 == 0
+          - klass = 'row-even'
+        - else
+          - klass = 'row-odd'
+
+        %tr{:class  => klass}
+          %td= tcs.term_course.course.name
+          %td.centered= tcs.term_course.term.name
+          - if !(tcs.grade.nil?)
+            - counter_grade += 1
+            - sum = sum + tcs.grade
+          %td.centered= (tcs.grade.nil?)?"N.D.":tcs.grade
+    
+    - avg = "N.D."
+    - if counter == 0
+      %tr
+        %td.centered{:colspan=>3}= "No hay resultados"
+    - else    
+      - avg = sum/counter_grade
+      
+
+%h5= "Estatus: #{@student.status_type}"
+%h5= "Promedio: #{avg}"

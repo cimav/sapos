@@ -38,6 +38,7 @@
       %li= link_to "Horarios", "#horario"
       %li= link_to "Calificaciones", "#calificaciones"
       %li= link_to "Notas", "#notas"
+      %li= link_to "Kardex", "#kardex"
 
     #detalles
       %h2 Detalles
@@ -173,8 +174,11 @@
     #archivos
       %h2 Archivos
       %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/archivos", "scrolling" => "no", "onLoad" => "calcFrameHeight(this.id);" }
-	
+    
     #notas
       %h2 Notas
       = f.text_area :notes
 
+    #kardex
+      %h2 Kardex
+      = render :partial => 'kardex', :locals => {:student => @student}

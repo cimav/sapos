@@ -3,6 +3,7 @@ class TermStudent < ActiveRecord::Base
   belongs_to :term
   belongs_to :student
   has_many :term_course_student
+  accepts_nested_attributes_for :term_course_student
 
   ACTIVE   = 1
   PENDING  = 2
