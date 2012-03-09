@@ -34,6 +34,7 @@
       %li= link_to "Cursos Externos", "#cursos"
       %li= link_to "Practicas de Laboratorio", "#practicas"
       %li= link_to "Notas", "#notas"
+      %li= link_to "Horario", "#horario"
 
     #detalles
       %h2 Detalles
@@ -100,3 +101,6 @@
       %h2 Notas
       = f.text_area :notes
 
+    #horario
+      = render :partial => 'schedule', :locals => {:staff => @staff}
+ 

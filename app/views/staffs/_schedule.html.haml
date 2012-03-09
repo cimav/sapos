@@ -1,0 +1,23 @@
+#staff-schedule-header
+  #staff-schedule-title
+    %h2 Horario
+  
+  %center
+    %table{:width=>"800px"}
+      %tbody
+        %tr
+          %td{:align=>"right"}
+            = hidden_field_tag :staff_id, staff.id
+            = "Fecha de inicio:"
+          %td
+            %div{:id => "field_staff_schedule_start_date", :class => 'field'}
+              = date_select :start_date, :start_year => 1994
+          %td{:align=>"right"}
+            = "Fecha final:"
+          %td
+            %div{:id => "field_staff_schedule_end_date", :class => 'field'}
+              = date_select :end_date, :start_year => 1994
+          %td
+            =link_to '  Buscar','#', :id=>'search-staff-schedule'
+
+#staff-schedule-area
