@@ -14,5 +14,6 @@ db/seed-data/
 .swp
 .swo
 sapos.esproj
+Gemfile.lock
 
 config/environment.rb
