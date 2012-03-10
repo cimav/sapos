@@ -39,6 +39,7 @@ Sapos::Application.routes.draw do
   match 'docentes/update_lab_practice' => 'staffs#update_lab_practice'
   match 'docentes/:id/practica-laboratorio/:lab_practice_id' => 'staffs#edit_lab_practice'
   match 'docentes/:id/estudiantes' => 'staffs#students'
+  match 'docentes/horario/:id' => 'staffs#schedule_table'
 
 
 
