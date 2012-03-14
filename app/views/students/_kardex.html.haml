@@ -12,6 +12,7 @@
 - counter = 0
 - counter_grade = 0
 - sum = 0
+- avg = 0
 %table#grades_table  
   %tr
     %th.centered= "Nombre de la Materia"
@@ -38,7 +39,7 @@
       %tr
         %td.centered{:colspan=>3}= "No hay resultados"
     - else    
-      - avg = sum/counter_grade
+      - avg = sum/counter_grade if counter_grade > 0
       
 
 %h5= "Estatus: #{@student.status_type}"
