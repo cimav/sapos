@@ -214,16 +214,24 @@ class StaffsController < ApplicationController
 	def schedule_table
 			@is_pdf				= false 
 			@id 					= params[:id]
+			
+      @start_date 	= params[:start_date]
+			@end_date 		= params[:end_date]
+      
+      if @start_date.blank? or @end_date.blank?
+        @error = 1 # No se pueden mandar fechas vacias
+        render :layout => false and return
+      end 
 
-			@start_day 		= params[:start_day]
-			@start_month 	= params[:start_month]
-			@start_year 	= params[:start_year]
-			@end_day 			= params[:end_day]
-			@end_month 		= params[:end_month]
-			@end_year 		= params[:end_year]
+      @sd           = Date.parse(@start_date)
+      @ed           = Date.parse(@end_date)
 
-			@start_date 	= "#{@start_year}-#{@start_month}-#{@start_day}"
-			@end_date 		= "#{@end_year}-#{@end_month}-#{@end_day}"
+      @diference    = @ed - @sd
+
+      if @diference.to_i < 0
+        @error  = 2 #La fecha inicial es mayor que la final
+        render :layout => false and return
+      end
 			
       @tcs					= TermCourseSchedule.where("staff_id = :staff_id AND ((start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date))",{:staff_id => @id,:start_date => @start_date,:end_date => @end_date});
 			
