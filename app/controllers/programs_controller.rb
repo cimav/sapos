@@ -316,17 +316,40 @@ class ProgramsController < ApplicationController
   end
 
   def students_table
+    @is_pdf = false
     if !params[:group].blank?
       @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
     else 
       @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
       params[:group] = @tc.group
     end
-    if @tc
-      render :layout => false
-    else
-      render :inline => 'Error'
-    end
+    
+    respond_with do |format|
+      format.html do
+        if @tc
+          render :layout => false
+        else
+          render :inline => 'Error'
+        end
+      end
+      format.pdf do
+        if @tc.kind_of?(Array)
+          @term_id = @tc[0].course.id
+        else
+          @term_id = @tc.course.id
+        end 
+     	  institution = Institution.find(1)
+      	@logo   = institution.image_url(:medium).to_s
+      	@is_pdf = true
+        @today  = Time.now
+      	html    = render_to_string(:layout => false , :action => "students_table.html.haml")
+      	kit     = PDFKit.new(html, :page_size => 'Letter')
+      	kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+      	filename = "acta-#{@term_id}.pdf"
+      	send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      	return # to avoid double render call
+      end
+    end  
   end
 
   def new_course_student
