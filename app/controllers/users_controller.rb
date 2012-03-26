@@ -1,5 +1,6 @@
 # coding: utf-8
 class UsersController < ApplicationController
+  load_and_authorize_resource
   before_filter :auth_required
   respond_to :html, :xml, :json
 
@@ -11,12 +12,13 @@ class UsersController < ApplicationController
     if !params[:q].blank?
       @users = @users.where("(email LIKE :n)", {:n => "%#{params[:q]}%"}) 
     end
-
     render :layout => false
   end
 
   def show
     @user = User.find(params[:id])
+    @campus = Campus.all
+    @programs = Program.all
     render :layout => false
   end
 

@@ -6,7 +6,8 @@
       %h1= @program.name
       .comment= @program.prefix
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @program
+        = f.submit 'Actualizar'
 
   #resource-tabs
     %ul

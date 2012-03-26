@@ -1,5 +1,6 @@
 # coding: utf-8
 class ProgramsController < ApplicationController
+  load_and_authorize_resource
   before_filter :auth_required
   respond_to :html, :xml, :json, :pdf
 
@@ -7,7 +8,12 @@ class ProgramsController < ApplicationController
   end
 
   def live_search
-    @programs = Program.order('name')
+    if current_user.access == 2
+      @programs= Program.order('name').where(:id=> current_user.program_id)
+    else    
+      @programs = Program.order('name')
+    end 
+
     if !params[:q].blank?
       @programs = @programs.where("name LIKE :n OR prefix LIKE :n", {:n => "%#{params[:q]}%"}) 
     end

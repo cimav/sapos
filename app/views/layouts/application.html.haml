@@ -15,23 +15,35 @@
     #top-bar
       %img#logo{:src => '/images/logo.png'}
       #nav-select= @page_title || 'Posgrado'
-      #account= @user.email
+      #account= current_user.email
 
     #nav-menu
       %ul.nav
         %li.op#op-home= link_to "Escritorio", root_url
-        %li.op#op-students= link_to "Estudiantes", students_path
-        %li.op#op-staff= link_to "Docentes", staffs_path
-        %li.op#op-staff= link_to "Programas", programs_path
-        %li.op#op-internships= link_to "Servicios CIMAV", internships_path
-        %li.op#op-internships= link_to "Tipos de Servicios CIMAV", internship_types_path
-        %li.op#op-institutions= link_to "Instituciones", institutions_path
-        %li.op#op-classrooms= link_to "Aulas", classrooms_path
-        %li.op#op-laboratories= link_to "Laboratorios", laboratories_path
-        %li.op#op-scholarship_categories= link_to "Becas", scholarship_categories_path
-        %li.op#op-users= link_to "Campus", campus_path
-        %li.op#op-users= link_to "Usuarios", users_path
-        %li.op#op-users= link_to "Departamentos", departments_path
+        - if can? :read, Student
+          %li.op#op-students= link_to "Estudiantes", students_path
+        - if can? :read, Staff
+          %li.op#op-staff= link_to "Docentes", staffs_path
+        - if can? :read, Program
+          %li.op#op-staff= link_to "Programas", programs_path
+        - if can? :read, Internship
+          %li.op#op-internships= link_to "Servicios CIMAV", internships_path
+        - if can? :read, InternshipType
+          %li.op#op-internships= link_to "Tipos de Servicios CIMAV", internship_types_path
+        - if can? :read, Institution
+          %li.op#op-institutions= link_to "Instituciones", institutions_path
+        - if can? :read, Classroom
+          %li.op#op-classrooms= link_to "Aulas", classrooms_path
+        - if can? :read, Laboratory
+          %li.op#op-laboratories= link_to "Laboratorios", laboratories_path
+        - if can? :read, ScholarshipCategory
+          %li.op#op-scholarship_categories= link_to "Becas", scholarship_categories_path
+        - if can? :read, Campus
+          %li.op#op-users= link_to "Campus", campus_path
+        - if can? :read, User
+          %li.op#op-users= link_to "Usuarios", users_path
+        - if can? :read, Department
+          %li.op#op-users= link_to "Departamentos", departments_path
 
     #flash-notice
 
