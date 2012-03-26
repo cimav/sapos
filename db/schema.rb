@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120217021930) do
+ActiveRecord::Schema.define(:version => 20120316182420) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -488,6 +488,8 @@ ActiveRecord::Schema.define(:version => 20120217021930) do
     t.integer  "status",     :default => 1
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "program_id"
+    t.integer  "campus_id"
   end
 
 end
