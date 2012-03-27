@@ -5,7 +5,7 @@ class StudentsController < ApplicationController
   respond_to :html, :xml, :json
 
   def index
-    if current_user.access == 2
+    if current_user.access == User::OPERATOR
       @campus = Campus.order('name').where(:id=> current_user.campus_id)
     else    
       @campus = Campus.order('name')
@@ -22,7 +22,7 @@ class StudentsController < ApplicationController
       @students = @students.where(:program_id => params[:program])
     end 
      
-    if current_user.access == 2
+    if current_user.access == User::OPERATOR
       params[:campus] = current_user.campus_id;
     end 
 
@@ -132,7 +132,7 @@ class StudentsController < ApplicationController
     @institutions = Institution.order('name')
     @states = State.order('code')
  
-    if current_user.access == 2
+    if current_user.access == User::OPERATOR
       @campus = Campus.order('name').where(:id=> current_user.campus_id)
     else    
       @campus = Campus.order('name')
