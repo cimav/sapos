@@ -8,7 +8,7 @@ class ProgramsController < ApplicationController
   end
 
   def live_search
-    if current_user.access == 2
+    if current_user.access == User::OPERATOR
       @programs= Program.order('name').where(:id=> current_user.program_id)
     else    
       @programs = Program.order('name')

@@ -23,7 +23,8 @@
       .comment= @staff.institution.name
       .comment= "ID: #{@staff.id}"
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @staff
+        = f.submit 'Actualizar'
 
   #resource-tabs
     %ul
