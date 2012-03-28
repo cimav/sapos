@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120316182420) do
+ActiveRecord::Schema.define(:version => 20120327203950) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -187,6 +187,7 @@ ActiveRecord::Schema.define(:version => 20120316182420) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "blood_type"
+    t.integer  "campus_id"
   end
 
   add_index "internships", ["contact_id"], :name => "index_internships_on_contact_id"
