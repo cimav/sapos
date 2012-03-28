@@ -11,6 +11,7 @@ class Ability
       if user.access == User::OPERATOR
         can :manage, Student
         can :manage, Program
+        can :manage, Internship
       end
     end
   end

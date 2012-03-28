@@ -1,5 +1,6 @@
 # coding: utf-8
 class InternshipsController < ApplicationController
+  load_and_authorize_resource
   before_filter :auth_required
   respond_to :html, :xml, :json
 
@@ -7,10 +8,20 @@ class InternshipsController < ApplicationController
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
     @staffs = Staff.order('first_name').where("id IN (SELECT DISTINCT staff_id FROM internships)")
     @internship_types = InternshipType.order('name')
+ 
+    if current_user.access == User::OPERATOR
+      @campus = Campus.order('name').where(:id=> current_user.campus_id)
+    else
+      @campus = Campus.order('name')
+    end 
   end
 
   def live_search
-    @internships = Internship.order("first_name")
+    if current_user.access == User::OPERATOR
+      @internships = Internship.order("first_name").where(:campus_id => current_user.campus_id)
+    else    
+      @internships = Internship.order("first_name")
+    end 
 
     if params[:institution] != '0' then
       @internships = @internships.where(:institution_id => params[:institution])
@@ -81,6 +92,13 @@ class InternshipsController < ApplicationController
     @internship_types = InternshipType.order('name')
     @staffs = Staff.order('first_name').includes(:institution)
     @states = State.order('code')
+
+    if current_user.access == User::OPERATOR
+      @campus = Campus.order('name').where(:id=> current_user.campus_id)
+    else
+      @campus = Campus.order('name')
+    end 
+
     render :layout => false
   end
 
