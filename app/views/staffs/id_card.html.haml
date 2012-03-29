@@ -1,0 +1,73 @@
+%html
+  %head
+    %title= 'ID CARD'
+  %body
+    #id_card
+      = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-card.jpg", :style => "margin-bottom: 20px; width: 100%;"
+      %table#cont
+        %tr
+          %td.photo
+            = image_tag "http://posgrado.cimav.edu.mx#{@staff.image_url.to_s}"
+          %td
+            %table
+              %tr
+                %td
+                  #card_name= @staff.first_name
+              %tr
+                %td
+                  #card_last_name= @staff.last_name
+              %tr
+                %td
+                  #card_program= @staff.institution.name
+              %tr
+                %td
+                  #card_card= ""
+              %tr
+                %td
+                  #card_start_date= ""
+              %tr
+                %td
+                  #card_valid= "Vigencia: Julio 30, 2012"
+        %tr
+          %td{:colspan => 2}
+            #card_student= "DOCENTE"
+    .pb_before2
+      %table#card-back
+        %tr
+          %td.sep-logo
+            = image_tag "http://posgrado.cimav.edu.mx/images/card-sep.jpg"
+          %td
+            %table#student-data
+              %tr
+                %td.back-name{:colspan => 2}= @staff.full_name
+              %tr
+                %td= "Correo:"
+                %td= @staff.email
+              %tr
+                %td= "Dirección:"
+                %td
+                  .address1= @staff.contact.address1
+                  .address2= @staff.contact.address2
+                  .city= "#{@staff.contact.city}, #{@student.contact.state.name rescue ''}"
+                  .country= @staff.contact.country.name rescue ''
+                  .zip= @staff.contact.zip
+              %tr
+                %td= ""
+                %td= ""
+              %tr
+                %td= ""
+                %td= ""
+              %tr
+                %td= ""
+                %td= ""
+              %tr
+                %td.separator{:colspan => 2}
+              %tr
+                %td.empty{:colspan => 2}
+              %tr
+                %td.cimav-data{:colspan => 2}
+                  %div= "Centro de Investigación en Materiales Avanzados, S.C."
+                  %div= "Miguel de Cervantes 120, Complejo Industrial Chihuahua"
+                  %div= "Chihuahua, Chih. México. 31109"
+                  %div= "Tels. +52 (614) 439-1161, 439-1158"
+                  %div.registro= "Registro Institucional SEP: 18 - 00114"
