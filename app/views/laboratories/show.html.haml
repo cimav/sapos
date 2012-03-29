@@ -4,7 +4,8 @@
       %h1= "#{@laboratory.full_name}"
       .comment= @laboratory.campus.name
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @laboratory
+        = f.submit 'Actualizar'
 
   #resource-tabs
     %ul

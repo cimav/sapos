@@ -4,7 +4,8 @@
       %h1= "#{@classroom.full_name}"
       .comment= @classroom.room_type_text
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @classroom
+        = f.submit 'Actualizar'
 
   #resource-tabs
     %ul

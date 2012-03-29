@@ -4,7 +4,8 @@
       %h1= "#{@department.full_name}"
       .comment= @department.description
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @department
+        = f.submit 'Actualizar'
 
   #resource-tabs
     %ul
