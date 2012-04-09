@@ -55,6 +55,7 @@ class StaffsController < ApplicationController
 
     if @staff.save
       flash[:notice] = "Docente creado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Staff: #{@staff.id},#{@staff.first_name} #{@staff.last_name}"}).save
 
       respond_with do |format|
         format.html do
@@ -90,6 +91,7 @@ class StaffsController < ApplicationController
 
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Docente actualizado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Staff: #{@staff.id},#{@staff.first_name} #{@staff.last_name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

@@ -31,6 +31,7 @@ class ClassroomsController < ApplicationController
 
     if @classroom.save
       flash[:notice] = "Aula creada."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Classroom: #{@classroom.id},#{@classroom.name}"}).save
 
       respond_with do |format|
         format.html do
@@ -66,6 +67,7 @@ class ClassroomsController < ApplicationController
 
     if @classroom.update_attributes(params[:classroom])
       flash[:notice] = "Aula actualizada."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Classroom: #{@classroom.id},#{@classroom.name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

@@ -30,6 +30,7 @@ class InternshipTypesController < ApplicationController
 
     if @internship_type.save
       flash[:notice] = "Tipo de Servicio creado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Internship type: #{@internship_type.id},#{@internship_type.name}"}).save
 
       respond_with do |format|
         format.html do
@@ -65,6 +66,7 @@ class InternshipTypesController < ApplicationController
 
     if @internship_type.update_attributes(params[:internship_type])
       flash[:notice] = "Tipo de servicio actualizado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Internship type: #{@internship_type.id},#{@internship_type.name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

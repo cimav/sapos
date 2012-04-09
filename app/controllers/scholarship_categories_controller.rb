@@ -29,6 +29,7 @@ class ScholarshipCategoriesController < ApplicationController
 
       if @scholarship_category.save
         flash[:notice] = "Categoria creada."
+        ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Scholarship category: #{@scholarship_category.id},#{@scholarship_category.name}"}).save
 
         respond_with do |format|
           format.html do
@@ -64,6 +65,7 @@ class ScholarshipCategoriesController < ApplicationController
 
       if @scholarship_category.update_attributes(params[:scholarship_category])
         flash[:notice] = "Categoria actualizada."
+        ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Scholarship category: #{@scholarship_category.id},#{@scholarship_category.name}"}).save
         respond_with do |format|
           format.html do
             if request.xhr?

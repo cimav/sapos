@@ -6,6 +6,7 @@ class StudentFilesController < ApplicationController
     @student_file = StudentFile.find(params[:id])
     if @student_file.destroy
       flash[:notice] = "Archivo eliminado"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Student File: #{@student_file.id},#{@student_file.description}"}).save
 
       respond_with do |format|
         format.html do
@@ -40,6 +41,7 @@ class StudentFilesController < ApplicationController
 
     if @student_file.update_attributes(params[:student_file])
       flash[:notice] = "Descripci?n actualizada."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Student File: #{@student_file.id},#{@student_file.description}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

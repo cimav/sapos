@@ -32,6 +32,7 @@ class UsersController < ApplicationController
 
     if @user.save
       flash[:notice] = "Usuario creado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create User: #{@user.id},#{@user.email}"}).save
 
       respond_with do |format|
         format.html do
@@ -64,6 +65,7 @@ class UsersController < ApplicationController
 
   def update 
     @user = User.find(params[:id])
+    ActivityLog.new({:user_id=>current_user.id,:activity=>"Update User: #{@user.id},#{@user.email}"}).save
 
     if @user.update_attributes(params[:user])
       flash[:notice] = "Usuario actualizado."
