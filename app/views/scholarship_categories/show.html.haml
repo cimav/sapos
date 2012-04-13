@@ -5,7 +5,8 @@
       %h1= "#{@scholarship_category.name}"
     
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @scholarship_category
+        = f.submit 'Actualizar'
 
   
   #resource-tabs

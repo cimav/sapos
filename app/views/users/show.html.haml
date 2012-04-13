@@ -13,7 +13,8 @@
       %h1= "#{@user.email}"
       .comment= @user.access_type
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @user
+        = f.submit 'Actualizar'
 
   #resource-tabs
     %ul
@@ -33,3 +34,17 @@
       .field#field_user_status
         = f.label :status, 'Estado'
         = f.select :status,  User::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+
+      .field#field_user_campus
+        = f.label :campus_id, 'Campus'
+        - q = ["Ninguno",0]
+        - p = @campus.collect{|p|[p.name,p.id]}
+        - p.insert(0,q)
+        = f.select :campus_id,p
+    
+      .field#field_user_program
+        = f.label :program_id, 'Programa'
+        - q = ["Ninguno",0]
+        - p = @programs.collect{|p|[p.name,p.id]}
+        - p.insert(0,q)
+        = f.select :program_id,p

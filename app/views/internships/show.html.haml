@@ -24,7 +24,8 @@
       .resource-card
         = link_to 'Credencial', "/internados/#{@internship.id}/credencial.pdf", :id=>'a-id-card'
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @internship
+        = f.submit 'Actualizar'
 
   #resource-tabs
     %ul
@@ -68,6 +69,12 @@
       .field#field_internship_staff_id
         = f.label :staff_id, 'Docente responsable'
         = f.grouped_collection_select :staff_id, @institutions, :staffs_active, :name, :id, :full_name
+      .field#field_internship_campus
+        = f.label :campus_id, 'Campus'
+        - q = ["Ninguno",0]
+        - p = @campus.collect{|p|[p.name,p.id]}
+        - p.insert(0,q)
+        = f.select :campus_id,p
 
       .field#field_internship_gender 
         = f.label :gender, 'Sexo'

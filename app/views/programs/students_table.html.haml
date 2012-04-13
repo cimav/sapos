@@ -1,4 +1,26 @@
-= render :partial => 'term_course_header', :locals => {:tc => @tc, :selected => 'students'}
+-if !@is_pdf
+  = render :partial => 'term_course_header', :locals => {:tc => @tc, :selected => 'students'}
+
+-if @is_pdf
+  = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
+  .centered
+    %h1="Acta de calificaciones"
+    %h2= "PROGRAMA: #{@tc.course.program.name}"
+    %table.tc-students
+      %tbody
+        %tr.header
+          %th.centered Fecha
+          %th.centered Ciclo Escolar
+          %th.centered Materia 
+          %th.centered Titular
+        %tr
+          %td.centered #{l @today, :format=>'%d-%m-%Y'}
+          %td.centered #{@tc.term.name}
+          %td.centered #{@tc.course.name}
+          - if @tc.staff.nil?
+            %td.centered Sin Titular
+          - else
+            %td.centered #{@tc.staff.full_name}
 
 -if @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).count > 0 
   %table.tc-students
@@ -7,13 +29,31 @@
         %th Matricula
         %th Nombre
         - if [Term::GRADING, Term::ENDED].include? @tc.term.status
+          - if @is_pdf
+            %th Porcentaje de Asistencia
           %th Calificación
     - @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).order("created_at DESC").each_with_index do |tc_student, index|
       %tr.tc-students-item{:id=>"tr_tc_student_#{tc_student.id}", :tc_student_id=>tc_student.id}
         %td{:title => 'Algo'}= tc_student.term_student.student.card
         %td= tc_student.term_student.student.full_name
         - if [Term::GRADING, Term::ENDED].include? @tc.term.status
+          - if @is_pdf
+            %td= ""
           %td= tc_student.grade
 
-- if @tc.term.status == Term::OPEN
-  = link_to 'Agregar estudiante', '#', :id => 'add-student-to-course'
+-if !@is_pdf
+  - if @tc.term.status == Term::OPEN
+    = link_to 'Agregar estudiante', '#', :id => 'add-student-to-course'
+  - if @tc.term.status == Term::ENDED
+    = link_to "Imprimir acta de calificaciones", :controller =>"programs", :action=>"students_table", :id => 'print-act', :format => 'pdf'
+
+-if @is_pdf 
+  %br
+  %br
+  .centered
+    %br  
+      = "Firma del Titular de la Materia"
+    -if @tc.staff.nil?
+      = "Sin Titular"
+    - else 
+      = @tc.staff.full_name

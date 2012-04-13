@@ -1,11 +1,17 @@
 # coding: utf-8
 class StudentsController < ApplicationController
+  load_and_authorize_resource
   before_filter :auth_required
   respond_to :html, :xml, :json
 
   def index
+    if current_user.access == User::OPERATOR
+      @campus = Campus.order('name').where(:id=> current_user.campus_id)
+    else    
+      @campus = Campus.order('name')
+    end 
+    
     @programs = Program.order('name')
-    @campus = Campus.order('name')
     @supervisors = Staff.find_by_sql "SELECT id, first_name, last_name FROM staffs WHERE id IN (SELECT supervisor FROM students UNION SELECT co_supervisor FROM students) ORDER BY first_name, last_name"
   end
 
@@ -14,6 +20,10 @@ class StudentsController < ApplicationController
 
     if params[:program] != '0' then
       @students = @students.where(:program_id => params[:program])
+    end 
+     
+    if current_user.access == User::OPERATOR
+      params[:campus] = current_user.campus_id;
     end 
 
     if params[:campus] != '0' then
@@ -122,7 +132,12 @@ class StudentsController < ApplicationController
     @countries = Country.order('name')
     @institutions = Institution.order('name')
     @states = State.order('code')
-    @campus = Campus.order('name')
+ 
+    if current_user.access == User::OPERATOR
+      @campus = Campus.order('name').where(:id=> current_user.campus_id)
+    else    
+      @campus = Campus.order('name')
+    end 
     render :layout => false
   end
 

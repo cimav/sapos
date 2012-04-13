@@ -1,4 +1,5 @@
-- @include_js = ['classrooms']
+= stylesheet_link_tag 'custom-theme/jquery-ui.css'
+- @include_js = ['classrooms','jquery.ui.datepicker.js','jquery.ui.datepicker-es.js']
 - @page_title = 'Salones'
 - @nav_icon = 'classrooms'
 #items-panel.side-panel.inst-side-panel
@@ -10,6 +11,7 @@
   #items-list.panel-items
   
   .panel-add
-    = link_to  'Agregar nuevo salón', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
+    - if can? :create, Classroom
+      = link_to  'Agregar nuevo salón', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
 
 #content-panel.main-panel

@@ -22,8 +22,11 @@
       %h1= "#{@staff.first_name} #{@staff.last_name}"
       .comment= @staff.institution.name
       .comment= "ID: #{@staff.id}"
+      .resource-card
+        = link_to 'Credencial', "/docentes/#{@staff.id}/credencial.pdf", :id=>'a-id-card'
     .resource-save
-      = f.submit 'Actualizar'
+      - if can? :create || :update, @staff
+        = f.submit 'Actualizar'
 
   #resource-tabs
     %ul

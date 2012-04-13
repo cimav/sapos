@@ -3,9 +3,21 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   def authenticated?
-    @user = User.where(:email => session[:admin_user], :status => User::STATUS_ACTIVE).first
-    @user && @user.email == session[:admin_user]
+    #@user = User.where(:email => session[:admin_user], :status => User::STATUS_ACTIVE).first
+    #@user && @user.email == session[:admin_user]
+
+    if session[:user_auth].blank? 
+      user = User.where(:email => session[:admin_user], :status => User::STATUS_ACTIVE).first
+      session[:user] = user
+      session[:user_auth] = user && user.email == session[:admin_user]
+      if session[:user_auth]
+        session[:user_id] = user.id
+      end
+    else
+      session[:user_auth]
+    end
   end
+
   helper_method :authenticated?
 
   def auth_required
@@ -33,5 +45,25 @@ class ApplicationController < ActionController::Base
     book.write "tmp/#{filename}.xls"
     # send_file("tmp/#{filename}.xls", :type=>"application/ms-excel", :x_sendfile=>true)
     send_file "tmp/#{filename}.xls", :x_sendfile=>true
+  end
+  
+  helper_method :current_user
+
+  private
+  def current_user
+    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+  end
+
+  rescue_from CanCan::AccessDenied do |exception|
+     flash[:error] = "Access denied!"
+     respond_with do |format|
+       format.html do
+         if request.xhr?
+           json = {}
+           json[:flash] = flash
+           render :json => json, :status => :unprocessable_entity   
+         end 
+       end     
+     end
   end
 end

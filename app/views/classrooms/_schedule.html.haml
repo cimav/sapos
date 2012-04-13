@@ -9,16 +9,13 @@
             = hidden_field_tag :classroom_id, classroom.id
             = "Fecha de inicio:"
           %td
-            %div{:id => "field_classroom_schedule_start_date", :class => 'field'}
-              = date_select :start_date, :start_year => 1994
+            %input{:type=>'text',:id=>'start_date',:readonly=>true}      
           %td{:align=>"right"}
             = "Fecha final:"
           %td
-            %div{:id => "field_classroom_schedule_end_date", :class => 'field'}
-              = date_select :end_date, :start_year => 1994
+            %input{:type=>'text',:id=>'end_date'}      
           %td
             =link_to '  Buscar','#', :id=>'search-classroom-schedule'
-            =# %button{:id=>'search-classroom-schedule'}
-            =# "Buscar"
 
 #classroom-schedule-area
+= javascript_include_tag "end.js"

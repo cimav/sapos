@@ -10,6 +10,7 @@
   #items-list.panel-items
   
   .panel-add
-    = link_to  'Agregar nuevo usuario', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
+    - if can? :create, User
+      = link_to  'Agregar nuevo usuario', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
 
 #content-panel.main-panel

@@ -20,6 +20,11 @@
       - @staffs.each do |staff|
         - staff_options += "<option value=\"#{staff.id}\">#{staff.full_name}</option>" 
       = select_tag "staff", staff_options.html_safe
+      
+      - campus_options = "<option value=\"0\">Todos los campus</option>"
+      - @campus.each do |camp|
+        - campus_options += "<option value=\"#{camp.id}\">#{camp.name}</option>" 
+      = select_tag "campus", campus_options.html_safe
   
   
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
@@ -38,7 +43,8 @@
   #items-list.panel-items
   
   .panel-add
-    = link_to  'Agregar nuevo servicio', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
+    - if can? :create, Internship
+      = link_to  'Agregar nuevo servicio', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
     %a{'id' => 'to_excel'} XLS
 
 

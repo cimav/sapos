@@ -1,32 +1,40 @@
--# if @is_pdf 
-  = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
-  %h1= @tcs[0].classroom.code
-  %div= @tcs[0].classroom.name
-#tc-header
-  #tc-title
-    -# if @is_pdf 
-      %div= "Horario: #{@tcs[0].classroom.name} (#{l @tcs[0].start_date, :format => :long} – #{l @tcs[0].end_date, :format => :long})"
-
-- if !@is_pdf 
-  .pdf-link= link_to "PDF", :controller => "classrooms", :action => "schedule_table", :id => @id, :start_day=> @start_day, :start_month => @start_month ,:start_year => @start_year, :end_day=>@end_day,:end_month=>@end_month, :end_year=>@end_year, :format => 'pdf'
-
-%table#student-schedule
-  %tr
-    %th Hora
-    %th Lunes
-    %th Martes
-    %th Miercoles
-    %th Jueves
-    %th Viernes
-    %th Sabado
-    %th Domingo
-  - (@min_hour..@max_hour).each do |i|
+- if @error
+  %br
+  %p{:align=>'center'}
+    - if @error.to_i == 1
+      = "No se pueden mandar fechas vacias"
+    - if @error.to_i == 2
+      = "La fecha inicial no puede ser mayor que la final" 
+- else
+  - if @is_pdf 
+    = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
+    %h1= "Horario"
+    %div= @tcs[0].classroom.name
+  #tc-header
+    #tc-title
+      - if @is_pdf 
+        %div= "(#{l @sd, :format => :long} – #{l @ed, :format => :long})"
+  
+  - if !@is_pdf 
+    .pdf-link= link_to "PDF", :controller => "classrooms", :action => "schedule_table", :id => @id, :start_date => @start_date, :end_date => @end_date, :format => 'pdf'
+  
+  %table#student-schedule
     %tr
-      %td.hora= "#{i}:00"
-      - (1..7).each do |j|
-        %td.dia
-          - @schedule[i][j].each do |k|
-            .session_block(class="session_style_#{k['n']}")
-              .session-title= k['name']
-              .session-staff= k['staff_name']
-              .session-comments= k['comments']
+      %th Hora
+      %th Lunes
+      %th Martes
+      %th Miercoles
+      %th Jueves
+      %th Viernes
+      %th Sabado
+      %th Domingo
+    - (@min_hour..@max_hour).each do |i|
+      %tr
+        %td.hora= "#{i}:00"
+        - (1..7).each do |j|
+          %td.dia
+            - @schedule[i][j].each do |k|
+              .session_block(class="session_style_#{k['n']}")
+                .session-title= k['name']
+                .session-staff= k['staff_name']
+                .session-comments= k['comments']
