@@ -31,6 +31,7 @@ class LaboratoriesController < ApplicationController
 
     if @laboratory.save
       flash[:notice] = "Laboratorio creado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Laboratory: #{@laboratory.id},#{@laboratory.name}"}).save
 
       respond_with do |format|
         format.html do
@@ -66,6 +67,7 @@ class LaboratoriesController < ApplicationController
 
     if @laboratory.update_attributes(params[:laboratory])
       flash[:notice] = "Laboratorio actualizado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Laboratory: #{@laboratory.id},#{@laboratory.name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

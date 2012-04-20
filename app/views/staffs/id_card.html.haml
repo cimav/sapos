@@ -27,7 +27,7 @@
                   #card_start_date= ""
               %tr
                 %td
-                  #card_valid= "Vigencia: Julio 30, 2012"
+                  #card_valid= "Vigencia: #{l @time, :format => '%B %d, %Y'}"
         %tr
           %td{:colspan => 2}
             #card_student= "DOCENTE"

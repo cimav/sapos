@@ -1,6 +1,6 @@
 # coding: utf-8
 class CampusController < ApplicationController
-  load_and_authorize_resource
+  #load_and_authorize_resource
   before_filter :auth_required
   respond_to :html, :xml, :json
 
@@ -33,6 +33,7 @@ class CampusController < ApplicationController
 
     if @campus.save
       flash[:notice] = "Campus creada."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Campus: #{@campus.id},#{@campus.name}"}).save
 
       respond_with do |format|
         format.html do
@@ -68,6 +69,7 @@ class CampusController < ApplicationController
 
     if @campus.update_attributes(params[:campus])
       flash[:notice] = "Campus actualizado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Campus: #{@campus.id},#{@campus.name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

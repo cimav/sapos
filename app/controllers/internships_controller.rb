@@ -114,6 +114,7 @@ class InternshipsController < ApplicationController
 
     if @internship.save
       flash[:notice] = "Servicio creado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Internship: #{@internship.id},#{@internship.first_name} #{@internship.last_name}"}).save
 
       respond_with do |format|
         format.html do
@@ -149,6 +150,7 @@ class InternshipsController < ApplicationController
 
     if @internship.update_attributes(params[:internship])
       flash[:notice] = "Servicio actualizado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Internship: #{@internship.id},#{@internship.first_name} #{@internship.last_name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

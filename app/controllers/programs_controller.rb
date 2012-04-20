@@ -36,6 +36,7 @@ class ProgramsController < ApplicationController
 
     if @program.save
       flash[:notice] = "Programa creada."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Program: #{@program.id},#{@program.name}"}).save
 
       respond_with do |format|
         format.html do
@@ -70,6 +71,7 @@ class ProgramsController < ApplicationController
     @program = Program.find(params[:id])
     if @program.update_attributes(params[:program])
       flash[:notice] = "Programa actualizada."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Program: #{@program.id},#{@program.name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

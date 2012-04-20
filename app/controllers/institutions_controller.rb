@@ -30,7 +30,7 @@ class InstitutionsController < ApplicationController
 
   def create
     @institution = Institution.new(params[:institution])
-
+    ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Institution: #{@institution.id},#{@institution.name}"}).save
     if @institution.save
       flash[:notice] = "Institucion creada."
 
@@ -68,6 +68,7 @@ class InstitutionsController < ApplicationController
 
     if @institution.update_attributes(params[:institution])
       flash[:notice] = "Institucion actualizada."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Institution: #{@institution.id},#{@institution.name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

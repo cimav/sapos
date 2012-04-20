@@ -31,6 +31,7 @@ class DepartmentsController < ApplicationController
 
     if @department.save
       flash[:notice] = "Departamento creado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Deparment: #{@department.id},#{@department.name}"}).save
 
       respond_with do |format|
         format.html do
@@ -66,6 +67,7 @@ class DepartmentsController < ApplicationController
   
 		if @department.update_attributes(params[:department])
 			flash[:notice] = "Departamento Actualizado"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Deparment: #{@department.id},#{@department.name}"}).save
     	respond_with do |format|
 				format.html do
 					if request.xhr?

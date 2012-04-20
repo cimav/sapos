@@ -6,6 +6,7 @@ class InternshipFilesController < ApplicationController
     @internship_file = InternshipFile.find(params[:id])
     if @internship_file.destroy
       flash[:notice] = "Archivo eliminado"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Deleted internship_file: #{@internship_file.id},#{@internship_file.description}"}).save
 
       respond_with do |format|
         format.html do
@@ -40,6 +41,7 @@ class InternshipFilesController < ApplicationController
 
     if @internship_file.update_attributes(params[:internship_file])
       flash[:notice] = "Descripci?n actualizada."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update internship_file: #{@internship_file.id},#{@internship_file.description}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?

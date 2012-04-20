@@ -152,6 +152,7 @@ class StudentsController < ApplicationController
 
     if @student.save
       flash[:notice] = "Estudiante creado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
 
       respond_with do |format|
         format.html do
@@ -187,6 +188,7 @@ class StudentsController < ApplicationController
 
     if @student.update_attributes(params[:student])
       flash[:notice] = "Estudiante actualizado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?
@@ -284,6 +286,7 @@ class StudentsController < ApplicationController
     @student.thesis.set_number
     if @student.save
       flash[:notice] = "Numero de tesis asignado."
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Thesis Number asigned to Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
 
       respond_with do |format|
         format.html do
