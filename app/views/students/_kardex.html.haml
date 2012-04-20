@@ -19,7 +19,7 @@
     %th.centered= "Ciclo"
     %th.centered= "Calificación"
     - @student.term_students.each do |te|
-      - te.term_course_student.each do |tcs|
+      - te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
         - counter += 1
         - if counter % 2 == 0
           - klass = 'row-even'
