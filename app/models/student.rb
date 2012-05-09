@@ -76,7 +76,7 @@ class Student < ActiveRecord::Base
   
   def add_extra
     self.build_contact()
-    self.build_scholarship()
+    # self.build_scholarship()
     self.build_thesis()
     self.save(:validate => false)
   end
