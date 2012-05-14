@@ -130,8 +130,32 @@ class StudentsController < ApplicationController
     @staffs = Staff.order('first_name').includes(:institution)
     @countries = Country.order('name')
     @institutions = Institution.order('name')
-    @states = State.order('code')
- 
+    @states = State.order('code')  
+    today = Date.today
+    yyyy  = today.year - @student.start_date.year
+    m = today.month - @student.start_date.month
+    
+    if m > 0
+      @year  = yyyy
+      @month = m
+    else 
+      @year  = yyyy - 1
+      @month = 12 + m  
+    end
+
+    if @year == 1
+      @text_year = " año"
+    else
+      @text_year = " años"
+    end 
+   
+    if @month == 1
+      @text_month = "mes"
+    else
+      @text_month = "meses"
+    end 
+
+
     if current_user.access == User::OPERATOR
       @campus = Campus.order('name').where(:id=> current_user.campus_id)
     else    
@@ -403,6 +427,20 @@ class StudentsController < ApplicationController
     end
   end
 
+  def term_grades_list
+    @tcs = TermCourseSchedule.where("start_date>=CURDATE() AND start_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY)").order("start_date, start_hour")
+    render :layout => false
+  end
+  
+  def advances_list
+    if current_user.access == User::ADMINISTRATOR
+      @advances = Advance.where("advance_date>=CURDATE() AND advance_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY)")
+    elsif  current_user.access == User::OPERATOR
+      @advances = Advance.joins(:student).where("advance_date>=CURDATE() AND advance_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY) AND campus_id=:campus_id",{:campus_id=>current_user.campus_id})
+    end 
+    render :layout => false
+  end
+
   def id_card
     @student = Student.find(params[:id])
     respond_with do |format|
@@ -423,24 +461,24 @@ class StudentsController < ApplicationController
     end
   end
 
-	def kardex 
-    	@student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+  def kardex 
+    @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
     	
-			respond_with do |format|
-      	format.html do
-       	 render :layout => false
-      	end 
-      	format.pdf do
-        	institution = Institution.find(1)
-	        @logo = institution.image_url(:medium).to_s
- 	       	@is_pdf = true
- 	       	html = render_to_string(:layout => false , :action => "_kardex.html.haml")
-        	kit = PDFKit.new(html, :page_size => 'Letter')
-        	kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
-        	filename = "kardex-#{@student.id}.pdf"
-        	send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-        	return # to avoid double render call
-      	end
-			end
-	end
+    respond_with do |format|
+      format.html do
+        render :layout => false
+      end 
+      format.pdf do
+        institution = Institution.find(1)
+        @logo = institution.image_url(:medium).to_s
+        @is_pdf = true
+        html = render_to_string(:layout => false , :action => "_kardex.html.haml")
+        kit = PDFKit.new(html, :page_size => 'Letter')
+        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        filename = "kardex-#{@student.id}.pdf"
+        send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+        return # to avoid double render call
+      end
+    end
+  end
 end
