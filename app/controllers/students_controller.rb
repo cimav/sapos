@@ -101,6 +101,7 @@ class StudentsController < ApplicationController
                    'Nombre' => s.first_name, 
                    'Apellidos' => s.last_name, 
                    'Estado' => s.status_type,
+	           "Fecha_Nac" => s.date_of_birth,
 	           "Ciudad_Nac" => s.city,
 	           "Estado_Nac" => (s.state.name rescue ''),
 	           "Pais_Nac" => (s.country.name rescue ''),
@@ -119,7 +120,7 @@ class StudentsController < ApplicationController
                    'Sinodal5' => (Staff.find(s.thesis.examiner5).full_name rescue ''),
                    }
         end
-        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
+        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
         to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
