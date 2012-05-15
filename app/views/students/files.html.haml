@@ -54,6 +54,7 @@
 #files-area
   %table{'class' => 'files-table'}
     - @student.student_file.each do |student_file|
+      - next if !File.exists?(student_file.file.to_s)
       %tr{'id' => "file-#{student_file.id}"}
         - if File.extname(student_file.file.to_s) == ''
           - ext = 'unknown'
