@@ -21,6 +21,14 @@
     .resource-title
       %h1= "#{@student.first_name} #{@student.last_name}"
       .comment= "Matrícula: #{@student.card}"
+      .comment= "Tiempo estudiante: #{@year} #{@text_year} #{@month} #{@text_month}"
+      - tcs_size = @student.term_students.size
+      - if tcs_size > @student.program.terms_duration
+        .comment
+          = "Ciclos Cursados: "
+          %font{:color=>"red"} #{tcs_size} (#{@student.program.terms_duration})
+      - else  
+        .comment= "Ciclos Cursados: #{tcs_size} (#{@student.program.terms_duration})"
       .comment= @student.program.name
       .resource-card
         = link_to 'Credencial', "/estudiantes/#{@student.id}/credencial.pdf", :id=>'a-id-card'
@@ -111,7 +119,6 @@
       .field#field_student_cvu
         = f.label :curp, 'CURP'
         = f.text_field :curp
-
 
 
       %h3 Grado anterior
