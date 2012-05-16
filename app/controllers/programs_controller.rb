@@ -186,6 +186,7 @@ class ProgramsController < ApplicationController
 
   def edit_enrollment
     @program = Program.find(params[:id])
+    #@ts = TermStudent.includes(:term_student_payment).find(params[:term_student_id])
     @ts = TermStudent.find(params[:term_student_id])
     render :layout => 'standalone'
   end
@@ -521,6 +522,44 @@ class ProgramsController < ApplicationController
   def groups_dropdown
     @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
     render :layout => false
+  end
+
+  def documentation
+    if !params[:group].blank?
+      @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
+    else
+      @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
+      params[:group] = @tc.group
+    end
+    if !@tc
+      render :inline => 'Error'
+    end
+    render :layout => false
+  end
+  
+  def files
+    @program = Program.includes(:documentation_file).find(params[:id])
+    @documentation_file  = DocumentationFile.new
+    render :layout => 'standalone'
+  end
+  
+  def upload_file
+    params[:documentation_file]['file'].each do |f|
+      @documentation_file = DocumentationFile.new(f)
+      @documentation_file.program_id = params[:documentation_file]['program_id']
+      @documentation_file.file = f
+      @documentation_file.description = f.original_filename
+      if @documentation_file.save
+        flash[:notice] = "Archivo subido exitosamente."
+      else
+        flash[:error] = "Error al subir archivo."
+      end
+    end
+
+    redirect_to :action => 'files', :id => params[:id]
+  end
+  
+  def delete_file
   end
 
 end

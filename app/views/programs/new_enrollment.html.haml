@@ -24,6 +24,15 @@
         %div{:id => "field_term_term_students_attributes_0_notes", :class => 'field'}
           = fields.label :notes, 'Comentarios'
           = fields.text_field :notes
+        
+        = fields.fields_for "term_student_payment_attributes[0]" do |tsp_field|
+          %div{:id => "field_term_term_students_attributes_0_tsp_amount" , :class  =>'field'}
+            = tsp_field.label :amount, 'Cantidad'
+            = tsp_field.text_field :amount
+          
+          %div{:id => "field_term_term_students_attributes_0_tsp_status" , :class  =>'field'}
+            = tsp_field.label :status, 'Estatus'
+            = tsp_field.select :status, TermStudentPayment::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
 
         #dialog-submit-button-area
           = fields.submit "Agregar estudiante al ciclo"

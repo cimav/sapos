@@ -17,6 +17,8 @@ Sapos::Application.routes.draw do
   match 'estudiantes/:id/credencial' => 'students#id_card'
   match 'estudiantes/:id/kardex' => 'students#kardex'
   match 'estudiantes/:id/boleta/:term_id' => 'students#term_grades'
+  match 'estudiantes/lista' => 'students#term_grades_list'
+  match 'estudiantes/avances' => 'students#advances_list'
 
   resources :student_files
 
@@ -118,10 +120,17 @@ Sapos::Application.routes.draw do
   match 'programas/:id/periodo/:term_id/curso/:course_id/asistencia' => 'programs#attendee_table'
   match 'programas/:id/periodo/:term_id/curso/:course_id/asistencia/:group' => 'programs#attendee_table'
   match 'programas/:id/periodo/:term_id/curso/:course_id/nuevo_grupo' => 'programs#new_group'
+  match 'programas/:id/periodo/:term_id/curso/:course_id/documentacion/:group' => 'programs#documentation'
   match 'programas/create_group' => 'programs#create_group'
   match 'programas/:id/periodo/:term_id/curso/:course_id/groups_dropdown/:group' => 'programs#groups_dropdown'
   match 'programas/:id/periodo/:term_id/curso/:course_id/grupo/:group/cambiar_titular' => 'programs#update_staff_to_group'
   match 'programas/update_group' => 'programs#update_group'
+  match 'programas/:id/documentos' => 'programs#files'
+  match 'programas/upload_file' => 'programs#upload_file'
+  match 'programas/delete_file' => 'programs#delete_file'
+  
+
+  match 'logs/show' => 'logs#index'
 
   scope(:path_names => { :new => "nuevo", :edit => "editar" }) do
     resources :students, :path => "estudiantes"

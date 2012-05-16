@@ -1,0 +1,3 @@
+= render :partial => 'term_course_header', :locals => {:tc => @tc, :selected => 'documentation'}
+%iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/programas/#{@program.id}/documentos", "scrolling" => "no", "onLoad" => "calcFrameHeight(this.id);" }
+

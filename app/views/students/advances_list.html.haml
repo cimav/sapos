@@ -1,0 +1,26 @@
+- if @advances.size <= 0
+  %br
+  %h3.centered= " No hay avances programados"
+-else 
+  %table#advances_table
+    %tr
+      %th.centered= "#"
+      %th.centered= "Estudiante"
+      %th.centered= "Tema"
+      %th.centered= "Fecha"
+      - counter = 1
+      - @advances.each do |l|
+        - mod = counter % 2
+        - if mod==0 
+          %tr.row-even
+            %td= counter
+            %td= l.student.full_name
+            %td= l.title
+            %td= "#{l l.advance_date, :format => :long}"
+        - else 
+          %tr.row-odd
+            %td= counter
+            %td= l.student.full_name
+            %td= l.title
+            %td= "#{l l.advance_date, :format => :long}"
+        - counter = counter + 1

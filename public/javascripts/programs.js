@@ -353,6 +353,11 @@ $('#a-tc-attendee').live('click', function() {
   current_option = 'attendee';
 });
 
+$('#a-tc-documentation').live('click', function() {
+  loadDocumentation($('#tc_group').val());
+  current_option = 'documentation';
+});
+
 // Enrollment
 $('#enrollment_term_id').live("change", function() {
   loadEnrollment();
@@ -420,7 +425,8 @@ $(".enrollment-item").live("click", function() {
         id: 'edit-student-iframe' + enrollment_id,
         src: url,
         scrolling: 'no',
-        onload: "autoResizeIFRAME('edit-schedule-iframe" + enrollment_id + "')"
+        onload: "autoResizeIFRAME('edit-student-iframe" + enrollment_id + "')"
+        //onload: "autoResizeIFRAME('edit-schedule-iframe" + enrollment_id + "')"
       }).appendTo("#div_"+enrollment_id);
 
       $("#div_"+enrollment_id).slideDown("fast", function() {
@@ -455,6 +461,22 @@ function loadAttendee(g) {
   }
 }
 
+// Documentation
+
+function loadDocumentation(g){
+  term_id = $('#tc_term_id').val();
+  course_id = $('#tc_course_id').val();
+  program_id = $('#program_id').val();
+  if (null === g) g = '';
+  if ((term_id > 0) && (course_id > 0)) {
+    url = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/documentacion/" + g;
+    $.get(url, {}, function(html) {
+      $("#program-area").html(html);
+    });
+  } else {
+      $("#program-area").html('');
+  }
+}
 
 // Change group 
 $('#tc_group').live("change", function() {
@@ -467,6 +489,8 @@ $('#tc_group').live("change", function() {
       loadSchedule($('#tc_group').val());
     } else if (current_option == 'attendee') {
       loadAttendee($('#tc_group').val());
+    } else if (current_option == 'documentation'){
+      loadDocumentation($('#tc_group').val());
     }
   }
 });

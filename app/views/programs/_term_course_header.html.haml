@@ -14,6 +14,8 @@
     - student_class = selected == 'students'?'tc-selected':''
     - schedule_class = selected == 'schedule'?'tc-selected':''
     - attendee_class = selected == 'attendee'?'tc-selected':''
+    - documentation_class = selected == 'documentation'?'tc-selected':''
     = link_to 'Estudiantes', '#', :id=>'a-tc-students', :class => student_class
     = link_to 'Horario', '#', :id=>'a-tc-schedule', :class => schedule_class
     = link_to 'Asistencia', '#', :id=>'a-tc-attendee', :class => attendee_class
+    = link_to 'Documentación', '#', :id=>'a-tc-documentation', :class => documentation_class

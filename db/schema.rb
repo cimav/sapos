@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120409163403) do
+ActiveRecord::Schema.define(:version => 20120509173722) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -129,6 +129,16 @@ ActiveRecord::Schema.define(:version => 20120409163403) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "documentation_files", :force => true do |t|
+    t.integer  "program_id"
+    t.string   "description"
+    t.string   "file"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "documentation_files", ["program_id"], :name => "index_documentation_files_on_program_id"
 
   create_table "external_courses", :force => true do |t|
     t.integer  "staff_id"
@@ -439,6 +449,14 @@ ActiveRecord::Schema.define(:version => 20120409163403) do
   add_index "term_courses", ["course_id"], :name => "index_term_courses_on_course_id"
   add_index "term_courses", ["staff_id"], :name => "index_term_courses_on_staff_id"
   add_index "term_courses", ["term_id"], :name => "index_term_courses_on_term_id"
+
+  create_table "term_student_payments", :force => true do |t|
+    t.integer  "term_student_id"
+    t.decimal  "amount",          :precision => 10, :scale => 0
+    t.integer  "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "term_students", :force => true do |t|
     t.integer  "term_id"

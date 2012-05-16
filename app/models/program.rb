@@ -1,5 +1,8 @@
 # coding: utf-8
 class Program < ActiveRecord::Base
+  has_many :documentation_file
+  accepts_nested_attributes_for :documentation_file
+
   MASTER        = 1
   DOCTORATE     = 2
   PROPADEUTIC   = 3

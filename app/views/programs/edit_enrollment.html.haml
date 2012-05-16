@@ -19,6 +19,11 @@
         showFormErrors(xhr, status, error);
     });
 
+  $("#a-new-payment").live("click", function() {
+    $("#new-payment-dialog").dialog('open');
+  });
+
+
 = form_for @program, :remote => true, :url => {:action => 'update_enrollment' }, :html => {:'data-type' => 'html', :id => 'item-edit-enrollment', :class => 'edit-course-student'} do |f|
   = fields_for "ts", @ts do |fields|
     = fields.hidden_field :id
@@ -34,7 +39,35 @@
     %div{:id => "ts_notes", :class => 'field'}
       = fields.label :notes, 'Comentarios'
       = fields.text_field :notes
-
+    
+    = "Agregar pago:"
+    = fields.fields_for "term_student_payment_attributes[0]" do |tps_fields|
+      = tps_fields.hidden_field :id
+      %div{:id => "tps_amount", :class => 'field'}
+        = tps_fields.label :amount, 'Cantidad'
+        = tps_fields.text_field :amount
+   
+      %div{:id => "tsp_status" , :class  =>'field'}
+        = tps_fields.label :status, 'Estatus'
+        - status_hash =  TermStudentPayment::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+        - if @ts.term_student_payment.size > 0
+          - status_hash =  status_hash.reject {|a,b| b == 1 }
+        = tps_fields.select :status, status_hash
+    
+    - if @ts.term_student_payment.size > 0
+      %div{:id=> "ts_payments", :class => 'field'}
+        %table.payments
+          %tbody
+            %tr
+              %th Cantidad
+              %th Status
+              %th Fecha
+            - @ts.term_student_payment.each do |tsp|    
+              %tr
+                %td= tsp.amount
+                %td= tsp.status_type
+                %td= "#{l tsp.created_at, :format => :long}"
+    
     .iframe-submit-button-area
       = fields.submit "Actualizar inscripción"
 

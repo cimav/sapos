@@ -48,6 +48,7 @@
       %li= link_to "Calificaciones", "#calificaciones"
       %li= link_to "Notas", "#notas"
       %li= link_to "Kardex", "#kardex"
+      %li= link_to "Pagos", "#pagos"
 
     #detalles
       %h2 Detalles
@@ -121,6 +122,7 @@
         = f.text_field :curp
 
 
+
       %h3 Grado anterior
       .field#field_previous_institution
         = f.label :previous_institution, 'Institucion'
@@ -190,3 +192,7 @@
     #kardex
       %h2 Kardex
       = render :partial => 'kardex', :locals => {:student => @student}
+    
+    #pagos
+      %h2 Pagos
+      = render :partial => 'payments', :locals => {:student => @student}

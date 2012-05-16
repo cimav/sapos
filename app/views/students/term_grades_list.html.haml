@@ -1,0 +1,29 @@
+- if @tcs.size <= 0
+  %br
+  %h3.centered= " No hay exámenes programados"
+-else 
+  %table#term_grades_table
+    %tr
+      %th.centered= "#"
+      %th.centered= "Fecha"
+      %th.centered= "Hora"
+      %th.centered= "Docente"
+      %th.centered= "Lugar"
+      - counter = 1
+      - @tcs.each do |l|
+        - mod = counter % 2
+        - if mod==0 
+          %tr.row-even
+            %td= counter
+            %td= "#{l l.start_date, :format => :long}"
+            %td= "#{l l.start_hour, :format=> '%H:%M'}"
+            %td= l.staff.full_name
+            %td= l.classroom.name
+        - else 
+          %tr.row-odd
+            %td= counter
+            %td= "#{l l.start_date, :format => :long}"
+            %td= "#{l l.start_hour, :format=> '%H:%M'}"
+            %td= l.staff.full_name
+            %td= l.classroom.name
+        - counter = counter + 1
