@@ -1,4 +1,8 @@
+- if @student.term_students.count == 0
+  .no-payments= "El alumno no ha sido inscrito a algún ciclo"
+
 - @student.term_students.each do |s|
+  %h2{:style => 'margin-top: 20px;'}= s.term.name
   - counter = 0 
   %table#grades_table{:width => '60%'}
     %tr
@@ -6,18 +10,18 @@
       %th.centered= "Cantidad"
       %th.centered= "Estatus"
       %th.centered= "File"
-      - s.term_student_payment.each do |tsp| 
-        - counter += 1
-        - if counter % 2 == 0 
-          - klass = 'row-even'
-        - else
-          - klass = 'row-odd'
-        %tr{:class => klass}
-          %td= "#{l tsp.created_at, :format => :long}"
-          %td= tsp.amount
-          %td= tsp.status_type
-          %td= "N.D"
+    - s.term_student_payment.each do |tsp| 
+      - counter += 1
+      - if counter % 2 == 0 
+        - klass = 'row-even'
+      - else
+        - klass = 'row-odd'
+      %tr{:class => klass}
+        %td= "#{l tsp.created_at, :format => :long}"
+        %td= number_to_currency(tsp.amount)
+        %td= tsp.status_type
+        %td= "N.D"
 
-        - if counter == 0 
-          %tr
-            %td.centered{:colspan=>4}= "No hay resultados"
+    - if counter == 0 
+      %tr
+        %td.centered{:colspan=>4}= "No hay resultados"

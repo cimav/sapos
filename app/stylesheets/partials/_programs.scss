@@ -297,3 +297,35 @@ table.attendee_list {
 #update-staff-group {
   font-size: 80%;
 }
+
+table.payments {
+  width: 300px;
+  border: 1px solid $line-color;
+  border-collapse: collapse;
+  tr {
+    th {
+      font-weight: bold;
+      background-color: $selected-color;
+      color: $white;
+      padding: 4px;
+      border: 1px solid $line-color;
+    }
+    td {
+      padding: 4px;
+      border: 1px solid $line-color;
+    }
+  }
+}
+
+.no-payments {
+  color: $grey;
+  padding: 20px;
+  width: 300px;
+  background: $bg-color;
+  border: 1px solid $line-color;
+  margin: 5px 0;
+}
+
+.add-payment {
+  margin: 10px 0;
+}
