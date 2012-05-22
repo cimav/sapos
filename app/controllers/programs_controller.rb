@@ -558,7 +558,13 @@ class ProgramsController < ApplicationController
 
     redirect_to :action => 'files', :id => params[:id]
   end
-  
+
+  def file
+    p = Program.find(params[:id])
+    pf = p.documentation_file.find(params[:file_id]).file
+    send_file pf.to_s, :x_sendfile=>true
+  end 
+
   def delete_file
   end
 

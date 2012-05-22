@@ -69,4 +69,4 @@
           %span.file-edit
             = link_to_function 'Editar descripción', "edit_description(#{doc_file.id})"
             |
-            = link_to 'Eliminar archivo', [@program, doc_file], :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
+            = link_to 'Eliminar archivo', doc_file, :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
