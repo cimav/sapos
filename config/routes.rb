@@ -43,6 +43,12 @@ Sapos::Application.routes.draw do
   match 'docentes/:id/estudiantes' => 'staffs#students'
   match 'docentes/horario/:id' => 'staffs#schedule_table'
   match 'docentes/:id/credencial' => 'staffs#id_card'
+  match 'docentes/:id/archivos' => 'staffs#files'
+  match 'docentes/:id/archivo/:file_id' => 'staffs#file'
+  match 'docentes/upload_file' => 'staffs#upload_file'
+  match 'docentes/delete_file' => 'staffs#delete_file'
+  
+  resources :staff_files
 
   match 'internados/busqueda' => 'internships#live_search'
   match 'internados/:id/cambiar_foto' => 'internships#change_image'

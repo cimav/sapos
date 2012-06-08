@@ -325,5 +325,37 @@ class StaffsController < ApplicationController
       end
     end
   end
+  
+  def files
+    @staff = Staff.includes(:staff_file).find(params[:id])
+    @staff_file = StaffFile.new
+    render :layout => 'standalone'
+  end
+
+  def upload_file
+    params[:staff_file]['file'].each do |f|
+      @staff_file = StaffFile.new(f)
+      @staff_file.staff_id = params[:staff_file]['staff_id']
+      @staff_file.file = f
+      @staff_file.description = f.original_filename
+      if @staff_file.save
+        flash[:notice] = "Archivo subido exitosamente."
+      else
+        flash[:error] = "Error al subir archivo."
+      end
+    end
+
+    redirect_to :action => 'files', :id => params[:id]
+  end
+
+  def file
+    s = Staff.find(params[:id])
+    sf = s.staff_file.find(params[:file_id]).file
+    send_file sf.to_s, :x_sendfile=>true
+  end 
+
+  def delete_file
+  end
+
 
 end
