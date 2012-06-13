@@ -38,6 +38,7 @@
       %li= link_to "Practicas de Laboratorio", "#practicas"
       %li= link_to "Notas", "#notas"
       %li= link_to "Horario", "#horario"
+      %li= link_to "Archivos", "#archivos"
 
     #detalles
       %h2 Detalles
@@ -107,3 +108,7 @@
     #horario
       = render :partial => 'schedule', :locals => {:staff => @staff}
  
+    #archivos
+      %h2 Archivos
+      %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/docentes/#{@staff.id}/archivos", "scrolling" => "no", "onLoad" => "calcFrameHeight(this.id);" }
+    

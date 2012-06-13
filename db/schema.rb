@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120509173722) do
+ActiveRecord::Schema.define(:version => 20120607225526) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -301,6 +301,16 @@ ActiveRecord::Schema.define(:version => 20120509173722) do
   end
 
   add_index "seminars", ["staff_id"], :name => "index_seminars_on_staff_id"
+
+  create_table "staff_files", :force => true do |t|
+    t.integer  "staff_id"
+    t.string   "description"
+    t.string   "file"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "staff_files", ["staff_id"], :name => "index_staff_files_on_staff_id"
 
   create_table "staffs", :force => true do |t|
     t.integer  "employee_number"
