@@ -1,0 +1,26 @@
+- if @logs.size <= 0
+  %br
+  %h3.centered= " No hay logs registrados"
+-else 
+  %table#logs_table
+    %tr
+      %th.centered= "#"
+      %th.centered= "Usuario"
+      %th.centered= "Fecha"
+      %th.centered= "Acción"
+      - counter = 1
+      - @logs.each do |l|
+        - mod = counter % 2
+        - if mod==0 
+          %tr.row-even
+            %td= counter
+            %td= l.user.email
+            %td= "#{l l.updated_at, :format => :long}"
+            %td= l.activity
+        - else 
+          %tr.row-odd
+            %td= counter
+            %td= l.user.email
+            %td= "#{l l.updated_at, :format => :long}"
+            %td= l.activity
+        - counter = counter + 1
