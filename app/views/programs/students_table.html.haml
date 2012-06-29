@@ -5,14 +5,18 @@
   = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
   .centered
     %h1="Acta de calificaciones"
-    %h2= "PROGRAMA: #{@tc.course.program.name}"
-    %table.tc-students
+  
+    %table#programs_grades_table
       %tbody
         %tr.header
-          %th.centered Fecha
-          %th.centered Ciclo Escolar
-          %th.centered Materia 
-          %th.centered Titular
+          %th.centered{:colspan => 4}="&nbsp;".html_safe
+        %tr
+          %td{:colspan => 4} PROGRAMA: #{@tc.course.program.name}
+        %tr.header
+          %th.centered FECHA
+          %th.centered CICLO ESCOLAR
+          %th.centered MATERIA
+          %th.centered TITULAR
         %tr
           %td.centered #{l @today, :format=>'%d-%m-%Y'}
           %td.centered #{@tc.term.name}
@@ -21,39 +25,65 @@
             %td.centered Sin Titular
           - else
             %td.centered #{@tc.staff.full_name}
-
+        
 -if @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).count > 0 
-  %table.tc-students
-    %tbody
+  -if @is_pdf
+    %table#programs_grades_table
       %tr.header
-        %th Matricula
-        %th Nombre
+        %th.centered MATRÍCULA
+        %th.centered NOMBRE DEL ALUMNO   
         - if [Term::GRADING, Term::ENDED].include? @tc.term.status
           - if @is_pdf
-            %th Porcentaje de Asistencia
-          %th Calificación
-    - @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).order("created_at DESC").each_with_index do |tc_student, index|
-      %tr.tc-students-item{:id=>"tr_tc_student_#{tc_student.id}", :tc_student_id=>tc_student.id}
-        %td{:title => 'Algo'}= tc_student.term_student.student.card
-        %td= tc_student.term_student.student.full_name
+            %th.centered PORCENTAJE DE ASISTENCIA
+        %th.centered Calificación final
+      - @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).order("created_at DESC").each_with_index do |tc_student, index|
+        %tr.tc-students-item{:id=>"tr_tc_student_#{tc_student.id}", :tc_student_id=>tc_student.id}
+          %td{:title => 'Algo'}= tc_student.term_student.student.card
+          %td= tc_student.term_student.student.full_name
+          - if [Term::GRADING, Term::ENDED].include? @tc.term.status
+            - if @is_pdf
+              %td= ""
+            %td= tc_student.grade
+  - else
+    %table.tc-students
+      %tr.header
+        %th.centered MATRÍCULA
+        %th.centered NOMBRE DEL ALUMNO   
         - if [Term::GRADING, Term::ENDED].include? @tc.term.status
           - if @is_pdf
-            %td= ""
-          %td= tc_student.grade
+            %th.centered PORCENTAJE DE ASISTENCIA
+        %th.centered Calificación final
+      - @tc.term_course_students.where(:status => TermCourseStudent::ACTIVE).order("created_at DESC").each_with_index do |tc_student, index|
+        %tr.tc-students-item{:id=>"tr_tc_student_#{tc_student.id}", :tc_student_id=>tc_student.id}
+          %td{:title => 'Algo'}= tc_student.term_student.student.card
+          %td= tc_student.term_student.student.full_name
+          - if [Term::GRADING, Term::ENDED].include? @tc.term.status
+            - if @is_pdf
+              %td= ""
+            %td= tc_student.grade
+
+
 
 -if !@is_pdf
   - if @tc.term.status == Term::OPEN
     = link_to 'Agregar estudiante', '#', :id => 'add-student-to-course'
   - if @tc.term.status == Term::ENDED
-    = link_to "Imprimir acta de calificaciones", :controller =>"programs", :action=>"students_table", :id => 'print-act', :format => 'pdf'
+    = link_to "Imprimir acta de calificaciones", :controller =>"programs", :action=>"students_table", :id => @tc.course.program.id, :format => 'pdf'
 
 -if @is_pdf 
   %br
   %br
-  .centered
-    %br  
-      = "Firma del Titular de la Materia"
-    -if @tc.staff.nil?
-      = "Sin Titular"
-    - else 
-      = @tc.staff.full_name
+    .centered
+      %table#programs_grades_footer
+        %tr
+          %td
+            %br
+              = "Firma del Titular de la Materia"
+            -if @tc.staff.nil?
+              = "Sin Titular"
+            - else 
+              = @tc.staff.full_name
+          %td
+            %br 
+              = "M.H. Carmen Nicté Ortiz Villanueva "
+            = "Jefa del Departamento de Posgrado"
