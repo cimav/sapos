@@ -68,7 +68,7 @@
   - if @tc.term.status == Term::OPEN
     = link_to 'Agregar estudiante', '#', :id => 'add-student-to-course'
   - if @tc.term.status == Term::ENDED
-    = link_to "Imprimir acta de calificaciones", :controller =>"programs", :action=>"students_table", :id => @tc.course.program.id, :format => 'pdf'
+    = link_to "Imprimir acta de calificaciones", :controller =>"programs", :action=>"students_table", :id => @tc.course.program.id, :format => 'pdf',:group=>@tc.group
 
 -if @is_pdf 
   %br
