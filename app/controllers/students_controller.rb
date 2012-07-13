@@ -98,7 +98,7 @@ class StudentsController < ApplicationController
         rows = Array.new
         @students.collect do |s|
           if s.status == Student::GRADUATED || s.status == Student::FINISH
-            end_date = (s.thesis.defence_date.strftime("%m/%d/%Y") rescue '')
+            end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
           else
             end_date = ''
           end
