@@ -97,6 +97,11 @@ class StudentsController < ApplicationController
       format.xls do
         rows = Array.new
         @students.collect do |s|
+          if s.status == Student::GRADUATED || s.status == Student::FINISH
+            end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
+          else
+            end_date = ''
+          end
           rows << {'Matricula' => s.card,
                    'Nombre' => s.first_name, 
                    'Apellidos' => s.last_name, 
@@ -109,7 +114,7 @@ class StudentsController < ApplicationController
 	           "Campus" => (s.campus.name rescue ''),
                    'Programa' => s.program.name,
                    'Inicio' => s.start_date,
-                   'Fin' => s.end_date,
+                   'Fin' => end_date,
                    'Asesor' => (Staff.find(s.supervisor).full_name rescue ''),
                    'Coasesor' => (Staff.find(s.co_supervisor).full_name rescue ''),
                    'Tesis' => s.thesis.title,
