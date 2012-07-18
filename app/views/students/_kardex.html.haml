@@ -39,7 +39,7 @@
       %tr
         %td.centered{:colspan=>3}= "No hay resultados"
     - else    
-      - avg = sum/counter_grade if counter_grade > 0
+      - avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
       
 
 %h5= "Estatus: #{@student.status_type}"
