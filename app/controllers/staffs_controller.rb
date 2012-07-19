@@ -32,8 +32,30 @@ class StaffsController < ApplicationController
     if !s.empty?
       @staffs = @staffs.where("status IN (#{s.join(',')})")
     end
+        logger.debug "AQUI 2"
 
-    render :layout => false
+    respond_with do |format|
+      format.html do
+        render :layout => false
+      end
+      format.xls do
+        rows = Array.new
+        @staffs.collect do |s|
+          rows << {'Numero_Empleado' => s.employee_number,
+                   'Nombre' => s.first_name,   
+                   'Apellidos' => s.last_name,
+                   'Correo_Elec' => s.email,
+                   'Sexo' => s.gender,
+                   'Fecha_Nac' => s.date_of_birth,
+                   'CVU' => s.cvu,
+                   'SNI' => s.sni,
+                   'Estado' => s.status,
+                 }
+        end
+        column_order = ["Numero_Empleado","Nombre","Apellidos","Correo_Elec","Sexo","Fecha_Nac","CVU","SNI","Estado"]
+        to_excel(rows,column_order,"Docentes","Docentes")
+      end 
+    end
   end
 
   def show
