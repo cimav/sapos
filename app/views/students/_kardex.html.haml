@@ -30,9 +30,17 @@
           %td= tcs.term_course.course.name
           %td.centered= tcs.term_course.term.name
           - if !(tcs.grade.nil?)
-            - counter_grade += 1
-            - sum = sum + tcs.grade
-          %td.centered= (tcs.grade.nil?)?"N.D.":tcs.grade
+            - if !(tcs.grade<70)
+              - counter_grade += 1
+              - sum = sum + tcs.grade
+          - if tcs.grade.nil?
+            %td.centered= "N.D."
+          - else
+            %td.centered
+              - if (tcs.grade<70)
+                %span{:style=>"color: red;"} #{tcs.grade}
+              -else
+                = tcs.grade
     
     - avg = "N.D."
     - if counter == 0
