@@ -11,11 +11,6 @@ function loadLogs()
     $("#logs-area").html(html);
   });
 
-  url = location.pathname + 'estudiantes/lista';
-  $.get(url, {}, function(html) {
-    $("#term-grades-area").html(html);
-  });
-  
   url = location.pathname + 'estudiantes/avances';
   $.get(url, {}, function(html) {
     $("#advances-area").html(html);
