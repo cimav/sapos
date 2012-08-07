@@ -177,6 +177,7 @@ class StudentsController < ApplicationController
   end
 
   def create
+    flash = {}
     @student = Student.new(params[:student])
 
     if @student.save
@@ -213,6 +214,7 @@ class StudentsController < ApplicationController
   end
 
   def update 
+    flash = {}
     @student = Student.find(params[:id])
 
     if @student.update_attributes(params[:student])
@@ -253,6 +255,7 @@ class StudentsController < ApplicationController
   end
 
   def upload_image
+    flash = {}
     @student = Student.find(params[:id])
     if @student.update_attributes(params[:student])
       flash[:notice] = "Imagen actualizada."
@@ -270,8 +273,9 @@ class StudentsController < ApplicationController
   end
 
   def upload_file
+    flash = {}
     params[:student_file]['file'].each do |f|
-      @student_file = StudentFile.new(f)
+      @student_file = StudentFile.new
       @student_file.student_id = params[:student_file]['student_id']
       @student_file.file = f
       @student_file.description = f.original_filename
@@ -301,6 +305,7 @@ class StudentsController < ApplicationController
   end
 
   def create_advance
+    flash = {}
     @student = Student.find(params[:student_id])
     if @student.update_attributes(params[:student])
       flash[:notice] = "Nuevo avance creado."
@@ -311,6 +316,7 @@ class StudentsController < ApplicationController
   end
 
   def assign_thesis_number
+    flash = {}
     @student = Student.find(params[:student_id])
     @student.thesis.set_number
     if @student.save

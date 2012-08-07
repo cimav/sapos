@@ -73,6 +73,7 @@ class StaffsController < ApplicationController
   end
 
   def create
+    flash = {}
     @staff = Staff.new(params[:staff])
 
     if @staff.save
@@ -109,6 +110,7 @@ class StaffsController < ApplicationController
   end
 
   def update 
+    flash = {}
     @staff = Staff.find(params[:id])
 
     if @staff.update_attributes(params[:staff])
@@ -148,6 +150,7 @@ class StaffsController < ApplicationController
   end
 
   def upload_image
+    flash = {}
     @staff = Staff.find(params[:id])
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Imagen actualizada."
@@ -164,6 +167,7 @@ class StaffsController < ApplicationController
   end
 
   def create_seminar
+    flash = {}
     @staff = Staff.find(params[:staff_id])
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Nuevo seminario creado."
@@ -190,6 +194,7 @@ class StaffsController < ApplicationController
   end
 
   def create_external_course
+    flash = {}
     @staff = Staff.find(params[:staff_id])
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Nuevo external_courseio creado."
@@ -216,6 +221,7 @@ class StaffsController < ApplicationController
   end
 
   def create_lab_practice
+    flash = {}
     @staff = Staff.find(params[:staff_id])
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Nueva practica creado."
@@ -355,8 +361,9 @@ class StaffsController < ApplicationController
   end
 
   def upload_file
+    flash = {}
     params[:staff_file]['file'].each do |f|
-      @staff_file = StaffFile.new(f)
+      @staff_file = StaffFile.new
       @staff_file.staff_id = params[:staff_file]['staff_id']
       @staff_file.file = f
       @staff_file.description = f.original_filename

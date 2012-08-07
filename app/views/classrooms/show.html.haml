@@ -1,4 +1,4 @@
-- form_for @classroom, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
+= form_for @classroom, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
   .resource-header
     .resource-title
       %h1= "#{@classroom.full_name}"

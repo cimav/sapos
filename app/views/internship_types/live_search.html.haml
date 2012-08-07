@@ -3,7 +3,7 @@
   - @internship_types.each do |internship_type|
     - c += 1
     %li 
-      - link_to internship_type, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html' do
+      = link_to internship_type, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html' do
         .title= internship_type.full_name rescue internship_type.name
 #counter
   .inner= "#{c} tipos de Servicios CIMAV"

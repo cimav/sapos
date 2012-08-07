@@ -5,7 +5,7 @@
 #items-panel.side-panel.staffs-side-panel
   .panel-search
     
-    - form_tag institutions_path, :id => 'live-search', :method => 'get', :remote => true do
+    = form_tag institutions_path, :id => 'live-search', :method => 'get', :remote => true do
   
       - institution_options = "<option value=\"0\">Todas las instituciones</option>"
       - @institutions.each do |institution|

@@ -2,7 +2,9 @@
 class InternshipFilesController < ApplicationController
   before_filter :auth_required
   respond_to :html, :xml, :json
+
   def destroy
+    flash = {}
     @internship_file = InternshipFile.find(params[:id])
     if @internship_file.destroy
       flash[:notice] = "Archivo eliminado"
@@ -37,6 +39,7 @@ class InternshipFilesController < ApplicationController
   end
 
   def update
+    flash = {}
     @internship_file = InternshipFile.find(params[:id])
 
     if @internship_file.update_attributes(params[:internship_file])

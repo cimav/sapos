@@ -28,6 +28,7 @@ class UsersController < ApplicationController
   end
 
   def create
+    flash = {}
     @user = User.new(params[:user])
 
     if @user.save
@@ -64,6 +65,7 @@ class UsersController < ApplicationController
   end
 
   def update 
+    flash = {}
     @user = User.find(params[:id])
     ActivityLog.new({:user_id=>current_user.id,:activity=>"Update User: #{@user.id},#{@user.email}"}).save
 

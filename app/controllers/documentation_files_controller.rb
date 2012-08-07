@@ -1,7 +1,9 @@
 class DocumentationFilesController < ApplicationController
   before_filter :auth_required
   respond_to :html, :xml, :json
+
   def destroy
+    flash = {}
     @documentation_file = DocumentationFile.find(params[:id])
     if @documentation_file.destroy
       flash[:notice] = "Archivo eliminado"
@@ -36,6 +38,7 @@ class DocumentationFilesController < ApplicationController
   end
 
   def update
+    flash = {}
     @documentation_file = DocumentationFile.find(params[:id])
 
     if @documentation_file.update_attributes(params[:student_file])

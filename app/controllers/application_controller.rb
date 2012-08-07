@@ -3,6 +3,24 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   def authenticated?
+    if session[:user_auth].blank?
+      user = User.where(:email => session[:user_email], :status => User::STATUS_ACTIVE).first
+      session[:user_auth] = user && user.email == session[:user_email]
+      if session[:user_auth]
+        session[:user_id] = user.id
+      end
+    else
+      session[:user_auth]
+    end
+  end
+  helper_method :authenticated?
+
+  def auth_required
+    redirect_to '/login' unless authenticated?
+  end
+
+
+  def xauthenticated?
     #@user = User.where(:email => session[:admin_user], :status => User::STATUS_ACTIVE).first
     #@user && @user.email == session[:admin_user]
 
@@ -20,7 +38,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :authenticated?
 
-  def auth_required
+  def xauth_required
     redirect_to '/auth/admin' unless authenticated?
   end
 
@@ -55,15 +73,16 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from CanCan::AccessDenied do |exception|
-     flash[:error] = "Access denied!"
-     respond_with do |format|
-       format.html do
-         if request.xhr?
-           json = {}
-           json[:flash] = flash
-           render :json => json, :status => :unprocessable_entity   
-         end 
-       end     
-     end
+    flash = {}
+    flash[:error] = "Access denied!"
+    respond_with do |format|
+      format.html do
+        if request.xhr?
+          json = {}
+          json[:flash] = flash
+          render :json => json, :status => :unprocessable_entity   
+        end 
+      end     
+    end
   end
 end

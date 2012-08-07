@@ -26,6 +26,7 @@ class InternshipTypesController < ApplicationController
   end
 
   def create
+    flash = {}
     @internship_type = InternshipType.new(params[:internship_type])
 
     if @internship_type.save
@@ -62,6 +63,7 @@ class InternshipTypesController < ApplicationController
   end
 
   def update 
+    flash = {}
     @internship_type = InternshipType.find(params[:id])
 
     if @internship_type.update_attributes(params[:internship_type])

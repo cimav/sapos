@@ -29,6 +29,7 @@ class CampusController < ApplicationController
   end
 
   def create
+    flash = {}
     @campus = Campus.new(params[:campus])
 
     if @campus.save
@@ -65,6 +66,7 @@ class CampusController < ApplicationController
   end
 
   def update 
+    flash = {}
     @campus = Campus.find(params[:id])
 
     if @campus.update_attributes(params[:campus])
@@ -104,6 +106,7 @@ class CampusController < ApplicationController
   end
 
   def upload_image
+    flash = {}
     @campus = Campus.find(params[:id])
     if @campus.update_attributes(params[:campus])
       flash[:notice] = "Imagen actualizada."

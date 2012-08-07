@@ -2,7 +2,7 @@
   %h3= @tc.course.name
   #schedule-term Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})
 
-- form_for(@tc, :url => { :action => "create_group" }) do |f|
+= form_for(@tc, :url => { :action => "create_group" }) do |f|
   = f.hidden_field :term_id
   = f.hidden_field :course_id
   %div{:id => "group_staff", :class => 'field'}

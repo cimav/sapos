@@ -1,0 +1,7 @@
+#login-area
+  .login-message= t :sign_in_with_your_existing_account
+  .login-methods
+    #login-google-apps.login-method
+      = link_to '/auth/google_oauth2' do
+        = image_tag("/assets/google-apps.png")
+  .clearfix

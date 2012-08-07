@@ -27,6 +27,7 @@ class ClassroomsController < ApplicationController
   end
 
   def create
+    flash = {}
     @classroom = Classroom.new(params[:classroom])
 
     if @classroom.save
@@ -63,6 +64,7 @@ class ClassroomsController < ApplicationController
   end
 
   def update 
+    flash = {}
     @classroom = Classroom.find(params[:id])
 
     if @classroom.update_attributes(params[:classroom])
