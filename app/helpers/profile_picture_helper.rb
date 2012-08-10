@@ -18,6 +18,6 @@ module ProfilePictureHelper
     #  b64 = Base64.encode64(img)
     #  "data:image/gif;base64,#{b64}"
     #end
-    "/images/default_picture.jpg"
+    "/assets/default_picture.jpg"
   end
 end

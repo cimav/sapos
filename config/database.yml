@@ -11,9 +11,9 @@ development:
   reconnect: false
   database: sapos_development
   pool: 5
-  username: sapos
-  password: s4p0s2011
-  socket: /var/run/mysqld/mysqld.sock
+  username: root
+  password: 
+  #socket: /var/run/mysqld/mysqld.sock
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -24,9 +24,9 @@ test:
   reconnect: false
   database: sapos_test
   pool: 5
-  username: sapos
-  password: s4p0s2011
-  socket: /var/run/mysqld/mysqld.sock
+  username: root
+  password: 
+  #socket: /var/run/mysqld/mysqld.sock
 
 production:
   adapter: mysql2
@@ -34,6 +34,6 @@ production:
   reconnect: false
   database: sapos_production
   pool: 5
-  username: sapos
-  password: s4p0s2011
-  socket: /var/run/mysqld/mysqld.sock
+  username: root
+  password: 
+  #socket: /var/run/mysqld/mysqld.sock
