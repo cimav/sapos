@@ -361,7 +361,8 @@ class ProgramsController < ApplicationController
         @today  = Time.now
       	html    = render_to_string(:layout => false , :action => "students_table.html.haml")
       	kit     = PDFKit.new(html, :page_size => 'Letter')
-      	kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+      	# kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
       	filename = "acta-#{@term_id}.pdf"
       	send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       	return # to avoid double render call
@@ -488,7 +489,8 @@ class ProgramsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "attendee_table.html.haml")
         kit = PDFKit.new(html, :page_size => 'Letter', :orientation => 'Landscape')
-        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        # kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
         filename = "asistencia-#{@tc.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
