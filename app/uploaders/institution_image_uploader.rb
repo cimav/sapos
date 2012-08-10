@@ -17,7 +17,7 @@ class InstitutionImageUploader < CarrierWave::Uploader::Base
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
   def default_url
-    "/images/#{model.class.to_s.underscore}/fallback/" + [version_name, "default.jpg"].compact.join('_')
+    "/assets/#{model.class.to_s.underscore}/fallback/" + [version_name, "default.jpg"].compact.join('_')
   end
 
   # Process files as they are uploaded:
@@ -37,7 +37,7 @@ class InstitutionImageUploader < CarrierWave::Uploader::Base
   end
 
   # Add a white list of extensions which are allowed to be uploaded.
-  # For images you might use something like this:
+  # For assets you might use something like this:
   # def extension_white_list
   #   %w(jpg jpeg gif png)
   # end
