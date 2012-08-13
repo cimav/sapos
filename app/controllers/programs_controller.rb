@@ -32,6 +32,7 @@ class ProgramsController < ApplicationController
   end
 
   def create
+    flash = {}
     @program = Program.new(params[:program])
 
     if @program.save
@@ -68,6 +69,7 @@ class ProgramsController < ApplicationController
   end
 
   def update 
+    flash = {}
     @program = Program.find(params[:id])
     if @program.update_attributes(params[:program])
       flash[:notice] = "Programa actualizada."
@@ -111,6 +113,7 @@ class ProgramsController < ApplicationController
   end
 
   def create_course
+    flash = {}
     @program = Program.find(params[:program_id])
     if @program.update_attributes(params[:program])
       flash[:notice] = "Nuevo curso creado."
@@ -132,6 +135,7 @@ class ProgramsController < ApplicationController
   end
 
   def create_term
+    flash = {}
     @program = Program.find(params[:program_id])
     if @program.update_attributes(params[:program])
       flash[:notice] = "Nuevo curso creado."
@@ -175,6 +179,7 @@ class ProgramsController < ApplicationController
   end
 
   def create_enrollment
+    flash = {}
     @term = Term.find(params[:term_id])
     if @term.update_attributes(params[:term])
       flash[:notice] = "Estudiante inscrito satisfactoriamente"
@@ -192,6 +197,7 @@ class ProgramsController < ApplicationController
   end
 
   def update_enrollment
+    flash = {}
     @ts = TermStudent.find(params[:ts][:id])
     if @ts.update_attributes(params[:ts])
       flash[:notice] = "Inscripción actualizada"
@@ -270,6 +276,7 @@ class ProgramsController < ApplicationController
   end
 
   def create_schedule
+    flash = {}
     @tc = TermCourse.find(params[:term_course_id])
     if @tc.update_attributes(params[:term_course])
       flash[:notice] = "Sesión creada."
@@ -288,6 +295,7 @@ class ProgramsController < ApplicationController
   end
 
   def update_schedule
+    flash = {}
     @cs = TermCourseSchedule.find(params[:cs][:id])
     if @cs.update_attributes(params[:cs])
       if (@cs.status == TermCourseSchedule::INACTIVE) 
@@ -353,7 +361,8 @@ class ProgramsController < ApplicationController
         @today  = Time.now
       	html    = render_to_string(:layout => false , :action => "students_table.html.haml")
       	kit     = PDFKit.new(html, :page_size => 'Letter')
-      	kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+      	# kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
       	filename = "acta-#{@term_id}.pdf"
       	send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       	return # to avoid double render call
@@ -373,6 +382,7 @@ class ProgramsController < ApplicationController
   end
 
   def create_course_student
+    flash = {}
     @tc = TermCourse.find(params[:term_course_id])
     if @tc.update_attributes(params[:term_course])
       flash[:notice] = "Estudiante agregado."
@@ -390,6 +400,7 @@ class ProgramsController < ApplicationController
   end
 
   def update_course_student
+    flash = {}
     @cs = TermCourseStudent.find(params[:cs][:id])
     if @cs.update_attributes(params[:cs])
       flash[:notice] = "Estudiante actualizado."
@@ -423,6 +434,7 @@ class ProgramsController < ApplicationController
   end
 
   def inactive_course_student
+    flash = {}
     @cs = TermCourseStudent.find(params[:term_course_student_id])
     params[:cs] = {:status => TermCourseStudent::INACTIVE}
     if @cs.update_attributes(params[:cs])
@@ -477,7 +489,8 @@ class ProgramsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "attendee_table.html.haml")
         kit = PDFKit.new(html, :page_size => 'Letter', :orientation => 'Landscape')
-        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        # kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
         filename = "asistencia-#{@tc.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
@@ -495,6 +508,7 @@ class ProgramsController < ApplicationController
   end
 
   def create_group
+    flash = {}
     @tc = TermCourse.new
     if @tc.update_attributes(params[:term_course])
       flash[:notice] = "Grupo creado."
@@ -510,6 +524,7 @@ class ProgramsController < ApplicationController
   end
 
   def update_group
+    flash = {}
     @tc = TermCourse.find(params[:term_course][:id])
     if @tc.update_attributes(params[:term_course])
       flash[:notice] = "El titular del grupo ha sido actualizado."
@@ -544,8 +559,9 @@ class ProgramsController < ApplicationController
   end
   
   def upload_file
+    flash = {}
     params[:documentation_file]['file'].each do |f|
-      @documentation_file = DocumentationFile.new(f)
+      @documentation_file = DocumentationFile.new
       @documentation_file.program_id = params[:documentation_file]['program_id']
       @documentation_file.file = f
       @documentation_file.description = f.original_filename

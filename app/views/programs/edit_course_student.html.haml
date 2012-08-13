@@ -66,5 +66,5 @@
 
     - if [Term::OPEN, Term::PROGRESS].include? @cs.term_course.term.status
       .inactive-link
-        - link_to "#{request.request_uri}/desactivar", :method => :post, :remote => true, :id => 'inactive-course-student', :'data-type' => 'html', :confirm => '¿Está seguro?' do
+        = link_to "#{request.request_uri}/desactivar", :method => :post, :remote => true, :id => 'inactive-course-student', :'data-type' => 'html', :confirm => '¿Está seguro?' do
           = "¿Dar de baja?"

@@ -110,6 +110,7 @@ class InternshipsController < ApplicationController
   end
 
   def create
+    flash = {}
     @internship = Internship.new(params[:internship])
 
     if @internship.save
@@ -146,6 +147,7 @@ class InternshipsController < ApplicationController
   end
 
   def update 
+    flash = {}
     @internship = Internship.find(params[:id])
 
     if @internship.update_attributes(params[:internship])
@@ -185,6 +187,7 @@ class InternshipsController < ApplicationController
   end
 
   def upload_image
+    flash = {}
     @internship = Internship.find(params[:id])
     if @internship.update_attributes(params[:internship])
       flash[:notice] = "Imagen actualizada."
@@ -202,8 +205,9 @@ class InternshipsController < ApplicationController
   end
 
   def upload_file
+    flash = {}
     params[:internship_file]['file'].each do |f|
-      @internship_file = InternshipFile.new(f)
+      @internship_file = InternshipFile.new
       @internship_file.internship_id = params[:internship_file]['internship_id']
       @internship_file.file = f
       @internship_file.description = f.original_filename

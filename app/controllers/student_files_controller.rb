@@ -2,7 +2,9 @@
 class StudentFilesController < ApplicationController
   before_filter :auth_required
   respond_to :html, :xml, :json
+
   def destroy
+    flash = {}
     @student_file = StudentFile.find(params[:id])
     if @student_file.destroy
       flash[:notice] = "Archivo eliminado"
@@ -37,6 +39,7 @@ class StudentFilesController < ApplicationController
   end
 
   def update
+    flash = {}
     @student_file = StudentFile.find(params[:id])
 
     if @student_file.update_attributes(params[:student_file])

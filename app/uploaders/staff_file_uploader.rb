@@ -13,12 +13,12 @@ class StaffFileUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    "#{RAILS_ROOT}/private/files/staff/#{model.staff_id}"
+    "#{Rails.root}/private/files/staff/#{model.staff_id}"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
-  #   "/images/fallback/" + [version_name, "default.png"].compact.join('_')
+  #   "/assets/fallback/" + [version_name, "default.png"].compact.join('_')
   # end
 
   # Process files as they are uploaded:
@@ -34,7 +34,7 @@ class StaffFileUploader < CarrierWave::Uploader::Base
   # end
 
   # Add a white list of extensions which are allowed to be uploaded.
-  # For images you might use something like this:
+  # For assets you might use something like this:
   # def extension_white_list
   #   %w(jpg jpeg gif png)
   # end

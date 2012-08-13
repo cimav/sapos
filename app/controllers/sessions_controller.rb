@@ -1,8 +1,18 @@
 class SessionsController < ApplicationController
-  def authenticate
-    auth_hash = request.env['omniauth.auth']
+  #def authenticate
+  #  auth_hash = request.env['omniauth.auth']
+  #
+  #  session[:admin_user] = auth_hash['user_info']['email']
+  #
+  #  if authenticated?
+  #    redirect_to '/'
+  #  else
+  #    render :text => '401 Unauthorized', :status => 401
+  #  end
+  #end
 
-    session[:admin_user] = auth_hash['user_info']['email']
+  def create
+    session[:user_email] = auth_hash['info']['email']
 
     if authenticated?
       redirect_to '/'
@@ -10,4 +20,19 @@ class SessionsController < ApplicationController
       render :text => '401 Unauthorized', :status => 401
     end
   end
+
+  def destroy
+    reset_session
+    redirect_to '/login'
+  end
+
+  def failure
+    render :text => '403 Auth method has failed', :status => 403
+  end
+
+  protected
+  def auth_hash
+    request.env['omniauth.auth']
+  end
+
 end

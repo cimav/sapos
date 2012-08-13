@@ -4,4 +4,4 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-Sapos::Application.config.secret_token = '95b5e9ef8fc2262b426c8e22ac8c8c50693162ba4f471f2532975fe8af6b9f625cab317d5c45d24f7086b9bcdf4245d84c3a622812cb4368b90d3b9dcbffa396'
+Sapos::Application.config.secret_token = '700dc1a43f94c9b4334595b07e412825c5c12040518f00c81b1ebaa77e2a6084317dfdc64f3fddd06e14f855ec14a8b3025ca61d057fc5cb33c6c8c6715432b4'

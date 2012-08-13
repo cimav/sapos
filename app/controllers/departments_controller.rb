@@ -27,6 +27,7 @@ class DepartmentsController < ApplicationController
   end
 
   def create
+    flash = {}
     @department = Department.new(params[:department])
 
     if @department.save
@@ -63,25 +64,26 @@ class DepartmentsController < ApplicationController
   end
 
   def update 
-	 @department = Department.find(params[:id])
-  
-		if @department.update_attributes(params[:department])
-			flash[:notice] = "Departamento Actualizado"
+    flash = {}
+    @department = Department.find(params[:id])
+
+    if @department.update_attributes(params[:department])
+      flash[:notice] = "Departamento Actualizado"
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Deparment: #{@department.id},#{@department.name}"}).save
-    	respond_with do |format|
-				format.html do
-					if request.xhr?
-						json = {}
-						json[:flash] = flash
-						json[:errors] = @department.errors
-						render :json => json
-					else
-						redirect_to @department
-					end
-				end
-			end
-		else
-      flsh[:error] = "Error al actualizar departamento."
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:errors] = @department.errors
+            render :json => json
+          else
+            redirect_to @department
+          end
+        end
+      end
+    else
+      flash[:error] = "Error al actualizar departamento."
       respond_with do |format|
         format.html do
           if request.xhr?
@@ -93,7 +95,7 @@ class DepartmentsController < ApplicationController
             redirect_to @department
           end
         end
-			end
-		end
+      end
+    end
   end
 end

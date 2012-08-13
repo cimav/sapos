@@ -1,10 +1,10 @@
-- @include_js = ['campus']
+- @include_js = 'campus'
 - @page_title = 'Campus'
 - @nav_icon = 'campus'
 #items-panel.side-panel.inst-side-panel
   .panel-search
     
-    - form_tag campus_path, :id => 'live-search', :method => 'get', :remote => true do
+    = form_tag campus_path, :id => 'live-search', :method => 'get', :remote => true do
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
      
   #items-list.panel-items

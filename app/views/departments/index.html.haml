@@ -1,10 +1,10 @@
-- @include_js = ['departments']
+- @include_js = 'departments'
 - @page_title = 'Departamentos'
 - @nav_icon = 'departments'
 #items-panel.side-panel.inst-side-panel
   .panel-search
     
-    - form_tag departments_path, :id => 'live-search', :method => 'get', :remote => true do
+    = form_tag departments_path, :id => 'live-search', :method => 'get', :remote => true do
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
      
   #items-list.panel-items

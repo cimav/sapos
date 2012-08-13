@@ -1,13 +1,23 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.9'
-gem 'mysql2', '< 0.3'
+gem 'rails', '3.2.3'
+gem 'mysql2'
+gem 'json'
 gem 'jquery-rails'
-gem 'omniauth', '~> 0.3.2'
-gem 'oauth'
-gem 'oa-openid', :require => 'omniauth/openid' 
+
+group :assets do
+  gem 'sass-rails',   '~> 3.2.3'
+  gem 'coffee-rails', '~> 3.2.1'
+  gem 'uglifier', '>= 1.0.3'
+end
+
+gem 'therubyracer'
 gem 'haml'
-gem 'compass', '0.11.5'
+
+gem 'omniauth-google-oauth2'
+
+gem 'metainspector'
+
 gem 'carrierwave'
 gem 'rmagick'
 gem 'spreadsheet'

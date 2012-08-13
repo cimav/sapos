@@ -153,5 +153,8 @@ Sapos::Application.routes.draw do
     resources :internship_types, :path => "tipos_internados"
   end
 
-  match '/auth/admin/callback', :to => 'sessions#authenticate'
+  match '/auth/:provider/callback' => 'sessions#create'
+  match '/auth/failure' => 'sessions#failure'
+  match "/logout" => 'sessions#destroy'
+  match '/login' => 'login#index'
 end

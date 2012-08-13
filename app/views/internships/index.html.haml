@@ -1,10 +1,10 @@
-- @include_js = ['internships']
+- @include_js = 'internships'
 - @page_title = 'Servicios CIMAV'
 - @nav_icon = 'internships'
 #items-panel.side-panel.internships-side-panel
   .panel-search
     
-    - form_tag internships_path, :id => 'live-search', :method => 'get', :remote => true do
+    = form_tag internships_path, :id => 'live-search', :method => 'get', :remote => true do
 
       - internship_type_options = "<option value=\"0\">Todas los tipos</option>"
       - @internship_types.each do |internship_type|

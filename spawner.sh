@@ -13,4 +13,8 @@ fi
 
 cd /home/rails/sapos
 
-unicorn -p 30001
+export GOOGLE_KEY='435428651303.apps.googleusercontent.com'
+export GOOGLE_SECRET='d_tFDnNLT7sA-C33sI-WpN8q'
+export RAILS_ENV='production'
+
+unicorn -p 3000

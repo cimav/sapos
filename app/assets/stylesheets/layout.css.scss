@@ -1,7 +1,7 @@
 #top-bar {
   position: fixed;
   z-index: 999999;
-  background: transparent url(/images/bg-bar.png) repeat-x;
+  background: transparent url(/assets/bg-bar.png) repeat-x;
   height: 31px;
   width: 100%;
   color: #fff;
@@ -22,9 +22,9 @@
     width: 256px;
     height: 22px;
     text-shadow: #113f7d 0px -1px 1px;
-    background: transparent url(/images/bg-nav.png) repeat-x;
+    background: transparent url(/assets/bg-nav.png) repeat-x;
     &:hover {
-      background: transparent url(/images/bg-nav-hover.png) repeat-x;
+      background: transparent url(/assets/bg-nav-hover.png) repeat-x;
       cursor: pointer;
     }
   }
@@ -32,7 +32,7 @@
   #account {
     float: right;
     height: 31px;
-    background: transparent url(/images/sep-account.png) no-repeat;
+    background: transparent url(/assets/sep-account.png) no-repeat;
     padding: 7px 0px 0px 20px;
     margin-right: 20px;
   }
@@ -43,7 +43,7 @@
   top: 30px;
   left: 0px;
   width: 300px;
-  background: transparent url(/images/bg-white-trans.png);
+  background: transparent url(/assets/bg-white-trans.png);
   border-right: 1px solid $line-color;
   border-bottom: 1px solid $line-color;
   border-left: 1px solid $line-color;

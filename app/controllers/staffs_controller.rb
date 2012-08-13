@@ -73,6 +73,7 @@ class StaffsController < ApplicationController
   end
 
   def create
+    flash = {}
     @staff = Staff.new(params[:staff])
 
     if @staff.save
@@ -109,6 +110,7 @@ class StaffsController < ApplicationController
   end
 
   def update 
+    flash = {}
     @staff = Staff.find(params[:id])
 
     if @staff.update_attributes(params[:staff])
@@ -148,6 +150,7 @@ class StaffsController < ApplicationController
   end
 
   def upload_image
+    flash = {}
     @staff = Staff.find(params[:id])
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Imagen actualizada."
@@ -164,6 +167,7 @@ class StaffsController < ApplicationController
   end
 
   def create_seminar
+    flash = {}
     @staff = Staff.find(params[:staff_id])
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Nuevo seminario creado."
@@ -190,6 +194,7 @@ class StaffsController < ApplicationController
   end
 
   def create_external_course
+    flash = {}
     @staff = Staff.find(params[:staff_id])
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Nuevo external_courseio creado."
@@ -216,6 +221,7 @@ class StaffsController < ApplicationController
   end
 
   def create_lab_practice
+    flash = {}
     @staff = Staff.find(params[:staff_id])
     if @staff.update_attributes(params[:staff])
       flash[:notice] = "Nueva practica creado."
@@ -319,7 +325,8 @@ class StaffsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "schedule_table.html.haml")
         kit = PDFKit.new(html, :page_size => 'Letter')
-        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        #kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
+        kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
         filename = "horario-#{@tcs[0].staff.id}-#{@tcs[0].term_course.term.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
@@ -340,7 +347,8 @@ class StaffsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "id_card.html.haml")
         kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
-        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/card.css"
+        # kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/card.css"
+        kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('card.css')
         filename = "ID-#{@staff.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
@@ -355,8 +363,9 @@ class StaffsController < ApplicationController
   end
 
   def upload_file
+    flash = {}
     params[:staff_file]['file'].each do |f|
-      @staff_file = StaffFile.new(f)
+      @staff_file = StaffFile.new
       @staff_file.staff_id = params[:staff_file]['staff_id']
       @staff_file.file = f
       @staff_file.description = f.original_filename

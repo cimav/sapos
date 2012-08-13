@@ -27,6 +27,7 @@ class LaboratoriesController < ApplicationController
   end
 
   def create
+    flash = {}
     @laboratory = Laboratory.new(params[:laboratory])
 
     if @laboratory.save
@@ -63,6 +64,7 @@ class LaboratoriesController < ApplicationController
   end
 
   def update 
+    flash = {}
     @laboratory = Laboratory.find(params[:id])
 
     if @laboratory.update_attributes(params[:laboratory])

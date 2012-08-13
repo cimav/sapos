@@ -9,6 +9,7 @@ public/images/staff/
 public/images/institution/
 public/images/campus/
 public/images/internship/
+public/assets
 db/seed-data/
 .DS_Store
 .swp

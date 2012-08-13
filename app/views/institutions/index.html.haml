@@ -1,10 +1,10 @@
-- @include_js = ['institutions']
+- @include_js = 'institutions'
 - @page_title = 'Instituciones'
 - @nav_icon = 'institutions'
 #items-panel.side-panel.inst-side-panel
   .panel-search
     
-    - form_tag institutions_path, :id => 'live-search', :method => 'get', :remote => true do
+    = form_tag institutions_path, :id => 'live-search', :method => 'get', :remote => true do
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
      
   #items-list.panel-items

@@ -29,6 +29,7 @@ class InstitutionsController < ApplicationController
   end
 
   def create
+    flash = {}
     @institution = Institution.new(params[:institution])
     ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Institution: #{@institution.id},#{@institution.name}"}).save
     if @institution.save
@@ -64,6 +65,7 @@ class InstitutionsController < ApplicationController
   end
 
   def update 
+    flash = {}
     @institution = Institution.find(params[:id])
 
     if @institution.update_attributes(params[:institution])
@@ -103,6 +105,7 @@ class InstitutionsController < ApplicationController
   end
 
   def upload_image
+    flash = {}
     @institution = Institution.find(params[:id])
     if @institution.update_attributes(params[:institution])
       flash[:notice] = "Imagen actualizada."
