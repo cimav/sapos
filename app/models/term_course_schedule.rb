@@ -1,5 +1,6 @@
 # coding: utf-8
 class TermCourseSchedule < ActiveRecord::Base
+  attr_accessible :id,:term_course_id,:day,:start_hour,:end_hour,:classroom_id,:staff_id,:start_date,:end_date,:class_type,:status,:created_at,:updated_at
   belongs_to :term_course
   belongs_to :staff
   belongs_to :classroom

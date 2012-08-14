@@ -1,4 +1,6 @@
 class Internship < ActiveRecord::Base
+  attr_accessible :id,:internship_type_id,:first_name,:last_name,:gender,:date_of_birth,:start_date,:end_date,:location,:email,:institution_id,:contact_id,:staff_id,:thesis_title,:activities,:status,:image,:notes,:created_at,:updated_at,:blood_type,:campus_id
+
   belongs_to :institution
   belongs_to :staff
   belongs_to :internship_type

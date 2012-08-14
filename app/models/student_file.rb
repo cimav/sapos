@@ -1,5 +1,6 @@
 # coding: utf-8
 class StudentFile < ActiveRecord::Base
+  attr_accessible :id,:student_id,:description,:file,:created_at,:updated_at
   mount_uploader :file, StudentFileUploader
   validates :description, :presence => true
 

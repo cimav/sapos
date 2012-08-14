@@ -1,5 +1,6 @@
 # coding: utf-8
 class Term < ActiveRecord::Base
+  attr_accessible :id,:program_id,:code,:name,:start_date,:end_date,:status,:created_at,:updated_at
   belongs_to :program
 
   has_many :term_courses

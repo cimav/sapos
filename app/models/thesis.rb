@@ -1,5 +1,6 @@
 # coding: utf-8
 class Thesis < ActiveRecord::Base
+  attr_accessible :id,:student_id,:number,:consecutive,:title,:abstract,:defence_date,:examiner1,:examiner2,:examiner3,:examiner4,:examiner5,:status,:notes,:created_at,:updated_at
   belongs_to :student
   after_update :set_student_status
 

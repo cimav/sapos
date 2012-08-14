@@ -1,5 +1,6 @@
 # coding: utf-8
 class User < ActiveRecord::Base
+  attr_accessible :id,:email,:access,:status,:created_at,:updated_at,:program_id,:campus_id
   ADMINISTRATOR = 1
   OPERATOR      = 2
   STAFF         = 3

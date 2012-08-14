@@ -1,5 +1,6 @@
 # coding: utf-8
 class Institution < ActiveRecord::Base
+  attr_accessible :id,:short_name,:name,:contact_id,:image,:created_at,:updated_at
   has_many :staffs, :order => "first_name, last_name"
 
   has_one :contact, :as => :attachable

@@ -1,4 +1,5 @@
 class DocumentationFile < ActiveRecord::Base
+  attr_accessible :id,:program_id,:description,:file,:created_at,:updated_at
   mount_uploader :file, DocumentationFileUploader
   validates :description, :presence => true
 

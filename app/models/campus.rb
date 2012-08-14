@@ -1,4 +1,6 @@
 class Campus < ActiveRecord::Base
+  attr_accessible :id,:short_name,:name,:contact_id,:image,:created_at,:updated_at  
+
   has_many :students, :order => "first_name, last_name"
   has_many :laboratories
 
