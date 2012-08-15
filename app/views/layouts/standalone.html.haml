@@ -3,6 +3,7 @@
   %head
     %title= @page_title || 'CIMAV'
     = stylesheet_link_tag "application"
+    = javascript_include_tag "application"
     - if !@include_js.nil?
       = javascript_include_tag @include_js
     = csrf_meta_tag

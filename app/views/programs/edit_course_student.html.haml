@@ -39,7 +39,6 @@
        $(this).removeClass("loading");
     });
 
-
 = form_for @program, :remote => true, :url => {:action => 'update_course_student' }, :html => {:'data-type' => 'html', :id => 'item-edit-course-student', :class => 'edit-course-student'} do |f|
   = fields_for "cs", @cs do |fields|
     = fields.hidden_field :id
@@ -66,5 +65,4 @@
 
     - if [Term::OPEN, Term::PROGRESS].include? @cs.term_course.term.status
       .inactive-link
-        = link_to "#{request.request_uri}/desactivar", :method => :post, :remote => true, :id => 'inactive-course-student', :'data-type' => 'html', :confirm => '¿Está seguro?' do
-          = "¿Dar de baja?"
+        = link_to "¿Dar de baja?","#{request.fullpath}/desactivar", :id=> 'inactive-course-student', :remote=> true, :data => {:confirm => '¿Está seguro?'}
