@@ -1,6 +1,6 @@
 # coding: utf-8
 class Term < ActiveRecord::Base
-  attr_accessible :id,:program_id,:code,:name,:start_date,:end_date,:status,:created_at,:updated_at,:term_students_attributes
+  attr_accessible :id,:program_id,:code,:name,:start_date,:end_date,:status,:created_at,:updated_at,:term_students_attributes,:term_courses_attributes
   belongs_to :program
 
   has_many :term_courses
