@@ -241,7 +241,7 @@ class InternshipsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "id_card.html.haml")
         kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
-        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/card.css"
+        kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}card.css"
         filename = "INTERN-#{@internship.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call

@@ -408,8 +408,7 @@ class StudentsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "schedule_table.html.haml")
         kit = PDFKit.new(html, :page_size => 'Letter')
-        #kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
-        kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
+        kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}pdf.css"
         filename = "horario-#{@ts.student_id}-#{@ts.term_id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
@@ -432,8 +431,7 @@ class StudentsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "term_grades.html.haml")
         kit = PDFKit.new(html, :page_size => 'Letter')
-        #kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
-        kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
+        kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}pdf.css"
         filename = "boleta-#{@ts.student_id}-#{@ts.term_id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
@@ -467,9 +465,7 @@ class StudentsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :template => "students/id_card.html.haml", :formats => [:html], :handlers => [:haml])
         kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
-        # kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/card.css"
-        # kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('card.css')
-        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/card.css"
+        kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}card.css"
         filename = "ID-#{@student.card}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
@@ -490,10 +486,7 @@ class StudentsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :template => "students/_kardex.html.haml", :formats => [:html], :handlers => [:haml])
         kit = PDFKit.new(html, :page_size => 'Letter')
-        #kit.stylesheets << "#{request.protocol}#{request.host_with_port}" + view_context.asset_path('pdf.css')
-        kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
-        #kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
-
+        kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}pdf.css"
         filename = "kardex-#{@student.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call

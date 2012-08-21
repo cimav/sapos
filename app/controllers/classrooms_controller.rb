@@ -178,9 +178,7 @@ class ClassroomsController < ApplicationController
         	@is_pdf = true
         	html = render_to_string(:layout => false , :action => "schedule_table.html.haml")
         	kit = PDFKit.new(html, :page_size => 'Letter')
-        	# kit.stylesheets << "#{Rails.root}/public/stylesheets/compiled/pdf.css"
-                kit.stylesheets << "http://posgrado.cimav.edu.mx" + view_context.asset_path('pdf.css')
-
+                kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}pdf.css"
         	filename = "horario-#{@tcs[0].classroom.id}-#{@tcs[0].term_course.term.id}.pdf"
         	send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         	return # to avoid double render call
