@@ -1,0 +1,2 @@
+module StaffFilesHelper
+end
