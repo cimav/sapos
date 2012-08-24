@@ -25,9 +25,32 @@
               %tr
                 %td
                   #card_valid= "Vigencia: #{l @internship.end_date, :format => :long}"
+        - if @internship.internship_type.id == 6
+          %tr
+            %td{:colspan => 2}
+              %br
+          %tr
+            %td{:colspan => 2}
+              %br
+          %tr
+            %td{:colspan => 2}
+              = image_tag "http://posgrado.cimav.edu.mx/assets/postdoctoral-bar-card.jpg", :style => "width: 108%;"
+          %tr
+            %td{:colspan => 2}
+              %br
+          %tr
+            %td{:colspan => 2}
+              %br
+        - else
+          %tr
+            %td{:colspan => 2}
+              #card_student= @internship.internship_type.name
         %tr
           %td{:colspan => 2}
-            #card_student= @internship.internship_type.name
+            %br
+        %tr
+          %td{:colspan => 2}
+            %br
     .pb_before2
       %table#card-back
         %tr
@@ -67,4 +90,4 @@
                   %div= "Miguel de Cervantes 120, Complejo Industrial Chihuahua"
                   %div= "Chihuahua, Chih. México. 31109"
                   %div= "Tels. +52 (614) 439-1161, 439-1158"
-                  %div.registro= "Registro Institucional SEP: 18 - 00114"
+                  %div= "Registro Institucional SEP: 18 - 00114"
