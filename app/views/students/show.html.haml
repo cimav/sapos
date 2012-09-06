@@ -157,6 +157,14 @@
         = f.label :passport, 'Pasaporte'
         = f.text_field :passport
     
+      %h3 Información de acceso
+      .field#field_student_email_cimav
+        = f.label :email_cimav, 'Email CIMAV'
+        = f.text_field :email_cimav
+
+      .field#field_student_domain_password
+        = f.label :domain_password, 'Domain Pass'
+        = f.text_field :domain_password
     #contacto
       %h2 Contacto
       = f.fields_for :contact do |contact_fields|

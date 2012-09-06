@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120607225526) do
+ActiveRecord::Schema.define(:version => 20120906173133) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -307,8 +307,8 @@ ActiveRecord::Schema.define(:version => 20120607225526) do
     t.integer  "staff_id"
     t.string   "description"
     t.string   "file"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "staff_files", ["staff_id"], :name => "index_staff_files_on_staff_id"
@@ -405,6 +405,8 @@ ActiveRecord::Schema.define(:version => 20120607225526) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "campus_id"
+    t.string   "email_cimav"
+    t.string   "domain_password"
   end
 
   add_index "students", ["campus_id"], :name => "index_students_on_campus_id"
