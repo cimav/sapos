@@ -99,9 +99,17 @@ class StudentsController < ApplicationController
         @students.collect do |s|
           if s.status == Student::GRADUATED || s.status == Student::FINISH
             end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
+            
+            if end_date.blank? 
+              months = ''
+            else
+              months = months_between(s.start_date,end_date)
+            end
           else
             end_date = ''
           end
+
+          
           rows << {'Matricula' => s.card,
                    'Nombre' => s.first_name, 
                    'Apellidos' => s.last_name, 
@@ -115,6 +123,7 @@ class StudentsController < ApplicationController
                    'Programa' => s.program.name,
                    'Inicio' => s.start_date,
                    'Fin' => end_date,
+                   'Meses' => months,
                    'Asesor' => (Staff.find(s.supervisor).full_name rescue ''),
                    'Coasesor' => (Staff.find(s.co_supervisor).full_name rescue ''),
                    'Tesis' => s.thesis.title,
@@ -125,7 +134,7 @@ class StudentsController < ApplicationController
                    'Sinodal5' => (Staff.find(s.thesis.examiner5).full_name rescue ''),
                    }
         end
-        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
+        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
         to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
@@ -493,4 +502,17 @@ class StudentsController < ApplicationController
       end
     end
   end
+
+  def months_between(past_date,recent_date)
+    total_years = (recent_date.year - past_date.year)
+
+    if total_years > 0
+      rdm   = recent_date.month - 12    
+      pdm   = past_date.month - 12
+
+      ((rdm - pdm) + 12 * total_years)
+    else
+      (recent_date.month - past_date.month)
+    end
+  end 
 end
