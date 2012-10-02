@@ -23,7 +23,8 @@ es:
         odd: " debe de ser non"
         even: " debe de ser par"
         record_invalid: "La validación falló: {{errors}}"
-
+        email: " no es un email válido"
+ 
   number:
     percentage:
       format:
