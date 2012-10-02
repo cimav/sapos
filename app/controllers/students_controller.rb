@@ -249,6 +249,7 @@ class StudentsController < ApplicationController
             json = {}
             json[:flash] = flash
             json[:errors] = @student.errors
+            json[:errors_full] = @student.errors.full_messages
             render :json => json, :status => :unprocessable_entity
           else 
             redirect_to @student

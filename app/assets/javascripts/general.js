@@ -43,24 +43,35 @@ function liveSearch() {
 function showFormErrors(xhr, status, error) {
     var res,
         errorText,
-        errorMsg;
+        errorMs,
+        errorMesg;
 
     try {
         res = $.parseJSON(xhr.responseText);
     } catch(err) {
         res['errors'] = { generic_error: "Error:" + err.description };
     }
-    showFlash(res['flash']['error'], 'error');
 
+    errorMesg="";
+    $.each(res['errors_full'],function(key,value){
+        numlist = key + 1
+        errorMesg+=numlist+": "+value+"<br>";
+      });
+   
+     
     for ( e in res['errors'] ) {
+        
         errorMsg = $('<div>' + res['errors'][e] + '</div>').addClass('error-message');
         $('#field_' + model_name + '_' + e.replace('.', '_')).addClass('with-errors').append(errorMsg);
     }
+    
+    showFlash(res['flash']['error'], 'error', errorMesg);
 }
 
-function showFlash(msg, type) {
+function showFlash(msg,type,errors) {
+    if (!errors){errors="";}
     $("#flash-notice").removeClass('success').removeClass('notice').removeClass('info');
-    $("#flash-notice").addClass(type).html(msg);
+    $("#flash-notice").addClass(type).html(msg +"<p>"+ errors);
     $("#flash-notice").slideDown();
     if (type != 'error') {
       $("#flash-notice").delay(1500).slideUp();
