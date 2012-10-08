@@ -44,8 +44,8 @@ class Student < ActiveRecord::Base
   validates :first_name, :presence => true
   validates :last_name, :presence => true
   validates :program_id, :presence => true  
-  validates :email_cimav, :email => true
-  validates :email, :email => true
+  validates :email_cimav, :email => true, :on => :update
+  validates :email, :email => true, :on => :update
   
   after_create :set_card, :add_extra
 
