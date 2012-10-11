@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120906173133) do
+ActiveRecord::Schema.define(:version => 20121004180017) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -243,6 +243,13 @@ ActiveRecord::Schema.define(:version => 20120906173133) do
 
   add_index "laboratories", ["campus_id"], :name => "index_laboratories_on_campus_id"
 
+  create_table "permission_users", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "program_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "programs", :force => true do |t|
     t.string   "name"
     t.string   "level",          :limit => 20
@@ -252,6 +259,7 @@ ActiveRecord::Schema.define(:version => 20120906173133) do
     t.datetime "updated_at"
     t.integer  "terms_duration"
     t.integer  "terms_qty"
+    t.integer  "program_type"
   end
 
   create_table "scholarship_categories", :force => true do |t|
@@ -523,12 +531,13 @@ ActiveRecord::Schema.define(:version => 20120906173133) do
 
   create_table "users", :force => true do |t|
     t.string   "email"
-    t.integer  "access",     :default => 2
-    t.integer  "status",     :default => 1
+    t.integer  "access",       :default => 2
+    t.integer  "status",       :default => 1
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "program_id"
     t.integer  "campus_id"
+    t.integer  "program_type"
   end
 
 end

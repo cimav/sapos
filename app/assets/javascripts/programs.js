@@ -4,6 +4,15 @@ function initializeSearchForm() {
   // Do nothing
 }
 
+$('#program_type').live("change", function() {
+  liveSearch();
+});
+
+function initializeSearchForm() {
+  $("#program_type option[value=0]").attr("selected", true);
+}
+
+
 $(document).ready(function() {
   liveSearch();
 });

@@ -3,18 +3,26 @@
 - @nav_icon = 'students'
 #items-panel.side-panel 
   .panel-search
-    
-    = form_tag students_path, :id => 'live-search', :method => 'get', :remote => true do
-  
-      - program_options = "<option value=\"0\">Todos los programas</option>"
+    .invisible-options
+      - program_options = Array.new
+      - program_options.push(["Todos los programas","0"])
       - @programs.each do |program|
-        - program_options += "<option value=\"#{program.id}\">#{program.name}</option>" 
-      = select_tag "program", program_options.html_safe
+        - mi_array = [program.name,program.id,{:program_type=>program.program_type}]
+        - program_options.push(mi_array)
+      = options_for_select(program_options)
+           
 
-      - campus_options = "<option value=\"0\">Todos los campus</option>"
+    = form_tag students_path, :id => 'live-search', :method => 'get', :remote => true do
+      = select_tag "program_type", options_for_select(Program::PROGRAM_TYPE.invert.sort {|a,b| a[1] <=> b[1] })
+
+      = select_tag "program", options_for_select(program_options)
+
+      - campus_options = Hash.new
+      - if @all_campus
+        - campus_options["Todos los campus"] = 0
       - @campus.each do |camp|
-        - campus_options += "<option value=\"#{camp.id}\">#{camp.name}</option>" 
-      = select_tag "campus", campus_options.html_safe
+        - campus_options[camp.name] = camp.id
+      = select_tag "campus", options_for_select(campus_options)
 
       - supervisor_options = "<option value=\"0\">Cualquier asesor</option>"
       - @supervisors.each do |supervisor|

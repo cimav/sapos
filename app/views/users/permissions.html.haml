@@ -1,0 +1,9 @@
+- @programs.each_with_index do |p,index|
+  = fields_for "user[permission_user_attributes][#{index}]" do |f|
+    =#%div{:id => "field_user_permission_user_#{index}_program_id", :class=>'field' }
+    = f.label :program_id, p.name
+    = f.check_box :program_id, {:multiple=>false}, p.id.to_s
+    %br
+      
+
+

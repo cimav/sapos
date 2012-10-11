@@ -5,26 +5,41 @@ class StudentsController < ApplicationController
   respond_to :html, :xml, :json
 
   def index
-    if current_user.access == User::OPERATOR
-      @campus = Campus.order('name').where(:id=> current_user.campus_id)
-    else    
-      @campus = Campus.order('name')
+    if current_user.campus_id == 0
+      @campus     = Campus.order('name')
+      @all_campus = 1 
+    else
+      @campus = Campus.joins(:user).where(:users=>{:id=>current_user.id})
+      @all_campus = 0
     end 
     
-    @programs = Program.order('name')
+    if current_user.program_type == Program::ALL
+      @programs     = Program.order('name')
+    else
+      @programs     = Program.joins(:permission_user).where(:permission_users=>{:user_id=>current_user.id}).order('name')
+    end
+
     @supervisors = Staff.find_by_sql "SELECT id, first_name, last_name FROM staffs WHERE id IN (SELECT supervisor FROM students UNION SELECT co_supervisor FROM students) ORDER BY first_name, last_name"
   end
 
   def live_search
-    @students = Student.order("first_name").includes(:program)
+    if current_user.program_type==Program::ALL
+      @students = Student.order("first_name").includes(:program)
+    else
+      @students = Student.joins(:program => :permission_user).where(:permission_users=>{:user_id=>current_user.id}).order("first_name").includes(:program)
+    end
+
+    if params[:program_type] != '0' then
+      @students = @students.joins(:program).where(:programs=>{:program_type=>params[:program_type]})
+    end
 
     if params[:program] != '0' then
       @students = @students.where(:program_id => params[:program])
     end 
      
-    if current_user.access == User::OPERATOR
-      params[:campus] = current_user.campus_id;
-    end 
+    if current_user.campus_id != 0 
+      params[:campus] = current_user.campus_id
+    end
 
     if params[:campus] != '0' then
       @students = @students.where(:campus_id => params[:campus])

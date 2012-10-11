@@ -18,7 +18,11 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
     @campus = Campus.all
-    @programs = Program.all
+    if @user.program_type != Program::ALL
+      @programs = Program.where(:program_type => @user.program_type)
+    end
+
+    @permissions_user = PermissionUser.where(:user_id=>params[:id])
     render :layout => false
   end
 
@@ -68,7 +72,7 @@ class UsersController < ApplicationController
     flash = {}
     @user = User.find(params[:id])
     ActivityLog.new({:user_id=>current_user.id,:activity=>"Update User: #{@user.id},#{@user.email}"}).save
-
+    
     if @user.update_attributes(params[:user])
       flash[:notice] = "Usuario actualizado."
       respond_with do |format|
@@ -90,6 +94,7 @@ class UsersController < ApplicationController
             json = {}
             json[:flash] = flash
             json[:errors] = @user.errors
+            json[:errors_full] = @program.errors.full_messages
             render :json => json, :status => :unprocessable_entity
           else 
             redirect_to @user
@@ -97,5 +102,12 @@ class UsersController < ApplicationController
         end
       end
     end
+  end
+  
+  def permissions
+    @user = User.find(params[:id])
+    @type = params[:type]
+    @programs = Program.where(:program_type=>@type)
+    render :layout => false
   end
 end

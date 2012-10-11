@@ -1,6 +1,13 @@
 # coding: utf-8
 class User < ActiveRecord::Base
-  attr_accessible :id,:email,:access,:status,:created_at,:updated_at,:program_id,:campus_id
+  attr_accessible :id,:email,:access,:status,:created_at,:updated_at,:program_id,:campus_id,:program_type,:permission_user_attributes
+ 
+  belongs_to :campus 
+  has_many :permission_user
+  accepts_nested_attributes_for :permission_user
+
+  before_save :delete_permissions
+
   ADMINISTRATOR = 1
   OPERATOR      = 2
   STAFF         = 3
@@ -14,6 +21,7 @@ class User < ActiveRecord::Base
                  OPERATOR      => 'Operador',
                  ADMINISTRATOR => 'Administrador'}
 
+
   STATUS = {STATUS_INACTIVE => 'Inactivo',
             STATUS_ACTIVE   => 'Activo'}
 
@@ -22,5 +30,9 @@ class User < ActiveRecord::Base
 
   def access_type
     ACCESS_TYPE[access]
+  end
+  
+  def delete_permissions
+    PermissionUser.delete_all(:user_id => self.id)
   end
 end

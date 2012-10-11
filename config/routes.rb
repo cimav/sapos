@@ -85,6 +85,7 @@ Sapos::Application.routes.draw do
   match 'laboratorios/busqueda' => 'laboratories#live_search'
 
   match 'usuarios/busqueda' => 'users#live_search'
+  match 'usuarios/:id/permisos/:type' => 'users#permissions'
   
   match 'programas/busqueda' => 'programs#live_search'
   match 'programas/:id/nuevo_curso' => 'programs#new_course'

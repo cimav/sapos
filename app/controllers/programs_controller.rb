@@ -8,14 +8,18 @@ class ProgramsController < ApplicationController
   end
 
   def live_search
-    if current_user.access == User::OPERATOR
-      @programs= Program.order('name').where(:id=> current_user.program_id)
-    else    
+    if current_user.program_type == Program::ALL
       @programs = Program.order('name')
-    end 
+    else
+      @programs = Program.joins(:permission_user).where(:permission_users=>{:user_id=>current_user.id})
+    end
 
     if !params[:q].blank?
       @programs = @programs.where("name LIKE :n OR prefix LIKE :n", {:n => "%#{params[:q]}%"}) 
+    end
+    
+    if params[:program_type] != '0' then
+      @programs = @programs.where(:program_type=>params[:program_type])
     end
 
     render :layout => false
@@ -93,6 +97,7 @@ class ProgramsController < ApplicationController
             json = {}
             json[:flash] = flash
             json[:errors] = @program.errors
+            json[:errors_full] = @program.errors.full_messages
             render :json => json, :status => :unprocessable_entity
           else 
             redirect_to @program
