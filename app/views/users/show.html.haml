@@ -51,13 +51,14 @@
         = f.select :program_type, program_types
        
       #specific_permissions
-        - @programs.each_with_index do |p,index|
-          = fields_for "user[permission_user_attributes][#{index}]" do |f|
-            = f.label :program_id, p.name
-            - check = false
-            - @permissions_user.each do |pu|
-              - if pu.program_id == p.id
-                - check = true
-                - break
-            = f.check_box :program_id, {:multiple=>false,:checked=>check}, p.id.to_s
-            %br
+        - if @programs
+          - @programs.each_with_index do |p,index|
+            = fields_for "user[permission_user_attributes][#{index}]" do |f|
+              = f.label :program_id, p.name
+              - check = false
+              - @permissions_user.each do |pu|
+                - if pu.program_id == p.id
+                  - check = true
+                  - break
+              = f.check_box :program_id, {:multiple=>false,:checked=>check}, p.id.to_s
+              %br
