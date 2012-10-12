@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
   OPERATOR      = 2
   STAFF         = 3
   STUDENT       = 4
+  MANAGER       = 5
 
   STATUS_ACTIVE   = 1
   STATUS_INACTIVE = 2
@@ -19,7 +20,8 @@ class User < ActiveRecord::Base
   ACCESS_TYPE = {STUDENT       => 'Estudiante',
                  STAFF         => 'Docente',
                  OPERATOR      => 'Operador',
-                 ADMINISTRATOR => 'Administrador'}
+                 ADMINISTRATOR => 'Administrador',
+                 MANAGER       => 'Jefe de Posgrado'}
 
 
   STATUS = {STATUS_INACTIVE => 'Inactivo',

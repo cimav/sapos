@@ -163,6 +163,15 @@ class StudentsController < ApplicationController
     @countries = Country.order('name')
     @institutions = Institution.order('name')
     @states = State.order('code')  
+    if current_user.access == User::MANAGER
+      @status = Student::STATUS
+    else
+      @status = Student::STATUS
+      @status.delete(Student::GRADUATED)
+      @status.delete(Student::UNREGISTERED)
+      @status.delete(Student::INACTIVE)
+    end
+
     today = Date.today
     yyyy  = today.year - @student.start_date.year
     m = today.month - @student.start_date.month
