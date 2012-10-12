@@ -13,7 +13,7 @@
            
 
     = form_tag students_path, :id => 'live-search', :method => 'get', :remote => true do
-      = select_tag "program_type", options_for_select(Program::PROGRAM_TYPE.invert.sort {|a,b| a[1] <=> b[1] })
+      = select_tag "program_type", options_for_select(@program_type)
 
       = select_tag "program", options_for_select(program_options)
 

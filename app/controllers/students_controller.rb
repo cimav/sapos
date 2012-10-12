@@ -15,8 +15,10 @@ class StudentsController < ApplicationController
     
     if current_user.program_type == Program::ALL
       @programs     = Program.order('name')
+      @program_type = Program::PROGRAM_TYPE.invert.sort {|a,b| a[1] <=> b[1] }
     else
       @programs     = Program.joins(:permission_user).where(:permission_users=>{:user_id=>current_user.id}).order('name')
+      @program_type = { Program::PROGRAM_TYPE[current_user.program_type] => current_user.program_type }
     end
 
     @supervisors = Staff.find_by_sql "SELECT id, first_name, last_name FROM staffs WHERE id IN (SELECT supervisor FROM students UNION SELECT co_supervisor FROM students) ORDER BY first_name, last_name"
