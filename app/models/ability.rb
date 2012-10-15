@@ -16,18 +16,15 @@ class Ability
 
     if user.access == User::ADMINISTRATOR
         can :live_search, :all
-        can [:read, :update], Student
+        can [:read, :update, :files, :upload_file, :delete_file, :upload_image, :change_image, :file], Student
         can [:read, :update], User
-        can :manage, [Staff, Program, Internship, Institution, Classroom, Laboratory, Internship, Department]
+        can :manage, [Staff, Program, Internship, Institution, Classroom, Laboratory, Department]
     else
       can :live_search, :all  ## for default read all live_search
       if user.access == User::OPERATOR
         can [:read, :update], Student
         can :manage, Internship
       end
-
-       if user.access == User::ADMINISTRATOR 
-       end
     end
   end
 end
