@@ -13,7 +13,7 @@
       %h1= "#{@user.email}"
       .comment= @user.access_type
     .resource-save
-      - if can? :create || :update, @user
+      - if can? :update, @user
         = f.submit 'Actualizar'
 
   #resource-tabs

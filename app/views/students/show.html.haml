@@ -31,7 +31,7 @@
       .resource-card
         = link_to 'Credencial', "/estudiantes/#{@student.id}/credencial.pdf", :id=>'a-id-card'
     .resource-save
-      - if can? :create || :update, @student
+      - if can? :update, @student
         = f.submit 'Actualizar'
 
   #resource-tabs
