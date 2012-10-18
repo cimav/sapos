@@ -163,15 +163,8 @@ class StudentsController < ApplicationController
     @countries = Country.order('name')
     @institutions = Institution.order('name')
     @states = State.order('code')  
-    if current_user.access == User::MANAGER
-      @status = Student::STATUS
-    else
-      @status = Student::STATUS
-      @status.delete(Student::GRADUATED)
-      @status.delete(Student::UNREGISTERED)
-      @status.delete(Student::INACTIVE)
-    end
-
+    @status = Student::STATUS
+    
     today = Date.today
     yyyy  = today.year - @student.start_date.year
     m = today.month - @student.start_date.month
@@ -251,7 +244,29 @@ class StudentsController < ApplicationController
   def update 
     flash = {}
     @student = Student.find(params[:id])
-
+ 
+    if current_user.access != User::MANAGER
+      my_hash = params[:student]
+      status = my_hash[:status]
+      if (status.to_i==Student::GRADUATED or status.to_i==Student::UNREGISTERED or status.to_i==Student::INACTIVE) and (status.to_i != @student.status.to_i)
+        flash[:error] = "El estatus \"#{Student::STATUS[status.to_i]}\" solo lo puede establecer el Jefe de Posgrado"
+        respond_with do |format|
+          format.html do
+            if request.xhr?
+              json = {}
+              json[:flash] = flash
+              json[:errors] = @student.errors
+              json[:errors_full] = @student.errors.full_messages
+              render :json => json, :status => :unprocessable_entity
+            else 
+              redirect_to @student
+            end
+          end
+        end
+        return false
+      end 
+    end
+    
     if @student.update_attributes(params[:student])
       flash[:notice] = "Estudiante actualizado."
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
