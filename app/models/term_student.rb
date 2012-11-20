@@ -5,6 +5,7 @@ class TermStudent < ActiveRecord::Base
   belongs_to :student
   has_many :term_course_student
   has_many :term_student_payment
+  has_many :student_advances_file
   accepts_nested_attributes_for :term_course_student
   accepts_nested_attributes_for :term_student_payment
 

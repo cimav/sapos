@@ -1,0 +1,52 @@
+= stylesheet_link_tag "application"
+= javascript_include_tag "jquery"
+<!--script src="/jquery.js" type="text/javascript"></script-->
+
+#advances_files
+  - counter = 0
+  - ts_id = 0
+  - sat = StudentAdvancesFile::STUDENT_ADVANCE_TYPE.clone
+
+  #files_area
+    - if @term_student.size==0
+      = "No hay ciclos activos"
+    
+    - @term_student.each_with_index do |ts, index|
+      - ts_id = ts.id
+      %a{"class"=>"menu-selected"}= "Ciclo: #{ts.term.name}"
+      - @saf = StudentAdvancesFile.where(:term_student_id=>ts.id)
+      - if @saf.size == 0 
+        %p= "No se han subido archivos para este ciclo"
+      - @saf.each do |saf|
+        %div{'id'=>"student_advances_file_#{saf.id}",'class'=>'file_classi'}
+          = "#{StudentAdvancesFile::STUDENT_ADVANCE_TYPE[saf.student_advance_type]}:"
+          %a{'href' => "/avances/#{saf.id}/file"}= saf.description
+          = link_to 'Eliminar archivo', "/avances/borrar/#{saf.id}", :class => 'delete-file'
+          - sat.delete(saf.student_advance_type)
+          - counter= counter+1
+
+    %p
+      -if !flash[:notice].nil?
+        = flash[:notice]
+      -if !flash[:error].nil?
+        = flash[:error]
+
+  #upload-box
+    - if @term_student.size > 0
+      - if (0 <= counter) and (counter < 2)
+        = form_for(StudentAdvancesFile.new, :url => { :action => "upload_file" }, :html => {:id => 'item-upload-file-form', :multipart => true}) do |f|
+          = f.hidden_field :term_student_id, {:value => ts_id }
+          = f.file_field :file, {"multiple" => "multiple"}
+          .upload Elegir archivo
+          .upload-msg
+            %center= f.select :student_advance_type, sat.invert.sort {|a,b| a[1] <=> b[1] }
+
+:javascript
+  $('.delete-file').click(function()
+  {    if(confirm("¿Esta seguro?")){return true;}else{
+       return false;}
+  });
+
+  $('#student_advances_file_file').live('change', function() {
+    $("#item-upload-file-form").submit();
+  }); 
