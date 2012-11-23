@@ -20,6 +20,11 @@ Sapos::Application.routes.draw do
   match 'estudiantes/lista' => 'students#term_grades_list'
   match 'estudiantes/avances' => 'students#advances_list'
 
+  match 'estudiantes/archivos/avances/:id' => 'student_advances_file#index'
+  match '/avances/borrar/:id' => 'student_advances_file#destroy'
+  match '/avances/subir_archivo' => 'student_advances_file#upload_file'
+  match '/avances/:id/file' => 'student_advances_file#file'
+  
   resources :student_files
 
   match 'docentes/busqueda' => 'staffs#live_search'
@@ -135,7 +140,6 @@ Sapos::Application.routes.draw do
   match 'programas/:id/documentos/:file_id' => 'programs#file'
 
   resources :documentation_files
-  
 
   match 'logs/show' => 'logs#index'
 
