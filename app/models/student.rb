@@ -40,7 +40,6 @@ class Student < ActiveRecord::Base
   has_many :term_students
   accepts_nested_attributes_for :term_students
 
-
   validates :first_name, :presence => true
   validates :last_name, :presence => true
   validates :program_id, :presence => true  
