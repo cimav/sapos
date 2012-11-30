@@ -20,6 +20,14 @@
       %div{:id => "field_program_terms_0_end_date", :class => 'field'}
         = fields.label :end_date, 'Fin'
         = fields.date_select :end_date,:start_year=>2001
+      
+      %div{:id => "field_program_terms_0_advance_start_date", :class => 'field'}
+        = fields.label :advance_start_date, 'Entrega avances inicio'
+        = fields.date_select :advance_start_date,:start_year=>2001
+      
+      %div{:id => "field_program_terms_0_advance_end_date", :class => 'field'}
+        = fields.label :advance_end_date, 'Entrega avances fin'
+        = fields.date_select :advance_end_date,:start_year=>2001
 
       #dialog-submit-button-area
         = fields.submit "Crear nuevo ciclo escolar"

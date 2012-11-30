@@ -6,6 +6,8 @@
         %th Nombre
         %th Inicio
         %th Fin
+        %th Entrega Avances Inicio
+        %th Entrega Avances Fin
         %th Status
     - @program.terms.order("start_date DESC").each_with_index do |term, index|
       %tr.term-item{:id=>"tr_term_#{term.id}", :term_id=>term.id}
@@ -13,4 +15,12 @@
         %td= term.name
         %td.centered= l term.start_date, :format => :long
         %td.centered= l term.end_date, :format => :long
+        - if !term.advance_start_date.nil?
+          %td.centered= l term.advance_start_date, :format => :long
+        -else
+          %td.centered=""
+        - if !term.advance_end_date.nil?
+          %td.centered= l term.advance_end_date, :format => :long
+        -else
+          %td.centered=""
         %td= term.status_type
