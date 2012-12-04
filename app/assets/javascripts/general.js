@@ -55,7 +55,7 @@ function showFormErrors(xhr, status, error) {
     errorMesg="";
     $.each(res['errors_full'],function(key,value){
         numlist = key + 1
-        errorMesg+=numlist+": "+value+"<br>";
+        errorMesg+=" "+numlist+": "+value+"<br>";
       });
    
      

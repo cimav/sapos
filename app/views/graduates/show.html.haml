@@ -1,0 +1,57 @@
+= form_for @graduate, :remote => true, :html => { :'data-type' => 'html', :id => 'item-edit-form' } do |f|
+  .resource-header.student-header
+    .resource-picture
+      = image_tag @student.image_url(:medium).to_s, :id => "img-medium-#{@student.id}"
+      %br
+    .resource-title
+      %h1= "#{@student.first_name} #{@student.last_name}"
+      .comment= "Matrícula: #{@student.card} (#{@student.program.name})"
+      .comment
+    .resource-save
+      - if can? :update, @student
+        = f.submit 'Actualizar'
+
+  #resource-tabs
+    %ul
+      %li.first-tab= link_to "Datos", "#datos"
+     
+    #datos
+      %h2 Datos
+      = f.hidden_field :id
+      = f.hidden_field :student_id, {:value => @student.id }
+
+      .field#field_graduate_workplace
+        = f.label :workplace, "Lugar de Trabajo"
+        = f.text_field :workplace
+
+      .field#field_graduate_income
+        = f.label :income, "Ingresos"
+        = f.select :income, Graduate::INCOMES.invert.sort {|a,b| a[1] <=> b[1] }
+      
+      .field#field_graduate_gyre
+        = f.label :gyre, "Giro"
+        = f.select :gyre, Graduate::GYRE.invert.sort {|a,b| a[1] <=> b[1] }
+        
+      .field#field_graduate_prizes
+        = f.label :prizes, "Premios"
+        = f.text_area :prizes
+
+      .field#field_graduate_sni
+        = f.label :sni, "SNI"
+        = f.text_field :sni
+      
+      .field#field_graduate_sni_status
+        = f.label :sni_status, "Estatus SNI"
+        = f.select :sni_status, Graduate::SNI_STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+
+      .field#field_graduate_subsequent_studies
+        = f.label :subsequent_studies, "Estudios Subsecuentes"
+        = f.text_area :subsequent_studies
+
+      .field#field_student_period_from
+        = f.label :period_from, 'Periodo de'
+        = f.date_select :period_from, :start_year => 1994
+      
+      .field#field_student_period_to
+        = f.label :period_to, 'Periodo a'
+        = f.date_select :period_to, :start_year => 1994

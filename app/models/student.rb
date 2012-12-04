@@ -39,6 +39,9 @@ class Student < ActiveRecord::Base
 
   has_many :term_students
   accepts_nested_attributes_for :term_students
+  
+  has_one :graduate
+  accepts_nested_attributes_for :graduate
 
   validates :first_name, :presence => true
   validates :last_name, :presence => true

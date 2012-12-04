@@ -42,6 +42,8 @@
           %li.op#op-users= link_to "Usuarios", users_path
         - if can? :read, Department
           %li.op#op-users= link_to "Departamentos", departments_path
+        - if can? :read, Graduate
+          %li.op#op-users= link_to "Seguimiento de Egresados", graduates_path
 
     #flash-notice
 

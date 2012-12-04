@@ -2,6 +2,9 @@ Sapos::Application.routes.draw do
   get "scholarship_categories/index"
 
   root :to => 'welcome#index'
+  
+  match 'egresados/busqueda' => 'graduates#live_search'
+  match 'egresados/analizar/:student_id' => 'graduates#analizer'
 
   match 'estudiantes/busqueda' => 'students#live_search'
   match 'estudiantes/:id/cambiar_foto' => 'students#change_image'
@@ -156,6 +159,7 @@ Sapos::Application.routes.draw do
     resources :users, :path => "usuarios"
     resources :departments, :path => "departamentos"
     resources :internship_types, :path => "tipos_internados"
+    resources :graduates, :path => "egresados"
   end
 
   match '/auth/:provider/callback' => 'sessions#create'
