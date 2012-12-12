@@ -89,19 +89,6 @@ class GraduatesController < ApplicationController
       format.xls do
         rows = Array.new
         @students.collect do |s|
-          if s.status == Student::GRADUATED || s.status == Student::FINISH
-            end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
-            
-            if end_date.blank? 
-              months = ''
-            else
-              months = months_between(s.start_date,end_date)
-            end
-          else
-            end_date = ''
-          end
-
-          
           rows << {'Matricula' => s.card,
                    'Nombre' => s.first_name, 
                    'Apellidos' => s.last_name, 
@@ -110,23 +97,21 @@ class GraduatesController < ApplicationController
 	           "Ciudad_Nac" => s.city,
 	           "Estado_Nac" => (s.state.name rescue ''),
 	           "Pais_Nac" => (s.country.name rescue ''),
-                   "Institucion_Anterior" => (Institution.find(s.previous_institution).full_name rescue ''),
 	           "Campus" => (s.campus.name rescue ''),
                    'Programa' => s.program.name,
-                   'Inicio' => s.start_date,
-                   'Fin' => end_date,
-                   'Meses' => months,
                    'Asesor' => (Staff.find(s.supervisor).full_name rescue ''),
-                   'Coasesor' => (Staff.find(s.co_supervisor).full_name rescue ''),
-                   'Tesis' => s.thesis.title,
-                   'Sinodal1' => (Staff.find(s.thesis.examiner1).full_name rescue ''),
-                   'Sinodal2' => (Staff.find(s.thesis.examiner2).full_name rescue ''),
-                   'Sinodal3' => (Staff.find(s.thesis.examiner3).full_name rescue ''),
-                   'Sinodal4' => (Staff.find(s.thesis.examiner4).full_name rescue ''),
-                   'Sinodal5' => (Staff.find(s.thesis.examiner5).full_name rescue ''),
+                   'Lugar_de_trabajo' => (s.graduate.workplace rescue ''),
+                   'Ingresos' => (Graduate::INCOMES[s.graduate.income] rescue ''),
+                   'Giro' => (Graduate::GYRE[s.graduate.gyre] rescue ''),
+                   'Premios' => (s.graduate.prizes rescue ''),
+                   'SNI' => (s.graduate.sni rescue ''),
+                   'Estatus_SNI' => (Graduate::SNI_STATUS[s.graduate.sni_status] rescue ''),
+                   'Estudios_Subsecuentes' => (s.graduate.subsequent_studies rescue ''),
+                   'Del' => (s.graduate.period_from rescue ''),
+                   'Al' => (s.graduate.period_to rescue ''),
                    }
         end
-        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
+        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Campus", "Programa", "Asesor", "Lugar_de_trabajo","Ingresos","Giro","Premios","SNI","Estatus_SNI","Estudios_Subsecuentes","Del","Al"]
         to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
