@@ -268,6 +268,10 @@ class StudentsController < ApplicationController
     end
     
     if @student.update_attributes(params[:student])
+      graduated = 0
+      if (@student.status.to_i==Student::GRADUATED and @student.graduate.nil?)
+        graduated = 1
+      end
       flash[:notice] = "Estudiante actualizado."
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
       respond_with do |format|
@@ -275,6 +279,7 @@ class StudentsController < ApplicationController
           if request.xhr?
             json = {}
             json[:flash] = flash
+            json[:graduated] = graduated 
             json[:thesis_status] = @student.thesis.status
             render :json => json
           else 

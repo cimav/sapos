@@ -69,15 +69,25 @@ function showFormErrors(xhr, status, error) {
 }
 
 function showFlash(msg,type,errors) {
-    if (!errors){errors="";}
-    $("#flash-notice").removeClass('success').removeClass('notice').removeClass('info');
-    $("#flash-notice").addClass(type).html(msg +"<p>"+ errors);
-    $("#flash-notice").slideDown();
-    if (type != 'error') {
-      $("#flash-notice").delay(1500).slideUp();
+    try{
+      fn = $("#flash-notice",window.parent.document);
+      if (!errors){errors="";}
+      $(fn).removeClass('success').removeClass('notice').removeClass('info');
+      $(fn).addClass(type).html(msg +"<p>"+ errors);
+      $(fn).slideDown();
+      if (type != 'error') {
+        $(fn).delay(1500).slideUp();
+      }
+    }catch(e){
+      if (!errors){errors="";}
+      $("#flash-notice").removeClass('success').removeClass('notice').removeClass('info');
+      $("#flash-notice").addClass(type).html(msg +"<p>"+ errors);
+      $("#flash-notice").slideDown();
+      if (type != 'error') {
+        $("#flash-notice").delay(1500).slideUp();
+      }
     }
 }
-
 
 $(document).ready(function() {
 
@@ -172,14 +182,27 @@ $('#item-new-form')
         var res = $.parseJSON(xhr.responseText);
         showFlash(res['flash']['notice'], 'success');
         $("#search-box").val(res['uniq']);
-        initializeSearchForm();
-        liveSearch();       
+        try{
+          initializeSearchForm();
+          liveSearch();       
+        }
+        catch(e)
+        {
+         // let it pass
+        }
     })
 
     .live('ajax:complete', function(evt, xhr, status) {
         var $submitButton = $(this).find('input[type="submit"]');
-        $submitButton.text( $(this).data('origText') );
-        $submitButton.attr('disabled', 'disabled').addClass('disabled');
+        if(status=="error")
+        { 
+          $submitButton.removeClass('disabled');
+          $submitButton.attr('disabled',false);
+        }
+        else{
+          $submitButton.text( $(this).data('origText') );
+          $submitButton.attr('disabled', 'disabled').addClass('disabled');
+        }
     })
 
     .live("ajax:error", function(evt, xhr, status, error) {
@@ -200,6 +223,7 @@ $('#item-edit-form')
     .live("ajax:success", function(evt, data, status, xhr) {
         var $form = $(this);
         var res = $.parseJSON(xhr.responseText);
+        if(res['graduated']==1){$("#graduate-dialog").dialog('open');}
         showFlash(res['flash']['notice'],'success');
     })
 

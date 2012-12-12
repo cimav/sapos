@@ -1,3 +1,19 @@
+:javascript
+  $(function() {
+    $("#graduate-dialog").remove();
+    $('#content-panel').append('<div title="Graduado" id="graduate-dialog"><center><iframe id="iframe-graduate-dialog" width="650" height="440" src="/egresados/nuevo/#{@student.id}/dialog" scrolling="yes"></iframe></center></div>');
+    $("#graduate-dialog").dialog({ autoOpen: false, width: 740, height: 550, modal:true });
+  });
+  
+  window.success_msg = function(id) {
+    if (id==1)
+    {
+       $("#graduate-dialog").dialog("close");
+    }
+  };
+
+
+
 = form_for @student, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
   = hidden_field :student, :id
 

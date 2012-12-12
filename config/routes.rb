@@ -5,6 +5,8 @@ Sapos::Application.routes.draw do
   
   match 'egresados/busqueda' => 'graduates#live_search'
   match 'egresados/analizar/:student_id' => 'graduates#analizer'
+  match 'egresados/nuevo/:id/:dialog' => 'graduates#new'
+  match 'egresados/listo' => 'graduates#ready'
 
   match 'estudiantes/busqueda' => 'students#live_search'
   match 'estudiantes/:id/cambiar_foto' => 'students#change_image'

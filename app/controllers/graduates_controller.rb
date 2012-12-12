@@ -149,6 +149,7 @@ class GraduatesController < ApplicationController
 
   def new
     @student = Student.find(params[:id])
+    @dialog  = params[:dialog]
     render :layout => false
   end
 
@@ -222,6 +223,10 @@ class GraduatesController < ApplicationController
     end
 
 
+  end
+
+  def ready
+    render :layout => false
   end
 
 private

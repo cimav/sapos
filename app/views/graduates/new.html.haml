@@ -1,19 +1,26 @@
+- if @dialog == "dialog"
+  = stylesheet_link_tag    "application"
+  = javascript_include_tag "application"
+  = javascript_include_tag "graduate"
+
 = form_for @graduate, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
   .resource-header.student-header
-    .resource-picture
-      = image_tag @student.image_url(:medium).to_s, :id => "img-medium-#{@student.id}"
-      %br
-    .resource-title
-      %h1= "#{@student.first_name} #{@student.last_name}"
-      .comment= "Matrícula: #{@student.card} (#{@student.program.name})"
-      .comment
-    .resource-save
-      - if can? :create, @student
-        = f.submit 'Crear'
+    - if @dialog != "dialog"
+      .resource-picture
+        = image_tag @student.image_url(:medium).to_s, :id => "img-medium-#{@student.id}"
+        %br
+      .resource-title
+        %h1= "#{@student.first_name} #{@student.last_name}"
+        .comment= "Matrícula: #{@student.card} (#{@student.program.name})"
+        .comment
+      .resource-save
+        - if can? :create, @student
+          = f.submit 'Crear'
 
   #resource-tabs
-    %ul
-      %li.first-tab= link_to "Datos", "#datos"
+    - if @dialog != "dialog"
+      %ul
+        %li.first-tab= link_to "Datos", "#datos"
      
     #datos
       %h2 Datos
@@ -55,3 +62,21 @@
       .field#field_student_period_to
         = f.label :period_to, 'Periodo a'
         = f.date_select :period_to, :start_year => 1994
+      
+      - if @dialog == "dialog"
+        .resource-save
+          - if can? :create, @student
+            = f.submit 'Crear'
+
+        :javascript
+          $('#item-new-form').live('ajax:complete', function(evt, xhr, status) {
+            var $submitButton = $(this).find('input[type="submit"]');
+            if(status=="error")
+            {
+              $submitButton.removeClass('disabled');
+              $submitButton.attr('disabled',false);
+            }
+            else{
+              window.location="/egresados/listo";
+            }
+          });
