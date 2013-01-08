@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121130013303) do
+ActiveRecord::Schema.define(:version => 20121218003921) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -259,6 +259,16 @@ ActiveRecord::Schema.define(:version => 20121130013303) do
   end
 
   add_index "laboratories", ["campus_id"], :name => "index_laboratories_on_campus_id"
+
+  create_table "mails", :force => true do |t|
+    t.string   "from"
+    t.string   "to"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "status",     :default => 0
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
 
   create_table "permission_users", :force => true do |t|
     t.integer  "user_id"
