@@ -249,3 +249,10 @@ function start_datepicker()
   $( "#start_date" ).datepicker(config);
   $( "#end_date" ).datepicker(config);
 }
+
+$('.delete-file')
+  .live('ajax:success', function(evt, data, status, xhr) {
+    var r = $.parseJSON(xhr.responseText);
+    var s_id = r.seminar_id;
+    $("#tr_seminar_"+s_id).hide();
+  });

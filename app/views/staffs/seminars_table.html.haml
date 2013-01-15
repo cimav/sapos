@@ -5,9 +5,10 @@
         %th Titulo
         %th Inicio
         %th Lugar
-    - @staff.seminars.order("start_date DESC").each_with_index do |seminar, index|
+        %th Acciones
+    - @staff.seminars.where("status is null or status<>2").order("start_date DESC").each_with_index do |seminar, index|
       %tr.seminar-item{:id=>"tr_seminar_#{seminar.id}", :seminar_id=>seminar.id}
         %td= seminar.title
         %td.centered= l seminar.start_date, :format => :long
         %td= seminar.location
-
+        %td= link_to 'Eliminar',"docentes/#{@staff.id}/delete_seminar/#{seminar.id}",:confirm => '¿Estás seguro?', :method => 'post', :remote => true, :class => 'delete-file'

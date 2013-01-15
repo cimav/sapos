@@ -40,6 +40,7 @@ Sapos::Application.routes.draw do
   match 'docentes/create_seminar' => 'staffs#create_seminar'
   match 'docentes/update_seminar' => 'staffs#update_seminar'
   match 'docentes/:id/seminario/:seminar_id' => 'staffs#edit_seminar'
+  match 'docentes/:id/delete_seminar/:seminar_id' => 'staffs#delete_seminar'
   match 'docentes/:id/cursos-externos' => 'staffs#external_courses_table'
   match 'docentes/:id/nuevo_curso_externo' => 'staffs#new_external_course'
   match 'docentes/create_external_course' => 'staffs#create_external_course'

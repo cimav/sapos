@@ -182,6 +182,43 @@ class StaffsController < ApplicationController
     @seminar = Seminar.find(params[:seminar_id])
     render :layout => false
   end
+  
+  def delete_seminar
+    flash = {}
+    @seminar = Seminar.find(params[:seminar_id])
+    @seminar.status = 2
+    if @seminar.save 
+      flash[:notice] = "Seminario eliminado"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Seminar: #{@seminar.id}"}).save
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:seminar_id] = params[:seminar_id] 
+            render :json => json
+          else
+            redirect_to @staff
+          end
+         end
+       end
+    else
+      flash[:error] = "Error al eliminar seminario"
+      respond_with do |format|
+        format.html do 
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:errors] = @seminar.errors
+            json[:errors_full] = @seminar.errors.full_messages
+            render :json => json, :status => :unprocessable_entity
+          else
+            redirect_to @staff
+          end
+        end 
+      end      
+    end
+  end 
 
   def seminars_table
     @staff = Staff.find(params[:id])
