@@ -256,3 +256,17 @@ $('.delete-file')
     var s_id = r.seminar_id;
     $("#tr_seminar_"+s_id).hide();
   });
+
+$('.delete-file')
+  .live('ajax:success', function(evt, data, status, xhr) {
+    var r = $.parseJSON(xhr.responseText);
+    var s_id = r.seminar_id;
+    $("#tr_seminar_"+s_id).hide();
+  });
+
+$('.delete-file-ec')
+  .live('ajax:success', function(evt, data, status, xhr) {
+    var r = $.parseJSON(xhr.responseText);
+    var s_id = r.external_course_id;
+    $("#tr_external_course_"+s_id).hide();
+  });

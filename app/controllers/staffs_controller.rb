@@ -219,6 +219,43 @@ class StaffsController < ApplicationController
       end      
     end
   end 
+  
+  def delete_external_course
+    flash = {}
+    @external_course  = ExternalCourse.find(params[:external_course_id])
+    @external_course.status = 2
+    if @external_course.save 
+      flash[:notice] = "Curso externo eliminado"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete External Course: #{@external_course.id}"}).save
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:external_course_id] = params[:external_course_id] 
+            render :json => json
+          else
+            redirect_to @staff
+          end
+         end
+       end
+    else
+      flash[:error] = "Error al eliminar curso externo"
+      respond_with do |format|
+        format.html do 
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:errors] = @external_course.errors
+            json[:errors_full] = @external_course.errors.full_messages
+            render :json => json, :status => :unprocessable_entity
+          else
+            redirect_to @staff
+          end
+        end 
+      end      
+    end
+  end 
 
   def seminars_table
     @staff = Staff.find(params[:id])
