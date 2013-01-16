@@ -256,6 +256,43 @@ class StaffsController < ApplicationController
       end      
     end
   end 
+  
+  def delete_lab_practice
+    flash = {}
+    @lab_practice  = LabPractice.find(params[:lab_practice_id])
+    @lab_practice.status = 2
+    if @lab_practice.save 
+      flash[:notice] = "Práctica eliminada"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Lab Practice: #{@lab_practice.id}"}).save
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:lab_practice_id] = params[:lab_practice_id] 
+            render :json => json
+          else
+            redirect_to @staff
+          end
+         end
+       end
+    else
+      flash[:error] = "Error al eliminar la practica"
+      respond_with do |format|
+        format.html do 
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:errors] = @lab_practice.errors
+            json[:errors_full] = @lab_practice.errors.full_messages
+            render :json => json, :status => :unprocessable_entity
+          else
+            redirect_to @staff
+          end
+        end 
+      end      
+    end
+  end 
 
   def seminars_table
     @staff = Staff.find(params[:id])

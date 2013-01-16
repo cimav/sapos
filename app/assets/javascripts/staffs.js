@@ -270,3 +270,10 @@ $('.delete-file-ec')
     var s_id = r.external_course_id;
     $("#tr_external_course_"+s_id).hide();
   });
+
+$('.delete-file-lp')
+  .live('ajax:success', function(evt, data, status, xhr) {
+    var r = $.parseJSON(xhr.responseText);
+    var s_id = r.lab_practice_id;
+    $("#tr_lab_practice_"+s_id).hide();
+  });

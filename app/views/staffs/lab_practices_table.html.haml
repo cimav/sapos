@@ -5,9 +5,11 @@
         %th Titulo
         %th Inicio
         %th Lugar
-    - @staff.lab_practices.order("start_date DESC").each_with_index do |lab_practice, index|
+        %th Acciones
+    - @staff.lab_practices.where("status is null or status<>2").order("start_date DESC").each_with_index do |lab_practice, index|
       %tr.lab-practice-item{:id=>"tr_lab_practice_#{lab_practice.id}", :lab_practice_id=>lab_practice.id}
         %td= lab_practice.title
         %td.centered= l lab_practice.start_date, :format => :long
         %td= lab_practice.location
+        %td= link_to 'Eliminar',"docentes/#{@staff.id}/delete_lab_practice/#{lab_practice.id}",:confirm => '¿Estás seguro?', :method => 'post', :remote => true, :class => 'delete-file-lp'
 
