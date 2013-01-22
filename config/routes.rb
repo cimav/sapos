@@ -24,6 +24,7 @@ Sapos::Application.routes.draw do
   match 'estudiantes/:id/boleta/:term_id' => 'students#term_grades'
   match 'estudiantes/lista' => 'students#term_grades_list'
   match 'estudiantes/avances' => 'students#advances_list'
+  match 'estudiantes/constancias/:type/:id' => 'students#certificates'
 
   match 'estudiantes/archivos/avances/:id' => 'student_advances_file#index'
   match '/avances/borrar/:id' => 'student_advances_file#destroy'

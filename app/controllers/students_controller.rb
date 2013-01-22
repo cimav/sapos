@@ -550,6 +550,22 @@ class StudentsController < ApplicationController
     end
   end
 
+  def certificates
+    @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    if params[:type] == "estudios"
+      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_estudios.html")
+      s1 = string.gsub("<nombre>",@student.full_name)
+      s1 = s1.gsub("<matricula>",@student.card)
+      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
+      s1 = s1.gsub("<programa>",@student.program.name)
+      s1 = s1.gsub("<rails_root>","#{Rails.root}")
+      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "constancia-estudios-#{@student.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return
+    end
+  end
+
   def months_between(past_date,recent_date)
     total_years = (recent_date.year - past_date.year)
 

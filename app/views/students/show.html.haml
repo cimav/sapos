@@ -63,6 +63,7 @@
       %li= link_to "Notas", "#notas"
       %li= link_to "Kardex", "#kardex"
       %li= link_to "Pagos", "#pagos"
+      %li= link_to "Constancias", "#constancias"
 
     #detalles
       %h2 Detalles
@@ -220,3 +221,7 @@
     #pagos
       %h2 Pagos
       = render :partial => 'payments', :locals => {:student => @student}
+
+    #constancias
+      %h2 Constancias
+      = render :partial => 'certificates', :locals => {:student => @student}
