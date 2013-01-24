@@ -552,13 +552,21 @@ class StudentsController < ApplicationController
 
   def certificates
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    time = Time.new
+    year = time.year.to_s
     if params[:type] == "estudios"
       string = File.read("#{Rails.root}/app/views/students/certificates/constancia_estudios.html")
+      consecutive = get_consecutive(@student, time, Certificate::STUDIES)
       s1 = string.gsub("<nombre>",@student.full_name)
       s1 = s1.gsub("<matricula>",@student.card)
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<programa>",@student.program.name)
       s1 = s1.gsub("<rails_root>","#{Rails.root}")
+      s1 = s1.gsub("<consecutivo>",consecutive)
+      s1 = s1.gsub("<year_s>",year[2,4])
+      s1 = s1.gsub("<year>",year)
+      s1 = s1.gsub("<days>",time.day.to_s)
+      s1 = s1.gsub("<month>",get_month_name(time.month))
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-estudios-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
@@ -578,4 +586,30 @@ class StudentsController < ApplicationController
       (recent_date.month - past_date.month)
     end
   end 
+
+  def get_month_name(number)
+    months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
+    name = months[number - 1]
+    return name
+  end
+
+  def get_consecutive(object, time, type)
+    maximum = Certificate.where(:year => time.year).maximum("consecutive")
+
+    if maximum.nil?
+      maximum = 1
+    else
+      maximum = maximum + 1 
+    end
+ 
+    certificate                 = Certificate.new()
+    certificate.consecutive     = maximum
+    certificate.year            = time.year
+    certificate.attachable_id   = object.id
+    certificate.attachable_type = object.class.to_s
+    certificate.type            = type
+    certificate.save
+
+    return "%03d" % maximum
+  end
 end

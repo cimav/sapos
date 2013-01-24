@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121218003921) do
+ActiveRecord::Schema.define(:version => 20130123225840) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -62,6 +62,16 @@ ActiveRecord::Schema.define(:version => 20121218003921) do
     t.string   "image"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "certificates", :force => true do |t|
+    t.integer  "consecutive"
+    t.integer  "year"
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.integer  "type"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "classrooms", :force => true do |t|
@@ -140,6 +150,16 @@ ActiveRecord::Schema.define(:version => 20121218003921) do
   end
 
   add_index "documentation_files", ["program_id"], :name => "index_documentation_files_on_program_id"
+
+  create_table "emails", :force => true do |t|
+    t.string   "from"
+    t.string   "to"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "status",     :default => 0
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
 
   create_table "external_courses", :force => true do |t|
     t.integer  "staff_id"
@@ -259,16 +279,6 @@ ActiveRecord::Schema.define(:version => 20121218003921) do
   end
 
   add_index "laboratories", ["campus_id"], :name => "index_laboratories_on_campus_id"
-
-  create_table "mails", :force => true do |t|
-    t.string   "from"
-    t.string   "to"
-    t.string   "subject"
-    t.text     "content"
-    t.integer  "status",     :default => 0
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
-  end
 
   create_table "permission_users", :force => true do |t|
     t.integer  "user_id"
