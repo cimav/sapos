@@ -6,8 +6,6 @@ class Course < ActiveRecord::Base
   has_many :term_courses
   accepts_nested_attributes_for :term_courses
 
-
-
   def full_name
     "#{code}: #{name}" rescue name
   end

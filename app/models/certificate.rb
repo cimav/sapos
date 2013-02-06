@@ -3,10 +3,20 @@ class Certificate < ActiveRecord::Base
 
   belongs_to :attachable, :polymorphic => true
   
-  STUDIES    = 1
-  ENROLLMENT = 2
+  STUDIES          = 1
+  ENROLLMENT       = 2
+  VISA             = 3
+  AVERAGE          = 4
+  SEMESTER_AVERAGE = 5
+  SOCIAL_WELFARE   = 6
+  CREDITS          = 7
 
-  TYPE = {STUDIES => 'Constancia de estudios',
-          ENROLLMENT => 'Constancia de inscripcion'
+  TYPE = {STUDIES           => 'Constancia de estudios',
+          ENROLLMENT        => 'Constancia de inscripcion',
+          VISA              => 'Constancia para VISA',
+          AVERAGE           => 'Constancia de Promedio General',
+          SEMESTER_AVERAGE  => 'Constancia de Promedio Semestral',
+          SOCIAL_WELFARE    => 'Constancia para tramite de seguro',
+          CREDITS           => 'Constancia de creditos cubiertos'
           } 
 end

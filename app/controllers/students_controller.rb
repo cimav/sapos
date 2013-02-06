@@ -554,6 +554,9 @@ class StudentsController < ApplicationController
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
     time = Time.new
     year = time.year.to_s
+    head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
+    base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
+
     if params[:type] == "estudios"
       string = File.read("#{Rails.root}/app/views/students/certificates/constancia_estudios.html")
       consecutive = get_consecutive(@student, time, Certificate::STUDIES)
@@ -571,6 +574,191 @@ class StudentsController < ApplicationController
       filename = "constancia-estudios-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return
+    end 
+
+    if params[:type] == "inscripcion"
+      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_inscripcion.html")
+      string = "#{head}#{string}#{base}"
+      consecutive = get_consecutive(@student, time, Certificate::ENROLLMENT)
+      s1 = string.gsub("<nombre>",@student.full_name)
+      s1 = s1.gsub("<matricula>",@student.card)
+      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
+      s1 = s1.gsub("<rails_root>","#{Rails.root}")
+      s1 = s1.gsub("<consecutivo>",consecutive)
+      s1 = s1.gsub("<year_s>",year[2,4])
+      s1 = s1.gsub("<year>",year)
+      s1 = s1.gsub("<days>",time.day.to_s)
+      s1 = s1.gsub("<month>",get_month_name(time.month))
+      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.month).capitalize)
+      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.month).capitalize)
+      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.year.to_s)
+      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "constancia-inscripcion-#{@student.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return
+    end 
+
+    if params[:type] == "visa"
+      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_visa.html")
+      string = "#{head}#{string}#{base}"
+      consecutive = get_consecutive(@student, time, Certificate::VISA)
+      s1 = string.gsub("<rails_root>","#{Rails.root}")
+      s1 = s1.gsub("<consecutivo>",consecutive)
+      s1 = s1.gsub("<year_s>",year[2,4])
+      s1 = s1.gsub("<year>",year)
+      s1 = s1.gsub("<days>",time.day.to_s)
+      s1 = s1.gsub("<month>",get_month_name(time.month))
+      ######################################################################
+      s1 = s1.gsub("<nombre>",@student.full_name)
+      s1 = s1.gsub("<matricula>",@student.card)
+      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
+      s1 = s1.gsub("<programa>",@student.program.name)
+      s1 = s1.gsub("<student_image_uri>", @student.image_url.to_s)
+      ######################################################################
+      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "constancia-inscripcion-#{@student.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return
+    end
+    
+    if params[:type] == "promedio"
+      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_promedio_general.html")
+      string = "#{head}#{string}#{base}"
+      consecutive = get_consecutive(@student, time, Certificate::AVERAGE)
+      s1 = string.gsub("<rails_root>","#{Rails.root}")
+      s1 = s1.gsub("<consecutivo>",consecutive)
+      s1 = s1.gsub("<year_s>",year[2,4])
+      s1 = s1.gsub("<year>",year)
+      s1 = s1.gsub("<days>",time.day.to_s)
+      s1 = s1.gsub("<month>",get_month_name(time.month))
+      s1 = s1.gsub("<nombre>",@student.full_name)
+      s1 = s1.gsub("<matricula>",@student.card)
+      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
+      s1 = s1.gsub("<programa>",@student.program.name)
+      ######################################################################
+      s1 = s1.gsub("<semestre>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.code)
+      counter = 0
+      counter_grade = 0
+      sum = 0
+      avg = 0
+      @student.term_students.each do |te|
+        te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
+          counter += 1
+          if !(tcs.grade.nil?)
+            if !(tcs.grade<70)
+              counter_grade += 1
+              sum = sum + tcs.grade
+            end 
+          end 
+        end 
+      end 
+    
+      if counter > 0 
+        avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0 
+      end 
+      s1 = s1.gsub("<promedio>", avg.to_s)
+      ######################################################################
+      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "constancia-inscripcion-#{@student.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return 
+    end
+    
+    if params[:type] == "semestral"
+      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_promedio_semestral.html")
+      string = "#{head}#{string}#{base}"
+      consecutive = get_consecutive(@student, time, Certificate::SEMESTER_AVERAGE)
+      s1 = string.gsub("<rails_root>","#{Rails.root}")
+      s1 = s1.gsub("<consecutivo>",consecutive)
+      s1 = s1.gsub("<year_s>",year[2,4])
+      s1 = s1.gsub("<year>",year)
+      s1 = s1.gsub("<days>",time.day.to_s)
+      s1 = s1.gsub("<month>",get_month_name(time.month))
+      s1 = s1.gsub("<nombre>",@student.full_name)
+      s1 = s1.gsub("<matricula>",@student.card)
+      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
+      s1 = s1.gsub("<programa>",@student.program.name)
+      ######################################################################
+      s1 = s1.gsub("<semestre>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.code)
+      counter = 0
+      counter_grade = 0
+      sum = 0
+      avg = 0
+      @student.term_students.where(:term_id=>@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.id).each do |te|
+        te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
+          counter += 1
+          if !(tcs.grade.nil?)
+            if !(tcs.grade<70)
+              counter_grade += 1
+              sum = sum + tcs.grade
+            end 
+          end 
+        end 
+      end 
+    
+      if counter > 0 
+        avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0 
+      end 
+      s1 = s1.gsub("<promedio>", avg.to_s)
+      ######################################################################
+      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "constancia-inscripcion-#{@student.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return 
+    end
+    
+    if params[:type] == "seguro"
+      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_tramite_seguro.html")
+      string = "#{head}#{string}#{base}"
+      consecutive = get_consecutive(@student, time, Certificate::SOCIAL_WELFARE)
+      s1 = string.gsub("<rails_root>","#{Rails.root}")
+      s1 = s1.gsub("<consecutivo>",consecutive)
+      s1 = s1.gsub("<year_s>",year[2,4])
+      s1 = s1.gsub("<year>",year)
+      s1 = s1.gsub("<days>",time.day.to_s)
+      s1 = s1.gsub("<month>",get_month_name(time.month))
+      s1 = s1.gsub("<nombre>",@student.full_name)
+      s1 = s1.gsub("<matricula>",@student.card)
+      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
+      s1 = s1.gsub("<programa>",@student.program.name)
+      ######################################################################
+      s1 = s1.gsub("<start_day>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.day.to_s)
+      s1 = s1.gsub("<end_day>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.day.to_s)
+      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.month).capitalize)
+      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.month).capitalize)
+      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.year.to_s)
+      #s1 = s1.gsub("<creditos_totales>",@student.)
+      s1 = s1.gsub("<creditos>", get_credits(@student))
+      s1 = s1.gsub("<promedio>",get_average(@student))
+      ######################################################################
+      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "constancia-inscripcion-#{@student.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return 
+    end
+
+    if params[:type] == "creditos"
+      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_creditos_cubiertos.html")
+      string = "#{head}#{string}#{base}"
+      consecutive = get_consecutive(@student, time, Certificate::CREDITS)
+      s1 = string.gsub("<rails_root>","#{Rails.root}")
+      s1 = s1.gsub("<consecutivo>",consecutive)
+      s1 = s1.gsub("<year_s>",year[2,4])
+      s1 = s1.gsub("<year>",year)
+      s1 = s1.gsub("<days>",time.day.to_s)
+      s1 = s1.gsub("<month>",get_month_name(time.month))
+      s1 = s1.gsub("<nombre>",@student.full_name)
+      s1 = s1.gsub("<matricula>",@student.card)
+      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
+      s1 = s1.gsub("<programa>",@student.program.name)
+      ######################################################################
+      s1 = s1.gsub("<creditos>", get_credits(@student))
+      s1 = s1.gsub("<promedio>",get_average(@student))
+      ######################################################################
+      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "constancia-inscripcion-#{@student.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return 
     end
   end
 
@@ -611,5 +799,33 @@ class StudentsController < ApplicationController
     certificate.save
 
     return "%03d" % maximum
+  end
+  
+  def get_average(student)
+    counter = 0
+    counter_grade = 0
+    sum = 0
+    avg = 0
+    student.term_students.each do |te|
+      te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
+        counter += 1
+        if !(tcs.grade.nil?)
+          if !(tcs.grade<70)
+            counter_grade += 1
+            sum = sum + tcs.grade
+          end
+        end
+      end
+    end
+
+    if counter > 0
+      avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
+    end
+    
+    return avg.to_s
+  end
+
+  def get_credits(student)
+    return 100.to_s
   end
 end
