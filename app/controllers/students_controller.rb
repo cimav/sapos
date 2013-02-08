@@ -558,6 +558,12 @@ class StudentsController < ApplicationController
     base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
 
     if params[:type] == "estudios"
+      @terms = @student.term_students.joins(:term).where("start_date>=CURDATE() AND end_date<=CURDATE()").order(:start_date).limit(1)[0]
+      if @terms.nil?
+        @mensaje =  "El alumno no esta inscrito en un ciclo actual"
+        render :layout => false and return
+      end
+
       string = File.read("#{Rails.root}/app/views/students/certificates/constancia_estudios.html")
       consecutive = get_consecutive(@student, time, Certificate::STUDIES)
       s1 = string.gsub("<nombre>",@student.full_name)
@@ -592,6 +598,8 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.month).capitalize)
       s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.month).capitalize)
       s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.year.to_s)
+
+  
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-inscripcion-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
@@ -614,6 +622,15 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<programa>",@student.program.name)
       s1 = s1.gsub("<student_image_uri>", @student.image_url.to_s)
+      result = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
+ 
+      if result.size.eql? 0
+        s1 = s1.gsub(/<beca>.+<\/beca>/m,"")
+      else
+        if !result[0].scholarship_type.scholarship_category.id.eql? 1
+          s1 = s1.gsub(/<beca>.+<\/beca>/m,"")
+        end
+      end
       ######################################################################
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-inscripcion-#{@student.id}.pdf"
