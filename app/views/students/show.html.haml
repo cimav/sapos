@@ -40,10 +40,10 @@
       .comment
         = "Tiempo estudiante: #{@year} #{@text_year} #{@month} #{@text_month}, Ciclos: "
         - tcs_size = @student.term_students.size
-        - if tcs_size > @student.program.terms_duration
-          %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_duration})
+        - if tcs_size > @student.program.terms_qty
+          %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_qty})
         - else  
-          = "#{tcs_size} (#{@student.program.terms_duration})"
+          = "#{tcs_size} de #{@student.program.terms_qty}"
       .resource-card
         = link_to 'Credencial', "/estudiantes/#{@student.id}/credencial.pdf", :id=>'a-id-card'
     .resource-save
