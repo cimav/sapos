@@ -744,9 +744,25 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.month).capitalize)
       s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.month).capitalize)
       s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.year.to_s)
-      #s1 = s1.gsub("<creditos_totales>",@student.)
+      
+      if @student.program.level.eql? 1
+        s1 = s1.gsub("<creditos_totales>",75)
+      elsif @student.program.level.eql? 2
+        s1 = s1.gsub("<creditos_totales>",150)
+      else
+        s1 = s1.gsub("<creditos_totales>","Unknown")
+      end
+
       s1 = s1.gsub("<creditos>", get_credits(@student))
       s1 = s1.gsub("<promedio>",get_average(@student))
+      result = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
+      
+      if result.size.eql? 0
+        s1 = s1.gsub(/<beca>.+<\/beca>/m,"")
+      else
+        s1 = s1.gsub(/<total_beca>/,result[0].amount.to_s)
+      end
+      s1 = s1.gsub("<semester>",get_semester(@student))
       ######################################################################
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-inscripcion-#{@student.id}.pdf"
@@ -843,6 +859,40 @@ class StudentsController < ApplicationController
   end
 
   def get_credits(student)
-    return 100.to_s
+    credits = 0
+    student.term_students.each do |te|
+      te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
+        if !(tcs.grade.nil?)
+          if !(tcs.grade<70)
+            credits = credits + tcs.term_course.course.credits
+          end
+        end
+      end
+    end
+    
+    return credits.to_s
+  end
+
+  def get_semester(student)
+    semester = get_semester_text(student.term_students.size)
+    return semester
+  end
+
+  def get_semester_text(total)
+   semester_text = case total
+     when 1 then "primer" 
+     when 2 then "segundo"
+     when 3 then "tercero"
+     when 4 then "cuarto"
+     when 5 then "quinto"
+     when 6 then "sexto"
+     when 7 then "septimo"
+     when 8 then "octavo"
+     when 9 then "noveno"
+     when 10 then "decimo"
+     else "desconocido"
+   end
+   
+    return semester_text
   end
 end
