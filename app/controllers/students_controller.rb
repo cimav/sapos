@@ -558,12 +558,6 @@ class StudentsController < ApplicationController
     base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
 
     if params[:type] == "estudios"
-      @terms = @student.term_students.joins(:term).where("start_date>=CURDATE() AND end_date<=CURDATE()").order(:start_date).limit(1)[0]
-      if @terms.nil?
-        @mensaje =  "El alumno no esta inscrito en un ciclo actual"
-        render :layout => false and return
-      end
-
       string = File.read("#{Rails.root}/app/views/students/certificates/constancia_estudios.html")
       consecutive = get_consecutive(@student, time, Certificate::STUDIES)
       s1 = string.gsub("<nombre>",@student.full_name)
@@ -576,6 +570,13 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<year>",year)
       s1 = s1.gsub("<days>",time.day.to_s)
       s1 = s1.gsub("<month>",get_month_name(time.month))
+      if @student.gender == 'F'
+        s1 = s1.gsub("<genero>","a")
+      elsif @student.gender == 'H'
+        s1 = s1.gsub("<genero>","o")
+      else
+        s1 = s1.gsub("<genero>","x")
+      end
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-estudios-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
@@ -598,8 +599,13 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.month).capitalize)
       s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.month).capitalize)
       s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.year.to_s)
-
-  
+      if @student.gender == 'F'
+        s1 = s1.gsub("<genero>","a")
+      elsif @student.gender == 'H'
+        s1 = s1.gsub("<genero>","o")
+      else
+        s1 = s1.gsub("<genero>","x")
+      end
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-inscripcion-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
@@ -623,6 +629,17 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<programa>",@student.program.name)
       s1 = s1.gsub("<student_image_uri>", @student.image_url.to_s)
       result = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
+      
+      if @student.gender == 'F'
+        s1 = s1.gsub("<genero>","a")
+        s1 = s1.gsub("<genero2>","la")
+      elsif @student.gender == 'H'
+        s1 = s1.gsub("<genero>","o")
+        s1 = s1.gsub("<genero2>","el")
+      else
+        s1 = s1.gsub("<genero>","x")
+        s1 = s1.gsub("<genero2>","x")
+      end
  
       if result.size.eql? 0
         s1 = s1.gsub(/<beca>.+<\/beca>/m,"")
@@ -674,6 +691,16 @@ class StudentsController < ApplicationController
         avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0 
       end 
       s1 = s1.gsub("<promedio>", avg.to_s)
+      if @student.gender == 'F'
+        s1 = s1.gsub("<genero>","a")
+        s1 = s1.gsub("<genero2>","la")
+      elsif @student.gender == 'H'
+        s1 = s1.gsub("<genero>","o")
+        s1 = s1.gsub("<genero2>","el")
+      else
+        s1 = s1.gsub("<genero>","x")
+        s1 = s1.gsub("<genero2>","x")
+      end
       ######################################################################
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-inscripcion-#{@student.id}.pdf"
@@ -696,27 +723,27 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<programa>",@student.program.name)
       ######################################################################
-      s1 = s1.gsub("<semestre>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.code)
-      counter = 0
-      counter_grade = 0
-      sum = 0
-      avg = 0
-      @student.term_students.where(:term_id=>@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.id).each do |te|
-        te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
-          counter += 1
-          if !(tcs.grade.nil?)
-            if !(tcs.grade<70)
-              counter_grade += 1
-              sum = sum + tcs.grade
-            end 
-          end 
-        end 
-      end 
-    
-      if counter > 0 
-        avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0 
-      end 
+      ts = @student.term_students.joins(:term).order(:start_date)
+      term = ts.last.term
+      avg = get_semester_average(term)
+
+      if avg.eql? 0
+        term = ts[ts.size - 2].term
+        avg = get_semester_average(term)
+      end
+      
       s1 = s1.gsub("<promedio>", avg.to_s)
+      s1 = s1.gsub("<semestre>",term.code)
+      if @student.gender == 'F'
+        s1 = s1.gsub("<genero>","a")
+        s1 = s1.gsub("<genero2>","la")
+      elsif @student.gender == 'H'
+        s1 = s1.gsub("<genero>","o")
+        s1 = s1.gsub("<genero2>","el")
+      else
+        s1 = s1.gsub("<genero>","x")
+        s1 = s1.gsub("<genero2>","x")
+      end
       ######################################################################
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-inscripcion-#{@student.id}.pdf"
@@ -763,6 +790,16 @@ class StudentsController < ApplicationController
         s1 = s1.gsub(/<total_beca>/,result[0].amount.to_s)
       end
       s1 = s1.gsub("<semester>",get_semester(@student))
+      if @student.gender == 'F'
+        s1 = s1.gsub("<genero>","a")
+        s1 = s1.gsub("<genero2>","la")
+      elsif @student.gender == 'H'
+        s1 = s1.gsub("<genero>","o")
+        s1 = s1.gsub("<genero2>","el")
+      else
+        s1 = s1.gsub("<genero>","x")
+        s1 = s1.gsub("<genero2>","x")
+      end
       ######################################################################
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-inscripcion-#{@student.id}.pdf"
@@ -787,6 +824,16 @@ class StudentsController < ApplicationController
       ######################################################################
       s1 = s1.gsub("<creditos>", get_credits(@student))
       s1 = s1.gsub("<promedio>",get_average(@student))
+      if @student.gender == 'F'
+        s1 = s1.gsub("<genero>","a")
+        s1 = s1.gsub("<genero2>","la")
+      elsif @student.gender == 'H'
+        s1 = s1.gsub("<genero>","o")
+        s1 = s1.gsub("<genero2>","el")
+      else
+        s1 = s1.gsub("<genero>","x")
+        s1 = s1.gsub("<genero2>","x")
+      end
       ######################################################################
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-inscripcion-#{@student.id}.pdf"
@@ -894,5 +941,28 @@ class StudentsController < ApplicationController
    end
    
     return semester_text
+  end
+
+  def get_semester_average(term)
+    counter = 0
+    counter_grade = 0
+    sum = 0
+    avg = 0
+    @student.term_students.where(:term_id=>term.id).each do |te|
+      te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
+        counter += 1
+        if !(tcs.grade.nil?)
+          if !(tcs.grade<70)
+            counter_grade += 1
+            sum = sum + tcs.grade
+          end 
+        end 
+      end 
+    end 
+  
+    if counter > 0 
+      avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0 
+    end 
+    return avg
   end
 end
