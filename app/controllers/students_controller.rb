@@ -200,7 +200,19 @@ class StudentsController < ApplicationController
 
   def new
     @student = Student.new
-    @programs = Program.order('name')
+    if current_user.campus_id == 0
+      @campus     = Campus.order('name')
+      @all_campus = 1 
+    else
+      @campus = Campus.joins(:user).where(:users=>{:id=>current_user.id})
+      @all_campus = 0
+    end 
+
+    if current_user.program_type == Program::ALL
+      @programs     = Program.order('name')
+    else
+      @programs     = Program.joins(:permission_user).where(:permission_users=>{:user_id=>current_user.id}).order('name')
+    end
     render :layout => false
   end
 
