@@ -608,9 +608,9 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<year>",year)
       s1 = s1.gsub("<days>",time.day.to_s)
       s1 = s1.gsub("<month>",get_month_name(time.month))
-      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.month).capitalize)
-      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.month).capitalize)
-      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.year.to_s)
+      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.start_date.month).capitalize)
+      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.month).capitalize)
+      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.year.to_s)
       if @student.gender == 'F'
         s1 = s1.gsub("<genero>","a")
       elsif @student.gender == 'H'
@@ -682,7 +682,7 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<programa>",@student.program.name)
       ######################################################################
-      s1 = s1.gsub("<semestre>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.code)
+      s1 = s1.gsub("<semestre>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.code)
       counter = 0
       counter_grade = 0
       sum = 0
@@ -735,7 +735,7 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<programa>",@student.program.name)
       ######################################################################
-      ts = @student.term_students.joins(:term).order(:start_date)
+      ts = @student.term_students.joins(:term).order("start_date")
       term = ts.last.term
       avg = get_semester_average(term)
 
@@ -778,11 +778,11 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<programa>",@student.program.name)
       ######################################################################
-      s1 = s1.gsub("<start_day>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.day.to_s)
-      s1 = s1.gsub("<end_day>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.day.to_s)
-      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.start_date.month).capitalize)
-      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.month).capitalize)
-      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order(:start_date).limit(1)[0].term.end_date.year.to_s)
+      s1 = s1.gsub("<start_day>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.start_date.day.to_s)
+      s1 = s1.gsub("<end_day>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.day.to_s)
+      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.start_date.month).capitalize)
+      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.month).capitalize)
+      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.year.to_s)
       
       if @student.program.level.eql? 1
         s1 = s1.gsub("<creditos_totales>",75)
