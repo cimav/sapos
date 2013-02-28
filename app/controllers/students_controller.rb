@@ -784,14 +784,6 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.month).capitalize)
       s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.year.to_s)
       
-      if @student.program.level.eql? 1
-        s1 = s1.gsub("<creditos_totales>",75)
-      elsif @student.program.level.eql? 2
-        s1 = s1.gsub("<creditos_totales>",150)
-      else
-        s1 = s1.gsub("<creditos_totales>","Unknown")
-      end
-
       s1 = s1.gsub("<creditos>", get_credits(@student))
       s1 = s1.gsub("<promedio>",get_average(@student))
       result = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
@@ -845,6 +837,14 @@ class StudentsController < ApplicationController
       else
         s1 = s1.gsub("<genero>","x")
         s1 = s1.gsub("<genero2>","x")
+      end
+      
+      if @student.program.level.eql? "1"
+        s1 = s1.gsub("<creditos_totales>","75.0")
+      elsif @student.program.level.eql? "2"
+        s1 = s1.gsub("<creditos_totales>","150.0")
+      else
+        s1 = s1.gsub("<creditos_totales>","Unknown")
       end
       ######################################################################
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
