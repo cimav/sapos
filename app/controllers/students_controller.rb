@@ -600,6 +600,7 @@ class StudentsController < ApplicationController
       string = "#{head}#{string}#{base}"
       consecutive = get_consecutive(@student, time, Certificate::ENROLLMENT)
       s1 = string.gsub("<nombre>",@student.full_name)
+      s1 = s1.gsub("<programa>",@student.program.name)
       s1 = s1.gsub("<matricula>",@student.card)
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<rails_root>","#{Rails.root}")

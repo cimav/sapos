@@ -374,8 +374,6 @@ class StaffsController < ApplicationController
       @error  = 2 #La fecha inicial es mayor que la final
       render :layout => false and return
     end
-    
-
 
     @tcs = TermCourseSchedule.joins(:term_course).where("term_course_schedules.staff_id = :staff_id AND term_courses.status=1 AND ((start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date))",{:staff_id => @id,:start_date => @start_date,:end_date => @end_date});
 			
