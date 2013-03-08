@@ -1,0 +1,48 @@
+%br
+%br
+%br
+%br
+%br
+%font{:face=>"Verdaba, sans-serif"}
+  %p.western{:align=>"left"}
+    %b="A quien corresponda"
+    %br
+    %b="Presente.-"
+  %br
+  %br
+  %div{:style=>"text-align: justify;"}
+    %p.western
+      = "La suscrita M.H Nicté Ortiz Villanueva Jefa dek Dpto. de Posgrado del Centro de Investigación en Materiales Avanzados, S.C., Organismo del Sistema SEP CONACYT, según Acuerdo ante la SEP 964031 con fecha del 15 de abril de 1996 y clave de Registro DGES 256035417101, y con sus Programas de Posgrado registrados ante la Dirección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero}"
+      %b=@nombre
+      = ", de matrícula "
+      %b=@matricula
+      = " se encuentra inscrit#{@genero} como alumno regular, en nuestro Programa de #{@programa}, bajo la dirección de #{@asesor}."
+    =# INICIO BECA
+    - if !@scholarship.size.eql? 0
+      %br
+      %br
+      %p.western
+        = "Asimismo se informa que"
+        %b=@nombre
+        - if @scholarship.size.eql? 1
+          = "percibe una beca CONACyT de #{@scholarship[0].amount} veces el salario mínimo de la Ciudad de México." 
+        - if @scholarship.size.eql? 2
+          = "percibe dos becas CONACyT de #{@scholarship[0].amount} y #{@scholarship[1]} veces el salario mínimo de la Ciudad de México respectivamente."
+    =# FIN BECA     
+    %br
+    %br
+    %p.western 
+      = "Se extiende la presente constancia den la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
+  %p.western
+    %br
+    %br
+    %img{:src=>"#{@rails_root}/public#{@student_image_uri}", :alt=>"X", :align=>'left', :hspace=>'12', :border=>'0', :width=>'300px'}
+    %br
+  %div{:style=>"border:none;  width: 50%; text-align: center; position: absolute; left:440px; font-family: Arial, sans-serif; font-size: 18pt; so-language: es-ES;"}
+    %b="A t e n t a m e n t e"
+    %br
+    %br
+    %br
+    %b="M.H. Nicté Ortiz Villanueva"
+    %br
+    %b="Jefa del Departamento de Posgrado."

@@ -626,46 +626,38 @@ class StudentsController < ApplicationController
     end 
 
     if params[:type] == "visa"
-      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_visa.html")
-      string = "#{head}#{string}#{base}"
-      consecutive = get_consecutive(@student, time, Certificate::VISA)
-      s1 = string.gsub("<rails_root>","#{Rails.root}")
-      s1 = s1.gsub("<consecutivo>",consecutive)
-      s1 = s1.gsub("<year_s>",year[2,4])
-      s1 = s1.gsub("<year>",year)
-      s1 = s1.gsub("<days>",time.day.to_s)
-      s1 = s1.gsub("<month>",get_month_name(time.month))
-      ######################################################################
-      s1 = s1.gsub("<nombre>",@student.full_name)
-      s1 = s1.gsub("<matricula>",@student.card)
-      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
-      s1 = s1.gsub("<programa>",@student.program.name)
-      s1 = s1.gsub("<student_image_uri>", @student.image_url.to_s)
-      result = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
+      @consecutivo = get_consecutive(@student, time, Certificate::VISA)
+      @rails_root  = "#{Rails.root}"
+      @year_s      = year[2,4]
+      @year        = year
+      @days        = time.day.to_s
+      @month       = get_month_name(time.month)
+      @nombre      = @student.full_name
+      @matricula   = @student.card
+      @asesor      = Staff.find(@student.supervisor).full_name
+      @programa    = @student.program.name
+      @student_image_uri = @student.image_url.to_s
       
-      if @student.gender == 'F'
-        s1 = s1.gsub("<genero>","a")
-        s1 = s1.gsub("<genero2>","la")
-      elsif @student.gender == 'H'
-        s1 = s1.gsub("<genero>","o")
-        s1 = s1.gsub("<genero2>","el")
-      else
-        s1 = s1.gsub("<genero>","x")
-        s1 = s1.gsub("<genero2>","x")
-      end
+      scholarship = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
  
-      if result.size.eql? 0
-        s1 = s1.gsub(/<beca>.+<\/beca>/m,"")
+      if @student.gender == 'F'
+        @genero  = "a"
+        @genero2 = "la"
+      elsif @student.gender == 'H'
+        @genero  = "o"
+        @genero2 = "el"
       else
-        if !result[0].scholarship_type.scholarship_category.id.eql? 1
-          s1 = s1.gsub(/<beca>.+<\/beca>/m,"")
-        end
+        @genero  = "x"
+        @genero2 = "x"
       end
-      ######################################################################
-      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "constancia-inscripcion-#{@student.id}.pdf"
+
+      @scholarship = @student.scholarship.joins(:scholarship_type=>[:scholarship_category]).where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE() AND scholarship_categories.id=1")
+
+      html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_visa')
+      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "constancia-visa-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return
+      return # to avoid double render call
     end
     
     if params[:type] == "promedio"

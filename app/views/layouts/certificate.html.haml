@@ -1,0 +1,39 @@
+!!!
+%html
+  %head
+    :css
+      @page { margin-right: 3cm; margin-top: 2.5cm; margin-bottom: 2.5cm }
+      P { margin-bottom: 0cm; direction: ltr; color: #000000; widows: 2; orphans: 2 }
+      P.western { font-family: "Arial", sans-serif; font-size: 18pt; so-language: es-ES;}
+      P.cjk { font-family: "Times New Roman", serif; font-size: 18pt }
+      P.ctl { font-family: "Arial", sans-serif; font-size: 18pt; so-language: ar-SA }
+      H1 { margin-top: 0cm; margin-bottom: 0cm; direction: ltr; color: #000000; widows: 2; orphans: 2 }
+      H1.western { font-family: "Arial", sans-serif; font-size: 18pt; so-language: es-ES }
+      H1.cjk { font-family: "Times New Roman", serif; font-size: 18pt }
+      H1.ctl { font-family: "Arial", sans-serif; font-size: 18pt; so-language: ar-SA }
+      DIV.content {
+        height: 2000px;
+        width: 1280px;
+        position: relative;
+        top: 140px;
+        left: 190px;
+      }
+  %body{:lang=>'es-ES',:text=>'#000000', :dir=>"LTR"}
+    .principal{:style=>"background-image:url(#{@rails_root}/app/views/students/certificates/membretada.jpg);background-repeat:no-repeat;background-position: top center; height: 2150px; width: 1697px;"} 
+      .content
+        %p.western
+          %br
+        %p.western
+          %br
+        %p.western
+          %br
+        %p.western
+          %br
+        %p.western
+          %br
+        %p.western{:align=>'right'}
+          %font{:face=>'Verdana, sans-serif',:color=>'#000080'}
+            %b="Departamento de Posgrado."
+            %br
+            %b="Oficio No. PO - #{@consecutivo}/#{@year_s}"
+        = yield
