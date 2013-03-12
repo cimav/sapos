@@ -1,4 +1,13 @@
 :javascript
+  $(function(){
+    $("#new-scholarship-dialog").remove();
+    $("#content-panel").append('<div title="Nueva Beca" id="new-scholarship-dialog"><iframe width="900" height="450" src="/becas/#{@student.id}/nueva_beca" scrolling="no"></iframe></div>');
+    $("#new-scholarship-dialog").dialog({ autoOpen: false, width: 950, height: 500, modal:true });
+    $("#a-new-scholarship").live("click",function(){
+      $("#new-scholarship-dialog").dialog('open');  
+    });
+  });
+
   function showScholarshipFields() {
     var t = $('#student_scholarship_attributes_scholarship_type_id').val();
     $('#field_student_scholarship_department_id').hide();
