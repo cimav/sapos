@@ -72,6 +72,7 @@ Sapos::Application.routes.draw do
   match 'internados/upload_file' => 'internships#upload_file'
   match 'internados/delete_file' => 'internships#delete_file'
   match 'internados/:id/credencial' => 'internships#id_card'
+  match 'internados/constancias/:type/:id' => 'internships#certificates'
 
   resources :internship_files
 
@@ -89,12 +90,14 @@ Sapos::Application.routes.draw do
   match 'aulas/busqueda' => 'classrooms#live_search'
   match 'aulas/horario/:id' => 'classrooms#schedule_table'
   
-  match 'becas/busqueda' => 'scholarship_categories#live_search'
-  match 'becas/:id/tipos' => 'scholarship_categories#types_table'
-  match 'becas/:id/nuevo_tipo' => 'scholarship_categories#new_type'
-  match 'becas/create_type' => 'scholarship_categories#create_type'
-  match 'becas/update_type' => 'scholarship_categories#update_type'
-  match 'becas/:id/tipo/:scholarship_type_id' => 'scholarship_categories#edit_type'
+  match 'becas/:id/nueva_beca' => 'scholarship#new'
+
+  match 'becas/categorias/busqueda' => 'scholarship_categories#live_search'
+  match 'becas/categorias/:id/tipos' => 'scholarship_categories#types_table'
+  match 'becas/categorias/:id/nuevo_tipo' => 'scholarship_categories#new_type'
+  match 'becas/categorias/create_type' => 'scholarship_categories#create_type'
+  match 'becas/categorias/update_type' => 'scholarship_categories#update_type'
+  match 'becas/categorias/:id/tipo/:scholarship_type_id' => 'scholarship_categories#edit_type'
 
   match 'laboratorios/busqueda' => 'laboratories#live_search'
 
@@ -161,11 +164,12 @@ Sapos::Application.routes.draw do
     resources :campus, :path => "campus"
     resources :classrooms, :path => "aulas"
     resources :laboratories, :path => "laboratorios"
-    resources :scholarship_categories, :path => "becas"
+    resources :scholarship_categories, :path => "becas/categorias"
     resources :users, :path => "usuarios"
     resources :departments, :path => "departamentos"
     resources :internship_types, :path => "tipos_internados"
     resources :graduates, :path => "egresados"
+    resources :scholarship, :path => "becas"
   end
 
   match '/auth/:provider/callback' => 'sessions#create'
