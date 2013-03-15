@@ -834,10 +834,13 @@ class StudentsController < ApplicationController
       
       if @student.program.level.eql? "1"
         s1 = s1.gsub("<creditos_totales>","75.0")
+        s1 = s1.gsub("<nivel>","de la Maestría")
       elsif @student.program.level.eql? "2"
         s1 = s1.gsub("<creditos_totales>","150.0")
+        s1 = s1.gsub("<nivel>","del Doctorado")
       else
         s1 = s1.gsub("<creditos_totales>","Unknown")
+        s1 = s1.gsub("<nivel>","Unknown")
       end
       ######################################################################
       kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
