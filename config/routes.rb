@@ -150,6 +150,8 @@ Sapos::Application.routes.draw do
   match 'programas/upload_file' => 'programs#upload_file'
   match 'programas/delete_file' => 'programs#delete_file'
   match 'programas/:id/documentos/:file_id' => 'programs#file'
+  
+  match 'aspirantes/busqueda' => 'applicants#live_search'
 
   resources :documentation_files
 
@@ -170,6 +172,7 @@ Sapos::Application.routes.draw do
     resources :internship_types, :path => "tipos_internados"
     resources :graduates, :path => "egresados"
     resources :scholarship, :path => "becas"
+    resources :applicants, :path => "aspirantes"
   end
 
   match '/auth/:provider/callback' => 'sessions#create'

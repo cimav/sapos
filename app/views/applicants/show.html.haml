@@ -1,0 +1,70 @@
+= form_for @applicant, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
+  = hidden_field :applicant, :id
+  .resource-header.student-header
+    .resource-picture
+      %br
+    .resource-title
+      %h1= "#{@applicant.full_name}"
+      .comment
+      .comment
+      .resource-card
+    .resource-save
+      - if can? :update, @applicant
+        = f.submit 'Actualizar'
+
+  #resource-tabs
+    %ul
+      %li.first-tab= link_to "General", "#general"
+      %li= link_to "Documentos", "#documentos"
+
+    #general
+      %h2 General
+      .field#field_applicant_first_name
+        = f.label :first_name, 'Nombre' 
+        = f.text_field :first_name 
+      
+      .field#field_applicant_primary_last_name
+        = f.label :primary_last_name, 'Primer Apellido'
+        = f.text_field :primary_last_name
+
+        
+      .field#field_applicant_second_last_name
+        = f.label :second_last_name, 'Segundo Apellido'
+        = f.text_field :second_last_name
+
+      .field#field_applicant_program_id
+        = f.label :program_id, 'Programa'
+        = f.collection_select :program_id, @programs, :id, :name, options = {:prompt => "Selecciona el programa"} 
+
+      .field#field_applicant_date_of_birth
+        = f.label :date_of_birth, 'Fecha de nacimiento'
+        = f.date_select :date_of_birth, :start_year => DateTime.now.year - 100
+
+      .field#field_previous_institution
+        = f.label :previous_institution, 'Institucion'
+        = f.collection_select :previous_institution, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"} 
+      .field#field_previous_degree_type
+        = f.label :previous_degree_type, 'Tipo'
+        = f.select :previous_degree_type,  [['Selecciona el grado',''], ['Post-Doctorado', 'POSDOCTORADO'], ['Doctorado', 'DOCTORADO'], ['Maestria', 'MAESTRIA'], ['Licenciatura', 'LICENCIATURA'], ['Bachillerato', 'BACHILLERATO']]
+      .field#field_applicant_average
+        = f.label :average, 'Promedio'
+        = f.text_field :average
+      
+      .field#field_applicant_phone
+        = f.label :phone, 'Teléfono'
+        = f.text_field :phone
+ 
+      .field#field_applicant_cell_phone
+        = f.label :cell_phone, 'Celular'
+        = f.text_field :cell_phone
+
+      .field#field_applicant_address
+        = f.label :address, 'Dirección'
+        = f.text_field :address, :size => 100
+
+      .field#field_applicant_civil_status
+        = f.label :civil_status, 'Estado Civil'
+        = f.select :civil_status,  [['Selecciona el estado civil',''], ['Soltero', 'SOLTERO'], ['Casado', 'CASADO'], ['Divorciado', 'DIVORCIADO']]
+      
+    #documentos
+      %h2 Documentos

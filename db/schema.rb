@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130123225840) do
+ActiveRecord::Schema.define(:version => 20130314202652) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -54,6 +54,25 @@ ActiveRecord::Schema.define(:version => 20130123225840) do
   add_index "advances", ["tutor3"], :name => "index_advances_on_tutor3"
   add_index "advances", ["tutor4"], :name => "index_advances_on_tutor4"
   add_index "advances", ["tutor5"], :name => "index_advances_on_tutor5"
+
+  create_table "applicants", :force => true do |t|
+    t.integer  "program_id"
+    t.string   "folio"
+    t.string   "first_name"
+    t.string   "primary_last_name"
+    t.string   "second_last_name"
+    t.integer  "previous_institution"
+    t.string   "previous_degree_type"
+    t.string   "average"
+    t.date     "date_of_birth"
+    t.string   "phone"
+    t.string   "cell_phone"
+    t.string   "email"
+    t.string   "address"
+    t.integer  "civil_status"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
 
   create_table "campus", :force => true do |t|
     t.string   "short_name", :limit => 20
