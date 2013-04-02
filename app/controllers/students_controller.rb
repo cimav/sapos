@@ -730,6 +730,7 @@ class StudentsController < ApplicationController
       ######################################################################
       ts = @student.term_students.joins(:term).order("start_date")
       term = ts.last.term
+      s1 = s1.gsub("<semestre>",term.code)
       avg = get_semester_average(term)
 
       if avg.eql? 0
@@ -738,7 +739,7 @@ class StudentsController < ApplicationController
       end
       
       s1 = s1.gsub("<promedio>", avg.to_s)
-      s1 = s1.gsub("<semestre>",term.code)
+      s1 = s1.gsub("<semestre_cursado>",term.code)
       if @student.gender == 'F'
         s1 = s1.gsub("<genero>","a")
         s1 = s1.gsub("<genero2>","la")
