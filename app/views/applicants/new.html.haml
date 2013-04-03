@@ -2,7 +2,6 @@
 
   .resource-header
     .resource-picture
-      =# image_tag @applicant.image_url(:medium).to_s
     .resource-title
       %h1= "Nuevo Aspirante"
     .resource-save
@@ -14,7 +13,6 @@
 
     #detalles
       %h2 Detalles
-
       .field#field_applicant_first_name
         = f.label :first_name, 'Nombre' 
         = f.text_field :first_name 

@@ -25,6 +25,10 @@ class ApplicantsController < ApplicationController
     if params[:program] != '0' then
       @applicants = @applicants.where(:program_id => params[:program])
     end
+    
+    if params[:status] != '0' then
+      @applicants = @applicants.where(:status => params[:status])
+    end
 
     if !params[:q].blank?
       @applicants = @applicants.where("(CONCAT(first_name,' ',primary_last_name) LIKE :n OR id LIKE :n)",{:n => "%#{params[:q]}%"})

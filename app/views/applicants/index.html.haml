@@ -2,7 +2,7 @@
 - @page_title = 'Aspirantes'
 - @nav_icon = 'applicants'
 #items-panel.side-panel 
-  .panel-search{:style=>"height: 55px"}
+  .panel-search{:style=>"height: 75px"}
     .invisible-options
       - program_options = Array.new
       - program_options.push(["Todos los programas","0"])
@@ -13,9 +13,15 @@
     = form_tag students_path, :id => 'live-search', :method => 'get', :remote => true do
       = select_tag "program", options_for_select(program_options)
 
+      - status_options = Applicant::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+      - status_options.unshift(["Todos los estatus",0])
+
+      = select_tag "status", options_for_select(status_options)
+
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
-     
-  #items-list.panel-items{:style=>"top: 80px;"}
+ 
+        
+  #items-list.panel-items{:style=>"top: 100px;"}
   
   .panel-add
     - if can? :create, Applicant

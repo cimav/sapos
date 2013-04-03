@@ -6,6 +6,10 @@ $('#program').live("change", function() {
   liveSearch();
 });
 
+$('#status').live("change", function() {
+  liveSearch();
+});
+
 // ** Xls
 $('#to_excel').live('click', function() {
   window.location = location.pathname + "/busqueda.xls?" + $("#live-search").serialize();
