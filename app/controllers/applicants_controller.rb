@@ -6,6 +6,7 @@ class ApplicantsController < ApplicationController
     @applicant = Applicant.find(params[:id])
     @programs     = Program.where(:program_type=>2).order('name')
     @institutions = Institution.order('name')
+    @staffs       = Staff.select("id,first_name,last_name").order("first_name")
     render :layout => false
   end
 
@@ -17,6 +18,7 @@ class ApplicantsController < ApplicationController
       @programs     = Program.joins(:permission_user).where(:permission_users=>{:user_id=>current_user.id},:program_type=>2).order('name')
       @program_type = { Program::PROGRAM_TYPE[current_user.program_type] => current_user.program_type }
     end
+
   end
 
   def live_search
@@ -34,15 +36,40 @@ class ApplicantsController < ApplicationController
       @applicants = @applicants.where("(CONCAT(first_name,' ',primary_last_name) LIKE :n OR id LIKE :n)",{:n => "%#{params[:q]}%"})
     end    
 
-
-    render :layout => false
+    respond_with do |format|
+      format.html do 
+        render :layout => false
+      end
+      format.xls do 
+        rows = Array.new
+        @applicants.collect do |s|
+          rows << {'Folio' => s.folio,
+                   'Nombre' => s.first_name,
+                   'Primer_Apellido' => s.primary_last_name,
+                   'Segundo_Apellido' => s.second_last_name,
+	           "Fecha_Nac" => s.date_of_birth,
+                   "Estado_Civil" => s.civil_status,
+                   'Programa' => s.program.name,
+                   "Institucion_Anterior" => (Institution.find(s.previous_institution).full_name rescue ''),
+                   "Promedio" => s.average,
+                   "Telefono" => s.phone,
+                   "Celular" => s.cell_phone,
+                   "Direccion" => s.address,
+                   'Asesor' => (Staff.find(s.staff_id).full_name rescue ''),
+                  }
+        end 
+        column_order = ["Folio","Nombre","Primer_Apellido","Segundo_Apellido","Fecha_Nac","Estado_Civil","Programa","Institucion_Anterior","Promedio","Telefono","Celular","Direccion","Asesor"]
+        to_excel(rows,column_order,"Aspirantes","Aspirantes")
+      end 
+    end 
   end
 
 
   def new
     @programs     = Program.where(:program_type=>2).order('name')
-    @applicant = Applicant.new
+    @applicant    = Applicant.new
     @institutions = Institution.order('name')
+    @staffs       = Staff.select("id,first_name,last_name").order("first_name")
 
     render :layout => false
   end

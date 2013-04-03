@@ -60,3 +60,8 @@
       .field#field_applicant_civil_status
         = f.label :civil_status, 'Estado Civil'
         = f.select :civil_status,  [['Selecciona el estado civil',''], ['Soltero', 'SOLTERO'], ['Casado', 'CASADO'], ['Divorciado', 'DIVORCIADO']]
+
+      .field#field_applicant_staff_id
+        = f.label :staff_id, 'Supervisor'
+        = f.collection_select :staff_id, @staffs, :id, :full_name, options = {:prompt => "Selecciona el asesor"}
+
