@@ -5,8 +5,8 @@ class Scholarship < ActiveRecord::Base
   belongs_to :scholarship_type
 
   validates :student_id, :presence => true
-  validates :scholarship_type_id, :presence => true
-  validates :amount, :presence => true
+ # validates :scholarship_type_id, :presence => true
+ # validates :amount, :presence => true
   validates :start_date, :presence => true
   validates :end_date, :presence => true
   validates :status, :presence => true
