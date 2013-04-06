@@ -44,9 +44,10 @@
       .field#field_previous_institution
         = f.label :previous_institution, 'Institucion'
         = f.collection_select :previous_institution, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"} 
+ 
       .field#field_previous_degree_type
-        = f.label :previous_degree_type, 'Tipo'
-        = f.select :previous_degree_type,  [['Selecciona el grado',''], ['Post-Doctorado', 'POSDOCTORADO'], ['Doctorado', 'DOCTORADO'], ['Maestria', 'MAESTRIA'], ['Licenciatura', 'LICENCIATURA'], ['Bachillerato', 'BACHILLERATO']]
+        = f.label :previous_degree_type, 'Grado'
+        = f.text_field :previous_degree_type, :size => 65
       .field#field_applicant_average
         = f.label :average, 'Promedio'
         = f.text_field :average
@@ -72,3 +73,4 @@
         = f.collection_select :staff_id, @staffs, :id, :full_name, options = {:prompt => "Selecciona el asesor"}
     #documentos
       %h2 Documentos
+

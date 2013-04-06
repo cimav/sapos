@@ -35,17 +35,37 @@ class Applicant < ActiveRecord::Base
   end
 
   def set_folio
-    con = Applicant.where("created_at between ? and ?",created_at.strftime('%Y-01-01') ,created_at.strftime('%Y-12-31')).maximum('consecutive')
+    cycle = String.new
+    
+    feb = Time.new(Time.now.year,2,1) 
+    jul = Time.new(Time.now.year,7,31)
+    aug = Time.new(Time.now.year,8,1) 
+
+    if Time.now.month.eql? 1
+      jan = Time.new(Time.now.year,1,31)
+    else
+      jan = Time.new(Time.now.year + 1,1,31)
+    end    
+
+    con = Applicant.where("created_at between ? and ?",feb.strftime('%Y-%m-%d') ,jan.strftime('%Y-%m-%d')).maximum('consecutive')
+    
     if con.nil?
       con = 1
     else
       con +=1
     end
-    
+
+    if Time.now.between?(feb,jul)
+      cycle = "A"     
+    else
+      cycle = "B"
+    end
+
     consecutive = "%03d" % con
     level       = Program::LEVEL[self.program.level.to_i]
+    prefix      = self.program.prefix
     self.consecutive = con
-    self.folio = "C#{level[0]}#{self.created_at.strftime('%Y')}#{consecutive}"
+    self.folio = "C#{level[0]}#{cycle}#{prefix}#{self.created_at.strftime('%Y')}#{consecutive}"
     self.save(:validate => false)
   end
 end
