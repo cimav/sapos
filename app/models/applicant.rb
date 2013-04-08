@@ -11,12 +11,23 @@ class Applicant < ActiveRecord::Base
   ACCEPTED    = 3
   DELETED     = 4
   
- STATUS = {
-   REGISTERED => 'Registrado',
-   REJECTED   => 'Rechazado',
-   ACCEPTED   => 'Aceptado',
-   DELETED    => 'Borrado'
- }
+  SINGLE   = 1
+  MARRIED  = 2
+  DIVORCED = 3
+
+  CIVIL_STATUS = {
+    SINGLE => 'Soltero',
+    MARRIED => 'Casado',
+    DIVORCED => 'Divorciado'   
+  }
+
+
+  STATUS = {
+    REGISTERED => 'Registrado',
+    REJECTED   => 'Rechazado',
+    ACCEPTED   => 'Aceptado',
+    DELETED    => 'Borrado'
+  }
 
   belongs_to :program
 

@@ -59,7 +59,7 @@
 
       .field#field_applicant_civil_status
         = f.label :civil_status, 'Estado Civil'
-        = f.select :civil_status,  [['Selecciona el estado civil',''], ['Soltero', 'SOLTERO'], ['Casado', 'CASADO'], ['Divorciado', 'DIVORCIADO']]
+        = f.select :civil_status, Applicant::CIVIL_STATUS.invert.sort {|a,b| a[1] <=> b[1] }.unshift(["Selecciona el estado civil",""])
 
       .field#field_applicant_staff_id
         = f.label :staff_id, 'Supervisor'
