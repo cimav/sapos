@@ -43,7 +43,7 @@
 
       .field#field_previous_institution
         = f.label :previous_institution, 'Institucion'
-        = f.collection_select :previous_institution, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"} 
+        = f.select :previous_institution, @institutions.collect {|p| [ p.name, p.id ] }.push(["Otras",0]), {:include_blank => 'Selecciona la institucion'}
  
       .field#field_previous_degree_type
         = f.label :previous_degree_type, 'Grado'
