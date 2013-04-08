@@ -18,3 +18,8 @@ $('#to_excel').live('click', function() {
 $(document).ready(function() {
   liveSearch();
 });
+
+function initializeSearchForm() {
+  $("#program option[value=0]").attr("selected", true);
+  $("#status option[value=0]").attr("selected", true);
+}
