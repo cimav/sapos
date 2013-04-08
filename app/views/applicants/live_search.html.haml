@@ -5,6 +5,6 @@
     %li 
       = link_to applicant, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "applicant_link_#{applicant.id}" do
         .title= applicant.first_name + " " + applicant.primary_last_name + " " + applicant.second_last_name
-        .comment= applicant.program.name
+        .comment= (applicant.program.name rescue '')
 #counter
   .inner= "#{c} aspirantes"
