@@ -35,7 +35,7 @@
 
       .field#field_applicant_program_id
         = f.label :program_id, 'Programa'
-        = f.collection_select :program_id, @programs, :id, :name, options = {:prompt => "Selecciona el programa"} 
+        = f.select :program_id, @programs.collect {|p| [ p.name, p.id ] }.push(["Otro",0]), {:include_blank => 'Selecciona el programa'}
 
       .field#field_applicant_date_of_birth
         = f.label :date_of_birth, 'Fecha de nacimiento'
