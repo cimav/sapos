@@ -47,6 +47,8 @@ class Applicant < ActiveRecord::Base
 
   def set_folio
     cycle = String.new
+    level = String.new
+    prefix = String.new
     
     feb = Time.new(Time.now.year,2,1) 
     jul = Time.new(Time.now.year,7,31)
@@ -73,8 +75,14 @@ class Applicant < ActiveRecord::Base
     end
 
     consecutive = "%03d" % con
-    level       = Program::LEVEL[self.program.level.to_i]
-    prefix      = self.program.prefix
+    if self.program
+      level  = Program::LEVEL[self.program.level.to_i]
+      prefix = self.program.prefix
+    else
+      level  = "CEN"
+      prefix = "X"
+    end
+
     self.consecutive = con
     self.folio = "C#{level[0]}#{cycle}#{prefix}#{self.created_at.strftime('%Y')}#{consecutive}"
     self.save(:validate => false)
