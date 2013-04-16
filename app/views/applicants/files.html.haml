@@ -89,7 +89,7 @@
   - ApplicantFile::REQUESTED_DOCUMENTS.each do |key, value|
     - if  @applicant_files.where(:file_type=>key).size > 0
       - @applicant_files.where(:file_type=>key).each do |af|
-        .field_requested_document#x_certificate
+        .field_requested_document
           - my_id = key
           = form_for(ApplicantFile.new, :url => {:action => "upload_file"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
             = hidden_field_tag :applicant_id, @applicant.id
@@ -103,7 +103,7 @@
             = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}",:my_file_id=> af.id
             = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}",:my_file_id=> af.id
     - else
-      .field_requested_document#x_certificate
+      .field_requested_document
         - my_id = key
         = form_for(ApplicantFile.new, :url => {:action => "upload_file"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
           = hidden_field_tag :applicant_id, @applicant.id

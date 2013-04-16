@@ -3,7 +3,7 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .fields_requested {
-  padding-left: 100px;
+  padding-left: 50px;
   width:1000px;
   height: 40px;
 }
@@ -29,13 +29,30 @@
 .field_requested_document img {
   float: left;
   width: 30px;
-  padding-right: 70px;
+  padding-right: 50px;
 }
 
 .field_requested_document img.mini {
   width: 10px;
 }
 
-.field_requested_document input[type=submit] {
+.field_requested_document input[type=file] {
   float:left;
+  margin: 4px 1px 10px 1px;
 }
+
+.reqdoc_button {
+  float:left;
+  margin: 0px 1px 10px 1px;
+}
+
+.reqdoc_button_download {
+  float:left;
+  margin: 0px 1px 10px 1px;
+}
+
+.reqdoc_button_delete {
+  float:left;
+  margin: 0px 1px 10px 1px;
+}
+

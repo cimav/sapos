@@ -74,4 +74,4 @@
  
     #documentos
       %h2 Documentos
-      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/aspirantes/#{@applicant.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
+      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "500", "src" => "/aspirantes/#{@applicant.id}/archivos", "scrolling" => "no", :frameborder=>"0"}
