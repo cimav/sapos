@@ -147,4 +147,34 @@ class ApplicantsController < ApplicationController
       end
     end
   end
+  
+  def files
+    @applicant = Applicant.find(params[:id])
+    @applicant_files = ApplicantFile.where(:applicant_id=>params[:id])
+    render :layout=> "standalone"
+  end
+
+  def upload_file
+    json = {}
+    f = params[:applicant_file]['file']
+
+    @applicant_file = ApplicantFile.new
+    @applicant_file.applicant_id = params[:applicant_id]
+    @applicant_file.file_type = params[:file_type]
+    @applicant_file.file = f
+    @applicant_file.description = f.original_filename
+
+    if @applicant_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@applicant_file.id}</id>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@applicant_file.errors.full_messages}</errors>"
+    end 
+  rescue  
+    render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
+  end
+
+  def  download_file
+    af = ApplicantFile.find(params[:id]).file
+    send_file af.to_s, :x_sendfile=>true
+  end
 end

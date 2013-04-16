@@ -79,7 +79,7 @@ class Applicant < ActiveRecord::Base
       level  = Program::LEVEL[self.program.level.to_i]
       prefix = self.program.prefix
     else
-      level  = "CEN"
+      level  = "C"
       prefix = "X"
     end
 

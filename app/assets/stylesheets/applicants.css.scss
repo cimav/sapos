@@ -1,3 +1,41 @@
 // Place all the styles related to the Applicants controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.fields_requested {
+  padding-left: 100px;
+  width:1000px;
+  height: 40px;
+}
+
+.field_requested_document{
+  border: 0px;
+  margin: 5px 0;
+}
+
+.field_requested_document label {
+  font-size: 19px;
+  color: $black;
+  width: 450px;
+  float: left;
+  display: block;
+  padding-top: 5px;
+}
+
+.field_requested_document label.uppercase {
+  text-transform: uppercase;
+}
+
+.field_requested_document img {
+  float: left;
+  width: 30px;
+  padding-right: 70px;
+}
+
+.field_requested_document img.mini {
+  width: 10px;
+}
+
+.field_requested_document input[type=submit] {
+  float:left;
+}

@@ -71,6 +71,7 @@
       .field#field_applicant_staff_id
         = f.label :staff_id, 'Supervisor'
         = f.collection_select :staff_id, @staffs, :id, :full_name, options = {:prompt => "Selecciona el asesor"}
+ 
     #documentos
       %h2 Documentos
-
+      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/aspirantes/#{@applicant.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }

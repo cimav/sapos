@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130403174928) do
+ActiveRecord::Schema.define(:version => 20130409210703) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -54,6 +54,15 @@ ActiveRecord::Schema.define(:version => 20130403174928) do
   add_index "advances", ["tutor3"], :name => "index_advances_on_tutor3"
   add_index "advances", ["tutor4"], :name => "index_advances_on_tutor4"
   add_index "advances", ["tutor5"], :name => "index_advances_on_tutor5"
+
+  create_table "applicant_files", :force => true do |t|
+    t.integer "applicant_id"
+    t.integer "file_type"
+    t.string  "description"
+    t.string  "file"
+  end
+
+  add_index "applicant_files", ["applicant_id"], :name => "index_applicant_files_on_applicant_id"
 
   create_table "applicants", :force => true do |t|
     t.integer  "program_id"

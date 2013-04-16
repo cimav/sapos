@@ -32,6 +32,11 @@ Sapos::Application.routes.draw do
   match '/avances/:id/file' => 'student_advances_file#file'
   
   resources :student_files
+  resources :applicant_files
+
+  match 'aspirantes/:id/upload_file' => 'applicants#upload_file'
+  match 'aspirantes/destroy_file/:id' => 'applicant_files#destroy'
+  match 'aspirantes/file/:id' => 'applicant_files#download'
 
   match 'docentes/busqueda' => 'staffs#live_search'
   match 'docentes/:id/cambiar_foto' => 'staffs#change_image'
@@ -152,6 +157,7 @@ Sapos::Application.routes.draw do
   match 'programas/:id/documentos/:file_id' => 'programs#file'
   
   match 'aspirantes/busqueda' => 'applicants#live_search'
+  match 'aspirantes/:id/archivos' => 'applicants#files'
 
   resources :documentation_files
 

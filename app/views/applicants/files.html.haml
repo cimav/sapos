@@ -1,0 +1,121 @@
+:javascript
+  var my_id;    
+  function display_status(type,my_id){
+    if(type=="ok"){
+      $("#img_ok_"+my_id).css("display","block");
+      $("#img_load_"+my_id).css("display","none");
+      $("#img_fail_"+my_id).css("display","none");
+    }
+    else if(type=="load"){
+      $("#img_ok_"+my_id).css("display","none");
+      $("#img_load_"+my_id).css("display","block");
+      $("#img_fail_"+my_id).css("display","none");
+    }
+    else if(type=="fail"){
+      $("#img_ok_"+my_id).css("display","none");
+      $("#img_load_"+my_id).css("display","none");
+      $("#img_fail_"+my_id).css("display","block");
+    }
+  }
+
+  $(document).ready(function() {
+    $(".reqdoc_button_download").click(function(){
+      my_id       = $(this).attr("my_id");
+      var my_file_id  = $(this).attr("my_file_id");
+      $("#files_iframe2").attr("src","/aspirantes/file/"+my_file_id);
+    });
+
+    $(".reqdoc_button_delete").click(function(){
+      my_id       = $(this).attr("my_id");
+      var my_file_id  = $(this).attr("my_file_id");
+      display_status("load",my_id);
+      $("#files_iframe2").attr("src","/aspirantes/destroy_file/"+my_file_id);
+    });
+
+    $(".reqdoc_button").click(function(){
+      my_id   = $(this).attr("my_id");
+      display_status("load",my_id);
+
+      var form_id = "#reqdoc-form-"+my_id;
+      $(form_id).submit();
+
+    });  
+    
+    $("#files_iframe2").load(function(){
+      var sts = $('#files_iframe2').contents().find("status").html();
+      var ref = $('#files_iframe2').contents().find("reference").html();
+      
+      if(sts=="0")
+      {
+        errors  = $('#files_iframe2').contents().find("errors").html();
+        alert(errors);
+
+        if(ref=="upload"){
+          display_status("fail",my_id);
+        }
+        else if(ref=='destroy')
+        {
+          display_status("ok",my_id);
+        }
+      }
+      else if(sts=="1")
+      {
+        if(ref=="upload")
+        {
+          var new_id = $('#files_iframe2').contents().find("id").html();
+          display_status("ok",my_id);
+          $("#applicant_file_file_"+my_id).css("display","none");
+          $("#reqdoc_button_"+my_id).css("display","none");
+          $("#reqdoc_button_download_"+my_id).css("display","block");
+          $("#reqdoc_button_delete_"+my_id).css("display","block");
+          
+          $("#reqdoc_button_"+my_id).attr("my_file_id",new_id);
+          $("#reqdoc_button_download_"+my_id).attr("my_file_id",new_id);
+          $("#reqdoc_button_delete_"+my_id).attr("my_file_id",new_id);
+        }
+        else if(ref=="destroy")
+        {
+          display_status("fail",my_id);
+          $("#applicant_file_file_"+my_id).css("display","block");
+          $("#reqdoc_button_"+my_id).css("display","block");
+          $("#reqdoc_button_download_"+my_id).css("display","none");
+          $("#reqdoc_button_delete_"+my_id).css("display","none");
+        }
+      }
+    });
+  });
+
+.fields_requested
+  - ApplicantFile::REQUESTED_DOCUMENTS.each do |key, value|
+    - if  @applicant_files.where(:file_type=>key).size > 0
+      - @applicant_files.where(:file_type=>key).each do |af|
+        .field_requested_document#x_certificate
+          - my_id = key
+          = form_for(ApplicantFile.new, :url => {:action => "upload_file"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
+            = hidden_field_tag :applicant_id, @applicant.id
+            = hidden_field_tag :file_type, my_id
+            = label_tag value
+            = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center', :style=>'display: none;'
+            = image_tag "ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
+            = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center'
+            = f.file_field :file,:id=>"applicant_file_file_#{my_id}", :style=>"display: none;"
+            = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}", :style=>"display:none;"
+            = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}",:my_file_id=> af.id
+            = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}",:my_file_id=> af.id
+    - else
+      .field_requested_document#x_certificate
+        - my_id = key
+        = form_for(ApplicantFile.new, :url => {:action => "upload_file"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
+          = hidden_field_tag :applicant_id, @applicant.id
+          = hidden_field_tag :file_type, my_id
+          = hidden_field_tag :my_file_id, 0
+          = label_tag value
+          = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
+          = image_tag "ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
+          = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none'
+          = f.file_field :file,:id=>"applicant_file_file_#{my_id}";
+          = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
+          = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
+          = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'display:none;', :my_file_id=> 0
+
+  %iframe{"name" => "files_iframe2", "id" => "files_iframe2" ,:style=> "display: none;"}
