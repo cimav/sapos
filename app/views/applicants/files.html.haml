@@ -96,7 +96,7 @@
             = hidden_field_tag :file_type, my_id
             = label_tag value
             = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center', :style=>'display: none;'
-            = image_tag "ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
+            = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
             = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center'
             = f.file_field :file,:id=>"applicant_file_file_#{my_id}", :style=>"display: none;"
             = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}", :style=>"display:none;"
@@ -111,7 +111,7 @@
           = hidden_field_tag :my_file_id, 0
           = label_tag value
           = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
-          = image_tag "ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
+          = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
           = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none'
           = f.file_field :file,:id=>"applicant_file_file_#{my_id}";
           = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
