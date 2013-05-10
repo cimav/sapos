@@ -33,6 +33,7 @@
       %li= link_to "Contacto", "#contacto"
       %li= link_to "Archivos", "#archivos"
       %li= link_to "Notas", "#notas"
+      %li= link_to "Constancias", "#constancias"
 
     #detalles
       %h2 Detalles
@@ -57,6 +58,10 @@
         .field#field_internship_institution_id
           = f.label :institution_id, 'Institucion'
           = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"}
+      
+      .field#field_internship_career
+        = f.label :career,'Carrera'
+        = f.text_field :career,:size=>100
 
       .field#field_internship_start_date
         = f.label :start_date, 'Fecha de inicio'
@@ -69,12 +74,25 @@
       .field#field_internship_staff_id
         = f.label :staff_id, 'Docente responsable'
         = f.grouped_collection_select :staff_id, @institutions, :staffs_active, :name, :id, :full_name
+ 
       .field#field_internship_campus
         = f.label :campus_id, 'Campus'
         - q = ["Ninguno",0]
         - p = @campus.collect{|p|[p.name,p.id]}
         - p.insert(0,q)
         = f.select :campus_id,p
+      
+      .field#field_internship_office
+        = f.label :office,'Departamento'
+        = f.text_field :office,:size=>100
+      
+      .field#field_internship_total_hours
+        = f.label :total_hours,'Horas totales'
+        = f.text_field :total_hours,:size=>5
+      
+      .field#field_internship_schedule
+        = f.label :schedule,'Horario'
+        = f.text_field :schedule,:size=>100
 
       .field#field_internship_gender 
         = f.label :gender, 'Sexo'
@@ -109,7 +127,10 @@
       %h2 Archivos
       %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/internados/#{@internship.id}/archivos", "scrolling" => "no", "onLoad" => "calcFrameHeight(this.id);" }
 	
- 
+    #constancias
+      %h2 Constancias
+      %br= link_to 'Carta de aceptación', "internados/constancias/aceptacion/#{@internship.id}"  
+      %br= link_to 'Carta de liberación', "internados/constancias/liberacion/#{@internship.id}"  
     #notas
       %h2 Notas
       = f.text_area :notes

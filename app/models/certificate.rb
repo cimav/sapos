@@ -11,6 +11,7 @@ class Certificate < ActiveRecord::Base
   SOCIAL_WELFARE    = 6
   CREDITS           = 7
   ACCEPTANCE        = 8
+  RELEASE           = 9
 
   TYPE = {STUDIES           => 'Constancia de estudios',
           ENROLLMENT        => 'Constancia de inscripcion',
@@ -19,6 +20,7 @@ class Certificate < ActiveRecord::Base
           SEMESTER_AVERAGE  => 'Constancia de Promedio Semestral',
           SOCIAL_WELFARE    => 'Constancia para tramite de seguro',
           CREDITS           => 'Constancia de creditos cubiertos',
-          ACCEPTANCE        => 'Carta de aceptacion de servicio social'
+          ACCEPTANCE        => 'Carta de aceptacion de servicio social',
+          RELEASE           => 'Carta de liberacion del servicio social'
           } 
 end

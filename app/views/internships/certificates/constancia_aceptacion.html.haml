@@ -1,0 +1,54 @@
+%br
+%br
+%br
+%br
+%br
+%font{:face=>"Verdaba, sans-serif"}
+  %p.western{:align=>"left"}
+    %b="A quien corresponda"
+    %br
+    %b="Presente.-"
+  %br
+  %br
+  %div{:style=>"text-align: justify;"}
+    %p.western
+      = "Por medio de la presentet hago constar que #{@genero2} alumn#{@genero} "
+      %b= "#{@nombre},"
+      =" perteneciente a "
+      %b= "#{@institucion}," 
+      =" de la carrera de "
+      %b= "#{@carrera}" 
+      = " y con No. de control " 
+      %b= "#{@numero}" 
+      = "está aceptada en este Centro de Investigación para realizar " 
+      %b="#{@internado},"
+      = " en el departamento de "
+      %b="#{@departamento}," 
+      = " bajo la supervisión de "
+      %b= "#{@asesor},"
+      = " cubriendo un total de " 
+      %b="#{@horas}" 
+      =" Hrs., dentro del periodo comprendido del "
+      %b="#{@start_day} de #{@start_month} al #{@end_day} de #{@end_month}"
+      = " del presente año en el siguiente horario de "
+      %b= "#{@horario},"
+      = " en este Centro de Investigación, desarrollando el siguiente proyecto: "
+      %b= @proyecto
+    %p.western 
+      = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
+  %p.western
+    %br
+    %br
+    %br
+    %br
+    %br
+  %div{:style=>"border:none;  width: 100%; text-align: center; position: absolute; font-family: Arial, sans-serif; font-size: 18pt; so-language: es-ES;"}
+    %b="A t e n t a m e n t e"
+    %br
+    %br
+    %br
+    %br
+    %br
+    %b="M.H. Nicté Ortiz Villanueva"
+    %br
+    %b="Jefa del Departamento de Posgrado."

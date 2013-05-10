@@ -249,6 +249,116 @@ class InternshipsController < ApplicationController
     end
   end
 
+  def certificates
+    @internship = Internship.find(params[:id])
+    time = Time.new
+    year = time.year.to_s
 
+    if params[:type] == "aceptacion"
+      @consecutivo = get_consecutive(@internship, time, Certificate::ACCEPTANCE)
+      @rails_root  = "#{Rails.root}"
+      @year_s      = year[2,4]
+      @year        = year
+      @days        = time.day.to_s
+      @month       = get_month_name(time.month)
+      @nombre      = @internship.full_name
+      @institucion = @internship.institution.name
+      @carrera     = @internship.career
+      @numero      = @internship.id
+      @internado   = @internship.activities
+      @departamento= @internship.office
+      @asesor      = @internship.staff.full_name
+      @horas       = @internship.total_hours.to_s
+      @start_day   = @internship.start_date.day.to_s
+      @start_month = get_month_name(@internship.start_date.month)
+      @end_day     = @internship.end_date.day.to_s
+      @end_month   = get_month_name(@internship.end_date.month)
+      @horario     = @internship.schedule
+      @proyecto    = @internship.thesis_title
+      ######################################################################
+      if @internship.gender == 'F'
+        @genero  = "a"
+        @genero2 = "la"
+      elsif @internship.gender == 'H'
+        @genero  = "o"
+        @genero2 = "el"
+      else
+        @genero  = "x"
+        @genero2 = "x"
+      end
 
+      html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_aceptacion')
+      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "carta-aceptacion-#{@internship.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return
+    end
+    
+    if params[:type] == "liberacion"
+      @consecutivo = get_consecutive(@internship, time, Certificate::RELEASE)
+      @rails_root  = "#{Rails.root}"
+      @year_s      = year[2,4]
+      @year        = year
+      @days        = time.day.to_s
+      @month       = get_month_name(time.month)
+      @nombre      = @internship.full_name
+      @institucion = @internship.institution.name
+      @carrera     = @internship.career
+      @numero      = @internship.id
+      @internado   = @internship.activities
+      @departamento= @internship.office
+      @asesor      = @internship.staff.full_name
+      @horas       = @internship.total_hours.to_s
+      @start_day   = @internship.start_date.day.to_s
+      @start_month = get_month_name(@internship.start_date.month)
+      @end_day     = @internship.end_date.day.to_s
+      @end_month   = get_month_name(@internship.end_date.month)
+      @horario     = @internship.schedule
+      @proyecto    = @internship.thesis_title
+      ######################################################################
+      if @internship.gender == 'F'
+        @genero  = "a"
+        @genero2 = "la"
+      elsif @internship.gender == 'H'
+        @genero  = "o"
+        @genero2 = "el"
+      else
+        @genero  = "x"
+        @genero2 = "x"
+      end
+      
+      html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_liberacion')
+      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "carta-liberacion-#{@internship.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return
+    end
+  end
+  
+  def get_consecutive(object, time, type)
+    maximum = Certificate.where(:year => time.year).maximum("consecutive")
+
+    if maximum.nil?
+      maximum = 1
+    else
+      maximum = maximum + 1 
+    end
+ 
+    certificate                 = Certificate.new()
+    certificate.consecutive     = maximum
+    certificate.year            = time.year
+    certificate.attachable_id   = object.id
+    certificate.attachable_type = object.class.to_s
+    certificate.type            = type
+    certificate.save
+
+    return "%03d" % maximum
+  end
+  
+
+  def get_month_name(number)
+    months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
+    name = months[number - 1]
+    return name
+  end
 end

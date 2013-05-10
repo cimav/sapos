@@ -1,0 +1,47 @@
+%br
+%br
+%br
+%br
+%br
+%font{:face=>"Verdaba, sans-serif"}
+  %p.western{:align=>"left"}
+    %b="A quien corresponda"
+    %br
+    %b="Presente.-"
+  %br
+  %br
+  %div{:style=>"text-align: justify;"}
+    %p.western
+      = "Por medio de la presente hago constar que el alumno "
+      %b= "#{@nombre},"
+      = " de la carrera de "
+      %b= "#{@carrera}"
+      = " perteneciente a "
+      %b= "#{@institucion}"
+      = " realizó "
+      %b= "#{@internship_type},"
+      = " dentro del periodo comprendido del "
+      %b="#{@start_day} de #{@start_month} al #{@end_day} de #{@end_month}"
+      = " cubriendo un total de  "
+      %b= "#{@horas}"
+      = " en este Centro de Investigación, desarrollando las siguientes actividades: "
+      %b= @internado
+      
+    %p.western 
+      = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
+  %p.western
+    %br
+    %br
+    %br
+    %br
+    %br
+  %div{:style=>"border:none;  width: 100%; text-align: center; position: absolute; font-family: Arial, sans-serif; font-size: 18pt; so-language: es-ES;"}
+    %b="A t e n t a m e n t e"
+    %br
+    %br
+    %br
+    %br
+    %br
+    %b="M.H. Nicté Ortiz Villanueva"
+    %br
+    %b="Jefa del Departamento de Posgrado."

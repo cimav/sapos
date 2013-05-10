@@ -36,6 +36,10 @@
         = f.label :institution_id, mark_required(@internship, :institution_id) + 'Institución'
         = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"} 
 
+      .field#field_internship_career
+        = f.label :career,'Carrera'
+        = f.text_field :career,:size=>100
+
     #notas
       %h2 Notas
       = f.text_area :notes
