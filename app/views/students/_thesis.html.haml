@@ -6,7 +6,7 @@
 %div{:id => "field_student_thesis_number", :class => 'field', :style => "display:#{thesis_display};"}
   = fields.label :number, 'Número'
   - if student.thesis.number.blank?
-  #thesis-number= link_to 'Asignar número', {:action => 'assign_thesis_number', :student_id => student.id}, :confirm => '¿Estás seguro?', :student_id => student.id, :method => 'put', :remote => true, :class => 'assign-number'
+    #thesis-number= link_to 'Asignar número', {:action => 'assign_thesis_number', :student_id => student.id}, :confirm => '¿Estás seguro?', :student_id => student.id, :method => 'put', :remote => true, :class => 'assign-number'
   - else
     #thesis-number= student.thesis.number
 
