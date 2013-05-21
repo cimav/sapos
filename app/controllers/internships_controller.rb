@@ -264,7 +264,7 @@ class InternshipsController < ApplicationController
       @nombre      = @internship.full_name
       @institucion = @internship.institution.name
       @carrera     = @internship.career
-      @numero      = @internship.id
+      @numero      = @internship.control_number
       @internado   = @internship.activities
       @departamento= @internship.office
       @asesor      = @internship.staff.full_name
@@ -304,7 +304,7 @@ class InternshipsController < ApplicationController
       @nombre      = @internship.full_name
       @institucion = @internship.institution.name
       @carrera     = @internship.career
-      @numero      = @internship.id
+      @numero      = @internship.control_number
       @internado   = @internship.activities
       @departamento= @internship.office
       @asesor      = @internship.staff.full_name

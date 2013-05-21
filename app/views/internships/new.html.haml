@@ -40,6 +40,10 @@
         = f.label :career,'Carrera'
         = f.text_field :career,:size=>100
 
+      .field#field_control_number
+        = f.label :control_number, 'No. de Control'
+        = f.text_field :control_number, :size=>100
+
     #notas
       %h2 Notas
       = f.text_area :notes
