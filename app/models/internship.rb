@@ -1,5 +1,5 @@
 class Internship < ActiveRecord::Base
-  attr_accessible :id,:internship_type_id,:first_name,:last_name,:gender,:date_of_birth,:start_date,:end_date,:location,:email,:institution_id,:contact_id,:staff_id,:thesis_title,:activities,:status,:image,:notes,:created_at,:updated_at,:blood_type,:campus_id,:contact_attributes,:career,:office,:total_hours,:schedule, :control_number
+  attr_accessible :id,:internship_type_id,:first_name,:last_name,:gender,:date_of_birth,:start_date,:end_date,:location,:email,:institution_id,:contact_id,:staff_id,:thesis_title,:activities,:status,:image,:notes,:created_at,:updated_at,:blood_type,:campus_id,:contact_attributes,:career,:office,:total_hours,:schedule, :control_number, :grade
 
   belongs_to :institution
   belongs_to :staff
@@ -15,6 +15,7 @@ class Internship < ActiveRecord::Base
   validates :last_name, :presence => true
   validates :institution_id, :presence => true
   validates :internship_type_id, :presence => true
+  validates :grade, :numericality => true
 
   after_create :add_extra
 

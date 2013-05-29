@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130521211750) do
+ActiveRecord::Schema.define(:version => 20130529224055) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -279,6 +279,7 @@ ActiveRecord::Schema.define(:version => 20130521211750) do
     t.integer  "total_hours"
     t.string   "schedule"
     t.string   "control_number"
+    t.integer  "grade"
   end
 
   add_index "internships", ["contact_id"], :name => "index_internships_on_contact_id"

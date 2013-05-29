@@ -172,6 +172,7 @@ class InternshipsController < ApplicationController
             json = {}
             json[:flash] = flash
             json[:errors] = @internship.errors
+            json[:errors_full] = @internship.errors.full_messages
             render :json => json, :status => :unprocessable_entity
           else 
             redirect_to @internship
@@ -308,6 +309,7 @@ class InternshipsController < ApplicationController
       @internado   = @internship.activities
       @departamento= @internship.office
       @asesor      = @internship.staff.full_name
+      @puntuacion  = @internship.grade
       @horas       = @internship.total_hours.to_s
       @start_day   = @internship.start_date.day.to_s
       @start_month = get_month_name(@internship.start_date.month)

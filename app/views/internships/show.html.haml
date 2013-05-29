@@ -9,6 +9,14 @@
       $("#a-change-image").live("click", function() {
         $("#change-img-dialog").dialog('open');
       });
+
+      $(document).ready(function() {
+        $('.reqdoc_button').click(function(){
+          var c_type = $(this).attr("c_type");
+          var iid    = $(this).attr("internship_id");
+          window.location.href="internados/constancias/"+c_type+"/"+iid;
+        });
+      });
     });
 
 
@@ -109,6 +117,10 @@
       .field#field_internship_thesis_title
         = f.label :thesis_title, 'Tesis'
         = f.text_field :thesis_title
+      
+      .field#field_internship_grade
+        = f.label :grade, 'Puntuación'
+        = f.text_field :grade
 
       .field#field_internship_activities
         = f.label :activities, 'Actividades a desempeñar'
@@ -135,6 +147,9 @@
       %h2 Constancias
       %br= link_to 'Carta de aceptación', "internados/constancias/aceptacion/#{@internship.id}"  
       %br= link_to 'Carta de liberación', "internados/constancias/liberacion/#{@internship.id}"  
+      .field_requested_document
+        = label_tag 'Carta de aceptación' 
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"liberacion",:internship_id=>@internship.id  
     #notas
       %h2 Notas
       = f.text_area :notes
