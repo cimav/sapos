@@ -266,7 +266,7 @@ class InternshipsController < ApplicationController
       @institucion = @internship.institution.name
       @carrera     = @internship.career
       @numero      = @internship.control_number
-      @internado   = @internship.activities
+      @internado   = @internship.internship_type.name
       @departamento= @internship.office
       @asesor      = @internship.staff.full_name
       @horas       = @internship.total_hours.to_s
