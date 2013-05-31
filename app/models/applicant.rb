@@ -1,5 +1,5 @@
 class Applicant < ActiveRecord::Base
-  attr_accessible :id,:program_id,:folio,:first_name,:primary_last_name,:second_last_name,:previous_institution,:previous_degree_type,:average,:date_of_birth,:phone,:cell_phone,:email,:address,:civil_status,:created_at,:updated_at,:status,:consecutive,:staff_id
+  attr_accessible :id,:program_id,:folio,:first_name,:primary_last_name,:second_last_name,:previous_institution,:previous_degree_type,:average,:date_of_birth,:phone,:cell_phone,:email,:address,:civil_status,:created_at,:updated_at,:status,:consecutive,:staff_id, :notes
 
   belongs_to :program
 
@@ -23,8 +23,8 @@ class Applicant < ActiveRecord::Base
 
 
   STATUS = {
-    REGISTERED => 'Registrado',
-    REJECTED   => 'Rechazado',
+    REGISTERED => 'En Proceso',
+    REJECTED   => 'No Aceptado',
     ACCEPTED   => 'Aceptado',
     DELETED    => 'Borrado'
   }
@@ -36,6 +36,7 @@ class Applicant < ActiveRecord::Base
   validates :previous_institution, :presence => true
   validates :previous_degree_type, :presence => true
   validates :date_of_birth, :presence => true
+  validates :notes, :presence => true, :if=> "status.eql? 4" 
   
   def full_name
     "#{first_name} #{primary_last_name} #{second_last_name}" rescue ''

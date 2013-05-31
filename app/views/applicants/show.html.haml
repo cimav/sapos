@@ -72,6 +72,14 @@
         = f.label :staff_id, 'Supervisor'
         = f.collection_select :staff_id, @staffs, :id, :full_name, options = {:prompt => "Selecciona el asesor"}
  
+      .field#field_applicant_status
+        = f.label :status, 'Estatus'
+        = f.select :status, Applicant::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+      
+      .field#field_applicant_notes
+        = f.label :notes, 'Notas'
+        = f.text_area :notes
+
     #documentos
       %h2 Documentos
-      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "530", "src" => "/aspirantes/#{@applicant.id}/archivos", "scrolling" => "no", :frameborder=>"0"}
+      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "555", "src" => "/aspirantes/#{@applicant.id}/archivos", "scrolling" => "no", :frameborder=>"0"}
