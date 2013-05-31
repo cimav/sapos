@@ -21,7 +21,7 @@ class ApplicantFile < ActiveRecord::Base
   ACADEMIC_CURRICULUM = 10
   CONACYT_ENDED_SCHOLARSHIP_CERTIFICATE = 11
   APPLICATION = 12
-  
+  OTHER = 13
 
   REQUESTED_DOCUMENTS = {
     BIRTH_CERTIFICATE => 'Acta de Nacimiento',
@@ -36,6 +36,7 @@ class ApplicantFile < ActiveRecord::Base
     ACADEMIC_CURRICULUM => 'Curriculum Academico',
     CONACYT_ENDED_SCHOLARSHIP_CERTIFICATE => 'Carta de finiquito de becario CONACyT',
     APPLICATION => 'Solicitud',
+    OTHER => 'Otro',
  }
 
 
