@@ -7,6 +7,7 @@ class ApplicantsController < ApplicationController
     @programs     = Program.where(:program_type=>2).order('name')
     @institutions = Institution.order('name')
     @staffs       = Staff.select("id,first_name,last_name").order("first_name")
+    @campus = Campus.order('name')
     render :layout => false
   end
 
@@ -19,6 +20,7 @@ class ApplicantsController < ApplicationController
       @program_type = { Program::PROGRAM_TYPE[current_user.program_type] => current_user.program_type }
     end
 
+    @campus = Campus.order('name')
   end
 
   def live_search
@@ -30,6 +32,10 @@ class ApplicantsController < ApplicationController
     
     if params[:status] != '0' then
       @applicants = @applicants.where(:status => params[:status])
+    end
+    
+    if params[:campus] != '0' then
+      @applicants = @applicants.where(:campus_id => params[:campus])
     end
 
     if !params[:q].blank?
@@ -70,6 +76,7 @@ class ApplicantsController < ApplicationController
     @applicant    = Applicant.new
     @institutions = Institution.order('name')
     @staffs       = Staff.select("id,first_name,last_name").order("first_name")
+    @campus       = Campus.order('name')
 
     render :layout => false
   end

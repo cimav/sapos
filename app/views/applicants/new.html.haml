@@ -29,6 +29,10 @@
         = f.label :program_id, 'Programa'
         = f.select :program_id, @programs.collect {|p| [ p.name, p.id ] }.push(["Otro",0]), {:include_blank => 'Selecciona el programa'}
  
+      .field#field_applicant_campus_id
+        = f.label :campus_id, 'Campus'
+        = f.select :campus_id, @campus.collect {|p| [ p.name, p.id ] }, {:include_blank => 'Selecciona el campus'}
+
       .field#field_applicant_date_of_birth
         = f.label :date_of_birth, 'Fecha de nacimiento'
         = f.date_select :date_of_birth, :start_year => DateTime.now.year - 100

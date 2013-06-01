@@ -35,7 +35,21 @@
 
       .field#field_applicant_program_id
         = f.label :program_id, 'Programa'
-        = f.select :program_id, @programs.collect {|p| [ p.name, p.id ] }.push(["Otro",0]), {:include_blank => 'Selecciona el programa'}
+        - program_options = Array.new
+        - @programs.each do |program|
+          - if @applicant.program_id == 0
+            = f.select :program_id, program_options.collect {|p| [ p.name, p.id ] }.push(["Otro","0"])
+            - break
+          - elsif @applicant.program_id == program.id
+            - program_options.push(program)
+            = f.select :program_id, program_options.collect {|p| [ p.name, p.id ] }
+      
+      .field#field_internship_campus
+        = f.label :campus_id, 'Campus'
+        - q = ["Ninguno",0]
+        - p = @campus.collect{|p|[p.name,p.id]}
+        - p.insert(0,q)
+        = f.select :campus_id,p
 
       .field#field_applicant_date_of_birth
         = f.label :date_of_birth, 'Fecha de nacimiento'
