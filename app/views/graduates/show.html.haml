@@ -55,3 +55,7 @@
       .field#field_student_period_to
         = f.label :period_to, 'Periodo a'
         = f.date_select :period_to, :start_year => 1994
+      
+      .field#field_graduate_notes
+        = f.label :notes, "Notas"
+        = f.text_area :notes

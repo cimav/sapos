@@ -1,5 +1,5 @@
 class Graduate < ActiveRecord::Base
-  attr_accessible :id,:student_id,:workplace,:income,:gyre,:prizes,:sni,:sni_status,:subsequent_studies,:period_from,:period_to
+  attr_accessible :id,:student_id,:workplace,:income,:gyre,:prizes,:sni,:sni_status,:subsequent_studies,:period_from,:period_to,:notes
   
   belongs_to :student
 
@@ -33,10 +33,11 @@ class Graduate < ActiveRecord::Base
   OTHER_SERVICES_NOT_GOVERMENT = 22
   GOVERMENT_ACTIVITIES  = 23
 
-  CANDIDATE_1 = 1
-  CANDIDATE_2 = 2
-  CANDIDATE_3 = 3
-  HONORARY   = 4
+  CANDIDATE = 1
+  SNI_1 = 2
+  SNI_2 = 3
+  SNI_3 = 4
+  HONORARY = 5
 
   RANGE_1 = 1
   RANGE_2 = 2
@@ -72,9 +73,10 @@ class Graduate < ActiveRecord::Base
  
   SNI_STATUS = {
     NONE        => '--------',
-    CANDIDATE_1 => 'Candidato 1',
-    CANDIDATE_2 => 'Candidato 2',
-    CANDIDATE_3 => 'Candidato 3',
+    CANDIDATE => 'Candidato',
+    SNI_1 => 'SNI 1',
+    SNI_2 => 'SNI 2',
+    SNI_3 => 'SNI 3',
     HONORARY    => 'Honorario'
   }
   

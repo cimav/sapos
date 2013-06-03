@@ -63,6 +63,10 @@
         = f.label :period_to, 'Periodo a'
         = f.date_select :period_to, :start_year => 1994
       
+      .field#field_graduate_notes
+        = f.label :notes, "Notas"
+        = f.text_area :notes
+      
       - if @dialog == "dialog"
         .resource-save
           - if can? :create, @student
