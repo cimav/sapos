@@ -35,10 +35,21 @@ class Applicant < ActiveRecord::Base
   validates :primary_last_name, :presence => true
   validates :previous_institution, :presence => true
   validates :previous_degree_type, :presence => true
+  validates :program_id, :presence => true
   validates :date_of_birth, :presence => true
   validates :notes, :presence => true, :if=> "status.eql? 4" 
   validates :campus_id, :presence => true
-  
+  validate :not_repeat_applicant, :on=>:create
+
+
+  def not_repeat_applicant
+    applicants = Applicant.where("first_name=? and primary_last_name=? and second_last_name=? and status = 1",first_name.strip,primary_last_name.strip,second_last_name.strip) 
+    
+    if applicants.size > 0
+      errors.add(:base,"Ya existe un registro activo con ese nombre #{applicants.size}")
+    end
+  end
+
   def full_name
     "#{first_name} #{primary_last_name} #{second_last_name}" rescue ''
   end
