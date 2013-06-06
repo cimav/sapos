@@ -29,6 +29,17 @@ $(document).ready(function() {
        alert("Debes escribir una explicación del borrado en las notas");
      }
   });
+
+  $('#item-edit-form').live('ajax:success', function(evt, data, status, xhr) {
+      var r = $.parseJSON(xhr.responseText);
+
+      if(r['params']['student_id'])
+      {
+         var student_id =r['params']['student_id'];
+         window.location="/estudiantes/?student_id="+student_id;
+      }
+  });
+
 });
 
 function initializeSearchForm() {

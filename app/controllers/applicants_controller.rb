@@ -120,38 +120,56 @@ class ApplicantsController < ApplicationController
   end
 
   def update
-    flash = {}
+    parameters = {}
     @applicant = Applicant.find(params[:id])
+    
+    if !@applicant.student_id.nil?
+      parameters[:student_id] = @applicant.student_id
+      render_error @applicant, "El aspirante ya esta registrado como alumno, no se puede modificar",parameters
+      return
+    end
+
     if @applicant.update_attributes(params[:applicant])
-      flash[:notice] = "Aspirante actualizado."
+      @message = "Aspirante actualizado."
+
+      if @applicant.status == 3 and @applicant.program_id != 0
+        if accepted_applicant_register @applicant
+           parameters[:student_id] = @applicant.student_id
+           parameters[:status] = 3
+           @message = "Aspirante actualizado e inscrito"
+        else
+          @applicant.errors.add(:base,"Error al crear el estudiante")
+          render_error @applicant, "No se pudo inscribir al aspirante",parameters
+          return
+        end
+      end
+
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Applicant: #{@applicant.id},#{@applicant.first_name} #{@applicant.primary_last_name}"}).save
-      respond_with do |format|
-        format.html do
-          if request.xhr?
-            json = {}
-            json[:flash] = flash
-            json[:uniq]  = @applicant.id
-            render :json => json
-          else
-            redirect_to @applicant
-          end
-        end
-      end
+      render_message @applicant,@message,parameters
     else
-      flash[:error] = "Error al crear aspirante."
-      respond_with do |format|
-        format.html do
-          if request.xhr? 
-            json = {}
-            json[:flash]  = flash
-            json[:errors] = @applicant.errors
-            json[:errors_full] = @applicant.errors.full_messages
-            render :json => json, :status=> :unprocessable_entity
-          else
-            redirect_to @applicant
-          end
-        end
-      end
+      render_error @applicant, "Error al actualizar estudiante",parameters
+    end
+  end
+  
+  def accepted_applicant_register (applicant)
+    @student = Student.new()
+    @student.first_name = applicant.first_name 
+    @student.last_name  = "#{applicant.primary_last_name} #{applicant.second_last_name}"
+    @student.campus_id  = applicant.campus_id 
+    @student.program_id = applicant.program_id
+    @student.previous_institution = applicant.previous_institution
+    @student.supervisor = applicant.staff_id
+    @student.start_date = Time.now
+  
+   
+    if @student.save 
+      applicant.update_attribute(:student_id,@student.id)
+      return true
+    else
+      logger.debug "NOOOOOOOOOOO: #{@student.errors.full_messages}"
+      @applicant.errors.add(:base,@student.errors.full_messages)
+      @applicant.
+      return false
     end
   end
   
@@ -183,5 +201,42 @@ class ApplicantsController < ApplicationController
   def  download_file
     af = ApplicantFile.find(params[:id]).file
     send_file af.to_s, :x_sendfile=>true
+  end
+
+  def render_error(object,message,parameters)
+    flash = {}
+    flash[:error] = message
+    respond_with do |format|
+      format.html do 
+        if request.xhr?
+          json = {}
+          json[:flash] = flash
+          json[:errors] = object.errors
+          json[:errors_full] = object.errors.full_messages
+          json[:params] = parameters
+          render :json => json, :status => :unprocessable_entity
+        else
+          redirect_to object
+        end
+      end
+    end
+  end
+
+  def render_message(object,message,parameters)
+    flash = {}
+    flash[:notice] = message
+    respond_with do |format|
+      format.html do
+        if request.xhr?
+          json = {}
+          json[:flash] = flash
+          json[:uniq]  = object.id
+          json[:params] = parameters
+          render :json => json
+        else
+          redirect_to object
+        end
+      end
+    end
   end
 end

@@ -41,7 +41,7 @@
       = select_tag "status", status_options.html_safe
 
   
-      = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
+      = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
      
   #items-list.panel-items
   
