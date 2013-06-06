@@ -56,6 +56,7 @@ class ApplicantsController < ApplicationController
 	           "Fecha_Nac" => s.date_of_birth,
                    "Estado_Civil" => (Applicant::CIVIL_STATUS[s.civil_status] rescue ''),
                    'Programa' => (s.program_id==0 ? 'Otro' : s.program.name),
+                   "Campus"   => (s.campus.name rescue '')
                    "Institucion_Anterior" => (s.previous_institution==0 ? 'Otras' : (Institution.find(s.previous_institution).full_name rescue '')),
                    "Promedio" => s.average,
                    "Telefono" => s.phone,
