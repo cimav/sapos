@@ -145,10 +145,11 @@
 	
     #constancias
       %h2 Constancias
-      %br= link_to 'Carta de aceptación', "internados/constancias/aceptacion/#{@internship.id}"  
-      %br= link_to 'Carta de liberación', "internados/constancias/liberacion/#{@internship.id}"  
-      .field_requested_document
+      .field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
         = label_tag 'Carta de aceptación' 
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"aceptacion",:internship_id=>@internship.id  
+      .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
+        = label_tag 'Carta de liberación' 
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"liberacion",:internship_id=>@internship.id  
     #notas
       %h2 Notas

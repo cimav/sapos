@@ -317,6 +317,7 @@ class InternshipsController < ApplicationController
       @end_month   = get_month_name(@internship.end_date.month)
       @horario     = @internship.schedule
       @proyecto    = @internship.thesis_title
+      @internship_type = @internship.internship_type.name
       ######################################################################
       if @internship.gender == 'F'
         @genero  = "a"
