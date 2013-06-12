@@ -58,6 +58,7 @@
       %li= link_to "Avances", "#avances"
       %li= link_to "Tesis", "#tesis"
       %li= link_to "Archivos", "#archivos"
+      %li= link_to "Documentos", "#documentos"
       %li= link_to "Horarios", "#horario"
       %li= link_to "Calificaciones", "#calificaciones"
       %li= link_to "Notas", "#notas"
@@ -210,6 +211,10 @@
       %h2 Archivos avances
       %iframe{"name" => "submit_iframe_2", "id" => "files_iframe_2", "width" => "900px", "height" => "300px", "src" => "/estudiantes/archivos/avances/#{@student.id}", "scrolling" => "yes"}
     
+    #documentos    
+      %h2="Expediente de ingreso"
+      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "555", "src" => "/aspirantes/#{@applicant_id}/archivos", "scrolling" => "no", :frameborder=>"0"}
+
     #notas
       %h2 Notas
       = f.text_area :notes

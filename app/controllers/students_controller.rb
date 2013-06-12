@@ -165,6 +165,13 @@ class StudentsController < ApplicationController
 
   def show
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    @applicant_id = 0
+    @applicants   = Applicant.where(:student_id=>@student.id,:campus_id=>@student.campus_id,:program_id=>@student.program_id)
+
+    if @applicants.size>0
+      @applicant_id = @applicants[0].id
+    end
+
     @staffs = Staff.order('first_name').includes(:institution)
     @countries = Country.order('name')
     @institutions = Institution.order('name')

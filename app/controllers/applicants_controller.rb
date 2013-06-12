@@ -178,6 +178,9 @@ class ApplicantsController < ApplicationController
     @applicant = Applicant.find(params[:id])
     @applicant_files = ApplicantFile.where(:applicant_id=>params[:id])
     render :layout=> "standalone"
+  rescue ActiveRecord::RecordNotFound
+    @error = 1
+    render :template=>"applicants/errors",:layout=> "standalone"
   end
 
   def upload_file
