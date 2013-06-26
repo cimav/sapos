@@ -33,7 +33,9 @@
       = " del presente año en el siguiente horario de "
       %b= "#{@horario},"
       = " en este Centro de Investigación, desarrollando el siguiente proyecto: "
-      %b= @proyecto
+      %ul
+        %li
+          %b= @proyecto
     %p.western 
       = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
   %p.western
