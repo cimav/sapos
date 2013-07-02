@@ -414,6 +414,7 @@ class StaffsController < ApplicationController
         details = {
           "name" 	   => session_item.term_course.course.name,
           "staff_name" => staff_name,
+          "classroom"  => session_item.classroom.name,
           "comments"   => comments,
           "id"         => session_item.id,
           "n"          => courses[session_item.term_course.course.id]
@@ -457,7 +458,7 @@ class StaffsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "id_card.html.haml")
         kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
-        kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}pdf.css"
+        kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}card.css"
         filename = "ID-#{@staff.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
