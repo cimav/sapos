@@ -589,10 +589,10 @@ class StudentsController < ApplicationController
     base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
             if current_user.campus_id == 2
               @firma  = "Alejandra García García"
-              @puesto = "Coordinador Académico Unidad Monterrey."
+              @puesto = "Coordinador Académico Unidad Monterrey"
             else
               @firma  = "M.H. Nicté Ortiz Villanueva"
-              @puesto = "Jefa del Departamento de Posgrado."
+              @puesto = "Jefa del Departamento de Posgrado"
             end 
 
     if params[:type] == "estudios"
