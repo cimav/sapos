@@ -178,7 +178,12 @@ class StudentsController < ApplicationController
     @states = State.order('code')  
     @status = Student::STATUS
     
-    today = Date.today
+    if @student.thesis.status.eql? "C"
+      today = @student.thesis.defence_date
+    else
+      today = Date.today
+    end 
+
     yyyy  = today.year - @student.start_date.year
     m = today.month - @student.start_date.month
     
