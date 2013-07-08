@@ -254,6 +254,13 @@ class InternshipsController < ApplicationController
     @internship = Internship.find(params[:id])
     time = Time.new
     year = time.year.to_s
+    if current_user.campus_id == 2
+      @firma  = "Alejandra García García"
+      @puesto = "Coordinador Académico Unidad Monterrey"
+    else
+      @firma  = "M.H. Nicté Ortiz Villanueva"
+      @puesto = "Jefa del Departamento de Posgrado"
+    end 
 
     if params[:type] == "aceptacion"
       @consecutivo = get_consecutive(@internship, time, Certificate::ACCEPTANCE)
