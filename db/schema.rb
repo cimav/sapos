@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130605221955) do
+ActiveRecord::Schema.define(:version => 20130705213055) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -598,6 +598,8 @@ ActiveRecord::Schema.define(:version => 20130605221955) do
     t.datetime "updated_at"
     t.date     "advance_start_date"
     t.date     "advance_end_date"
+    t.date     "grade_start_date"
+    t.date     "grade_end_date"
   end
 
   add_index "terms", ["program_id"], :name => "index_terms_on_program_id"
