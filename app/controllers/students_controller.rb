@@ -1017,11 +1017,11 @@ class StudentsController < ApplicationController
   def grade_certificates
     @time      = Time.now
     @thesis    = Thesis.find(params[:thesis_id])
-    @examiner1 = Staff.find(@thesis.examiner1)
-    @examiner2 = Staff.find(@thesis.examiner2)
-    @examiner3 = Staff.find(@thesis.examiner3)
-    @examiner4 = Staff.find(@thesis.examiner4)
-    @examiner5 = Staff.find(@thesis.examiner5)
+    @examiner1 = Staff.find(@thesis.examiner1).full_name rescue ""
+    @examiner2 = Staff.find(@thesis.examiner2).full_name rescue ""
+    @examiner3 = Staff.find(@thesis.examiner3).full_name rescue ""
+    @examiner4 = Staff.find(@thesis.examiner4).full_name rescue "" 
+    @examiner5 = Staff.find(@thesis.examiner5).full_name rescue ""
 
     filename = "/home/enrique/sapos/private/prawn_templates/acta_de_grado.pdf"
     Prawn::Document.generate("full_template.pdf", :template => filename) do |pdf|
@@ -1065,31 +1065,31 @@ class StudentsController < ApplicationController
       pdf.fill_rectangle [246,586], 100, 11
       pdf.fill_color "373435"
 
-      pdf.draw_text @examiner1.full_name, :at=>[246,576], :size=>11
+      pdf.draw_text @examiner1, :at=>[246,576], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,574], 100, 11
       pdf.fill_color "373435"
       
-      pdf.draw_text @examiner2.full_name, :at=>[246,564], :size=>11
+      pdf.draw_text @examiner2, :at=>[246,564], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,562], 100, 11
       pdf.fill_color "373435"
       
-      pdf.draw_text @examiner3.full_name, :at=>[246,552], :size=>11
+      pdf.draw_text @examiner3, :at=>[246,552], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,550], 100, 11
       pdf.fill_color "373435"
       
-      pdf.draw_text @examiner4.full_name, :at=>[246,540], :size=>11
+      pdf.draw_text @examiner4, :at=>[246,540], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,538], 100, 11
       pdf.fill_color "373435"
       
-      pdf.draw_text @examiner5.full_name, :at=>[246,528], :size=>11
+      pdf.draw_text @examiner5, :at=>[246,528], :size=>11
       
       ## SET THESIS TITLE
       x = 155
@@ -1139,7 +1139,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @examiner1.full_name
+      text = @examiner1
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
      
       # SET SECRETARY
@@ -1151,7 +1151,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @examiner5.full_name
+      text = @examiner5
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       
       # SET FIRST VOCAL
@@ -1163,7 +1163,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @examiner2.full_name
+      text = @examiner2
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
       # SET SECOND VOCAL
@@ -1175,7 +1175,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @examiner3.full_name
+      text = @examiner3
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       
       # SET  THIRD VOCAL
@@ -1187,7 +1187,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @examiner4.full_name
+      text = @examiner4
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
       # RENDER
