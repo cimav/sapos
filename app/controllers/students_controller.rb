@@ -1013,4 +1013,185 @@ class StudentsController < ApplicationController
     end 
     return avg
   end
+
+  def grade_certificates
+    @time      = Time.now
+    @thesis    = Thesis.find(params[:thesis_id])
+    @examiner1 = Staff.find(@thesis.examiner1)
+    @examiner2 = Staff.find(@thesis.examiner2)
+    @examiner3 = Staff.find(@thesis.examiner3)
+    @examiner4 = Staff.find(@thesis.examiner4)
+    @examiner5 = Staff.find(@thesis.examiner5)
+
+    filename = "/home/enrique/sapos/private/prawn_templates/acta_de_grado.pdf"
+    Prawn::Document.generate("full_template.pdf", :template => filename) do |pdf|
+      pdf.font_families.update("Arial" => {
+        :bold        => "/home/enrique/sapos/private/fonts/arial/arialbd.ttf",
+        :italic      => "/home/enrique/sapos/private/fonts/arial/ariali.ttf",
+        :bold_italic => "/home/enrique/sapos/private/fonts/arial/arialbi.ttf",
+        :normal      => "/home/enrique/sapos/private/fonts/arial/arial.ttf"
+      })
+      pdf.font "Arial"
+
+      # SET HOUR AND DAY
+      @hora = "%02d:%02d HORAS DEL DÍA %2d" % [@time.hour,@time.min,@time.day]
+      x = 388
+      y = 629
+      w = 150
+      h = 11 
+      size = 10
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [388,630], 130, 10
+      pdf.fill_color "373435"
+      pdf.text_box @hora , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
+
+      # SET MONTH AND YEAR
+      month = get_month_name(@time.month)
+      year = @time.year
+      @m_y = "MES DE #{month.upcase} DEL #{year}. SE REUNIERON LOS"
+      x = 244
+      y = 618
+      w = 450
+      h = 11 
+      size = 10
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [244,620], 330, 11
+      pdf.fill_color "373435"
+      pdf.text_box @m_y , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
+      
+       
+      # SET  THESIS EXAMINERS
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [246,586], 100, 11
+      pdf.fill_color "373435"
+
+      pdf.draw_text @examiner1.full_name, :at=>[246,576], :size=>11
+      
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [245,574], 100, 11
+      pdf.fill_color "373435"
+      
+      pdf.draw_text @examiner2.full_name, :at=>[246,564], :size=>11
+      
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [245,562], 100, 11
+      pdf.fill_color "373435"
+      
+      pdf.draw_text @examiner3.full_name, :at=>[246,552], :size=>11
+      
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [245,550], 100, 11
+      pdf.fill_color "373435"
+      
+      pdf.draw_text @examiner4.full_name, :at=>[246,540], :size=>11
+      
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [245,538], 100, 11
+      pdf.fill_color "373435"
+      
+      pdf.draw_text @examiner5.full_name, :at=>[246,528], :size=>11
+      
+      ## SET THESIS TITLE
+      x = 155
+      y = 490
+      w = 400
+      h = 40
+      size  = 14
+      text = @thesis.title
+      text = "\"#{text}\""  
+      
+      if text.size >= 110 && text.size <= 165
+        size = 12 
+      elsif text.size > 165 && text.size <= 220
+        size = 10
+      elsif text.size > 220
+        size = 9
+      end
+
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=>:bold, :align=> :center, :valign=> :center
+
+      # SET STUDENT NAME
+      x = 150
+      y = 384
+      w = 390
+      h = 30
+      size = 18
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      text = @thesis.student.full_name
+      
+      if text.size >= 40
+        size = 16
+      end
+      
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=>:bold, :align=> :center, :valign=> :center
+
+      # SET PRESIDENT
+      x = 5
+      y = 225
+      w = 225
+      h = 15 
+      size = 10
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      text = @examiner1.full_name
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+     
+      # SET SECRETARY
+      x = 307
+      y = 225
+      w = 225
+      h = 15 
+      size = 10
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      text = @examiner5.full_name
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      
+      # SET FIRST VOCAL
+      x = 5
+      y = 158
+      w = 225
+      h = 15 
+      size = 10
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      text = @examiner2.full_name
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+
+      # SET SECOND VOCAL
+      x = 307
+      y = 158
+      w = 225
+      h = 15 
+      size = 10
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      text = @examiner3.full_name
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      
+      # SET  THIRD VOCAL
+      x = 153
+      y = 115
+      w = 225
+      h = 15 
+      size = 10
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      text = @examiner4.full_name
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+
+      # RENDER
+      send_data pdf.render, type: "application/pdf", disposition: "inline"
+    end
+  end
 end
