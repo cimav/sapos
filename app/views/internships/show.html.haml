@@ -151,6 +151,9 @@
       .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
         = label_tag 'Carta de liberación' 
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"liberacion",:internship_id=>@internship.id  
+      .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
+        = label_tag 'Carta de uso de información' 
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"uso",:internship_id=>@internship.id  
     #notas
       %h2 Notas
       = f.text_area :notes

@@ -345,6 +345,48 @@ class InternshipsController < ApplicationController
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return
     end
+    
+    if params[:type] == "uso"
+      @consecutivo = get_consecutive(@internship, time, Certificate::USE)
+      @rails_root  = "#{Rails.root}"
+      @year_s      = year[2,4]
+      @year        = year
+      @days        = time.day.to_s
+      @month       = get_month_name(time.month)
+      @nombre      = @internship.full_name
+      @institucion = @internship.institution.name
+      @carrera     = @internship.career
+      @numero      = @internship.control_number
+      @internado   = @internship.internship_type.name
+      @departamento= @internship.office
+      @asesor      = @internship.staff.full_name
+      @horas       = @internship.total_hours.to_s
+      @start_day   = @internship.start_date.day.to_s
+      @start_month = get_month_name(@internship.start_date.month)
+      @start_year  = @internship.start_date.year.to_s
+      @end_day     = @internship.end_date.day.to_s
+      @end_month   = get_month_name(@internship.end_date.month)
+      @end_year    = @internship.end_date.year.to_s
+      @horario     = @internship.schedule
+      @proyecto    = @internship.thesis_title
+      ######################################################################
+      if @internship.gender == 'F'
+        @genero  = "a"
+        @genero2 = "la"
+      elsif @internship.gender == 'H'
+        @genero  = "o"
+        @genero2 = "el"
+      else
+        @genero  = "x"
+        @genero2 = "x"
+      end
+
+      html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_uso_informacion')
+      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "carta-uso-informacion-#{@internship.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return
+    end
   end
   
   def get_consecutive(object, time, type)
