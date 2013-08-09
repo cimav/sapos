@@ -54,7 +54,7 @@
     - if @cs.term_course.term.status == Term::GRADING
       %div{:id => "cs_grade", :class => 'field'}
         = fields.label :grade, 'Calificación'
-        = fields.select :grade, (0..100).to_a, :prompt => '---'
+        = fields.select :grade, (0..100).to_a.unshift(["NP",-1]), :prompt => '---'
 
       .iframe-submit-button-area
         = fields.submit "Actualizar"
