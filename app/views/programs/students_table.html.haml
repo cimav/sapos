@@ -43,7 +43,10 @@
           - if [Term::GRADING, Term::ENDED].include? @tc.term.status
             - if @is_pdf
               %td= ""
-            %td= tc_student.grade
+            - if tc_student.grade==-1
+              %td= "NP"
+            - else
+              %td= tc_student.grade
   - else
     %table.tc-students
       %tr.header
@@ -60,7 +63,10 @@
           - if [Term::GRADING, Term::ENDED].include? @tc.term.status
             - if @is_pdf
               %td= ""
-            %td= tc_student.grade
+            - if tc_student.grade==-1
+              %td= "NP"
+            - else
+              %td= tc_student.grade
 
 
 
