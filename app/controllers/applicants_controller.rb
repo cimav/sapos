@@ -153,21 +153,26 @@ class ApplicantsController < ApplicationController
   end
   
   def accepted_applicant_register (applicant)
-    @student = Student.new()
-    @student.first_name = applicant.first_name 
-    @student.last_name  = "#{applicant.primary_last_name} #{applicant.second_last_name}"
-    @student.campus_id  = applicant.campus_id 
-    @student.program_id = applicant.program_id
+    @student                      = Student.new()
+    @student.first_name           = applicant.first_name
+    @student.last_name            = "#{applicant.primary_last_name} #{applicant.second_last_name}"
+    @student.campus_id            = applicant.campus_id
+    @student.program_id           = applicant.program_id
     @student.previous_institution = applicant.previous_institution
-    @student.supervisor = applicant.staff_id
-    @student.start_date = Time.now
-  
-   
+    @student.previous_degree_desc = applicant.previous_degree_type
+    @student.supervisor           = applicant.staff_id
+    @student.date_of_birth        = applicant.date_of_birth
+    @student.email                = applicant.email
+    @student.start_date           = Time.now
+
     if @student.save 
       applicant.update_attribute(:student_id,@student.id)
+      @student.contact.home_phone   = applicant.phone
+      @student.contact.mobile_phone = applicant.cell_phone
+      @student.contact.address1     = applicant.address
+      @student.contact.save
       return true
     else
-      logger.debug "NOOOOOOOOOOO: #{@student.errors.full_messages}"
       @applicant.errors.add(:base,@student.errors.full_messages)
       @applicant.
       return false
