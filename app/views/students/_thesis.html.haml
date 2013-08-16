@@ -27,23 +27,42 @@
 %div{:id => "field_student_thesis_examiner1", :class => 'field'}
   = fields.label :examiner1, 'Sinodal 1'
   = fields.collection_select :examiner1, staffs, :id, :full_name, options = {:prompt => "Selecciona un sinodal"} 
+  - if !student.thesis.number.blank? && !student.thesis.examiner1.nil?
+    - st = Staff.find(student.thesis.examiner1)
+    - if st.institution.id != 1
+      = link_to ' Generar constancia para sinodales externos', {:action => 'sinodal_certificates', :staff_id => student.thesis.examiner1, :student_id=> student.id }, :method => 'put'
 
 %div{:id => "field_student_thesis_examiner2", :class => 'field'}
-  = fields.label :examiner1, 'Sinodal 2'
+  = fields.label :examiner2, 'Sinodal 2'
   = fields.collection_select :examiner2, staffs, :id, :full_name, options = {:prompt => "Selecciona un sinodal"} 
+  - if !student.thesis.number.blank? && !student.thesis.examiner2.nil?
+    - st = Staff.find(student.thesis.examiner2)
+    - if st.institution.id != 1
+      = link_to ' Generar constancia para sinodales externos', {:action => 'sinodal_certificates', :staff_id => student.thesis.examiner2, :student_id=> student.id }, :method => 'put'
 
 %div{:id => "field_student_thesis_examiner3", :class => 'field'}
-  = fields.label :examiner1, 'Sinodal 3'
+  = fields.label :examiner3, 'Sinodal 3'
   = fields.collection_select :examiner3, staffs, :id, :full_name, options = {:prompt => "Selecciona un sinodal"} 
+  - if !student.thesis.number.blank? && !student.thesis.examiner3.nil?
+    - st = Staff.find(student.thesis.examiner3)
+    - if st.institution.id != 1
+      = link_to ' Generar constancia para sinodales externos', {:action => 'sinodal_certificates', :staff_id => student.thesis.examiner3, :student_id=> student.id }, :method => 'put'
 
 %div{:id => "field_student_thesis_examiner4", :class => 'field'}
-  = fields.label :examiner1, 'Sinodal 4'
+  = fields.label :examiner4, 'Sinodal 4'
   = fields.collection_select :examiner4, staffs, :id, :full_name, options = {:prompt => "Selecciona un sinodal"} 
+  - if !student.thesis.number.blank? && !student.thesis.examiner4.nil?
+    - st = Staff.find(student.thesis.examiner4)
+    - if st.institution.id != 1
+      = link_to ' Generar constancia para sinodales externos', {:action => 'sinodal_certificates', :staff_id => student.thesis.examiner4, :student_id=> student.id }, :method => 'put'
 
 %div{:id => "field_student_thesis_examiner5", :class => 'field'}
-  = fields.label :examiner1, 'Sinodal 5'
+  = fields.label :examiner5, 'Sinodal 5'
   = fields.collection_select :examiner5, staffs, :id, :full_name, options = {:prompt => "Selecciona un sinodal"} 
-
+  - if !student.thesis.number.blank? && !student.thesis.examiner5.nil?
+    - st = Staff.find(student.thesis.examiner5)
+    - if st.institution.id != 1
+      = link_to ' Generar constancia para sinodales externos', {:action => 'sinodal_certificates', :staff_id => student.thesis.examiner5, :student_id=> student.id }, :method => 'put'
 
 %div{:id => "field_student_thesis_abstract", :class => 'field'}
   = fields.label :abstract, 'Abstract'

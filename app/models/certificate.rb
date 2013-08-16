@@ -13,6 +13,7 @@ class Certificate < ActiveRecord::Base
   ACCEPTANCE        = 8
   RELEASE           = 9
   USE               = 10
+  EXAMINER          = 11
 
   TYPE = {STUDIES           => 'Constancia de estudios',
           ENROLLMENT        => 'Constancia de inscripcion',
@@ -23,6 +24,7 @@ class Certificate < ActiveRecord::Base
           CREDITS           => 'Constancia de creditos cubiertos',
           ACCEPTANCE        => 'Carta de aceptacion de servicio social',
           RELEASE           => 'Carta de liberacion del servicio social',
-          USE               => 'Carta de uso de informacion'
+          USE               => 'Carta de uso de informacion',
+          EXAMINER          => 'Constancia para sinodales externos'
           } 
 end

@@ -587,13 +587,13 @@ class StudentsController < ApplicationController
     year = time.year.to_s
     head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
     base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
-            if current_user.campus_id == 2
-              @firma  = "Alejandra García García"
-              @puesto = "Coordinador Académico Unidad Monterrey"
-            else
-              @firma  = "M.H. Nicté Ortiz Villanueva"
-              @puesto = "Jefa del Departamento de Posgrado"
-            end 
+    if current_user.campus_id == 2
+      @firma  = "Alejandra García García"
+      @puesto = "Coordinador Académico Unidad Monterrey"
+    else
+      @firma  = "M.H. Nicté Ortiz Villanueva"
+      @puesto = "Jefa del Departamento de Posgrado"
+    end 
 
     if params[:type] == "estudios"
       string = File.read("#{Rails.root}/app/views/students/certificates/constancia_estudios.html")
@@ -667,7 +667,6 @@ class StudentsController < ApplicationController
       @asesor      = Staff.find(@student.supervisor).full_name
       @programa    = @student.program.name
       @student_image_uri = @student.image_url.to_s
-
 	      
       scholarship = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
  
@@ -890,6 +889,7 @@ class StudentsController < ApplicationController
     end
   end
 
+
   def months_between(past_date,recent_date)
     total_years = (recent_date.year - past_date.year)
 
@@ -1012,6 +1012,57 @@ class StudentsController < ApplicationController
       avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0 
     end 
     return avg
+  end
+
+  def sinodal_certificates
+    @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:student_id])
+
+    time = Time.new
+    year = time.year.to_s
+    head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
+    base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
+    
+    if current_user.campus_id == 2
+      @firma  = "Alejandra García García"
+      @puesto = "Coordinador Académico Unidad Monterrey"
+    else
+      @firma  = "M.H. Nicté Ortiz Villanueva"
+      @puesto = "Jefa del Departamento de Posgrado"
+    end 
+
+    @consecutivo = get_consecutive(@student, time, Certificate::EXAMINER)
+    @rails_root  = "#{Rails.root}"
+    @year_s      = year[2,4]
+    @year        = year
+    @days        = time.day.to_s
+    @month       = get_month_name(time.month)
+    @nombre      = @student.full_name
+    @matricula   = @student.card
+    @programa    = @student.program.name
+    @asesor      = Staff.find(params[:staff_id]).full_name
+    @institution = Staff.find(params[:staff_id]).institution.name
+    @thesis_title= @student.thesis.title
+	      
+    scholarship = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
+ 
+    if @student.gender == 'F'
+      @genero  = "a"
+      @genero2 = "la"
+    elsif @student.gender == 'H'
+      @genero  = "o"
+      @genero2 = "el"
+    else
+      @genero  = "x"
+      @genero2 = "x"
+    end
+
+    @scholarship = @student.scholarship.joins(:scholarship_type=>[:scholarship_category]).where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE() AND scholarship_categories.id=1")
+
+    html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_sinodal_externo')
+    kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+    filename = "constancia-sinodal-externo-#{@student.id}.pdf"
+    send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+    return # to avoid double render call
   end
 
   def grade_certificates
