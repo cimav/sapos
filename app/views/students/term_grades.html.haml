@@ -19,7 +19,7 @@
   - c = 0
   - total = 0
   - @grades.each do |g|
-    - grade = (g.grade.nil?)?0:g.grade
+    - grade = ((g.grade.nil?)or(g.grade<0))?0:g.grade
     - total += grade
     - c += 1
     - if c % 2 == 0 
@@ -29,7 +29,11 @@
     %tr{:class => klass}
       %td.centered= g.code
       %td= g.name
-      %td.centered= grade
+      %td.centered
+        - if g.grade<0
+          = "NP"
+        - else
+          = grade
       %td.centered= @ts.term.name
       %td.centered= "OBLIGATORIA"
   - if c == 0
