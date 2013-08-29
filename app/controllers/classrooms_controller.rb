@@ -119,7 +119,7 @@ class ClassroomsController < ApplicationController
       render :layout => false and return
     end
           
-    @tcs = TermCourseSchedule.where("classroom_id = :classroom_id AND ((start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date))",{:classroom_id => params[:id],:start_date => @start_date,:end_date => @end_date});
+    @tcs = TermCourseSchedule.where("classroom_id = :classroom_id AND status = 1 AND ((start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date))",{:classroom_id => params[:id],:start_date => @start_date,:end_date => @end_date});
 
     @schedule = Hash.new
     (4..22).each do |i|
