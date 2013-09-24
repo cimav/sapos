@@ -29,8 +29,12 @@
       = " cubriendo un total de " 
       %b="#{@horas}" 
       =" Hrs., dentro del periodo comprendido del "
-      %b="#{@start_day} de #{@start_month} al #{@end_day} de #{@end_month}"
-      = " del presente año en el siguiente horario de "
+      - if @selector == 1
+        %b="#{@start_day} de #{@start_month} al #{@end_day} de #{@end_month}"
+        = " del presente año en el siguiente horario de "
+      - else
+        %b="#{@start_day} de #{@start_month} del #{@start_year} al #{@end_day} de #{@end_month} del #{@end_year}"
+        = " en el siguiente horario de "
       %b= "#{@horario},"
       = " en este Centro de Investigación, desarrollando el siguiente proyecto: "
       %ul

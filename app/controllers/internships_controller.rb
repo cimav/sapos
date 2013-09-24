@@ -279,11 +279,17 @@ class InternshipsController < ApplicationController
       @horas       = @internship.total_hours.to_s
       @start_day   = @internship.start_date.day.to_s
       @start_month = get_month_name(@internship.start_date.month)
+      @start_year  = @internship.start_date.year.to_s
       @end_day     = @internship.end_date.day.to_s
       @end_month   = get_month_name(@internship.end_date.month)
+      @end_year    = @internship.end_date.year.to_s
       @horario     = @internship.schedule
       @proyecto    = @internship.thesis_title
       ######################################################################
+      if ( @year.to_i == @start_year.to_i ) && ( @year.to_i == @end_year.to_i )
+        @selector = 1
+      end
+
       if @internship.gender == 'F'
         @genero  = "a"
         @genero2 = "la"
