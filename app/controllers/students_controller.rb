@@ -112,6 +112,9 @@ class StudentsController < ApplicationController
     if !s.empty?
       @students = @students.where("status IN (#{s.join(',')})")
     end
+    
+    # Descartamos los que tienen status de borrado
+    #@students = @students.where("status<>0")
 
     respond_with do |format|
       format.html do
@@ -332,6 +335,23 @@ class StudentsController < ApplicationController
 	  end
 	end
       end
+    end
+  end
+
+  def destroy
+    parameters= {}
+    time = Time.now
+
+    @student.deleted = 1
+    @student.deleted_at = time
+
+    if @student.save
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
+      @message = "Alumno Eliminado"
+      render_message @student, @message, parameters
+    else
+      @message = "Error al eliminar el alumno"
+      render_error @student,@message, parameters
     end
   end
 
@@ -1116,31 +1136,31 @@ class StudentsController < ApplicationController
       pdf.fill_rectangle [246,586], 100, 11
       pdf.fill_color "373435"
 
-      pdf.draw_text @examiner1, :at=>[246,576], :size=>11
+      pdf.draw_text @examiner1.mb_chars.upcase, :at=>[246,576], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,574], 100, 11
       pdf.fill_color "373435"
       
-      pdf.draw_text @examiner2, :at=>[246,564], :size=>11
+      pdf.draw_text @examiner2.mb_chars.upcase, :at=>[246,564], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,562], 100, 11
       pdf.fill_color "373435"
       
-      pdf.draw_text @examiner3, :at=>[246,552], :size=>11
+      pdf.draw_text @examiner3.mb_chars.upcase, :at=>[246,552], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,550], 100, 11
       pdf.fill_color "373435"
       
-      pdf.draw_text @examiner4, :at=>[246,540], :size=>11
+      pdf.draw_text @examiner4.mb_chars.upcase, :at=>[246,540], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,538], 100, 11
       pdf.fill_color "373435"
       
-      pdf.draw_text @examiner5, :at=>[246,528], :size=>11
+      pdf.draw_text @examiner5.mb_chars.upcase, :at=>[246,528], :size=>11
       
       ## SET THESIS TITLE
       x = 155
@@ -1245,4 +1265,42 @@ class StudentsController < ApplicationController
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
   end
+  
+    def render_error(object,message,parameters)
+    flash = {}
+    flash[:error] = message
+    respond_with do |format|
+      format.html do 
+        if request.xhr?
+          json = {}
+          json[:flash] = flash
+          json[:errors] = object.errors
+          json[:errors_full] = object.errors.full_messages
+          json[:params] = parameters
+          render :json => json, :status => :unprocessable_entity
+        else
+          redirect_to object
+        end
+      end
+    end
+  end
+
+  def render_message(object,message,parameters)
+    flash = {}
+    flash[:notice] = message
+    respond_with do |format|
+      format.html do
+        if request.xhr?
+          json = {}
+          json[:flash] = flash
+          json[:uniq]  = object.id
+          json[:params] = parameters
+          render :json => json
+        else
+          redirect_to object
+        end
+      end
+    end
+  end
+
 end

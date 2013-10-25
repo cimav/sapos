@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130829210818) do
+ActiveRecord::Schema.define(:version => 20131023213029) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -518,6 +518,8 @@ ActiveRecord::Schema.define(:version => 20130829210818) do
     t.integer  "campus_id"
     t.string   "email_cimav"
     t.string   "domain_password"
+    t.integer  "deleted",                            :default => 0
+    t.datetime "deleted_at"
   end
 
   add_index "students", ["campus_id"], :name => "index_students_on_campus_id"

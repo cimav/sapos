@@ -10,9 +10,22 @@
     {
        $("#graduate-dialog").dialog("close");
     }
+
   };
 
+  $("#a-id-destroy").live("ajax:success", function(evt, data, status, xhr) {
+    var res = $.parseJSON(xhr.responseText);
+     try{
+       initializeSearchForm();
+       liveSearch();
+     }
+     catch(e)
+     {
+       // let it pass
+     }
 
+  });
+   
 
 = form_for @student, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
   = hidden_field :student, :id
@@ -28,14 +41,16 @@
       });
     });
 
-
   .resource-header.student-header
     .resource-picture
       = image_tag @student.image_url(:medium).to_s, :id => "img-medium-#{@student.id}"
       %br
       = link_to 'Cambiar foto', '#', :id=>'a-change-image'
     .resource-title
-      %h1= "#{@student.first_name} #{@student.last_name}"
+      %h1
+        = "#{@student.first_name} #{@student.last_name}" 
+        - if can? :destroy, @student
+          = link_to 'Eliminar',"/estudiantes/#{@student.id}/borrar", :remote=>true, :id=>'a-id-destroy',:confirm=>'Esto borrara todos los registros del estudiante ¿Seguro que deseas eliminarlo?'
       .comment= "Matrícula: #{@student.card} (#{@student.program.name})"
       .comment
         = "Tiempo estudiante: #{@year} #{@text_year} #{@month} #{@text_month}, Ciclos: "
@@ -49,6 +64,8 @@
     .resource-save
       - if can? :update, @student
         = f.submit 'Actualizar'
+        
+
 
   #resource-tabs
     %ul
@@ -226,3 +243,4 @@
     #constancias
       %h2 Constancias
       = render :partial => 'certificates', :locals => {:student => @student}
+
