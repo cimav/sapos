@@ -2,7 +2,7 @@
 class StudentFile < ActiveRecord::Base
   attr_accessible :id,:student_id,:description,:file,:created_at,:updated_at
 
-  default_scope joins(:student).where('students.deleted=?',0)
+  default_scope joins(:student).where('students.deleted=?',0).readonly(false)
 
   belongs_to :student
 

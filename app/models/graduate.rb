@@ -1,7 +1,7 @@
 class Graduate < ActiveRecord::Base
   attr_accessible :id,:student_id,:workplace,:income,:gyre,:prizes,:sni,:sni_status,:subsequent_studies,:period_from,:period_to,:notes
   
-  default_scope joins(:student).where('students.deleted=?',0) 
+  default_scope joins(:student).where('students.deleted=?',0).readonly(false)
  
   belongs_to :student
 
