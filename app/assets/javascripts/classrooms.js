@@ -27,7 +27,7 @@ function start_datepicker()
 
 
 $('#search-classroom-schedule').live("click",function(){
-	url = location.pathname + '/horario/' + $('#classroom_id').val()
+	url = location.pathname + '/horario/' + $('#classroom_id').val();
 	
   start_date  = $('#start_date').val();
   end_date    = $('#end_date').val();
