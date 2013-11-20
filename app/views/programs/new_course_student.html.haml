@@ -10,9 +10,9 @@
     #course-student-new
       - students_in_course = TermCourseStudent.where(:term_course_id => @tc.id).map(&:term_student_id)
       - if students_in_course.count > 0
-        - conditions = ['term_id = ? AND id not in (?)', @tc.term_id, students_in_course]
+        - conditions = ['term_students.term_id = ? AND term_students.id not in (?)', @tc.term_id, students_in_course]
       - else 
-        - conditions = ['term_id = ?', @tc.term_id]
+        - conditions = ['term_students.term_id = ?', @tc.term_id]
       - students_available = TermStudent.find(:all, :conditions => conditions).collect {|i| [i.student.full_name_with_card, i.id]}
 
       - in_program_options = ""
