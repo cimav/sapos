@@ -28,6 +28,18 @@ $('#to_excel').live('click', function() {
   window.location = location.pathname + "/busqueda.xls?" + $("#live-search").serialize();
 });
 
+$('#diploma-link').live('click', function() {
+ // window.location = location.pathname + "/diploma/" + 
+ var libro = prompt("Por favor capture el libro");
+ var foja  = prompt("Por favor capture la foja");
+ var href  = location.pathname + "/diploma/" + $('#diploma-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja;
+ $('#diploma-link').attr("target","_blank");
+ $('#diploma-link').attr("href",href);
+ return true;
+});
+
+
+
 
 function initializeSearchForm() {
   $("#program_type option[value=0]").attr("selected", true);

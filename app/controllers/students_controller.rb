@@ -1265,8 +1265,58 @@ class StudentsController < ApplicationController
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
   end
-  
-    def render_error(object,message,parameters)
+
+  def diploma
+    time = Time.new
+    
+    t = Thesis.find(params[:thesis_id])
+    libro = params[:libro]
+    foja  = params[:foja]
+
+    diploma          = "diploma-#{libro}-#{foja}.docx"
+    documento_xml    = "documento-#{libro}-#{foja}.docx"
+
+    ruta_template = Rails.root.join('private','docx','diploma-template.docx')
+    ruta_destino = Rails.root.join('tmp',diploma)
+    
+    xml_template = Rails.root.join('private','docx','document-template.xml')
+    xml_destino = Rails.root.join('tmp',documento_xml)
+ 
+    $stdout.binmode
+
+    FileUtils.cp ruta_template.to_s,ruta_destino.to_s
+    FileUtils.cp xml_template.to_s,xml_destino.to_s
+ 
+    filename = xml_destino.to_s
+    substring filename,/\[alumno\]/,t.student.full_name
+    substring filename,/\[grado\]/,t.student.program.name
+    substring filename,/\[dia\]/,t.defence_date.day.to_s
+    substring filename,/\[mes\]/,get_month_name(t.defence_date.month)
+    substring filename,/\[anio\]/,t.defence_date.year.to_s
+    substring filename,/\[dia2\]/,time.day.to_s
+    substring filename,/\[mes2\]/,get_month_name(time.month)
+    substring filename,/\[anyo2\]/,time.year.to_s
+    substring filename,/\[libro\]/,libro.to_s
+    substring filename,/\[foja\]/,foja.to_s
+    bar_txt = open(filename)
+ 
+    Zip::Archive.open(ruta_destino.to_s) do |ar|
+      ar.replace_io("word/document.xml", bar_txt)
+    end
+
+    zip_data = File.read(ruta_destino.to_s)
+
+    send_data(zip_data, :filename => documento_xml.to_s , :type => "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    return
+  end 
+
+  def substring(filename,regexp,replacestring)
+    text = File.read(filename) 
+    puts = text.gsub(regexp,replacestring)
+    File.open(filename, "w") { |file| file << puts }
+  end
+ 
+  def render_error(object,message,parameters)
     flash = {}
     flash[:error] = message
     respond_with do |format|
