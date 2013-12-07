@@ -1088,11 +1088,19 @@ class StudentsController < ApplicationController
   def grade_certificates
     @time      = Time.now
     @thesis    = Thesis.find(params[:thesis_id])
+    @level     = @thesis.student.program.level
     @examiner1 = Staff.find(@thesis.examiner1).full_name rescue ""
     @examiner2 = Staff.find(@thesis.examiner2).full_name rescue ""
     @examiner3 = Staff.find(@thesis.examiner3).full_name rescue ""
     @examiner4 = Staff.find(@thesis.examiner4).full_name rescue "" 
     @examiner5 = Staff.find(@thesis.examiner5).full_name rescue ""
+    
+    @examiner1t = Staff.find(@thesis.examiner1).title rescue ""
+    @examiner2t = Staff.find(@thesis.examiner2).title rescue ""
+    @examiner3t = Staff.find(@thesis.examiner3).title rescue ""
+    @examiner4t = Staff.find(@thesis.examiner4).title rescue "" 
+    @examiner5t = Staff.find(@thesis.examiner5).title rescue ""
+
 
     filename = "/home/enrique/sapos/private/prawn_templates/acta_de_grado.pdf"
     Prawn::Document.generate("full_template.pdf", :template => filename) do |pdf|
@@ -1135,30 +1143,35 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [246,586], 100, 11
       pdf.fill_color "373435"
+      text = "#{@examiner1t.mb_chars.upcase} #{@examiner1.mb_chars.upcase}"
 
-      pdf.draw_text @examiner1.mb_chars.upcase, :at=>[246,576], :size=>11
+      pdf.draw_text text, :at=>[246,576], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,574], 100, 11
       pdf.fill_color "373435"
+      text = "#{@examiner2t.mb_chars.upcase} #{@examiner2.mb_chars.upcase}"
       
-      pdf.draw_text @examiner2.mb_chars.upcase, :at=>[246,564], :size=>11
+      pdf.draw_text text, :at=>[246,564], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,562], 100, 11
       pdf.fill_color "373435"
+      text = "#{@examiner3t.mb_chars.upcase} #{@examiner3.mb_chars.upcase}"
       
-      pdf.draw_text @examiner3.mb_chars.upcase, :at=>[246,552], :size=>11
+      pdf.draw_text text, :at=>[246,552], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,550], 100, 11
       pdf.fill_color "373435"
+      text = "#{@examiner4t.mb_chars.upcase} #{@examiner4.mb_chars.upcase}"
       
       pdf.draw_text @examiner4.mb_chars.upcase, :at=>[246,540], :size=>11
       
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [245,538], 100, 11
       pdf.fill_color "373435"
+      text = "#{@examiner5t.mb_chars.upcase} #{@examiner5.mb_chars.upcase}"
       
       pdf.draw_text @examiner5.mb_chars.upcase, :at=>[246,528], :size=>11
       
@@ -1201,6 +1214,21 @@ class StudentsController < ApplicationController
       
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=>:bold, :align=> :center, :valign=> :center
 
+
+      # SET GRADE
+      x = 150
+      y = 450
+      w = 400
+      h = 55
+      size = 12
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      grado = @thesis.student.program.name.mb_chars.upcase
+      text = "PARA OBTENER EL GRADO DE #{grado} HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:" 
+      
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+
       # SET PRESIDENT
       x = 5
       y = 225
@@ -1210,7 +1238,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @examiner1
+      text = "#{@examiner1t.mb_chars.upcase} #{@examiner1.mb_chars.upcase}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
      
       # SET SECRETARY
@@ -1222,7 +1250,11 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @examiner5
+      if  @level=1
+        text = "#{@examiner3t.mb_chars.upcase} #{@examiner3.mb_chars.upcase}"
+      elsif @level= 2
+        text = "#{@examiner5t.mb_chars.upcase} #{@examiner5.mb_chars.upcase}"
+      end
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       
       # SET FIRST VOCAL
@@ -1234,33 +1266,50 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @examiner2
+      text = "#{@examiner2t.mb_chars.upcase} #{@examiner2.mb_chars.upcase}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
       # SET SECOND VOCAL
-      x = 307
-      y = 158
-      w = 225
-      h = 15 
-      size = 10
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      text = @examiner3
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      
-      # SET  THIRD VOCAL
-      x = 153
-      y = 115
-      w = 225
-      h = 15 
-      size = 10
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      text = @examiner4
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      if @level = 1
+        x = 307
+        y = 168
+        w = 225
+        h = 115 
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+      elsif  @level = 2
+        x = 307
+        y = 158
+        w = 225
+        h = 15 
+        size = 10
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+        pdf.fill_color "373435"
+        text = "#{@examiner3t.mb_chars.upcase} #{@examiner3.mb_chars.upcase}"
+        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      end 
 
+      # SET  THIRD VOCAL
+      if @level = 1
+        x = 153
+        y = 135
+        w = 225
+        h =  70
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+      elsif @level = !
+        x = 153
+        y = 115
+        w = 225
+        h = 15 
+        size = 10
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+        pdf.fill_color "373435"
+        text = "#{@examiner4t.mb_chars.upcase} #{@examiner4.mb_chars.upcase}"
+        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      end
       # RENDER
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end

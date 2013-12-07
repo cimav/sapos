@@ -42,6 +42,9 @@
 
     #detalles
       %h2 Detalles
+      .field#field_staff_title
+        = f.label :title, 'Título'
+        = f.text_field :title
 
       .field#field_staff_first_name
         = f.label :first_name, mark_required(@staff, :first_name) + 'Nombre'
