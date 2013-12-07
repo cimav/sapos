@@ -24,3 +24,6 @@ gem 'spreadsheet'
 gem 'pdfkit'
 gem 'cancan'
 gem 'prawn'
+
+gem 'zipruby'
+gem 'fileutils'
