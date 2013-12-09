@@ -1459,6 +1459,18 @@ class StudentsController < ApplicationController
       pdf.fill_color "000000"
       text = t.student.full_name.mb_chars.upcase
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
+      
+      # SET PROGRAM NAME
+      x = 179
+      y = 546
+      w = 400
+      h = 26
+      size = 12
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "000000"
+      text = t.student.program.name.mb_chars.upcase
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center,:valign=>:top
 
       ### SET COURSES
       ## CLEAN  PAGE 1
