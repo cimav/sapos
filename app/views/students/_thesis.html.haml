@@ -74,5 +74,5 @@
 %div{:id => "certificate_grade", :class => 'field', :style => ""}
   %br
   = link_to ' Generar Acta de Grado', {:action => 'grade_certificates', :thesis_id => student.thesis.id }, :method => 'put', :target=>"_blank"
-  =# link_to ' Generar Diploma', {:action => 'diploma', :thesis_id => student.thesis.id }, :method => 'put', :target=>"_blank"
   %a{'id' => 'diploma-link', 'thesis_id'=> student.thesis.id,'href'=>''} Generar Diploma
+  %a{'id' => 'total-studies-link', 'thesis_id'=> student.thesis.id,'href'=>''} Certificado Estudios Totales

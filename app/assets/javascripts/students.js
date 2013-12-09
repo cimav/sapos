@@ -29,7 +29,6 @@ $('#to_excel').live('click', function() {
 });
 
 $('#diploma-link').live('click', function() {
- // window.location = location.pathname + "/diploma/" + 
  var libro = prompt("Por favor capture el libro");
  var foja  = prompt("Por favor capture la foja");
  var href  = location.pathname + "/diploma/" + $('#diploma-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja;
@@ -38,6 +37,14 @@ $('#diploma-link').live('click', function() {
  return true;
 });
 
+$('#total-studies-link').live('click', function() {
+ var libro = prompt("Por favor capture el libro");
+ var foja  = prompt("Por favor capture la foja");
+ var href  = location.pathname + "/constancia_total/" + $('#total-studies-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja;
+ $('#total-studies-link').attr("target","_blank");
+ $('#total-studies-link').attr("href",href);
+ return true;
+});
 
 
 

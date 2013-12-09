@@ -929,6 +929,114 @@ class StudentsController < ApplicationController
     return name
   end
 
+  def get_cardinal_name(number)
+    cardinals = [
+      "cero",
+      "uno",
+      "dos",
+      "tres",
+      "cuatro",
+      "cinco",
+      "seis",
+      "siete",
+      "ocho",
+      "nueve",
+      "diez",
+      "once",
+      "doce",
+      "trece",
+      "catorce",
+      "quince",
+      "dieciséis",
+      "diecisiete",
+      "dieciocho",
+      "diecinueve",
+      "veinte",
+      "veintiuno",
+      "veintidós",
+      "veintitrés",
+      "veinticuatro",
+      "veinticinco",
+      "veintiseis",
+      "veintisiete",
+      "veintiocho",
+      "veintinueve",
+      "treinta",
+      "treinta y uno",
+      "treinta y dos",
+      "treinta y tres",
+      "treinta y cuatro",
+      "treinta y cinco",
+      "treinta y seis",
+      "treinta y siete",
+      "treinta y ocho",
+      "treinta y nueve",
+      "cuarenta",
+      "cuarenta y uno",
+      "cuarenta y dos",
+      "cuarenta y tres",
+      "cuarenta y cuatro",
+      "cuarenta y cinco",
+      "cuarenta y seis",
+      "cuarenta y siete",
+      "cuarenta y ocho",
+      "cuarenta y nueve",
+      "cincuenta",
+      "cincuenta y uno",
+      "cincuenta y dos",
+      "cincuenta y tres",
+      "cincuenta y cuatro",
+      "cincuenta y cinco",
+      "cincuenta y seis",
+      "cincuenta y siete",
+      "cincuenta y ocho",
+      "cincuenta y nueve",
+      "sesenta",
+      "sesenta y uno",
+      "sesenta y dos",
+      "sesenta y tres",
+      "sesenta y cuatro",
+      "sesenta y cinco",
+      "sesenta y seis",
+      "sesenta y siete",
+      "sesenta y ocho",
+      "sesenta y nueve",
+      "setenta",
+      "setenta y uno",
+      "setenta y dos",
+      "setenta y tres",
+      "setenta y cuatro",
+      "setenta y cinco",
+      "setenta y seis",
+      "setenta y siete",
+      "setenta y ocho",
+      "setenta y nueve",
+      "ochenta",
+      "ochenta y uno",
+      "ochenta y dos",
+      "ochenta y tres",
+      "ochenta y cuatro",
+      "ochenta y cinco",
+      "ochenta y seis",
+      "ochenta y siete",
+      "ochenta y ocho",
+      "ochenta y nueve",
+      "noventa",
+      "noventa y uno",
+      "noventa y dos",
+      "noventa y tres",
+      "noventa y cuatro",
+      "noventa y cinco",
+      "noventa y seis",
+      "noventa y siete",
+      "noventa y ocho",
+      "noventa y nueve",
+      "cien"]
+    
+    name = cardinals[number]
+    return name
+  end
+
   def get_consecutive(object, time, type)
     maximum = Certificate.where(:year => time.year).maximum("consecutive")
 
@@ -1314,6 +1422,184 @@ class StudentsController < ApplicationController
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
   end
+  
+  def total_studies_certificate
+    t = Thesis.find(params[:thesis_id])
+    libro = params[:libro]
+    foja  = params[:foja]
+    filename = "/home/enrique/sapos/private/prawn_templates/certificado_estudios_totales.pdf"
+    Prawn::Document.generate("full_template.pdf", :template => filename) do |pdf|
+      pdf.font_families.update("Arial" => {
+        :bold        => "/home/enrique/sapos/private/fonts/arial/arialbd.ttf",
+        :italic      => "/home/enrique/sapos/private/fonts/arial/ariali.ttf",
+        :bold_italic => "/home/enrique/sapos/private/fonts/arial/arialbi.ttf",
+        :normal      => "/home/enrique/sapos/private/fonts/arial/arial.ttf"
+      })
+      pdf.font "Arial"
+      # SET FOLIO
+      x = 462
+      y = 626
+      w = 40
+      h = 9
+      size = 9 
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      text = "#{libro}-#{foja}"
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :center, :valign=> :center
+
+      # SET NAME
+      x = 180
+      y = 568
+      w = 250
+      h = 13
+      size = 12
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "000000"
+      text = t.student.full_name.mb_chars.upcase
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
+
+      ### SET COURSES
+      ## CLEAN  PAGE 1
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [64,191], 20, 150
+      pdf.fill_rectangle [117,197], 106, 150
+      pdf.fill_rectangle [229,192], 45, 150
+      pdf.fill_rectangle [285,192], 38, 150
+      pdf.fill_rectangle [329,196], 84, 150
+
+      ## CLEAN PAGE 2
+      pdf.go_to_page(2)
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [72,575], 20, 150
+      pdf.fill_rectangle [120,583], 106, 150
+      pdf.fill_rectangle [231,575], 45, 150
+      pdf.fill_rectangle [287,575], 38, 150
+      pdf.fill_rectangle [330,575], 84, 150
+
+      # CODE INITIAL DATA
+      pdf.go_to_page(1)
+      x = 64
+      y = 191 
+      w = 20 
+      h = 9
+      size = 8 
+      # COURSE NAME INITIAL DATA
+      x_1 = 117
+      y_1 = 197
+      w_1 = 106
+      h_1 = 25
+      size_1 = 8
+      # TERMS INITIAL DATA
+      x_2 = 229
+      y_2 = 192
+      w_2 = 45
+      h_2 = 9
+      size_2 = 7
+      # GRADE INITIAL DATA
+      x_3 = 285
+      y_3 = 191
+      w_3 = 38
+      h_3 = 9
+      size_3 = 8
+      # GRADE ON TEXT INITIAL DATA
+      x_4 = 329
+      y_4 = 196
+      w_4 = 84
+      h_4 = 18
+      size_4 = 8
+      # GENERAL DATA
+      text = ""
+      counter = 0
+ 
+      t.student.term_students.each do |te|
+        te.term_course_student.where("term_course_students.status=? AND term_course_students.grade>=?",TermCourseStudent::ACTIVE,70).each do |tcs|
+          counter= counter + 1
+          ## SET CODE
+          text= tcs.term_course.course.code
+
+          pdf.fill_color "ffffff"
+          pdf.fill_rectangle [x,y], w, h
+          pdf.fill_color "000000"
+          pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
+          
+          y =  y - 50
+
+          ## SET COURSE NAME
+          text= tcs.term_course.course.name.mb_chars.upcase
+          
+          pdf.fill_color "ffffff"
+          pdf.fill_rectangle [x_1,y_1], w_1, h_1
+          pdf.fill_color "000000"
+          pdf.text_box text , :at=>[x_1,y_1], :width => w_1, :height=> h_1, :size=>size_1, :style=> :bold, :align=> :center, :valign=> :center
+          y_1 =  y_1 - 50
+
+          ## SET TERM
+          term = tcs.term_course.term.name
+          year = term.at(2..3)
+          subterm = term.at(5)
+
+          text = "#{year}/#{subterm}"
+          pdf.fill_color "ffffff"
+          pdf.fill_rectangle [x_2,y_2], w_2, h_2
+          pdf.fill_color "000000"
+          pdf.text_box text , :at=>[x_2,y_2], :width => w_2, :height=> h_2, :size=>size_2, :style=> :bold, :align=> :center, :valign=> :center
+          y_2 = y_2 - 50
+
+          ## SET GRADE
+          text = tcs.grade.to_s
+          pdf.fill_color "ffffff"
+          pdf.fill_rectangle [x_3,y_3], w_3, h_3
+          pdf.fill_color "000000"
+          pdf.text_box text , :at=>[x_3,y_3], :width => w_3, :height=> h_3, :size=>size_3, :style=> :bold, :align=> :center, :valign=> :center
+          y_3 = y_3 - 50
+          
+          ## SET GRADE ON TEXT
+          text = get_cardinal_name(tcs.grade.to_i)
+          pdf.fill_color "ffffff"
+          pdf.fill_rectangle [x_4,y_4], w_4, h_4
+          pdf.fill_color "000000"
+          pdf.text_box text.upcase , :at=>[x_4,y_4], :width => w_4, :height=> h_4, :size=>size_4, :style=> :bold, :align=> :center, :valign=> :center
+          y_4 = y_4 - 50
+
+          #### GO TO PAGE 2
+          if counter == 3
+            pdf.go_to_page(2)
+            x = 72
+            y = 575
+            x_1 = 120
+            y_1 = 583
+            x_2 = 231
+            y_2 = 575
+            x_3 = 287
+            y_3 = 575
+            x_4 = 330
+            y_4 = 580
+          end
+        end
+      end
+      
+      # DATE
+      pdf.go_to_page(2)
+      time = Time.new
+      x = 150 
+      y = 145
+      w = 250
+      h = 9
+      size = 9
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "000000"
+      text = "a #{time.day.to_s} de #{get_month_name(time.month)} del #{time.year.to_s}"
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
+
+      # RENDER
+      send_data pdf.render, type: "application/pdf", disposition: "inline"
+    end
+  end
+
+
 
   def diploma
     time = Time.new
