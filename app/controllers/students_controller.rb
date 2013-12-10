@@ -1194,6 +1194,7 @@ class StudentsController < ApplicationController
   end
 
   def grade_certificates
+    @r_root    = Rails.root.to_s
     @time      = Time.now
     @thesis    = Thesis.find(params[:thesis_id])
     @level     = @thesis.student.program.level
@@ -1209,16 +1210,17 @@ class StudentsController < ApplicationController
     @examiner4t = Staff.find(@thesis.examiner4).title rescue "" 
     @examiner5t = Staff.find(@thesis.examiner5).title rescue ""
 
-
-    filename = "/home/enrique/sapos/private/prawn_templates/acta_de_grado.pdf"
+    filename = "#{@r_root}/private/prawn_templates/acta_de_grado.pdf"
     Prawn::Document.generate("full_template.pdf", :template => filename) do |pdf|
       pdf.font_families.update("Arial" => {
-        :bold        => "/home/enrique/sapos/private/fonts/arial/arialbd.ttf",
-        :italic      => "/home/enrique/sapos/private/fonts/arial/ariali.ttf",
-        :bold_italic => "/home/enrique/sapos/private/fonts/arial/arialbi.ttf",
-        :normal      => "/home/enrique/sapos/private/fonts/arial/arial.ttf"
+        :bold        => "#{@r_root}/private/fonts/arial/arialbd.ttf",
+        :italic      => "#{@r_root}/private/fonts/arial/ariali.ttf",
+        :bold_italic => "#{@r_root}/private/fonts/arial/arialbi.ttf",
+        :normal      => "#{@r_root}/private/fonts/arial/arial.ttf"
       })
       pdf.font "Arial"
+
+      pdf.image "#{@r_root}/private/cimav_sc.png", :at => [112,703], :height => 48 
 
       # SET HOUR AND DAY
       @hora = "%02d:%02d HORAS DEL DÍA %2d" % [@time.hour,@time.min,@time.day]
@@ -1365,39 +1367,6 @@ class StudentsController < ApplicationController
       end
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       
-      # SET FIRST VOCAL
-      x = 5
-      y = 158
-      w = 225
-      h = 15 
-      size = 10
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      text = "#{@examiner2t.mb_chars.upcase} #{@examiner2.mb_chars.upcase}"
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-
-      # SET SECOND VOCAL
-      if @level = 1
-        x = 307
-        y = 168
-        w = 225
-        h = 115 
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-      elsif  @level = 2
-        x = 307
-        y = 158
-        w = 225
-        h = 15 
-        size = 10
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-        pdf.fill_color "373435"
-        text = "#{@examiner3t.mb_chars.upcase} #{@examiner3.mb_chars.upcase}"
-        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      end 
-
       # SET  THIRD VOCAL
       if @level = 1
         x = 153
@@ -1418,22 +1387,82 @@ class StudentsController < ApplicationController
         text = "#{@examiner4t.mb_chars.upcase} #{@examiner4.mb_chars.upcase}"
         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       end
+      
+      # SET SECOND VOCAL
+      if @level = 1
+        x = 307
+        y = 168
+        w = 225
+        h = 115 
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+      elsif  @level = 2
+        x = 307
+        y = 158
+        w = 225
+        h = 15 
+        size = 10
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+        pdf.fill_color "373435"
+        text = "#{@examiner3t.mb_chars.upcase} #{@examiner3.mb_chars.upcase}"
+        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      end 
+      
+      # SET FIRST VOCAL
+      if @level = 1
+        x = 5
+        y = 170
+        w = 225
+        h = 70
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+        x = 155 
+        y = 154
+        w = 225
+        h = 15 
+        size = 10
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+        pdf.fill_color "373435"
+        # line
+        text = "____________________________________________"
+        pdf.text_box text , :at=>[205,164], :width => 150, :height=>10 , :size=>5, :align=> :left, :valign=> :top
+        # text
+        text = "#{@examiner2t.mb_chars.upcase} #{@examiner2.mb_chars.upcase}"
+        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
+        text = "1er VOCAL"
+        pdf.text_box text , :at=>[x,y - 13], :width => w, :height=> h, :size=>12, :align=> :center, :valign=> :top
+       elsif @level = 2
+         x = 5
+         y = 158
+         w = 225
+         h = 15 
+         size = 10
+         pdf.fill_color "ffffff"
+         pdf.fill_rectangle [x,y], w, h
+         pdf.fill_color "373435"
+         text = "#{@examiner2t.mb_chars.upcase} #{@examiner2.mb_chars.upcase}"
+         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+       end
+
       # RENDER
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
   end
   
   def total_studies_certificate
+    @r_root    = Rails.root.to_s
     t = Thesis.find(params[:thesis_id])
     libro = params[:libro]
     foja  = params[:foja]
-    filename = "/home/enrique/sapos/private/prawn_templates/certificado_estudios_totales.pdf"
+    filename = "#{@r_root}/private/prawn_templates/certificado_estudios_totales.pdf"
     Prawn::Document.generate("full_template.pdf", :template => filename) do |pdf|
       pdf.font_families.update("Arial" => {
-        :bold        => "/home/enrique/sapos/private/fonts/arial/arialbd.ttf",
-        :italic      => "/home/enrique/sapos/private/fonts/arial/ariali.ttf",
-        :bold_italic => "/home/enrique/sapos/private/fonts/arial/arialbi.ttf",
-        :normal      => "/home/enrique/sapos/private/fonts/arial/arial.ttf"
+        :bold        => "#{@r_root}/private/fonts/arial/arialbd.ttf",
+        :italic      => "#{@r_root}/private/fonts/arial/ariali.ttf",
+        :bold_italic => "#{@r_root}/private/fonts/arial/arialbi.ttf",
+        :normal      => "#{@r_root}/private/fonts/arial/arial.ttf"
       })
       pdf.font "Arial"
       # SET FOLIO
