@@ -207,6 +207,52 @@ class ApplicantsController < ApplicationController
     render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
   end
 
+  def certificates
+    @applicant = Applicant.find(params[:id])
+    time = Time.new
+    year = time.year.to_s
+    
+    @firma  = "M.H. Nict Ortiz Villanueva"
+    @puesto = "Jefa del Departamento de Posgrado"
+
+
+    if params[:type] == "aceptacion"
+      @consecutivo = get_consecutive(@applicant, time, Certificate::APP_ACCEPTANCE)
+      @rails_root  = "#{Rails.root}"
+      @year_s      = year[2,4]
+      @year        = year
+      @days        = time.day.to_s
+      @month       = get_month_name(time.month)
+      @nombre      = @applicant.full_name
+      @programa    = @applicant.program.name
+      @campus      = @applicant.campus.id
+      
+      @ciclo              = params[:ciclo]
+      @fecha_inicio       = params[:f_ini]
+      @fecha_fin          = params[:f_fin]
+      @fecha_inscripcion  = params[:f_ins]
+      @fecha_revision     = params[:f_rev]
+
+      html = "Error"
+      if @applicant.status==3 # ACEPTADO
+        if @applicant.program.level == 3 # PROPEDEUTICO
+          html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_aceptacion_prop')
+        else
+          html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_aceptacion')
+        end
+      elsif @applicant.status==2 # RECHAZADO
+        html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_rechazo')
+      end
+
+      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      filename = "carta-aspirante-#{@applicant.id}.pdf"
+      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+      return
+    end
+  end
+
+
+
   def  download_file
     af = ApplicantFile.find(params[:id]).file
     send_file af.to_s, :x_sendfile=>true
@@ -247,5 +293,31 @@ class ApplicantsController < ApplicationController
         end
       end
     end
+  end
+  
+  def get_consecutive(object, time, type)
+    maximum = Certificate.where(:year => time.year).maximum("consecutive")
+
+    if maximum.nil?
+      maximum = 1
+    else
+      maximum = maximum + 1 
+    end
+ 
+    certificate                 = Certificate.new()
+    certificate.consecutive     = maximum
+    certificate.year            = time.year
+    certificate.attachable_id   = object.id
+    certificate.attachable_type = object.class.to_s
+    certificate.type            = type
+    certificate.save
+
+    return "%03d" % maximum
+  end
+  
+  def get_month_name(number)
+    months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
+    name = months[number - 1]
+    return name
   end
 end

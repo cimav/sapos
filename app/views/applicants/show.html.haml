@@ -1,3 +1,29 @@
+:javascript
+  $(document).ready(function() {
+    $('.reqdoc_button').click(function(){
+      var estatus = $(this).attr("estatus");
+      var level   = $(this).attr("level");
+      if(estatus==3)
+      {
+        var ciclo  = prompt("Capture ciclo:");
+        if(level==3)
+        {
+          var f_ini  = prompt("Capture fecha de inicio del ciclo:");
+          var f_fin  = prompt("Capture fecha de fin del ciclo:");
+        }
+        var f_ins  = prompt("Capture fecha de inscripcion:");
+      }
+      else if(estatus==2){
+        var f_rev  = prompt("Capture fecha de revision del comite:");
+      }
+
+      
+      var c_type = $(this).attr("c_type");
+      var aid    = $(this).attr("applicant_id");
+      window.location.href="aspirantes/constancias/"+c_type+"/"+aid+"?ciclo="+ciclo+"&f_ini="+f_ini+"&f_fin="+f_fin+"&f_ins="+f_ins+"&f_rev="+f_rev;
+    });
+  });
+
 = form_for @applicant, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
   = hidden_field :applicant, :id
   .resource-header.student-header
@@ -17,6 +43,7 @@
     %ul
       %li.first-tab= link_to "General", "#general"
       %li= link_to "Documentos", "#documentos"
+      %li= link_to "Constancias", "#constancias"
 
     #general
       %h2 General
@@ -95,3 +122,10 @@
     #documentos
       %h2 Documentos
       %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "555", "src" => "/aspirantes/#{@applicant.id}/archivos", "scrolling" => "no", :frameborder=>"0"}
+    
+    #constancias
+      %h2 Constancias
+      .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
+        = label_tag 'Carta de estatus de aceptación' 
+        - if @applicant.status!= 4 && @applicant.status!=1
+          = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"aceptacion", :applicant_id=>@applicant.id, :estatus=>@applicant.status, :level=> @applicant.program.level rescue "" 

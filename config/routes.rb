@@ -164,6 +164,7 @@ Sapos::Application.routes.draw do
   
   match 'aspirantes/busqueda' => 'applicants#live_search'
   match 'aspirantes/:id/archivos' => 'applicants#files'
+  match 'aspirantes/constancias/:type/:id' => 'applicants#certificates'
 
   resources :documentation_files
 
