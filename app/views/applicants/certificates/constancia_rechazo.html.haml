@@ -14,11 +14,11 @@
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       ="Por medio del presente me permito informar a usted que el Comité de Estudios de Posgrado en su reunión del pasado #{@fecha_revision} ha decidido el ingreso de aspirantes a los programas académicos de este Centro. Después de ser analizada su solicitud se ha determinado no aceptarlo. El Comité de Ingreso le recomienda, de ser de su interés, realizar de nueva cuenta la solicitud en la próxima convocatoria y atender a las siguientes recomendaciones en su anteproyecto de investigación:"
     %p.western{:style=>"font-size: 27pt; font-weight: 100;font-style: italic"}
-      = "\"El proyecto presentado es insuficiente para una tesis doctoral. Debe ser corregido y ampliado.\""
+      = "\"#{@recomendacion}\""
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       = "A sus órdenes para cualquier duda o comentario al respecto."
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
-      = "Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}"
+      = "Chihuahua, Chihuahua #{@days} de #{@month} de #{@year}"
   %p.western
     %br
     %br
@@ -34,7 +34,7 @@
     %p
     %br
     %div{:style=>"text-align: left;"}
-      ="c.c.p. Dr. José Andrés Matutes Aquino."
+      ="c.c.p. #{@supervisor}"
       %br
       - if @campus == 2
         ="c.c.p. Unidad Monterrey"

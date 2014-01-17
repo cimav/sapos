@@ -215,7 +215,6 @@ class ApplicantsController < ApplicationController
     @firma  = "M.H. Nict Ortiz Villanueva"
     @puesto = "Jefa del Departamento de Posgrado"
 
-
     if params[:type] == "aceptacion"
       @consecutivo = get_consecutive(@applicant, time, Certificate::APP_ACCEPTANCE)
       @rails_root  = "#{Rails.root}"
@@ -232,14 +231,19 @@ class ApplicantsController < ApplicationController
       @fecha_fin          = params[:f_fin]
       @fecha_inscripcion  = params[:f_ins]
       @fecha_revision     = params[:f_rev]
+      @recomendacion      = params[:rec]
+
+      @staff              = Staff.find(@applicant.staff_id)
+      @supervisor         = "No definido"
+      if !@staff.nil?
+        @supervisor         = "#{@staff.title} #{@staff.full_name}"
+      end
 
       html = "Error"
       if @applicant.status==3 # ACEPTADO
-        if @applicant.program.level == 3 # PROPEDEUTICO
-          html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_aceptacion_prop')
-        else
-          html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_aceptacion')
-        end
+        html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_aceptacion')
+      elsif @applicant.status==5 #PROPEDEUTICO
+        html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_aceptacion_prop')
       elsif @applicant.status==2 # RECHAZADO
         html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_rechazo')
       end

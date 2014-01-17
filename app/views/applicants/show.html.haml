@@ -2,25 +2,25 @@
   $(document).ready(function() {
     $('.reqdoc_button').click(function(){
       var estatus = $(this).attr("estatus");
-      var level   = $(this).attr("level");
       if(estatus==3)
       {
         var ciclo  = prompt("Capture ciclo:");
-        if(level==3)
-        {
+        var f_ins  = prompt("Capture fecha de inscripcion:");
+      }
+      else if(estatus==5){
+          var ciclo  = prompt("Capture ciclo:");
           var f_ini  = prompt("Capture fecha de inicio del ciclo:");
           var f_fin  = prompt("Capture fecha de fin del ciclo:");
-        }
-        var f_ins  = prompt("Capture fecha de inscripcion:");
+          var f_ins  = prompt("Capture fecha de inscripcion:");
       }
       else if(estatus==2){
         var f_rev  = prompt("Capture fecha de revision del comite:");
+        var rec    = prompt("Capture recomendacion del comite:");
       }
-
       
       var c_type = $(this).attr("c_type");
       var aid    = $(this).attr("applicant_id");
-      window.location.href="aspirantes/constancias/"+c_type+"/"+aid+"?ciclo="+ciclo+"&f_ini="+f_ini+"&f_fin="+f_fin+"&f_ins="+f_ins+"&f_rev="+f_rev;
+      window.location.href="aspirantes/constancias/"+c_type+"/"+aid+"?ciclo="+ciclo+"&f_ini="+f_ini+"&f_fin="+f_fin+"&f_ins="+f_ins+"&f_rev="+f_rev+"&rec="+rec;
     });
   });
 
@@ -127,5 +127,5 @@
       %h2 Constancias
       .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
         = label_tag 'Carta de estatus de aceptación' 
-        - if @applicant.status!= 4 && @applicant.status!=1
-          = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"aceptacion", :applicant_id=>@applicant.id, :estatus=>@applicant.status, :level=> @applicant.program.level rescue "" 
+        - if @applicant.status!= 4 && @applicant.status!=1 && !@applicant.program.nil?
+          = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"aceptacion", :applicant_id=>@applicant.id, :estatus=>@applicant.status 

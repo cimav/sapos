@@ -7,10 +7,11 @@ class Applicant < ActiveRecord::Base
   after_create :set_folio
   before_create :register
 
-  REGISTERED  = 1
-  REJECTED    = 2
-  ACCEPTED    = 3
-  DELETED     = 4
+  REGISTERED    = 1
+  REJECTED      = 2
+  ACCEPTED      = 3
+  DELETED       = 4
+  ACCEPTED_PROP = 5
   
   SINGLE   = 1
   MARRIED  = 2
@@ -24,10 +25,11 @@ class Applicant < ActiveRecord::Base
 
 
   STATUS = {
-    REGISTERED => 'En Proceso',
-    REJECTED   => 'No Aceptado',
-    ACCEPTED   => 'Aceptado',
-    DELETED    => 'Borrado'
+    REGISTERED    => 'En Proceso',
+    REJECTED      => 'No Aceptado',
+    ACCEPTED      => 'Aceptado',
+    ACCEPTED_PROP => 'Aceptado a propedeutico',
+    DELETED       => 'Borrado'
   }
 
   belongs_to :program

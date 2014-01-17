@@ -14,16 +14,13 @@
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       = "Por este conducto me es grato notificarle que ha sido aceptado como alumno de nuevo ingreso al programa #{@programa} para el ciclo #{@ciclo}. Le informo que la fecha establecida para la  inscripción de nuevo ingreso será el próximo #{@fecha_inscripcion}, para lo cual deberá presentarse en el área de Control Escolar de este Departamento."
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
-      ="El Comité le indica que deberá redefinir el alcance de su proyecto y  justificar la fuente de financiamiento."
-    %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       ="Así mismo, le informo que para el trámite de su beca nacional CONACYT deberá contar con CVU actualizado antes de la inscripción. Para mayor información ingresar a la página: "
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
-      = "http://www.conacyt.gob.mx/Becas/Aspirantes/Convocatorias_2011/1.4_Curricul"
-      = "um_Vitae_Unico.pdf"
+      = "http://www.conacyt.gob.mx/Becas"
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       = "Le envío una felicitación por este logro académico. Para cualquier duda o comentario al respecto, estoy a sus órdenes. "
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
-      = "Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}"
+      = "Chihuahua, Chihuahua #{@days} de #{@month} de #{@year}"
   %p.western
     %br
     %br
@@ -39,7 +36,7 @@
     %p
     %br
     %div{:style=>"text-align: left;"}
-      ="c.c.p. Dr. José Andrés Matutes Aquino."
+      = "c.c.p. #{@supervisor}"
       %br
       - if @campus == 2
         ="c.c.p. Unidad Monterrey"
