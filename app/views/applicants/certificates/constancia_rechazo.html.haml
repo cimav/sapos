@@ -34,7 +34,8 @@
     %p
     %br
     %div{:style=>"text-align: left;"}
-      ="c.c.p. #{@supervisor}"
+      - if !@supervisor.nil?
+        = "c.c.p. #{@supervisor}"
       %br
       - if @campus == 2
         ="c.c.p. Unidad Monterrey"

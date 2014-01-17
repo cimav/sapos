@@ -233,9 +233,9 @@ class ApplicantsController < ApplicationController
       @fecha_revision     = params[:f_rev]
       @recomendacion      = params[:rec]
 
-      @staff              = Staff.find(@applicant.staff_id)
-      @supervisor         = "No definido"
-      if !@staff.nil?
+      @staff              = Staff.find(@applicant.staff_id) rescue nil
+      @supervisor         = nil
+      if !@staff.nil? 
         @supervisor         = "#{@staff.title} #{@staff.full_name}"
       end
 
