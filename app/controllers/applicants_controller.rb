@@ -214,7 +214,7 @@ class ApplicantsController < ApplicationController
     
     @firma  = "M.H. Nict Ortiz Villanueva"
     @puesto = "Jefa del Departamento de Posgrado"
-
+   
     if params[:type] == "aceptacion"
       @consecutivo = get_consecutive(@applicant, time, Certificate::APP_ACCEPTANCE)
       @rails_root  = "#{Rails.root}"
@@ -232,6 +232,7 @@ class ApplicantsController < ApplicationController
       @fecha_inscripcion  = params[:f_ins]
       @fecha_revision     = params[:f_rev]
       @recomendacion      = params[:rec]
+      @level              = @applicant.program.level.to_i rescue 0
 
       @staff              = Staff.find(@applicant.staff_id) rescue nil
       @supervisor         = nil

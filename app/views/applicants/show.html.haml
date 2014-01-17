@@ -2,8 +2,8 @@
   $(document).ready(function() {
     $('.reqdoc_button').click(function(){
       var estatus = $(this).attr("estatus");
-      if(estatus==3)
-      {
+      var nivel = $(this).attr("level");
+      if(estatus==3){
         var ciclo  = prompt("Capture ciclo:");
         var f_ins  = prompt("Capture fecha de inscripcion:");
       }
@@ -15,7 +15,9 @@
       }
       else if(estatus==2){
         var f_rev  = prompt("Capture fecha de revision del comite:");
-        var rec    = prompt("Capture recomendacion del comite:");
+        if (nivel==2){
+          var rec    = prompt("Capture recomendacion del comite:");
+        }
       }
       
       var c_type = $(this).attr("c_type");
@@ -128,4 +130,4 @@
       .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
         = label_tag 'Carta de estatus de aceptación' 
         - if @applicant.status!= 4 && @applicant.status!=1 && !@applicant.program.nil?
-          = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"aceptacion", :applicant_id=>@applicant.id, :estatus=>@applicant.status 
+          = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"aceptacion", :applicant_id=>@applicant.id, :estatus=>@applicant.status, :level=>@applicant.program.level rescue 0
