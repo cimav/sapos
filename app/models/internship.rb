@@ -15,7 +15,6 @@ class Internship < ActiveRecord::Base
   validates :last_name, :presence => true
   validates :institution_id, :presence => true
   validates :internship_type_id, :presence => true
-  validates :grade, :numericality => true
 
   after_create :add_extra
 
