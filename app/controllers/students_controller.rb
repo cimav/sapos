@@ -657,9 +657,9 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<year>",year)
       s1 = s1.gsub("<days>",time.day.to_s)
       s1 = s1.gsub("<month>",get_month_name(time.month))
-      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.start_date.month).capitalize)
-      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.month).capitalize)
-      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.year.to_s)
+      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.start_date.month).capitalize)
+      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.month).capitalize)
+      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.year.to_s)
       if @student.gender == 'F'
 	s1 = s1.gsub("<genero>","a")
       elsif @student.gender == 'H'
@@ -688,7 +688,7 @@ class StudentsController < ApplicationController
       @programa    = @student.program.name
       @student_image_uri = @student.image_url.to_s
 	      
-      scholarship = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
+      scholarship = @student.scholarship.where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE()")
  
       if @student.gender == 'F'
         @genero  = "a"
@@ -701,7 +701,7 @@ class StudentsController < ApplicationController
         @genero2 = "x"
       end
 
-      @scholarship = @student.scholarship.joins(:scholarship_type=>[:scholarship_category]).where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE() AND scholarship_categories.id=1")
+      @scholarship = @student.scholarship.joins(:scholarship_type=>[:scholarship_category]).where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE() AND scholarship_categories.id=1")
 
       html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_visa')
       kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
@@ -725,7 +725,7 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<programa>",@student.program.name)
       ######################################################################
-      s1 = s1.gsub("<semestre>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.code)
+      s1 = s1.gsub("<semestre>",@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.code)
       s1 = s1.gsub("<firma>",@firma)
       s1 = s1.gsub("<puesto>",@puesto)
       counter = 0
@@ -782,7 +782,7 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<firma>",@firma)
       s1 = s1.gsub("<puesto>",@puesto)
       ######################################################################
-      ts = @student.term_students.joins(:term).order("start_date")
+      ts = @student.term_students.joins(:term).order("terms.start_date")
       term = ts.last.term
       s1 = s1.gsub("<semestre>",term.code)
       avg = get_semester_average(term)
@@ -826,17 +826,17 @@ class StudentsController < ApplicationController
       s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
       s1 = s1.gsub("<programa>",@student.program.name)
       ######################################################################
-      s1 = s1.gsub("<start_day>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.start_date.day.to_s)
-      s1 = s1.gsub("<end_day>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.day.to_s)
-      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.start_date.month).capitalize)
-      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.month).capitalize)
-      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order("start_date desc").limit(1)[0].term.end_date.year.to_s)
+      s1 = s1.gsub("<start_day>",@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.start_date.day.to_s)
+      s1 = s1.gsub("<end_day>",@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.day.to_s)
+      s1 = s1.gsub("<start_month>",get_month_name(@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.start_date.month).capitalize)
+      s1 = s1.gsub("<end_month>",get_month_name(@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.month).capitalize)
+      s1 = s1.gsub("<end_year>",@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.year.to_s)
       
       s1 = s1.gsub("<creditos>", get_credits(@student))
       s1 = s1.gsub("<promedio>",get_average(@student))
       s1 = s1.gsub("<firma>",@firma)
       s1 = s1.gsub("<puesto>",@puesto)
-      result = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
+      result = @student.scholarship.where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE()")
       
       if result.size.eql? 0
         s1 = s1.gsub(/<beca>.+<\/beca>/m,"")
