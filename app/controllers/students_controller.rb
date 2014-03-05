@@ -616,31 +616,32 @@ class StudentsController < ApplicationController
     end 
 
     if params[:type] == "estudios"
-      string = File.read("#{Rails.root}/app/views/students/certificates/constancia_estudios.html")
-      consecutive = get_consecutive(@student, time, Certificate::STUDIES)
-      s1 = string.gsub("<nombre>",@student.full_name)
-      s1 = s1.gsub("<matricula>",@student.card)
-      s1 = s1.gsub("<asesor>",Staff.find(@student.supervisor).full_name)
-      s1 = s1.gsub("<programa>",@student.program.name)
-      s1 = s1.gsub("<rails_root>","#{Rails.root}")
-      s1 = s1.gsub("<consecutivo>",consecutive)
-      s1 = s1.gsub("<year_s>",year[2,4])
-      s1 = s1.gsub("<year>",year)
-      s1 = s1.gsub("<days>",time.day.to_s)
-      s1 = s1.gsub("<month>",get_month_name(time.month))
-      s1 = s1.gsub("<firma>",@firma)
-      s1 = s1.gsub("<puesto>",@puesto)
+      @consecutivo = get_consecutive(@student, time, Certificate::STUDIES)
+      @rails_root  = "#{Rails.root}"
+      @year_s      = year[2,4]
+      @year        = year
+      @days        = time.day.to_s
+      @month       = get_month_name(time.month)
+      @nombre      = @student.full_name
+      @matricula   = @student.card
+      @programa    = @student.program.name
+      
       if @student.gender == 'F'
-	s1 = s1.gsub("<genero>","a")
+        @genero  = "a"
+        @genero2 = "la"
       elsif @student.gender == 'H'
-	s1 = s1.gsub("<genero>","o")
+        @genero  = "o"
+        @genero2 = "el"
       else
-	s1 = s1.gsub("<genero>","x")
+        @genero  = "x"
+        @genero2 = "x"
       end
-      kit = PDFKit.new(s1, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
+      
+      html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_estudios')
+      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-estudios-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return
+      return # to avoid double render call
     end 
 
     if params[:type] == "inscripcion"

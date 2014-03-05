@@ -1,0 +1,49 @@
+%br
+%br
+%br
+%br
+%br
+%font{:face=>"Verdaba, sans-serif"}
+  %p.western{:align=>"left"}
+    %b="A quien corresponda"
+    %br
+    %b="Presente.-"
+  %br
+  %br
+  %div{:style=>"text-align: justify;"}
+    %p.western
+      = "La suscrita"
+      %b=@firma
+      = "Jefa del Departamento de Posgrado, del Centro de Investigación en Materiales Avanzados, S.C., hace constar que "
+      %b=@nombre
+      = " de matrícula "
+      %b=@matricula
+      = " esta inscri#{@genero} como alumn#{@genero} regular en nuestro programa de "
+      %b="#{@programa},"
+      - if @student.program.level.to_i.eql? 3 #propedeutico
+        = "en este centro de investigación. "
+      - else
+        = "en este centro de investigación, bajo la supervisión académica de "
+        - s = Staff.find(@student.supervisor).full_name rescue ""
+        %b=s
+    %br
+    %br
+    %br
+    %p.western 
+      = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} de #{@month} de #{@year}, para los fines legales a que haya lugar."
+  %p.western
+    %br
+    %br
+    %br
+  %div{:style=>"border:none;  width: 100%; text-align: center; font-family: Arial, sans-serif; font-size: 18pt; so-language: es-ES;"}
+    %b="A t e n t a m e n t e"
+    %br
+    %br
+    %br
+    %br
+    %br
+    %br
+    %br
+    %b=@firma
+    %br
+    %b=@puesto
