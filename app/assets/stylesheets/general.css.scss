@@ -81,6 +81,13 @@ span.red { color: $red; }
   color: $info-color;
 }
 
+#record-box {
+  float: left;
+  position: absolute;
+  top: 150px;
+  width: 600px;
+}
+
 #upload-box {
   float: right;
   position: relative;

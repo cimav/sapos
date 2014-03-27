@@ -40,6 +40,15 @@
           .upload Elegir archivo
           .upload-msg
             %center= f.select :student_advance_type, sat.invert.sort {|a,b| a[1] <=> b[1] }
+ 
+  %p
+  #record-box
+    %h2="Historial"
+    - @student_advances_files.each do |saf|
+      %b= saf.term_student.term.name
+      = ": #{l saf.created_at, :format => :long} :"
+      %a{'href' => "/avances/#{saf.id}/file"}= saf.description
+
 
 :javascript
   $('.delete-file').click(function()
