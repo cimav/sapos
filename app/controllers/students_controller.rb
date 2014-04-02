@@ -1589,7 +1589,10 @@ class StudentsController < ApplicationController
           pdf.fill_rectangle [x_1,y_1], w_1, h_1
           pdf.fill_color "000000"
 
-          if tcs.term_course.course.name.size > 36
+          if tcs.term_course.course.name.size > 52
+            y_1 = y_1 + 10
+            h_1 = h_1 + 20
+          elsif  tcs.term_course.course.name.size > 36
             y_1 = y_1 + 5 
             h_1 = h_1 + 10
           end
