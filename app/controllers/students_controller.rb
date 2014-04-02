@@ -1562,7 +1562,6 @@ class StudentsController < ApplicationController
       # GENERAL DATA
       text = ""
       counter = 0
- 
 
       if t.student.program.level.to_i.eql? 2
         tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?",t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(:code)
@@ -1599,6 +1598,15 @@ class StudentsController < ApplicationController
 
           pdf.text_box text , :at=>[x_1,y_1], :width => w_1, :height=> h_1, :size=>size_1, :style=> :bold, :align=> :center, :valign=> :center
           y_1 =  y_1 - 50
+
+          if tcs.term_course.course.name.size > 52
+            y_1 = y_1 - 10
+            h_1 = h_1 - 20
+          elsif  tcs.term_course.course.name.size > 36
+            y_1 = y_1 - 5 
+            h_1 = h_1 - 10
+          end
+
 
           ## SET TERM
           term = tcs.term_course.term.name
