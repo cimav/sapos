@@ -1459,13 +1459,20 @@ class StudentsController < ApplicationController
     foja  = params[:foja]
     filename = "#{@r_root}/private/prawn_templates/certificado_estudios_totales.pdf"
     Prawn::Document.generate("full_template.pdf", :template => filename) do |pdf|
+      pdf.font_families.update("Times" => {
+        :bold        => "#{@r_root}/private/fonts/times/timesbd.ttf",
+        :italic      => "#{@r_root}/private/fonts/times/timesi.ttf",
+        :bold_italic => "#{@r_root}/private/fonts/times/timesbi.ttf",
+        :normal      => "#{@r_root}/private/fonts/times/times.ttf"
+      })
       pdf.font_families.update("Arial" => {
         :bold        => "#{@r_root}/private/fonts/arial/arialbd.ttf",
         :italic      => "#{@r_root}/private/fonts/arial/ariali.ttf",
         :bold_italic => "#{@r_root}/private/fonts/arial/arialbi.ttf",
         :normal      => "#{@r_root}/private/fonts/arial/arial.ttf"
       })
-      pdf.font "Arial"
+      pdf.font "Times"
+ 
       # SET FOLIO
       x = 462
       y = 626
@@ -1502,6 +1509,7 @@ class StudentsController < ApplicationController
       text = t.student.program.name.mb_chars.upcase
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center,:valign=>:top
 
+      pdf.font "Arial"
       ### SET COURSES
       ## CLEAN  PAGE 1
       pdf.fill_color "ffffff"
@@ -1555,8 +1563,7 @@ class StudentsController < ApplicationController
       text = ""
       counter = 0
  
-      t.student.term_students.each do |te|
-        te.term_course_student.where("term_course_students.status=? AND term_course_students.grade>=?",TermCourseStudent::ACTIVE,70).each do |tcs|
+      TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?",t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(:code).each do |tcs|
           counter= counter + 1
           ## SET CODE
           text= tcs.term_course.course.code
@@ -1619,7 +1626,6 @@ class StudentsController < ApplicationController
             x_4 = 330
             y_4 = 580
           end
-        end
       end
       
       # DATE
