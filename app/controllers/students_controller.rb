@@ -1701,9 +1701,27 @@ class StudentsController < ApplicationController
     FileUtils.cp ruta_template.to_s,ruta_destino.to_s
     FileUtils.cp xml_template.to_s,xml_destino.to_s
  
+    if t.student.program.level.to_i.eql? 2
+      program_title = /Doctorado/
+      if t.student.gender.eql? "F"     
+        student_title = "Doctora"
+      else
+        student_title = "Doctor"
+      end
+    else
+       program_title = /Maestr.a/
+       if t.student.gender.eql? "F"
+         student_title = "Maestra"
+       else
+         student_title = "Maestro"
+       end
+    end
+
+
     filename = xml_destino.to_s
     substring filename,/alumnox/,t.student.full_name
-    substring filename,/gradox/,t.student.program.name
+    substring filename,/gradox/,t.student.program.name.gsub(program_title,student_title)
+    substring filename,/gradoy/,t.student.program.name
     substring filename,/diax/,t.defence_date.day.to_s
     substring filename,/mesx/,get_month_name(t.defence_date.month)
     substring filename,/aniox/,t.defence_date.year.to_s
