@@ -1635,8 +1635,22 @@ class StudentsController < ApplicationController
           end
       end
       
+      pdf.font "Arial"
       # DATE
       pdf.go_to_page(2)
+      x = 260 
+      y = 168
+      w =  6
+      h =  9
+      size = 9
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "000000"
+      text = "#{counter}"
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
+
+      
+
       time = Time.new
       x = 150 
       y = 145
