@@ -1688,20 +1688,24 @@ class StudentsController < ApplicationController
  
     $stdout.binmode
 
+    logger.debug ruta_template.to_s
+    logger.debug ruta_destino.to_s
+
+
     FileUtils.cp ruta_template.to_s,ruta_destino.to_s
     FileUtils.cp xml_template.to_s,xml_destino.to_s
  
     filename = xml_destino.to_s
-    substring filename,/\[alumno\]/,t.student.full_name
-    substring filename,/\[grado\]/,t.student.program.name
-    substring filename,/\[dia\]/,t.defence_date.day.to_s
-    substring filename,/\[mes\]/,get_month_name(t.defence_date.month)
-    substring filename,/\[anio\]/,t.defence_date.year.to_s
-    substring filename,/\[dia2\]/,time.day.to_s
-    substring filename,/\[mes2\]/,get_month_name(time.month)
-    substring filename,/\[anyo2\]/,time.year.to_s
-    substring filename,/\[libro\]/,libro.to_s
-    substring filename,/\[foja\]/,foja.to_s
+    substring filename,/alumnox/,t.student.full_name
+    substring filename,/gradox/,t.student.program.name
+    substring filename,/diax/,t.defence_date.day.to_s
+    substring filename,/mesx/,get_month_name(t.defence_date.month)
+    substring filename,/aniox/,t.defence_date.year.to_s
+    substring filename,/diay/,time.day.to_s
+    substring filename,/mesy/,get_month_name(time.month)
+    substring filename,/anyoy/,time.year.to_s
+    substring filename,/librox/,libro.to_s
+    substring filename,/fojax/,foja.to_s
     bar_txt = open(filename)
  
     Zip::Archive.open(ruta_destino.to_s) do |ar|
@@ -1709,7 +1713,7 @@ class StudentsController < ApplicationController
     end
 
     zip_data = File.read(ruta_destino.to_s)
-
+    
     send_data(zip_data, :filename => documento_xml.to_s , :type => "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     return
   end 
