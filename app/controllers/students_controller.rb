@@ -1563,7 +1563,14 @@ class StudentsController < ApplicationController
       text = ""
       counter = 0
  
-      TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?",t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(:code).each do |tcs|
+
+      if t.student.program.level.to_i.eql? 2
+        tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?",t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(:code)
+      else
+        tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?",t.student.id,TermCourseStudent::ACTIVE,70).order(:code)
+      end
+
+        tcss.each do |tcs|
           counter= counter + 1
           ## SET CODE
           text= tcs.term_course.course.code
