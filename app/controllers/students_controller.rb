@@ -1588,6 +1588,12 @@ class StudentsController < ApplicationController
           pdf.fill_color "ffffff"
           pdf.fill_rectangle [x_1,y_1], w_1, h_1
           pdf.fill_color "000000"
+
+          if tcs.term_course.course.name.size > 36
+            y_1 = y_1 + 5 
+            h_1 = h_1 + 10
+          end
+
           pdf.text_box text , :at=>[x_1,y_1], :width => w_1, :height=> h_1, :size=>size_1, :style=> :bold, :align=> :center, :valign=> :center
           y_1 =  y_1 - 50
 
