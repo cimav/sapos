@@ -1488,7 +1488,7 @@ class StudentsController < ApplicationController
       # SET NAME
       x = 180
       y = 568
-      w = 250
+      w = 350
       h = 13
       size = 12
       pdf.fill_color "ffffff"
