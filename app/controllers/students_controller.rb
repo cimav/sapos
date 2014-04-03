@@ -1652,8 +1652,8 @@ class StudentsController < ApplicationController
           end
       end
       
-      pdf.font "Arial"
-      # DATE
+      pdf.font "Times"
+      # COUNTER
       pdf.go_to_page(2)
       x = 260 
       y = 168
@@ -1663,10 +1663,17 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "000000"
-      text = "#{counter}"
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
+      if counter > 9
+        pdf.fill_color "ffffff"
+        w = w +230
+        pdf.fill_rectangle [x,y], w, h
+        pdf.fill_color "000000"
+        text = "#{counter} ASIGNATURAS. LA ESCALA DE CALIFICACIONES"
+      else      
+        text = "#{counter}"
+      end 
 
-      
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
 
       time = Time.new
       x = 150 
