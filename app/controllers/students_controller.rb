@@ -1569,6 +1569,40 @@ class StudentsController < ApplicationController
         tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?",t.student.id,TermCourseStudent::ACTIVE,70).order(:code)
       end
 
+      if tcss.size > 11
+        # CODE INITIAL DATA
+        x = 64
+        y = 210
+        w = 20 
+        h = 9
+        size = 6 
+        # COURSE NAME INITIAL DATA
+        x_1 = 117
+        y_1 = 216
+        w_1 = 106
+        h_1 = 25
+        size_1 = 6
+        # TERMS INITIAL DATA
+        x_2 = 229
+        y_2 = 211
+        w_2 = 45
+        h_2 = 9
+        size_2 = 5
+        # GRADE INITIAL DATA
+        x_3 = 285
+        y_3 = 210
+        w_3 = 38
+        h_3 = 9
+        size_3 = 6
+        # GRADE ON TEXT INITIAL DATA
+        x_4 = 329
+        y_4 = 215
+        w_4 = 84
+        h_4 = 18
+        size_4 = 6
+      end
+
+
         tcss.each do |tcs|
           counter= counter + 1
           ## SET CODE
@@ -1579,7 +1613,12 @@ class StudentsController < ApplicationController
           pdf.fill_color "000000"
           pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
           
-          y =  y - 50
+          ## SET INTERLINE SPACE
+          if tcss.size > 11
+            y = y - 30
+          else
+            y = y - 50
+          end
 
           ## SET COURSE NAME
           text= tcs.term_course.course.name.mb_chars.upcase
@@ -1597,7 +1636,11 @@ class StudentsController < ApplicationController
           end
 
           pdf.text_box text , :at=>[x_1,y_1], :width => w_1, :height=> h_1, :size=>size_1, :style=> :bold, :align=> :center, :valign=> :center
-          y_1 =  y_1 - 50
+          if tcss.size > 11
+            y_1 = y_1 - 30
+          else
+            y_1 = y_1 - 50
+          end
 
           if tcs.term_course.course.name.size > 52
             y_1 = y_1 - 10
@@ -1618,7 +1661,11 @@ class StudentsController < ApplicationController
           pdf.fill_rectangle [x_2,y_2], w_2, h_2
           pdf.fill_color "000000"
           pdf.text_box text , :at=>[x_2,y_2], :width => w_2, :height=> h_2, :size=>size_2, :style=> :bold, :align=> :center, :valign=> :center
-          y_2 = y_2 - 50
+          if tcss.size > 11
+            y_2 = y_2 - 30
+          else
+            y_2 = y_2 - 50
+          end
 
           ## SET GRADE
           text = tcs.grade.to_s
@@ -1626,7 +1673,11 @@ class StudentsController < ApplicationController
           pdf.fill_rectangle [x_3,y_3], w_3, h_3
           pdf.fill_color "000000"
           pdf.text_box text , :at=>[x_3,y_3], :width => w_3, :height=> h_3, :size=>size_3, :style=> :bold, :align=> :center, :valign=> :center
-          y_3 = y_3 - 50
+          if tcss.size > 11
+            y_3 = y_3 - 30
+          else
+            y_3 = y_3 - 50
+          end
           
           ## SET GRADE ON TEXT
           text = get_cardinal_name(tcs.grade.to_i)
@@ -1634,22 +1685,43 @@ class StudentsController < ApplicationController
           pdf.fill_rectangle [x_4,y_4], w_4, h_4
           pdf.fill_color "000000"
           pdf.text_box text.upcase , :at=>[x_4,y_4], :width => w_4, :height=> h_4, :size=>size_4, :style=> :bold, :align=> :center, :valign=> :center
-          y_4 = y_4 - 50
+          if tcss.size > 11
+            y_4 = y_4 - 30
+          else
+            y_4 = y_4 - 50
+          end
 
           #### GO TO PAGE 2
-          if counter == 3
-            pdf.go_to_page(2)
-            x = 72
-            y = 575
-            x_1 = 120
-            y_1 = 583
-            x_2 = 231
-            y_2 = 575
-            x_3 = 287
-            y_3 = 575
-            x_4 = 330
-            y_4 = 580
-          end
+          if tcss.size > 11
+            if counter == 5
+              pdf.go_to_page(2)
+              x = 72
+              y = 575
+              x_1 = 120
+              y_1 = 583
+              x_2 = 231
+              y_2 = 575
+              x_3 = 287
+              y_3 = 575
+              x_4 = 330
+              y_4 = 580
+            end
+
+          else
+            if counter == 3
+              pdf.go_to_page(2)
+              x = 72
+              y = 575
+              x_1 = 120
+              y_1 = 583
+              x_2 = 231
+              y_2 = 575
+              x_3 = 287
+              y_3 = 575
+              x_4 = 330
+              y_4 = 580
+            end
+         end
       end
       
       pdf.font "Times"
@@ -1688,7 +1760,7 @@ class StudentsController < ApplicationController
         pdf.stroke_line [414.4,234],[414.4,200]
         pdf.stroke_line [505.2,234],[505.2,200]
       else      
-        text = "#{counter}"
+        text = "#{tcss.size}"
       end 
 
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
