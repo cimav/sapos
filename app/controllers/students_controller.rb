@@ -1653,7 +1653,7 @@ class StudentsController < ApplicationController
       end
       
       pdf.font "Times"
-      # COUNTER
+      # COUNTER COURSES
       pdf.go_to_page(2)
       x = 260 
       y = 168
@@ -1669,6 +1669,24 @@ class StudentsController < ApplicationController
         pdf.fill_rectangle [x,y], w, h
         pdf.fill_color "000000"
         text = "#{counter} ASIGNATURAS. LA ESCALA DE CALIFICACIONES"
+        
+        pdf.stroke_color= "FFFFFF"
+        pdf.line_width= 2
+        pdf.stroke_line [34,233],[508,233]
+
+
+        pdf.stroke_color= "000000"
+        pdf.line_width= 0.5
+        # horizontal line
+        pdf.stroke_line [34.6,200],[505.3,200]
+        # vertical lines
+        pdf.stroke_line [34.7,234],[34.7,200]
+        pdf.stroke_line [119.7,234],[119.7,200]
+        pdf.stroke_line [227.3,234],[227.3,200]
+        pdf.stroke_line [284.1,234],[284.1,200]
+        pdf.stroke_line [329.3,234],[329.3,200]
+        pdf.stroke_line [414.4,234],[414.4,200]
+        pdf.stroke_line [505.2,234],[505.2,200]
       else      
         text = "#{counter}"
       end 
