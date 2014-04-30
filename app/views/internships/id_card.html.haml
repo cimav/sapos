@@ -25,7 +25,7 @@
               %tr
                 %td
                   #card_valid= "Vigencia: #{l @internship.end_date, :format => :long}"
-        - if @internship.internship_type.id <= 9 and @internship.internship_type.id >0
+        - if @internship.internship_type.id <= 10 and @internship.internship_type.id >0
           %tr
             %td{:colspan => 2}
               %br
