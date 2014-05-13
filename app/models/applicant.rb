@@ -61,7 +61,7 @@ class Applicant < ActiveRecord::Base
     self.status = 1
   end
 
-  def set_folio
+  def create_folio
     cycle = String.new
     level = String.new
     prefix = String.new
@@ -100,7 +100,16 @@ class Applicant < ActiveRecord::Base
     end
 
     self.consecutive = con
-    self.folio = "C#{level[0]}#{cycle}#{prefix}#{self.created_at.strftime('%Y')}#{consecutive}"
+    folio = "C#{level[0]}#{cycle}#{prefix}#{self.created_at.strftime('%Y')}#{consecutive}"
+    return folio
+  end 
+
+  def set_folio
+    self.folio = self.create_folio
     self.save(:validate => false)
+  end
+   
+  def update_folio
+    self.folio = self.create_folio
   end
 end

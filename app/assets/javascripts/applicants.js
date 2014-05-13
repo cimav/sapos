@@ -38,6 +38,12 @@ $(document).ready(function() {
          var student_id =r['params']['student_id'];
          window.location="/estudiantes/?student_id="+student_id;
       }
+
+      if(r['params']['folio'])
+      {
+        folio = r['params']['folio'];
+        $("#folio_div").html("Folio: "+ folio);
+      }
   });
 
 });

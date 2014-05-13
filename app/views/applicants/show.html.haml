@@ -3,6 +3,7 @@
     $('.reqdoc_button').click(function(){
       var estatus = $(this).attr("estatus");
       var nivel = $(this).attr("level");
+
       if(estatus==3){
         var ciclo  = prompt("Capture ciclo:");
         var f_ins  = prompt("Capture fecha de inscripcion:");
@@ -24,6 +25,23 @@
       var aid    = $(this).attr("applicant_id");
       window.location.href="aspirantes/constancias/"+c_type+"/"+aid+"?ciclo="+ciclo+"&f_ini="+f_ini+"&f_fin="+f_fin+"&f_ins="+f_ins+"&f_rev="+f_rev+"&rec="+rec;
     });
+
+    $('#applicant_program_id').change(function(){
+      var sel_val = $(this).val();
+      var val     = $(this).val();
+      if (val){
+        var response = confirm("Al guardar los cambios se recalculara el folio  ¿Seguro que desea hacer esto?");
+        if (!response){ // NO!!
+          $('#applicant_program_id option').prop('selected', function() {
+            if (this.defaultSelected){
+              sel_val = $(this).val();
+            }
+          });
+        }
+      }
+      $(this).val(sel_val);
+    });
+    
   });
 
 = form_for @applicant, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
@@ -33,7 +51,7 @@
       %br
     .resource-title
       %h1= "#{@applicant.full_name}"
-      .comment
+      #folio_div.comment
         = "Folio: #{@applicant.folio}"
       .comment
       .resource-card
@@ -64,14 +82,7 @@
 
       .field#field_applicant_program_id
         = f.label :program_id, 'Programa'
-        - program_options = Array.new
-        - @programs.each do |program|
-          - if @applicant.program_id == 0
-            = f.select :program_id, program_options.collect {|p| [ p.name, p.id ] }.push(["Otro","0"])
-            - break
-          - elsif @applicant.program_id == program.id
-            - program_options.push(program)
-            = f.select :program_id, program_options.collect {|p| [ p.name, p.id ] }
+        = f.select :program_id, @programs.collect {|p| [ p.name, p.id ] }.push(["Otro",0]), {:include_blank => 'Selecciona el programa'}
       
       .field#field_internship_campus
         = f.label :campus_id, 'Campus'

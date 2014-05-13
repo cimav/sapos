@@ -129,9 +129,21 @@ class ApplicantsController < ApplicationController
       render_error @applicant, "El aspirante ya esta registrado como alumno, no se puede modificar",parameters
       return
     end
+    
+    @message = "Aspirante actualizado."
+    @activity_log = ""
+    @old_folio = @applicant.folio
+    @applicant.attributes = params[:applicant]
+    if @applicant.program_id_changed?
+      #Recalcular folio
+      @applicant.update_folio
+      @new_folio = @applicant.folio
+      @activity_log = "Update Applicant Folio: #{@applicant.id},#{@applicant.first_name} #{@applicant.primary_last_name}, Old Folio: #{@old_folio},New Folio:#{@new_folio}"
+      parameters[:folio] = @applicant.folio
+      @message = "#{@message} \n Folio Recalculado"
+    end
 
     if @applicant.update_attributes(params[:applicant])
-      @message = "Aspirante actualizado."
 
       if @applicant.status == 3 and @applicant.program_id != 0
         if accepted_applicant_register @applicant
@@ -146,6 +158,10 @@ class ApplicantsController < ApplicationController
       end
 
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Applicant: #{@applicant.id},#{@applicant.first_name} #{@applicant.primary_last_name}"}).save
+
+      if !@activity_log.blank?
+        ActivityLog.new({:user_id=>current_user.id,:activity=>@activity_log}).save
+      end
       render_message @applicant,@message,parameters
     else
       render_error @applicant, "Error al actualizar estudiante",parameters
