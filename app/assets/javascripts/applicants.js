@@ -7,7 +7,11 @@ $('#program').live("change", function() {
 });
 
 $('#status').live("change", function() {
-  $('#status_borrados').attr('checked', true);
+  var str = $(this).val();
+  if(str=="4")
+  {
+    $('#status_borrados').attr('checked', true);
+  }
   liveSearch();
 });
 
