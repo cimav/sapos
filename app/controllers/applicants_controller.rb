@@ -25,6 +25,9 @@ class ApplicantsController < ApplicationController
 
   def live_search
     @applicants = Applicant.order("first_name")
+    if !params[:status_borrados].to_i.eql? 1
+      @applicants = @applicants.where("status<>?",Applicant::DELETED)
+    end
 
     if params[:program] != '0' then
       @applicants = @applicants.where(:program_id => params[:program])
@@ -41,6 +44,7 @@ class ApplicantsController < ApplicationController
     if !params[:q].blank?
       @applicants = @applicants.where("(CONCAT(first_name,' ',primary_last_name) LIKE :n OR id LIKE :n)",{:n => "%#{params[:q]}%"})
     end    
+
 
     respond_with do |format|
       format.html do 

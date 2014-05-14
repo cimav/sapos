@@ -2,7 +2,7 @@
 - @page_title = 'Aspirantes'
 - @nav_icon = 'applicants'
 #items-panel.side-panel 
-  .panel-search{:style=>"height: 105px"}
+  .panel-search{:style=>"height: 115px"}
     .invisible-options
       - program_options = Array.new
       - program_options.push(["Todos los programas","0"])
@@ -26,8 +26,13 @@
       = select_tag "campus", options_for_select(campus_options)
 
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
+      
+      .cbs
+        %span 
+          = check_box_tag 'status_borrados', '1', false, :class => 'status-cbs'
+          = label_tag 'status_borrados', 'Mostrar Borrados'
  
-  #items-list.panel-items{:style=>"top: 115px;"}
+  #items-list.panel-items{:style=>"top: 135px;"}
   
   .panel-add
     - if can? :create, Applicant

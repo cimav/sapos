@@ -7,10 +7,16 @@ $('#program').live("change", function() {
 });
 
 $('#status').live("change", function() {
+  $('#status_borrados').attr('checked', true);
   liveSearch();
 });
 
 $('#campus').live("change", function() {
+  liveSearch();
+});
+
+// ** On change Status
+$('.status-cbs').live("click", function() {
   liveSearch();
 });
 
@@ -21,7 +27,7 @@ $('#to_excel').live('click', function() {
 
 $(document).ready(function() {
   liveSearch();
-
+  
   $("#applicant_status").live("change", function(){
      var str = $(this).val();
      if(str=="4")
