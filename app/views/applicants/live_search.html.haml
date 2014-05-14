@@ -6,15 +6,6 @@
       = link_to applicant, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "applicant_link_#{applicant.id}" do
         .title= applicant.first_name + " " + applicant.primary_last_name + " " + applicant.second_last_name
         .comment= (applicant.program.name rescue '')
-        -# @color = "#cc9900"
-        -# if applicant.status == 1
-          - @color = "#088A29"
-        -# elsif applicant.status == 2
-          - @color = "#9F81F7"
-        -# elsif applicant.status == 3
-          - @color = "#0000ff"
-        -# elsif applicant.status == 4
-          - @color = "#ff0000"
        
         - @color = "#cc9900"
         - if applicant.status == 4
