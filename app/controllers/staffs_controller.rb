@@ -32,7 +32,6 @@ class StaffsController < ApplicationController
     if !s.empty?
       @staffs = @staffs.where("status IN (#{s.join(',')})")
     end
-        logger.debug "AQUI 2"
 
     respond_with do |format|
       format.html do
