@@ -34,6 +34,10 @@ class InternshipsController < ApplicationController
     if params[:internship_type] != '0' then
       @internships = @internships.where(:internship_type_id => params[:internship_type])
     end 
+    
+    if params[:campus] != '0' then
+      @internships = @internships.where(:campus_id => params[:campus])
+    end 
 
     if !params[:q].blank?
       @internships = @internships.where("(CONCAT(first_name,' ',last_name) LIKE :n OR id LIKE :n)", {:n => "%#{params[:q]}%"}) 

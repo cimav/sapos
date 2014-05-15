@@ -15,6 +15,11 @@ $('#internship_type').live("change", function() {
   liveSearch();
 });
 
+// ** On change campus
+$('#campus').live("change", function() {
+  liveSearch();
+});
+
 // ** On change Status
 $('.status-cbs').live("click", function() {
   liveSearch();
