@@ -55,6 +55,7 @@
   %table{'class' => 'files-table'}
     - @internship.internship_file.each do |internship_file|
       %tr{'id' => "file-#{internship_file.id}"}
+      - if File.exist?(internship_file.file.to_s)
         - if File.extname(internship_file.file.to_s) == ''
           - ext = 'unknown'
         - else 
@@ -62,7 +63,7 @@
         %td{"class" => "file-entry type-unknown type-" + ext, "title" => File.basename(internship_file.file.to_s)}
           = form_for(internship_file, :remote => true, :html => {:'data-type' => 'html', :class => 'file-desc-form'}) do |ff|
             = ff.text_field :description
-          %span.file-desc
+          %span.file-desc 
             %a{'href' => "/internados/#{@internship.id}/archivo/#{internship_file.id}"}= internship_file.description
           %br
           %span.file-details= ext.upcase + ", " + number_to_human_size(File.size(internship_file.file.to_s))
@@ -70,3 +71,11 @@
             = link_to_function 'Editar descripción', "edit_description(#{internship_file.id})"
             |
             = link_to 'Eliminar archivo', [@internships, internship_file], :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
+      - else 
+        %td{"class"=> "file-entry type-unknown"}
+          %span.file-desc
+            = internship_file.description
+          %br
+          %span.file-details= "Al parecer el archivo fue eliminado pero aún existe el registro"
+          %span.file-edit
+            = link_to 'Borrar registro', [@internships, internship_file], :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
