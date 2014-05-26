@@ -72,7 +72,7 @@ class InternshipsController < ApplicationController
                    'Apellidos' => s.last_name,
                    'Sexo' => s.gender,
                    'Email' => s.email,
-                   'Fecha Nacimiento' => s.date_of_birth,
+                   'Fecha de Nacimiento' => s.date_of_birth,
                    'Tipo' => s.internship_type.name,
                    'Institucion' => (s.institution.name rescue ''),
                    'Inicio' => s.start_date,
