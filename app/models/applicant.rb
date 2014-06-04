@@ -12,6 +12,7 @@ class Applicant < ActiveRecord::Base
   ACCEPTED      = 3
   DELETED       = 4
   ACCEPTED_PROP = 5
+  DESISTS       = 6
   
   SINGLE   = 1
   MARRIED  = 2
@@ -29,7 +30,8 @@ class Applicant < ActiveRecord::Base
     REJECTED      => 'No Aceptado',
     ACCEPTED      => 'Aceptado',
     ACCEPTED_PROP => 'Aceptado a propedeutico',
-    DELETED       => 'Borrado'
+    DELETED       => 'Borrado',
+    DESISTS       => 'Desiste'
   }
 
   belongs_to :program
