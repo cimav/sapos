@@ -20,6 +20,13 @@
       .field#field_program_prefix
         = f.label :prefix, mark_required(@program, :prefix) + 'Clave'
         = f.text_field :prefix
+      
+      .field#field_program_program_type
+        = f.label :program_type, mark_required(@program, :program_type) + 'Tipo'
+        - program_types = Program::PROGRAM_TYPE.invert.sort {|a,b| a[1] <=> b[1] }.delete_if {|key,value| value<=1}
+        - q = ["",""]
+        - program_types.insert(0,q)
+        = f.select :program_type, program_types
 
       .field#field_program_level
         = f.label :level, 'Nivel'
