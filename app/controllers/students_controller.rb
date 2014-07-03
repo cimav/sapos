@@ -1448,6 +1448,31 @@ class StudentsController < ApplicationController
          pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
        end
 
+      # SET CIMAV DIRECTOR
+      x = 154
+      y = 40
+      w = 225
+      h = 30
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      # delete previous line
+      x_l = 154
+      y_l = 46
+      w_l = 225
+      h_l = 2
+      pdf.fill_rectangle [x_l,y_l], w_l, h_l
+      pdf.fill_color "373435"
+      # line
+      x2 = x + 20
+      pdf.stroke_color= "000000"
+      pdf.line_width= 0.3
+      pdf.stroke_line [x2,y + 6],[x2+183,y + 6]
+      # text
+      text = "DR. JUAN MÉNDEZ NONELL"
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
+      text = "DIRECTOR GENERAL"
+      pdf.text_box text , :at=>[x,y - 13], :width => w, :height=> h, :size=>12, :align=> :center, :valign=> :top
+
       # RENDER
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
@@ -1778,6 +1803,29 @@ class StudentsController < ApplicationController
       text = "a #{time.day.to_s} de #{get_month_name(time.month)} del #{time.year.to_s}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
 
+      # SET CIMAV DIRECTOR
+      x = 16
+      y = 65
+      w = 250
+      h = 14
+      size = 12
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y + 5], w, h + 5
+      pdf.fill_color "000000"
+      text = "DR. JUAN MÉNDEZ NONELL"
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      # SET APPOINTMENT
+      x = 16
+      y = 51
+      w = 250
+      h = 14
+      size = 12
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "000000"
+      text = "Director General"
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      
       # RENDER
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
