@@ -231,9 +231,13 @@ class ApplicantsController < ApplicationController
     @applicant = Applicant.find(params[:id])
     time = Time.new
     year = time.year.to_s
-    
-    @firma  = "M.H. Nict Ortiz Villanueva"
-    @puesto = "Jefa del Departamento de Posgrado"
+    dir  = t(:directory)   
+
+    title = dir[:posgrado_chief][:title]
+    name  = dir[:posgrado_chief][:name]
+    job   = dir[:posgrado_chief][:job]
+    @firma  = "#{title} #{name}"
+    @puesto = "#{job}"
    
     if params[:type] == "aceptacion"
       @consecutivo = get_consecutive(@applicant, time, Certificate::APP_ACCEPTANCE)

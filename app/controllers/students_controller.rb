@@ -608,12 +608,20 @@ class StudentsController < ApplicationController
     year = time.year.to_s
     head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
     base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
+    dir  = t(:directory)
+
     if current_user.campus_id == 2
-      @firma  = "Alejandra García García"
-      @puesto = "Coordinador Académico Unidad Monterrey"
+      title = dir[:academic_coordinator_monterrey][:title]
+      name  = dir[:academic_coordinator_monterrey][:name]
+      job   = dir[:academic_coordinator_monterrey][:job]
+      @firma  = "#{title} #{name}"
+      @puesto = "#{job}"
     else
-      @firma  = "M.H. Nicté Ortiz Villanueva"
-      @puesto = "Jefa del Departamento de Posgrado"
+      title = dir[:posgrado_chief][:title]
+      name  = dir[:posgrado_chief][:name]
+      job   = dir[:posgrado_chief][:job]
+      @firma  = "#{title} #{name}"
+      @puesto = "#{job}"
     end 
 
     if params[:type] == "estudios"
@@ -1151,15 +1159,22 @@ class StudentsController < ApplicationController
     year = time.year.to_s
     head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
     base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
-    
-    if current_user.campus_id == 2
-      @firma  = "Alejandra García García"
-      @puesto = "Coordinador Académico Unidad Monterrey"
-    else
-      @firma  = "M.H. Nicté Ortiz Villanueva"
-      @puesto = "Jefa del Departamento de Posgrado"
-    end 
+    dir  = t(:directory)    
 
+    if current_user.campus_id == 2
+      title = dir[:academic_coordinator_monterrey][:title]
+      name  = dir[:academic_coordinator_monterrey][:name]
+      job   = dir[:academic_coordinator_monterrey][:job]
+      @firma  = "#{title} #{name}"
+      @puesto = "#{job}"
+    else
+      title = dir[:posgrado_chief][:title]
+      name  = dir[:posgrado_chief][:name]
+      job   = dir[:posgrado_chief][:job]
+      @firma  = "#{title} #{name}"
+      @puesto = "#{job}"
+    end 
+    
     @consecutivo = get_consecutive(@student, time, Certificate::EXAMINER)
     @rails_root  = "#{Rails.root}"
     @year_s      = year[2,4]
@@ -1468,9 +1483,13 @@ class StudentsController < ApplicationController
       pdf.line_width= 0.3
       pdf.stroke_line [x2,y + 6],[x2+183,y + 6]
       # text
-      text = "DR. JUAN MÉNDEZ NONELL"
+      dir = t(:directory)
+      title = dir[:general_director][:title].mb_chars.upcase 
+      name  = dir[:general_director][:name].mb_chars.upcase
+      job   = dir[:general_director][:job].mb_chars.upcase
+      text = "#{title} #{name}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
-      text = "DIRECTOR GENERAL"
+      text = "#{job}"
       pdf.text_box text , :at=>[x,y - 13], :width => w, :height=> h, :size=>12, :align=> :center, :valign=> :top
 
       # RENDER
@@ -1803,7 +1822,7 @@ class StudentsController < ApplicationController
       text = "a #{time.day.to_s} de #{get_month_name(time.month)} del #{time.year.to_s}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
 
-      # SET CIMAV DIRECTOR
+      # SET GENERAL DIRECTOR
       x = 16
       y = 65
       w = 250
@@ -1812,7 +1831,12 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y + 5], w, h + 5
       pdf.fill_color "000000"
-      text = "DR. JUAN MÉNDEZ NONELL"
+      # Load locale config
+      dir = t(:directory)
+      title = dir[:general_director][:title].mb_chars.upcase 
+      name = dir[:general_director][:name].mb_chars.upcase
+      job  = dir[:general_director][:job]
+      text = "#{title} #{name}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       # SET APPOINTMENT
       x = 16
@@ -1823,7 +1847,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "000000"
-      text = "Director General"
+      text = "#{job}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       
       # RENDER

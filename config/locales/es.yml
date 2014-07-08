@@ -1,6 +1,18 @@
 es:
   hello: "Hola"
-  
+  directory:
+    general_director:
+      title:  "Dr."
+      name: "Juan Méndez Nonell"
+      job: "Director General"
+    posgrado_chief:
+      title: "M.H."
+      name: "Nicté Ortiz Villanueva"
+      job: "Jefa del Departamento de Posgrado"
+    academic_coordinator_monterrey:
+      title: ""
+      name: "Alejandra García García"
+      job: "Coordinador Académico Unidad Monterrey"
   activerecord:
     errors:
       messages:

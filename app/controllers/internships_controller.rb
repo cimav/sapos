@@ -258,12 +258,20 @@ class InternshipsController < ApplicationController
     @internship = Internship.find(params[:id])
     time = Time.new
     year = time.year.to_s
+    dir  = t(:directory)
+
     if current_user.campus_id == 2
-      @firma  = "Alejandra García García"
-      @puesto = "Coordinador Académico Unidad Monterrey"
+      title = dir[:academic_coordinator_monterrey][:title]
+      name  = dir[:academic_coordinator_monterrey][:name]
+      job   = dir[:academic_coordinator_monterrey][:job]
+      @firma  = "#{title} #{name}"
+      @puesto = "#{job}"
     else
-      @firma  = "M.H. Nicté Ortiz Villanueva"
-      @puesto = "Jefa del Departamento de Posgrado"
+      title = dir[:posgrado_chief][:title]
+      name  = dir[:posgrado_chief][:name]
+      job   = dir[:posgrado_chief][:job]
+      @firma  = "#{title} #{name}"
+      @puesto = "#{job}"
     end 
 
     if params[:type] == "aceptacion"
