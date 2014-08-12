@@ -8,7 +8,7 @@ class ClassroomsController < ApplicationController
   end
 
   def live_search
-    @classrooms = Classroom.order('code')
+    @classrooms = Classroom.where("status < 98").order('code')
     if !params[:q].blank?
       @classrooms = @classrooms.where("(name LIKE :n OR code LIKE :n)", {:n => "%#{params[:q]}%"}) 
     end
