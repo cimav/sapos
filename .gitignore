@@ -4,6 +4,7 @@ log/*.log
 tmp/
 private/*
 public/stylesheets/compiled/
+public/images/*
 public/images/student/
 public/images/staff/
 public/images/institution/
