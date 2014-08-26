@@ -16,7 +16,15 @@
       %b=@nombre
       = ", de matrícula "
       %b=@matricula
-      = " se encuentra inscrit#{@genero} como alumno regular, en nuestro Programa de #{@programa}, bajo la dirección de #{@asesor}."
+      = " se encuentra inscrit#{@genero} como alumno regular, en nuestro programa "
+      %b="#{@programa},"
+      - if @student.program.level.to_i.eql? 3 #propedeutico
+        = "en este centro de investigación. "
+      - else
+        = "en este centro de investigación, bajo la dirección de "
+        - s = Staff.find(@student.supervisor).full_name rescue ""
+        %b="#{s}."
+    %br
     %br
     %br
     %p.western 

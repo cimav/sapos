@@ -1,0 +1,54 @@
+%br
+%br
+%br
+%br
+%br
+%font{:face=>"Verdaba, sans-serif"}
+  %p.western{:align=>"left"}
+    %b="A quien corresponda"
+    %br
+    %b="Presente.-"
+  %br
+  %br
+  %div{:style=>"text-align: justify;"}
+    %p.western
+      = "La suscrita"
+      %b=@firma
+      = ", #{@puesto}, del Centro de Investigación en Materiales Avanzados, S.C., Organismo del Sistema SEP - CONACYT, según Acuerdo ante la SEP 964031 con fecha del 15 de abril de 1996 y clave de Registro DGES 256035417101, y con sus Programas de Posgrado registrados ante la DIrección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero}"
+      %b=@nombre
+      = " de matrícula "
+      %b=@matricula
+      = ", está inscrit#{@genero} como alumn#{@genero} regular el semestre"
+      %b=@semestre
+      = ", de nuestro programa "
+      %b="#{@programa},"
+      = " durante el periodo del "
+      - if @end_year == @start_year
+        %b= "#{@start_day} de #{@start_month}"
+        = " al "
+        %b= "#{@end_day} de #{@end_month} de #{@end_year}."
+      - else
+        %b= "#{@start_day} de #{@start_month} de #{@start_year}"
+        = " al "
+        %b= "#{@end_day} de #{@end_month} de #{@end_year}."
+    %br
+    %br
+    %br
+    %p.western 
+      = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} de #{@month} de #{@year}, para los fines legales a que haya lugar."
+  %p.western
+    %br
+    %br
+    %br
+  %div{:style=>"border:none;  width: 100%; text-align: center; font-family: Arial, sans-serif; font-size: 18pt; so-language: es-ES;"}
+    %b="A t e n t a m e n t e"
+    %br
+    %br
+    %br
+    %br
+    %br
+    %br
+    %br
+    %b=@firma
+    %br
+    %b=@puesto
