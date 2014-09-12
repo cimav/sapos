@@ -1223,7 +1223,7 @@ class StudentsController < ApplicationController
         pdf.fill_rectangle [245,538], 100, 11
         pdf.fill_color "373435"
         if @level.to_i.eql? 2
-          text = "#{@examiner5.title.to_s.mb_chars.upcase} #{@examiner5.mb_chars.upcase}"
+          text = "#{@examiner5.title.to_s.mb_chars.upcase} #{@examiner5.full_name.mb_chars.upcase}"
         end
       
         pdf.draw_text text.upcase, :at=>[246,528], :size=>11
