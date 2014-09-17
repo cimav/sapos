@@ -4,6 +4,31 @@ function initializeSearchForm() {
   // Do nothing
 }
 
+$('#sp-edit-text').live("click", function() {
+  var studies_plan_id = $("#studies-plans-combo_id").val();
+  loadStudiesPlan(studies_plan_id);
+});
+
+$('#studies-plans-combo_id').live("change", function() {
+  var studies_plan_id = $(this).val();
+  $('#sp-edit-text').hide();
+
+  if (parseInt(studies_plan_id,10) == 0)
+  {
+    loadNewStudiesPlan();
+    return false;
+  }
+
+  if ( !parseInt(studies_plan_id) ) {
+    $("#plan-area").html("");
+    $('#planes-sub-area').html("");
+  }
+  else{
+    loadPlanTable(studies_plan_id);
+    $('#sp-edit-text').show();
+  }
+});
+
 $('#program_type').live("change", function() {
   liveSearch();
 });
@@ -28,17 +53,48 @@ $('#item-edit-form')
     loadTermsTable();
   });
 
+// Studies Plan
+function loadNewStudiesPlan(){
+  var program_id = $('#program_id').val();
+  url = '/planes_estudios/'+program_id+'/nuevo'
+  $("#new-studies-plan-dialog").remove();
+  $("#content-panel").append('<div title="Nuevo plan de estudios" id="new-studies-plan-dialog"><iframe width="740" height="480" src="' + url  + '" scrolling="no"></iframe></div>')
+  $("#new-studies-plan-dialog").dialog({ autoOpen: false, width: 800, height: 600, modal:true });
+  $("#new-studies-plan-dialog").dialog('open');
+}
+
+function loadStudiesPlan(id){
+  url = '/planes_estudios/'+id
+  $("#studies-plan-dialog").remove();
+  $("#content-panel").append('<div title="Nuevo plan de estudios" id="studies-plan-dialog"><iframe width="740" height="480" src="' + url  + '" scrolling="no"></iframe></div>')
+  $("#studies-plan-dialog").dialog({ autoOpen: false, width: 800, height: 600, modal:true });
+  $("#studies-plan-dialog").dialog('open');
+}
+
+function reloadStudiesPlansCombo(studies_plan_id){
+  var program_id      = $('#program_id').val();
+  /*var studies_plan_id = $("#studies-plans-combo_id").val()*/
+  url = '/planes_estudios/'+program_id+'/combo'
+  $.get(url, {}, function(html) {
+    $('#planes-area').html(html);
+    $('#studies-plans-combo_id').val(studies_plan_id);
+    $('#sp-edit-text').show();
+    loadPlanTable(studies_plan_id);
+  });
+}
+
 // Plan
 var current_plan_edit = 0;
-function loadPlanTable() {
+function loadPlanTable(studies_plan_id) {
   program_id = $('#program_id').val();
-  url = location.pathname + '/' + program_id + '/plan';
+  url = location.pathname + '/' + program_id + '/' + studies_plan_id + '/plan';
   $.get(url, {}, function(html) {
     $("#plan-area").html(html);
     loadCoursesDropdown();
   });
   $("#new-course-dialog").remove();
-  $('#content-panel').append('<div title="Nuevo curso" id="new-course-dialog"><iframe width="550" height="340" src="/programas/' + program_id + '/nuevo_curso" scrolling="no"></iframe></div>');
+  url_nc = '/programas/' + program_id + '/' + studies_plan_id + '/nuevo_curso'
+  $('#content-panel').append('<div title="Nuevo curso" id="new-course-dialog"><iframe width="550" height="340" src="' + url_nc + '" scrolling="no"></iframe></div>');
   $("#new-course-dialog").dialog({ autoOpen: false, width: 640, height: 450, modal:true });
   $("#a-new-course").live("click", function() {
     $("#new-course-dialog").dialog('open');

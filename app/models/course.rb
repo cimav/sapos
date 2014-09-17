@@ -1,7 +1,8 @@
 # coding: utf-8
 class Course < ActiveRecord::Base
-  attr_accessible :id,:program_id,:code,:name,:lecture_hours,:lab_hours,:credits,:description,:term,:prereq1,:prereq2,:prereq3,:coreq1,:coreq2,:coreq3,:notes,:status,:created_at,:updated_at
+  attr_accessible :id,:program_id,:code,:name,:lecture_hours,:lab_hours,:credits,:description,:term,:prereq1,:prereq2,:prereq3,:coreq1,:coreq2,:coreq3,:notes,:status,:created_at,:updated_at,:studies_plan_id
   belongs_to :program
+  belongs_to :studies_plan
 
   has_many :term_courses
   accepts_nested_attributes_for :term_courses

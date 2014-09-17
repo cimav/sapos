@@ -1,5 +1,8 @@
+- @include_js = 'select2'
+- @include2_js = 'select2_locale_es'
+- @include_css = 'select2/select2'
 #schedule-header
-  %h3= @tc.course.name
+  %h3= "#{@tc.course.name} [#{@tc.course.studies_plan.code}]"
   #schedule-term Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})
   #schedule-term-group Grupo: #{@tc.group}: #{(@tc.staff.full_name rescue 'Sin titular')}
 = form_for(@program, :url => { :action => "create_course_student" }) do |f|
@@ -8,29 +11,41 @@
   = hidden_field_tag 'term_course[term_course_students_attributes][0][term_course_id]', @tc.id
   = fields_for "term_course[term_course_students_attributes][0]" do |fields|
     #course-student-new
+      -# busca los alumnos ya inscritos al curso
       - students_in_course = TermCourseStudent.where(:term_course_id => @tc.id).map(&:term_student_id)
+      -# si hay alguno los filtramos en un not in, si no hay solo mostramos los que esten en el mismo ciclo
       - if students_in_course.count > 0
         - conditions = ['term_students.term_id = ? AND term_students.id not in (?)', @tc.term_id, students_in_course]
       - else 
         - conditions = ['term_students.term_id = ?', @tc.term_id]
       - students_available = TermStudent.find(:all, :conditions => conditions).collect {|i| [i.student.full_name_with_card, i.id]}
-
+      
       - in_program_options = ""
       - if students_available.count > 0 
         - in_program_options = "<optgroup label=\"Inscritos en #{@program.name}\">"
         - students_available.each do |student|
           - in_program_options += "<option value=\"#{student[1]}\">#{student[0]}</option>"
 
+      -# mostramos los alumnos en el resto de los programas que esten en ciclos vigentes
       - other_program_options = ""
-      - Term.where("id <> #{@tc.id} AND status = #{Term::OPEN}").each do |other_term|
-        - other_program_options += "<optgroup label=\"[OTRO PROGRAMA] Ciclo: #{other_term.name} #{other_term.program.name}\">"
+      - @date = (Date.today).strftime("%Y-%m-%d")
+      - Term.where("id <> #{@tc.id} AND status = #{Term::OPEN} AND start_date<='#{@date}' AND end_date>='#{@date}'").each do |other_term|
+        - other_program_options += "<optgroup label=\"Ciclo: #{other_term.name} #{other_term.program.name}\">"
         - other_term.term_students.each do |ts|
-          - other_program_options += "<option value=\"#{ts.id}\">#{ts.student.full_name_with_card}</option>"
+          - logger.debug students_in_course
+          - if !students_in_course.index(ts.id)
+            - other_program_options += "<option value=\"#{ts.id}\">#{ts.student.full_name_with_card}</option>"
 
       - options = in_program_options + other_program_options
       %div{:id => "field_term_course_term_course_students_attributes_0_term_student_id"}
         = fields.label :term_student_id, 'Estudiante'
         = fields.select :term_student_id, options.html_safe
-
+      
       #dialog-submit-button-area
         = fields.submit "Agregar estudiante al curso"
+
+
+:javascript
+  $(document).ready(function(){
+    $('#term_course_term_course_students_attributes_0_term_student_id').select2();
+  });

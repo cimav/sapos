@@ -116,9 +116,9 @@ Sapos::Application.routes.draw do
   match 'usuarios/:id/permisos/:type' => 'users#permissions'
   
   match 'programas/busqueda' => 'programs#live_search'
-  match 'programas/:id/nuevo_curso' => 'programs#new_course'
+  match 'programas/:id/:studies_plan_id/nuevo_curso' => 'programs#new_course'
   match 'programas/create_course' => 'programs#create_course'
-  match 'programas/:id/plan' => 'programs#plan_table'
+  match 'programas/:id/:studies_plan_id/plan' => 'programs#plan_table'
   match 'programas/:id/curso/:course_id' => 'programs#edit_course'
   match 'programas/:id/periodos' => 'programs#terms_table'
   match 'programas/:id/nuevo_periodo' => 'programs#new_term'
@@ -128,6 +128,7 @@ Sapos::Application.routes.draw do
   match 'programas/:id/terms_dropdown' => 'programs#terms_dropdown'
   match 'programas/:id/periodo/:term_id/courses_dropdown' => 'programs#courses_dropdown'
   match 'programas/:id/periodo/:term_id/seleccionar_cursos' => 'programs#select_courses_for_term'
+  match 'programas/:id/periodo/:term_id/:studies_plan_id/asignar_cursos' => 'programs#courses_assign'
   match 'programas/:id/periodo/:term_id/asignar_cursos_al_periodo' => 'programs#assign_courses_to_term'
   match 'programas/:id/periodo/:term_id/curso/:course_id/horario' => 'programs#schedule_table'
   match 'programas/:id/periodo/:term_id/curso/:course_id/horario/:group' => 'programs#schedule_table'
@@ -166,6 +167,13 @@ Sapos::Application.routes.draw do
   match 'aspirantes/:id/archivos' => 'applicants#files'
   match 'aspirantes/constancias/:type/:id' => 'applicants#certificates'
 
+  #match 'planes_estudios/' => 'studies_plans#show'
+  match 'planes_estudios/:program_id/nuevo' => 'studies_plans#new'
+  match 'planes_estudios/crear' => 'studies_plans#create'
+  match 'planes_estudios/:program_id/combo' => 'studies_plans#combo'
+  match 'planes_estudios/:id' => 'studies_plans#show'
+  match 'planes_estudios/editar/:id' => 'studies_plans#update'
+
   resources :documentation_files
 
   match 'logs/show' => 'logs#index'
@@ -186,6 +194,7 @@ Sapos::Application.routes.draw do
     resources :graduates, :path => "egresados"
     resources :scholarship, :path => "becas"
     resources :applicants, :path => "aspirantes"
+    #resources :studies_plans, :path => "planes_estudios"
   end
 
   match '/auth/:provider/callback' => 'sessions#create'

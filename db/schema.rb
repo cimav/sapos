@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131023213029) do
+ActiveRecord::Schema.define(:version => 20140908214804) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -114,6 +114,7 @@ ActiveRecord::Schema.define(:version => 20131023213029) do
     t.integer  "room_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "status"
   end
 
   create_table "contacts", :force => true do |t|
@@ -147,13 +148,13 @@ ActiveRecord::Schema.define(:version => 20131023213029) do
 
   create_table "courses", :force => true do |t|
     t.integer  "program_id"
-    t.string   "code",          :limit => 10
+    t.string   "code",            :limit => 10
     t.string   "name"
-    t.decimal  "lecture_hours",               :precision => 8, :scale => 2
-    t.decimal  "lab_hours",                   :precision => 8, :scale => 2
-    t.decimal  "credits",                     :precision => 8, :scale => 2
+    t.decimal  "lecture_hours",                 :precision => 8, :scale => 2
+    t.decimal  "lab_hours",                     :precision => 8, :scale => 2
+    t.decimal  "credits",                       :precision => 8, :scale => 2
     t.text     "description"
-    t.integer  "term",                                                      :default => 1
+    t.integer  "term",                                                        :default => 1
     t.integer  "prereq1"
     t.integer  "prereq2"
     t.integer  "prereq3"
@@ -161,9 +162,10 @@ ActiveRecord::Schema.define(:version => 20131023213029) do
     t.integer  "coreq2"
     t.integer  "coreq3"
     t.text     "notes"
-    t.integer  "status",                                                    :default => 1
+    t.integer  "status",                                                      :default => 1
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "studies_plan_id"
   end
 
   add_index "courses", ["program_id"], :name => "index_courses_on_program_id"
@@ -520,6 +522,7 @@ ActiveRecord::Schema.define(:version => 20131023213029) do
     t.string   "domain_password"
     t.integer  "deleted",                            :default => 0
     t.datetime "deleted_at"
+    t.integer  "studies_plan_id"
   end
 
   add_index "students", ["campus_id"], :name => "index_students_on_campus_id"
@@ -530,6 +533,18 @@ ActiveRecord::Schema.define(:version => 20131023213029) do
   add_index "students", ["department_id"], :name => "index_students_on_department_id"
   add_index "students", ["program_id"], :name => "index_students_on_program_id"
   add_index "students", ["supervisor"], :name => "index_students_on_supervisor"
+
+  create_table "studies_plans", :force => true do |t|
+    t.integer  "program_id"
+    t.string   "code",       :limit => 20,                   :null => false
+    t.string   "name",       :limit => 100
+    t.text     "notes"
+    t.string   "status",     :limit => 20,  :default => "0"
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
+  end
+
+  add_index "studies_plans", ["program_id"], :name => "index_studies_plans_on_program_id"
 
   create_table "term_course_schedules", :force => true do |t|
     t.integer  "term_course_id"

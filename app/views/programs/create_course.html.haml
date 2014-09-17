@@ -1,6 +1,7 @@
 :javascript
   $(document).ready(function() {
-    parent.loadPlanTable();
+    //parent.loadPlanTable();
+    parent.reloadStudiesPlansCombo(#{@studies_plan.id});
     //parent.$("#program_link_#{@program.id}").click();
     parent.$("#new-course-dialog").dialog('close');
   });

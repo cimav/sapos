@@ -1,0 +1,30 @@
+:javascript
+  var model_name = 'studies_plan';
+
+= form_for @studies_plan, :url => { :action => "create" }, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
+  = f.hidden_field :program_id, :value=>@program.id
+  #new-studies-plan
+    .field#field_studies_plan_code
+      = f.label :code, 'Clave' 
+      = f.text_field :code, :size=>30
+      
+    .field#field_studies_plan_name
+      = f.label :name, 'Descripcion'
+      = f.text_field :name, :size=>70
+
+    .field#field_student_campus_id
+      = f.label :status, 'Estatus'
+      = f.select :status, StudiesPlan::STATUS.invert.sort { |a,b| a[1] <=> b[1] }
+
+  #notas
+    %h2 Notas
+    = f.text_area :notes, :cols=>70, :rows=>3
+
+  = f.submit 'Crear'
+
+:javascript
+  $('#item-new-form').live("ajax:success", function(evt, data, status, xhr) {
+    var res = $.parseJSON(xhr.responseText);
+    parent.reloadStudiesPlansCombo(res['uniq']);
+    parent.$("#new-studies-plan-dialog").dialog('close');
+  });

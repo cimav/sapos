@@ -1,0 +1,7 @@
+= hidden_field_tag 'program_id', @program.id
+- items = StudiesPlan.where(:program_id => @program.id).all.collect {|i| [i.name, i.id]}
+- items = items.sort
+- items += [['Crear Plan de Estudios',0]]
+= select "studies-plans-combo", "id", items, :prompt => 'Selecciona un plan de estudios'
+%a#sp-edit-text{:style=>'display:none;cursor:pointer'}
+  = " Editar Plan"

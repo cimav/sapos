@@ -1,6 +1,8 @@
 = form_for(@program, :url => { :action => "create_course" }) do |f|
   = hidden_field_tag 'program_id', @program.id
+  = hidden_field_tag 'studies_plan_id', @studies_plan.id
   = hidden_field_tag 'program[courses_attributes][0][program_id]', @program.id
+  = hidden_field_tag 'program[courses_attributes][0][studies_plan_id]', @studies_plan.id
   = fields_for "program[courses_attributes][0]" do |fields|
     #course-new
       %h3 Nuevo Curso

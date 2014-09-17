@@ -109,17 +109,20 @@ class ProgramsController < ApplicationController
 
   def plan_table
     @program = Program.find(params[:id])
+    @studies_plan_id = params[:studies_plan_id]
     render :layout => false
   end
 
   def new_course
     @program = Program.find(params[:id])
+    @studies_plan = StudiesPlan.find(params[:studies_plan_id])
     render :layout => 'standalone'
   end
 
   def create_course
     flash = {}
-    @program = Program.find(params[:program_id])
+    @program      = Program.find(params[:program_id])
+    @studies_plan = StudiesPlan.find(params[:studies_plan_id])
     if @program.update_attributes(params[:program])
       flash[:notice] = "Nuevo curso creado."
     else
@@ -250,9 +253,16 @@ class ProgramsController < ApplicationController
 
   def select_courses_for_term
     @program = Program.find(params[:id])
-    @term = Term.find(params[:term_id])
-    @courses_assigned = TermCourse.where("term_id = :t AND status = :s", {:t => @term.id, :s => TermCourse::ASSIGNED}).collect {|i| i.course_id}
+    @term    = Term.find(params[:term_id])
     render :layout => 'standalone'
+  end
+
+  def courses_assign
+    @program          = Program.find(params[:id])
+    @studies_plan     = StudiesPlan.find(params[:studies_plan_id])
+    @term             = Term.find(params[:term_id])
+    @courses_assigned = TermCourse.where("term_id = :t AND status = :s", {:t => @term.id, :s => TermCourse::ASSIGNED}).collect {|i| i.course_id}
+    render :layout => false
   end
 
   def assign_courses_to_term

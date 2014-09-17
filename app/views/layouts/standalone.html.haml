@@ -3,9 +3,13 @@
   %head
     %title= @page_title || 'CIMAV'
     = stylesheet_link_tag "application"
+    - if !@include_css.nil?
+      = stylesheet_link_tag @include_css
     = javascript_include_tag "application"
     - if !@include_js.nil?
       = javascript_include_tag @include_js
+    - if !@include2_js.nil?
+      = javascript_include_tag @include2_js
     = csrf_meta_tag
   %body
     #standalone-content

@@ -1,6 +1,6 @@
 #tc-header
   #tc-title
-    %h4= tc.course.name
+    %h4= "#{tc.course.name} [#{tc.course.studies_plan.code}]"
     %div Ciclo Escolar: #{tc.term.name} (#{l tc.term.start_date, :format => :long} – #{l tc.term.end_date, :format => :long})
     #groups-dropdown 
       = "Grupo: "

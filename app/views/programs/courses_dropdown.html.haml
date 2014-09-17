@@ -1,4 +1,4 @@
-- items = @term_course.collect {|i| [ i.course.name, i.course.id]}
+- items = @term_course.collect {|i| [ "#{i.course.name} [#{i.course.studies_plan.code}]", i.course.id]}
 - items = items.sort
 - if @term.status == Term::OPEN
   - items += [['Asignar cursos al ciclo escolar', 0]]

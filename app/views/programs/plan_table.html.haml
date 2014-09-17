@@ -1,7 +1,7 @@
 - current_term = 0
 %table.plan
   %tbody
-  - @program.courses.order("term").order("name").each_with_index do |course, index|
+  - @program.courses.where(:studies_plan_id=>@studies_plan_id).order("term").order("name").each_with_index do |course, index|
     - if current_term != course.term 
       - current_term = course.term
       - if current_term == 99
@@ -36,3 +36,5 @@
       - if !course.coreq3.nil?
         - coreq << Course.find(course.coreq3).code rescue 'Error'
       %td= coreq.join(',')
+
+= link_to 'Agregar curso', '#', :id=>'a-new-course'

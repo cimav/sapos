@@ -1,34 +1,25 @@
-= form_for(@program, :url => { :action => "assign_courses_to_term" }, :html => {:id => 'assign-course-form'}) do |f|
-  = hidden_field_tag :program_id, @program.id
-  = hidden_field_tag :term_id, @term.id
-  %h3= @program.name
-  #schedule-term= "Ciclo Escolar: #{@term.name} (#{l @term.start_date, :format => :long} – #{l @term.end_date, :format => :long})"
-  - current_term = 0
-  %table.courses-assign
-    %thead.fixed-header
-      %tr.header
-        %th Clave
-        %th Nombre
-        %th 
-    %tbody.scroll-content
-      - @program.courses.order("term").order("name").each_with_index do |course, index|
-        - if current_term != course.term
-          - current_term = course.term
-          - if current_term == 99
-            %tr.optional
-              %td{:colspan=>3} Optativas
-          - else
-            %tr.term
-              %td{:colspan=>3}= "#{@program.term_type} #{course.term}"
+%h3= @program.name
+#schedule-term= "Ciclo Escolar: #{@term.name} (#{l @term.start_date, :format => :long} – #{l @term.end_date, :format => :long})"
+- @items = []
+- @program.studies_plan.each do |sp|
+  - @items += [[sp.name,sp.id]]
+= select "studies-plans-combo-scft", "id", @items
+  
+#div-courses-assign
 
-        %tr.course{:id=>"tr_#{course.id}", :course_id=>course.id}
-          %td= course.id
-          %td= course.name
-          - if @term.status == Term::OPEN
-            %td= check_box_tag "courses[]", course.id, @courses_assigned.include?(course.id), :id => "chk_#{course.id}"
-          - else
-            %td= "-"
+:javascript
+  $(document).ready(function(){
+    $('#studies-plans-combo-scft_id').live("change", function() {
+      var val = $('#studies-plans-combo-scft_id').val()
+      loadCoursesAssign(#{@program.id},#{@term.id},val);
+    });
+   
+    function loadCoursesAssign(program_id,term_id,studies_plan_id) {
+      url = "/programas/" + program_id + "/periodo/" + term_id + "/" + studies_plan_id + "/asignar_cursos";
+      $.get(url, {}, function(html) {
+        $("#div-courses-assign").html(html);
+      }); 
+    }
 
-  #dialog-submit-button-area
-    - if @term.status == Term::OPEN
-      = f.submit "Asignar cursos"
+    loadCoursesAssign(#{@program.id},#{@term.id},#{@items[0][1]});
+  });
