@@ -5,14 +5,27 @@ es:
       title:  "Dr."
       name: "Juan Méndez Nonell"
       job: "Director General"
+      gender: "M"
+    academic_director:
+      title:  "Dr."
+      name: "Erasmo Orrantia Borunda"
+      job: "Director Académico"
+      gender: "M"
     posgrado_chief:
       title: "M.H."
       name: "Nicté Ortiz Villanueva"
       job: "Jefa del Departamento de Posgrado"
+      gender: "F"
+    scholar_control:
+      title: "Lic."
+      name: "Sandra Beltrán Lagunas"
+      job: "Coordinador de Control Escolar"
+      gender: "F"
     academic_coordinator_monterrey:
-      title: ""
+      title: "Dra."
       name: "Alejandra García García"
       job: "Coordinador Académico Unidad Monterrey"
+      gender: "F"
   activerecord:
     errors:
       messages:

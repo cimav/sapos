@@ -1,3 +1,14 @@
+:javascript
+  $(document).ready(function() {
+    $('.reqdoc_button').click(function(){
+      var c_type = $(this).attr("c_type");
+      var sid    = $(this).attr("student_id");
+      var siid  = $("input[name='firma']:checked").val();
+      window.location.href="estudiantes/constancias/"+c_type+"/"+sid+"/"+siid;
+    });
+  });
+
+
 - if @student.program.level.to_i.eql? 3 #propedeutico
   - @acceso= 1
 - else 
@@ -9,13 +20,27 @@
     - @acceso = 1
 
 - if @acceso.eql? 1
-  %br= link_to 'Constancia de estudios', "estudiantes/constancias/estudios/#{@student.id}"
-  %br= link_to 'Constancia de inscripción', "estudiantes/constancias/inscripcion/#{@student.id}"
-  %br= link_to 'Constancia para VISA', "estudiantes/constancias/visa/#{@student.id}"
-  %br= link_to 'Constancia de promedio general', "estudiantes/constancias/promedio/#{@student.id}"
-  %br= link_to 'Constancia de promedio semestral', "estudiantes/constancias/semestral/#{@student.id}"
-  %br= link_to 'Constancia para el tramite de seguro', "estudiantes/constancias/seguro/#{@student.id}"
-  %br= link_to 'Constancia de créditos cubiertos', "estudiantes/constancias/creditos/#{@student.id}"
+  .field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
+    = label_tag 'Constancia de estudios' 
+    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"estudios",:student_id=>@student.id  
+  .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
+    = label_tag 'Constancia de inscripción' 
+    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"inscripcion",:student_id=>@student.id  
+  .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
+    = label_tag 'Constancia para VISA' 
+    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"visa",:student_id=>@student.id  
+  .field_requested_document#field_requested_document_3{:style=>"width:600px; height:40px;"}
+    = label_tag 'Constancia de promedio general' 
+    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"promedio",:student_id=>@student.id  
+  .field_requested_document#field_requested_document_4{:style=>"width:600px; height:40px;"}
+    = label_tag 'Constancia de promedio semestral' 
+    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"semestral",:student_id=>@student.id  
+  .field_requested_document#field_requested_document_5{:style=>"width:600px; height:40px;"}
+    = label_tag 'Constancia para el trámite de seguro' 
+    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"seguro",:student_id=>@student.id  
+  .field_requested_document#field_requested_document_6{:style=>"width:600px; height:40px;"}
+    = label_tag 'Constancia de créditos cubiertos' 
+    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"creditos",:student_id=>@student.id  
 - else
   %br
     %u{:style=>"color:#D9D9D9"}= 'Constancia de estudios'
@@ -29,6 +54,26 @@
     %u{:style=>"color:#D9D9D9"}= 'Constancia de promedio semestral'
   %br= link_to 'Constancia para el tramite de seguro', "estudiantes/constancias/seguro/#{@student.id}"
   %br= link_to 'Constancia de créditos cubiertos', "estudiantes/constancias/creditos/#{@student.id}"
-  
-
-
+ 
+.radioDiv
+  - dir = t(:directory)
+  %b= "Firmantes:" 
+  %br
+  %br
+    = radio_button_tag "firma", 1, false, class: "radio-button-sign"
+    = "#{dir[:academic_director][:title]} #{dir[:academic_director][:name]}"
+    = "(#{dir[:academic_director][:job]})"
+  %br
+    = radio_button_tag "firma", 2, true, class: "radio-button-sign"
+    = "#{dir[:posgrado_chief][:title]} #{dir[:posgrado_chief][:name]}"
+    = "(#{dir[:posgrado_chief][:job]})"
+  - if (current_user.campus_id == 1 || current_user.campus_id==0)
+    %br
+      = radio_button_tag "firma", 3, false, class: "radio-button-sign"
+      = "#{dir[:scholar_control][:title]} #{dir[:scholar_control][:name]}"
+      = "(#{dir[:scholar_control][:job]})"
+  - if (current_user.campus_id == 2 || current_user.campus_id==0)
+    %br
+      = radio_button_tag "firma", 4, false, class: "radio-button-sign"
+      = "#{dir[:academic_coordinator_monterrey][:title]} #{dir[:academic_coordinator_monterrey][:name]}"
+      = "(#{dir[:academic_coordinator_monterrey][:job]})"

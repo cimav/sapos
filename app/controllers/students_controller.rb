@@ -603,25 +603,43 @@ class StudentsController < ApplicationController
   end
 
   def certificates
-    @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    @student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    @sign     = params[:sign_id]
+
     time = Time.new
     year = time.year.to_s
     head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
     base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
     dir  = t(:directory)
 
-    if current_user.campus_id == 2
-      title = dir[:academic_coordinator_monterrey][:title]
-      name  = dir[:academic_coordinator_monterrey][:name]
-      job   = dir[:academic_coordinator_monterrey][:job]
-      @firma  = "#{title} #{name}"
-      @puesto = "#{job}"
-    else
-      title = dir[:posgrado_chief][:title]
-      name  = dir[:posgrado_chief][:name]
-      job   = dir[:posgrado_chief][:job]
-      @firma  = "#{title} #{name}"
-      @puesto = "#{job}"
+    if @sign.eql? "1"
+      title    = dir[:academic_director][:title]
+      name     = dir[:academic_director][:name]
+      job      = dir[:academic_director][:job]
+      @sgender = dir[:academic_director][:gender] 
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
+    elsif @sign.eql? "2"
+      title    = dir[:posgrado_chief][:title]
+      name     = dir[:posgrado_chief][:name]
+      job      = dir[:posgrado_chief][:job]
+      @sgender = dir[:posgrado_chief][:gender] 
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
+    elsif @sign.eql? "3"
+      title    = dir[:scholar_control][:title]
+      name     = dir[:scholar_control][:name]
+      job      = dir[:scholar_control][:job]
+      @sgender = dir[:scholar_control][:gender] 
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
+    elsif @sign.eql? "4"
+      title    = dir[:academic_coordinator_monterrey][:title]
+      name     = dir[:academic_coordinator_monterrey][:name]
+      job      = dir[:academic_coordinator_monterrey][:job]
+      @sgender = dir[:academic_coordinator_monterrey][:gender] 
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
     end 
     
     ##### GENERO GRAMATICAL #####
@@ -634,6 +652,17 @@ class StudentsController < ApplicationController
     else
       @genero  = "x"
       @genero2 = "x"
+    end
+
+    if @sgender == "F"
+      @sgenero  = "a"
+      @sgenero2 = "la"
+    elsif @sgender == "M"
+      @sgenero  = "o"
+      @sgenero2 = "el"
+    else
+      @sgenero  = "x"
+      @sgenero2 = "x"
     end
 
     ################################ CONSTANCIA DE ESTUDIOS ##################################

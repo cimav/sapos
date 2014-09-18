@@ -12,9 +12,9 @@
   %br
   %div{:style=>"text-align: justify;"}
     %p.western
-      = "La suscrita"
-      %b=@firma
-      = ", #{@puesto}, del Centro de Investigación en Materiales Avanzados, S.C., Organismo del Sistema SEP - CONACYT, según Acuerdo ante la SEP 964031 con fecha del 15 de abril de 1996 y clave de Registro DGES 256035417101, y con sus Programas de Posgrado registrados ante la DIrección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero}"
+      = "#{@sgenero2.camelcase} suscrit#{@sgenero}"
+      %b="#{@firma},"
+      = " #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., Organismo del Sistema SEP - CONACYT, según Acuerdo ante la SEP 964031 con fecha del 15 de abril de 1996 y clave de Registro DGES 256035417101, y con sus Programas de Posgrado registrados ante la DIrección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero}"
       %b=@nombre
       = " de matrícula "
       %b=@matricula
