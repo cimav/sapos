@@ -603,13 +603,18 @@ class StudentsController < ApplicationController
   end
 
   def certificates
-    @student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
-    @sign     = params[:sign_id]
-
+    @student     = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    @sign        = params[:sign_id]
+    ## OPTIONS
+    @options     = params[:options]
+    if @options.eql? "1"
+      @op_asesor = 1
+    else
+      @op_asesor = 0
+    end
+    
     time = Time.new
     year = time.year.to_s
-    head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
-    base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
     dir  = t(:directory)
 
     if @sign.eql? "1"

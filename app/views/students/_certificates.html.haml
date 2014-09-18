@@ -1,62 +1,69 @@
+- if @student.program.level.to_i.eql? 3 #propedeutico
+  - @need_supervisor= 0
+  - @have_supervisor= 0
+  - @disabled       = true
+  - @checked        = false
+- else 
+  - @need_supervisor = 1
+  - @disabled        = false
+  - @checked         = true
+  - if @student.supervisor.nil?
+    - @have_supervisor = 0
+  - else 
+    - @have_supervisor = 1
+
 :javascript
   $(document).ready(function() {
     $('.reqdoc_button').click(function(){
       var c_type = $(this).attr("c_type");
       var sid    = $(this).attr("student_id");
       var siid  = $("input[name='firma']:checked").val();
-      window.location.href="estudiantes/constancias/"+c_type+"/"+sid+"/"+siid;
+      var options = $("#chk_asesor:checked").val();
+      if ("#{@have_supervisor}"==0 && options == 1 && "#{@need_supervisor}" == "1")
+      {
+        alert("No puedes imprimir una constancia con asesor si el usuario no tiene uno asignado");
+        return false;
+      }
+      
+      window.location.href="estudiantes/constancias/"+c_type+"/"+sid+"/"+siid+"?options="+options;
     });
   });
 
-
-- if @student.program.level.to_i.eql? 3 #propedeutico
-  - @acceso= 1
-- else 
-  -if @student.supervisor.nil?
-    - @acceso = 0
-    %p 
-      %b= "Aviso: este alumno no tiene asignado un asesor, solo tendra acceso a las constancias que puedan imprimirse."
-  - else
-    - @acceso = 1
-
-- if @acceso.eql? 1
-  .field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
-    = label_tag 'Constancia de estudios' 
-    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"estudios",:student_id=>@student.id  
-  .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
-    = label_tag 'Constancia de inscripción' 
-    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"inscripcion",:student_id=>@student.id  
-  .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
-    = label_tag 'Constancia para VISA' 
-    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"visa",:student_id=>@student.id  
-  .field_requested_document#field_requested_document_3{:style=>"width:600px; height:40px;"}
-    = label_tag 'Constancia de promedio general' 
-    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"promedio",:student_id=>@student.id  
-  .field_requested_document#field_requested_document_4{:style=>"width:600px; height:40px;"}
-    = label_tag 'Constancia de promedio semestral' 
-    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"semestral",:student_id=>@student.id  
-  .field_requested_document#field_requested_document_5{:style=>"width:600px; height:40px;"}
-    = label_tag 'Constancia para el trámite de seguro' 
-    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"seguro",:student_id=>@student.id  
-  .field_requested_document#field_requested_document_6{:style=>"width:600px; height:40px;"}
-    = label_tag 'Constancia de créditos cubiertos' 
-    = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"creditos",:student_id=>@student.id  
-- else
-  %br
-    %u{:style=>"color:#D9D9D9"}= 'Constancia de estudios'
-  %br 
-    %u{:style=>"color:#D9D9D9"}= 'Constancia de inscripción'
-  %br
-    %u{:style=>"color:#D9D9D9"}='Constancia para VISA'
-  %br
-    %u{:style=>"color:#D9D9D9"}= 'Constancia de promedio general'
-  %br
-    %u{:style=>"color:#D9D9D9"}= 'Constancia de promedio semestral'
-  %br= link_to 'Constancia para el tramite de seguro', "estudiantes/constancias/seguro/#{@student.id}"
-  %br= link_to 'Constancia de créditos cubiertos', "estudiantes/constancias/creditos/#{@student.id}"
+.field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
+  = label_tag 'Constancia de estudios' 
+  = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"estudios",:student_id=>@student.id  
+.field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
+  = label_tag 'Constancia de inscripción' 
+  = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"inscripcion",:student_id=>@student.id  
+.field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
+  = label_tag 'Constancia para VISA' 
+  = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"visa",:student_id=>@student.id  
+.field_requested_document#field_requested_document_3{:style=>"width:600px; height:40px;"}
+  = label_tag 'Constancia de promedio general' 
+  = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"promedio",:student_id=>@student.id  
+.field_requested_document#field_requested_document_4{:style=>"width:600px; height:40px;"}
+  = label_tag 'Constancia de promedio semestral' 
+  = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"semestral",:student_id=>@student.id  
+.field_requested_document#field_requested_document_5{:style=>"width:600px; height:40px;"}
+  = label_tag 'Constancia para el trámite de seguro' 
+  = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"seguro",:student_id=>@student.id  
+.field_requested_document#field_requested_document_6{:style=>"width:600px; height:40px;"}
+  = label_tag 'Constancia de créditos cubiertos' 
+  = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"creditos",:student_id=>@student.id  
  
+.optionsDiv
+  %b= "Opciones:"
+  %br
+  %br
+    = check_box_tag "chk_asesor", 1, @checked, disabled: @disabled
+    - if @disabled
+      %text{:style=>"color:#D9D9D9"}= "Incluir asesor"
+    - else
+      = "Incluir asesor"
+
 .radioDiv
   - dir = t(:directory)
+  %br
   %b= "Firmantes:" 
   %br
   %br
