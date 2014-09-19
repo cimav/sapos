@@ -101,7 +101,9 @@
       .field#field_student_status
         = f.label :status, 'Estado'
         = f.select :status, @status.invert.sort {|a,b| a[1] <=> b[1] }
-
+      .field#field_student_studies_plan
+        = f.label :studies_plan_id, 'Plan de Estudios'
+        = f.collection_select :studies_plan_id, @student.program.studies_plan,:id,:name, options = {:prompt => "Selecciona un plan de estudios"}
       .field#field_student_supervisor
         = f.label :supervisor, 'Asesor'
         = f.grouped_collection_select :supervisor, @institutions, :staffs, :name, :id, :full_name, options = {:prompt => "Selecciona el asesor"}
