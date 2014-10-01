@@ -28,7 +28,8 @@ Sapos::Application.routes.draw do
   match 'estudiantes/constancias_grado/:thesis_id' => 'students#grade_certificates'
   match 'estudiantes/constancias_sinodales/:student_id/:staff_id' => 'students#sinodal_certificates'
   match 'estudiantes/diploma/:thesis_id' => 'students#diploma'
-  match 'estudiantes/constancia_total/:thesis_id' => 'students#total_studies_certificate'
+  #match 'estudiantes/constancia_total/:thesis_id' => 'students#total_studies_certificate'
+  match 'estudiantes/constancia_total/:thesis_id' => 'certificates#total_studies_certificate'
   match 'estudiantes/:id/borrar' => 'students#destroy'
   
   match 'estudiantes/archivos/avances/:id' => 'student_advances_file#index'

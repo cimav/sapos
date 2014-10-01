@@ -1,6 +1,9 @@
 es:
   hello: "Hola"
+  certificates:
+    total_studies: "asignaturas. la escala de calificacion"
   directory:
+    center: "Centro de Investigación\n en Materiales Avanzados, S.C."
     general_director:
       title:  "Dr."
       name: "Juan Méndez Nonell"
