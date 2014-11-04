@@ -376,7 +376,7 @@ class StudentsController < ApplicationController
   def files
     @student = Student.includes(:student_file).find(params[:id])
     @student_file = StudentFile.new
-    render :layout => 'standalone'
+    render :layout => :false
   end
 
   def upload_file
@@ -1092,7 +1092,7 @@ class StudentsController < ApplicationController
       pdf.text_box @hora , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
 
       # SET MONTH AND YEAR
-      month = get_month_name(@time.month)
+      month = get_month_name(@thesis.defence_date.month)
       year = @time.year
       @m_y = "MES DE #{month.upcase} DEL #{year}. SE REUNIERON LOS"
       x = 244
