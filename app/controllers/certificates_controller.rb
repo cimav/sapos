@@ -217,8 +217,8 @@ class CertificatesController < ApplicationController
         ## SET COURSE NAME
         text= tcs.term_course.course.name.mb_chars.upcase
         
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x_1,y_1], w_1, h_1
+        #pdf.fill_color "ffffff"
+        #pdf.fill_rectangle [x_1,y_1], w_1, h_1
         pdf.fill_color "000000"
 
         if tcs.term_course.course.name.size > 52
@@ -276,7 +276,8 @@ class CertificatesController < ApplicationController
           set_lines(pdf,648,235)
           pdf.font "Arial"
           y   = 575
-          y_1 = y + 12
+          #y_1 = y + 12
+          y_1 = y + 32
           y_2 = y + 1
           y_3 = y
           y_4 = y + 5
@@ -286,7 +287,8 @@ class CertificatesController < ApplicationController
           set_lines(pdf,648,235)
           pdf.font "Arial"
           y   = 565
-          y_1 = y + 6
+          #y_1 = y + 6
+          y_1 = y + 18
           y_2 = y + 1
           y_3 = y 
           y_4 = y + 5

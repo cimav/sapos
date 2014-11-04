@@ -1080,7 +1080,7 @@ class StudentsController < ApplicationController
       pdf.font "Arial"
 
       # SET HOUR AND DAY
-      @hora = "%02d:%02d HORAS DEL DÍA %2d" % [@time.hour,@time.min,@time.day]
+      @hora = "%02d:%02d HORAS DEL DÍA %2d" % [@thesis.defence_date.hour,@thesis.defence_date.min,@thesis.defence_date.day]
       x = 388
       y = 629
       w = 150
