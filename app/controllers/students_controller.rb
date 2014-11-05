@@ -1750,10 +1750,10 @@ class StudentsController < ApplicationController
     substring filename,/gradox/,t.student.program.name.gsub(program_title,student_title)
     substring filename,/gradoy/,t.student.program.name
     substring filename,/diax/,t.defence_date.day.to_s
-    substring filename,/mesx/,get_month_name(t.defence_date.month)
+    substring filename,/mesx/,get_month_name(t.defence_date.month).capitalize
     substring filename,/aniox/,t.defence_date.year.to_s
     substring filename,/diay/,time.day.to_s
-    substring filename,/mesy/,get_month_name(time.month)
+    substring filename,/mesy/,get_month_name(time.month).capitalize
     substring filename,/anyoy/,time.year.to_s
     substring filename,/librox/,libro.to_s
     substring filename,/fojax/,foja.to_s
