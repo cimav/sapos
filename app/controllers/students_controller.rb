@@ -1323,21 +1323,22 @@ class StudentsController < ApplicationController
       h_l = 2
       pdf.fill_rectangle [x_l,y_l], w_l, h_l
       pdf.fill_color "373435"
-      # line
-      x2 = x + 20
-      pdf.stroke_color= "000000"
-      pdf.line_width= 0.3
-      pdf.stroke_line [x2,y + 6],[x2+183,y + 6]
-      # text
-      dir = t(:directory)
-      title = dir[:general_director][:title].mb_chars.upcase 
-      name  = dir[:general_director][:name].mb_chars.upcase
-      job   = dir[:general_director][:job].mb_chars.upcase
-      text = "#{title} #{name}"
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
-      text = "#{job}"
-      pdf.text_box text , :at=>[x,y - 13], :width => w, :height=> h, :size=>12, :align=> :center, :valign=> :top
-
+      if params[:sign]
+        # set line
+        x2 = x + 20
+        pdf.stroke_color= "000000"
+        pdf.line_width= 0.3
+        pdf.stroke_line [x2,y + 6],[x2+183,y + 6]
+        # text
+        dir = t(:directory)
+        title = dir[:general_director][:title].mb_chars.upcase 
+        name  = dir[:general_director][:name].mb_chars.upcase
+        job   = dir[:general_director][:job].mb_chars.upcase
+        text = "#{title} #{name}"
+        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
+        text = "#{job}"
+        pdf.text_box text , :at=>[x,y - 13], :width => w, :height=> h, :size=>12, :align=> :center, :valign=> :top
+      end
       # RENDER
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
