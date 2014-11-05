@@ -376,7 +376,7 @@ class StudentsController < ApplicationController
   def files
     @student = Student.includes(:student_file).find(params[:id])
     @student_file = StudentFile.new
-    render :layout => :false
+    render :layout => 'standalone'
   end
 
   def upload_file
