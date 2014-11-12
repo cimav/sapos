@@ -1081,29 +1081,61 @@ class StudentsController < ApplicationController
 
       # SET HOUR AND DAY
       @hora = "%02d:%02d HORAS DEL DÍA %2d" % [@thesis.defence_date.hour,@thesis.defence_date.min,@thesis.defence_date.day]
-      x = 388
-      y = 629
-      w = 150
-      h = 11 
-      size = 10
+      x = 240   #388
+      y = 631   #629
+      w = 290   #150
+      h = 35    #11 
+      size = 10 #10
       pdf.fill_color "ffffff"
-      pdf.fill_rectangle [388,630], 130, 10
+      pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      pdf.text_box @hora , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
 
       # SET MONTH AND YEAR
       month = get_month_name(@thesis.defence_date.month)
       year = @time.year
-      @m_y = "MES DE #{month.upcase} DEL #{year}. SE REUNIERON LOS"
-      x = 244
-      y = 618
-      w = 450
-      h = 11 
-      size = 10
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [244,620], 330, 11
-      pdf.fill_color "373435"
-      pdf.text_box @m_y , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
+      space1 = ""
+      space2 = ""
+      space3 = ""
+      space4 = ""
+      space5 = ""
+      space6 = ""
+      space7 = ""
+      if month.size.eql? 9
+        space1=" "
+        space2=" "
+        space5=" "
+      elsif month.size.eql? 7
+        space1=" "
+        space2=" "
+        space3=" "
+        space4=" "
+        space5=" "
+      elsif month.size.eql? 6
+        space1=" "
+        space2=" "
+        space3=" "
+        space4=" "
+        space5=" "
+        space6=" "
+        space7=" "
+      elsif month.size<5
+        space1="  "
+        space2="  "
+        space3=" "
+        space4=" "
+        space5=" "
+        space6="  "
+        space7="  "
+      end
+      
+      @m_y = "MES#{space1} DE#{space2} #{month.upcase}#{space3} DEL#{space4} #{year}.#{space5} SE#{space6} REUNIERON#{space7} LOS"
+      l = 0
+      pdf.bounding_box [x + 5,y - 2],:width => w + 10, :height=> h,:kerning=>true do
+        #pdf.stroke_bounds
+        pdf.text "EN CHIHUAHUA. CHIH., #{@hora}", :size=> size, :leading=>l,:character_spacing=>1.55
+        pdf.text @m_y, :size=> size, :leading=>l,:character_spacing=>0.9
+        pdf.text "MIEMBROS DEL JURADO INTEGRADO POR LOS SEÑORES:", :size=> size, :leading=>l, :character_spacing=>0.3
+      end
      
       # SET  THESIS EXAMINERS
       if (@level.to_i.eql? 1)||(@level.to_i.eql? 2)
@@ -1147,6 +1179,27 @@ class StudentsController < ApplicationController
         end
       
         pdf.draw_text text.upcase, :at=>[246,528], :size=>11
+
+      ##  SET TEXT
+      x = 150
+      y = 520
+      w = 400
+      h = 30
+
+      pdf.fill_color "ffffff"
+      pdf.fill_rectangle [x,y], w, h
+      pdf.fill_color "373435"
+      l = 0
+      if @level.to_i.eql? 1
+        y = y + 10
+      elsif @level.to_i.eql? 2
+        y = y - 5
+      end
+      pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
+        #pdf.stroke_bounds
+        pdf.text "BAJO LA PRESIDENCIA DEL PRIMERO Y CON EL CARÁCTER DE SECRETARIO", :size=> size, :align=> :center, :leading=>l,:character_spacing=>0.4
+        pdf.text "EL ÚLTIMO, PARA PROCEDER A EFECTUAR LA EVALUACION DE LA TESIS", :size=> size, :align=> :center, :leading=>l,:character_spacing=>0.4
+      end
       ## SET THESIS TITLE
       x = 155
       y = 490
@@ -1167,6 +1220,9 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
+      if @level.to_i.eql? 1
+        y = y + 10
+      end
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=>:bold, :align=> :center, :valign=> :center
 
       # SET STUDENT NAME
@@ -1178,7 +1234,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      text = @thesis.student.full_name
+      text = @thesis.student.full_name.mb_chars.upcase
       
       if text.size >= 40
         size = 16
@@ -1197,9 +1253,36 @@ class StudentsController < ApplicationController
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
       grado = @thesis.student.program.name.mb_chars.upcase
-      text = "PARA OBTENER EL GRADO DE #{grado} HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:" 
+      pdf.bounding_box [x+5,y-5],:width => w + 10, :height=> h do
+        #pdf.stroke_bounds
+        first_word = ""
+        rest_of_words = ""
+        a = grado.split(/ /)
+        a.each_with_index do |g,i|
+          if grado.size>55 
+            if i<=2
+              first_word = "#{first_word} #{g}"
+            else
+              rest_of_words = "#{rest_of_words} #{g}"
+            end
+          else
+            if i.eql? 0
+              first_word = g
+            else
+              rest_of_words = "#{rest_of_words} #{g}"
+            end
+          end
+        end
+        
+        
+        pdf.text "PARA OBTENER EL GRADO DE #{first_word}", :size=> size, :align=> :center
+        pdf.text "#{rest_of_words}", :size=> size, :align=> :center
+        pdf.text "HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS", :size=> size, :align=> :center
+        pdf.text "EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:", :size=> size, :align=> :center
+      end
+      #text = "PARA OBTENER EL GRADO DE #{grado} HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:" 
       
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      #pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
       # SET PRESIDENT
       x = 5
@@ -1222,22 +1305,22 @@ class StudentsController < ApplicationController
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
-      if  @level=1
+      if  @level.to_i.eql? 1
         text = "#{@examiner3.title.to_s.mb_chars.upcase} #{@examiner3.full_name.mb_chars.upcase}"
-      elsif @level= 2
+      elsif @level.to_i.eql? 2
         text = "#{@examiner5.title.to_s.mb_chars.upcase} #{@examiner5.full_name.mb_chars.upcase}"
       end
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       
       # SET  THIRD VOCAL
-      if @level = 1
+      if @level.to_i.eql? 1
         x = 153
         y = 135
         w = 225
         h =  70
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x,y], w, h
-      elsif @level = !
+      elsif @level.to_i.eql? 2
         x = 153
         y = 115
         w = 225
@@ -1251,14 +1334,14 @@ class StudentsController < ApplicationController
       end
       
       # SET SECOND VOCAL
-      if @level = 1
+      if @level.to_i.eql? 1
         x = 307
         y = 168
         w = 225
         h = 115 
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x,y], w, h
-      elsif  @level = 2
+      elsif  @level.to_i.eql? 2
         x = 307
         y = 158
         w = 225
@@ -1272,7 +1355,7 @@ class StudentsController < ApplicationController
       end 
       
       # SET FIRST VOCAL
-      if @level = 1
+      if @level.to_i.eql? 1
         x = 5
         y = 170
         w = 225
@@ -1296,18 +1379,33 @@ class StudentsController < ApplicationController
         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
         text = "1er VOCAL"
         pdf.text_box text , :at=>[x,y - 13], :width => w, :height=> h, :size=>12, :align=> :center, :valign=> :top
-       elsif @level = 2
-         x = 5
-         y = 158
-         w = 225
-         h = 15 
-         size = 10
-         pdf.fill_color "ffffff"
-         pdf.fill_rectangle [x,y], w, h
-         pdf.fill_color "373435"
-         text = "#{@examiner2.title.to_s.mb_chars.upcase} #{@examiner2.full_name.mb_chars.upcase}"
-         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-       end
+      elsif @level.to_i.eql? 2
+        x = 5
+        y = 158
+        w = 225
+        h = 15 
+        size = 10
+        pdf.fill_color "ffffff"
+        pdf.fill_rectangle [x,y], w, h
+        pdf.fill_color "373435"
+        text = "#{@examiner2.title.to_s.mb_chars.upcase} #{@examiner2.full_name.mb_chars.upcase}"
+        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      end
+
+      # SET Vo. Bo.
+      size = 11
+      if @level.to_i.eql? 1
+        x = 226
+        y = 130
+        w = 80
+        h = 40
+      elsif @level.to_i.eql? 2
+        x = 226
+        y = 100
+        w = 80
+        h = 40
+      end
+      pdf.text_box "Vo. Bo." , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
       # SET CIMAV DIRECTOR
       x = 154
