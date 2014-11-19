@@ -1132,7 +1132,7 @@ class StudentsController < ApplicationController
       l = 0
       pdf.bounding_box [x + 5,y - 2],:width => w + 10, :height=> h,:kerning=>true do
         #pdf.stroke_bounds
-        pdf.text "EN CHIHUAHUA. CHIH., #{@hora}", :size=> size, :leading=>l,:character_spacing=>1.55
+        pdf.text "EN CHIHUAHUA. CHIH., A LAS #{@hora}", :size=> size, :leading=>l,:character_spacing=>0.7
         pdf.text @m_y, :size=> size, :leading=>l,:character_spacing=>0.8
         pdf.text "MIEMBROS DEL JURADO INTEGRADO POR LOS SEÑORES:", :size=> size, :leading=>l, :character_spacing=>0.3
       end
