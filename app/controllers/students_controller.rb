@@ -1132,7 +1132,7 @@ class StudentsController < ApplicationController
       l = 0
       pdf.bounding_box [x + 5,y - 2],:width => w + 10, :height=> h,:kerning=>true do
         #pdf.stroke_bounds
-        pdf.text "EN CHIHUAHUA. CHIH., A LAS #{@hora}", :size=> size, :leading=>l,:character_spacing=>0.7
+        pdf.text "EN CHIHUAHUA, CHIH., A LAS #{@hora}", :size=> size, :leading=>l,:character_spacing=>0.7
         pdf.text @m_y, :size=> size, :leading=>l,:character_spacing=>0.8
         pdf.text "MIEMBROS DEL JURADO INTEGRADO POR LOS SEÑORES:", :size=> size, :leading=>l, :character_spacing=>0.3
       end
@@ -1198,7 +1198,7 @@ class StudentsController < ApplicationController
       pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
         #pdf.stroke_bounds
         pdf.text "BAJO LA PRESIDENCIA DEL PRIMERO Y CON EL CARÁCTER DE SECRETARIO", :size=> size, :align=> :center, :leading=>l,:character_spacing=>0.4
-        pdf.text "EL ÚLTIMO, PARA PROCEDER A EFECTUAR LA EVALUACION DE LA TESIS", :size=> size, :align=> :center, :leading=>l,:character_spacing=>0.4
+        pdf.text "EL ÚLTIMO, PARA PROCEDER A EFECTUAR LA EVALUACIÓN DE LA TESIS", :size=> size, :align=> :center, :leading=>l,:character_spacing=>0.4
       end
       ## SET THESIS TITLE
       x = 155
