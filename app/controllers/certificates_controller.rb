@@ -309,7 +309,7 @@ class CertificatesController < ApplicationController
       text =  "CHIHUAHUA, CHIH.,"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
       ## SET DATETIME
-      time = Time.new
+      time = t.defence_date.to_time
       x = x + 96
       y = y - 4 
       w = 250
