@@ -1405,7 +1405,9 @@ class StudentsController < ApplicationController
         w = 80
         h = 40
       end
-      pdf.text_box "Vo. Bo." , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      if params[:sign]
+        pdf.text_box "Vo. Bo." , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+      end
 
       # SET CIMAV DIRECTOR
       x = 154
