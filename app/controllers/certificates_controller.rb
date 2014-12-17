@@ -145,31 +145,31 @@ class CertificatesController < ApplicationController
         y = 210
         w = 20
         h = 9
-        size = 6
+        size = 7
         # COURSE NAME INITIAL DATA
         x_1 = 107
         y_1 = y + 8
         w_1 = 106
         h_1 = 25
-        size_1 = 6
+        size_1 = 7
         # TERMS INITIAL DATA
         x_2 = 220
         y_2 = y + 1
         w_2 = 45
         h_2 = 9
-        size_2 = 5
+        size_2 = 6
         # GRADE INITIAL DATA
         x_3 = 273
         y_3 = y
         w_3 = 38
         h_3 = 9
-        size_3 = 6
+        size_3 = 7
         # GRADE ON TEXT INITIAL DATA
         x_4 = 317
         y_4 = y + 5
         w_4 = 82
         h_4 = 20
-        size_4 = 6
+        size_4 = 7
       else
         # CODE INITIAL DATA
         x = 60
