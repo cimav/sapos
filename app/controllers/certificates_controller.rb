@@ -26,23 +26,23 @@ class CertificatesController < ApplicationController
         :normal      => "#{@r_root}/private/fonts/arial/arial.ttf"
       })
       pdf.font "Times"
-     
+
       set_decor_lines(pdf)
-      
+
       ## SET CENTER IMAGE
-      image = "#{Rails.root}/private/images/logo_cimav_100.png" 
+      image = "#{Rails.root}/private/images/logo_cimav_100.png"
       y = 690
       pdf.image image, :at => [22,y], :height => 42
       ## SET CENTER TITLE
       x = 93
-      w = 360 
+      w = 360
       h = 50
       pdf.stroke_color= "000000"
-      pdf.line_width= 0.2 
+      pdf.line_width= 0.2
       pdf.bounding_box([x,y],:width=>w, :height=>h,:kerning=>true) do
         pdf.text dir[:center].mb_chars.upcase, :align=>:center, :style=>:bold, :size=>20, :character_spacing=>-0.6
-      end 
- 
+      end
+
       ## SET FOLIO TITLE, LINE AND FOLIO
       # SET FOLIO TITLE
       x = 349
@@ -55,9 +55,9 @@ class CertificatesController < ApplicationController
       ## SET FOLIO LINE
       y = y - 8
       pdf.stroke_color= "373435"
-      pdf.line_width= 0.2 
+      pdf.line_width= 0.2
       pdf.stroke_line [x + 88,y],[485,y]
-      ## SET FOLIO 
+      ## SET FOLIO
       x = 440
       y = y + 8
       w = 40
@@ -89,16 +89,16 @@ class CertificatesController < ApplicationController
       w = 320
       h = 80
       size = 12
-      
+
       l = 4
       pdf.bounding_box([x,y],:width=>w + 20, :height=>h + 33,:kerning=>true) do
-        pdf.text "CONFORME  A  LOS  PLANES  DE  ESTUDIO  VIGENTES", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>0.4 
+        pdf.text "CONFORME  A  LOS  PLANES  DE  ESTUDIO  VIGENTES", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>0.4
         pdf.text "CONSERVANDOSE LAS EVALUACIONES", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>3.63132
         pdf.text "DE LA TOTALIDAD DE LOS PROGRAMAS", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>3.153
         pdf.text "V       I       G       E       N       T       E       S", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>2.281
         pdf.text "EN LOS ARCHIVOS DE ESTA INSTITUCIÓN", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>2.633
-      end 
-     
+      end
+
       # SET PHOTO
       pdf.line_width = 0.8
       y = y + 3
@@ -129,9 +129,9 @@ class CertificatesController < ApplicationController
       size = 15
       text = "CERTIFICADO DE ESTUDIOS TOTALES"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :center
-       
+
       set_lines(pdf,y - 33, 50)
-    
+
       if t.student.program.level.to_i.eql? 2
         tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?",t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(:code)
       else
@@ -139,13 +139,13 @@ class CertificatesController < ApplicationController
       end
 
       pdf.font "Arial"
-      if tcss.size > 11
+      if tcss.size >= 11
         # CODE INITIAL DATA
         x = 63
-        y = 210 
-        w = 20 
+        y = 210
+        w = 20
         h = 9
-        size = 6 
+        size = 6
         # COURSE NAME INITIAL DATA
         x_1 = 107
         y_1 = y + 8
@@ -174,9 +174,9 @@ class CertificatesController < ApplicationController
         # CODE INITIAL DATA
         x = 60
         y = 205
-        w = 20 
+        w = 20
         h = 9
-        size = 8 
+        size = 8
         # COURSE NAME INITIAL DATA
         x_1 = 108
         y_1 = y + 6
@@ -204,7 +204,7 @@ class CertificatesController < ApplicationController
         # GENERAL DATA
         text = ""
       end
-      
+
       counter = 0
       tcss.each_with_index do |tcs,index|
         ## SET CODE
@@ -216,7 +216,7 @@ class CertificatesController < ApplicationController
         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
         ## SET COURSE NAME
         text= tcs.term_course.course.name.mb_chars.upcase
-        
+
         #pdf.fill_color "ffffff"
         #pdf.fill_rectangle [x_1,y_1], w_1, h_1
         pdf.fill_color "000000"
@@ -225,12 +225,12 @@ class CertificatesController < ApplicationController
           y_1 = y_1 + 10
           h_1 = h_1 + 20
         elsif  tcs.term_course.course.name.size > 36
-          y_1 = y_1 + 5 
+          y_1 = y_1 + 5
           h_1 = h_1 + 10
         end
 
         pdf.text_box text , :at=>[x_1,y_1], :width => w_1, :height=> h_1, :size=>size_1, :style=> :bold, :align=> :center, :valign=> :center
-        
+
         ## SET TERM
         term = tcs.term_course.term.name
         year = term.at(2..3)
@@ -248,7 +248,7 @@ class CertificatesController < ApplicationController
         pdf.fill_rectangle [x_3,y_3], w_3, h_3
         pdf.fill_color "000000"
         pdf.text_box text , :at=>[x_3,y_3], :width => w_3, :height=> h_3, :size=>size_3, :style=> :bold, :align=> :center, :valign=> :center
-          
+
         ## SET GRADE ON TEXT
         text = get_cardinal_name(tcs.grade.to_i)
         pdf.fill_color "ffffff"
@@ -256,7 +256,7 @@ class CertificatesController < ApplicationController
         pdf.fill_color "000000"
         pdf.text_box text.upcase , :at=>[x_4,y_4], :width => w_4, :height=> h_4, :size=>size_4, :style=> :bold, :align=> :center, :valign=> :center
         ## SET INTERLINE SPACE
-        if tcss.size > 11
+        if tcss.size >= 11
           y = y - 33
           y_1 = y_1 - 33
           y_2 = y_2 - 33
@@ -270,13 +270,16 @@ class CertificatesController < ApplicationController
           y_4 = y_4 - 50
         end
 
-        if ((tcss.size > 10) && (index==4))
+        #text = "#{tcss.size}|#{index}"
+        #pdf.text_box text , :at=>[x_4 + 80,y_4], :width => w_4, :height=> h_4, :size=>size_4, :style=> :bold, :align=> :center, :valign=> :center
+
+        if ((tcss.size >= 11) && (index==3))
           pdf.start_new_page
           set_decor_lines(pdf)
           set_lines(pdf,648,235)
           pdf.font "Arial"
           y   = 575
-          y_1 = y + 12
+          y_1 = y + 18
           y_2 = y + 1
           y_3 = y
           y_4 = y + 5
@@ -288,12 +291,12 @@ class CertificatesController < ApplicationController
           y   = 565
           y_1 = y + 18
           y_2 = y + 1
-          y_3 = y 
+          y_3 = y
           y_4 = y + 5
         end
         counter = index
       end
-    
+
       pdf.font "Times"
       x    = 51
       y    = 172
@@ -311,7 +314,7 @@ class CertificatesController < ApplicationController
       ## SET DATETIME
       time = t.defence_date.to_time
       x = x + 96
-      y = y - 4 
+      y = y - 4
       w = 250
       h = 9
       size = 9
@@ -319,7 +322,7 @@ class CertificatesController < ApplicationController
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
       pdf.line_width   = 0.5
       pdf.stroke_line [x - 2, y - 8.5],[x + 176,y - 8.5]
-     
+
       set_general_director_sign(pdf,16,71)
       set_posgrado_chief_sign(pdf,250,71)
       send_data pdf.render, type: "application/pdf", disposition: "inline"
@@ -334,7 +337,7 @@ class CertificatesController < ApplicationController
     pdf.line_width= 0.5
     y_aux = 52
     y3 = y1 - y_aux
-    y_offset = y1 - (y_aux / 2) 
+    y_offset = y1 - (y_aux / 2)
     # horizontal line (TOP)
     pdf.stroke_line [31.6,y1],[487.4,y1]
     # vertical lines
@@ -369,9 +372,9 @@ class CertificatesController < ApplicationController
       ## LINES
       y_top    = 720
       y_bottom = 15
-      
+
       x_right  = 1
-      x_left   = 508 
+      x_left   = 508
 
       y        = y_top
       pdf.stroke_color = "ff0000"
@@ -380,12 +383,12 @@ class CertificatesController < ApplicationController
       x = 3
       y = y - 16
       pdf.stroke_color = "52658C"
-      pdf.line_width   = 4 
+      pdf.line_width   = 4
       pdf.stroke_line [x_right,y],[x_left,y]
-      
+
       y        = y_bottom
       pdf.stroke_color = "52658C"
-      pdf.line_width   = 4 
+      pdf.line_width   = 4
       pdf.stroke_line [x_right,y],[x_left,y]
       x = 3
       y = y - 16
@@ -407,7 +410,7 @@ class CertificatesController < ApplicationController
     size = 12
     # Load locale config
     dir = t(:directory)
-    title = dir[:general_director][:title].mb_chars.upcase 
+    title = dir[:general_director][:title].mb_chars.upcase
     name = dir[:general_director][:name].mb_chars.upcase
     job  = dir[:general_director][:job]
     text = "#{title} #{name}"
@@ -421,7 +424,7 @@ class CertificatesController < ApplicationController
     text = "#{job}"
     pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
   end
-  
+
   ####################################################################################################
   # SET POSGRADO CHIEF SIGN
   def set_posgrado_chief_sign(pdf,x,y)
@@ -435,7 +438,7 @@ class CertificatesController < ApplicationController
     size = 12
     # Load locale config
     dir = t(:directory)
-    title = dir[:posgrado_chief][:title].mb_chars.upcase 
+    title = dir[:posgrado_chief][:title].mb_chars.upcase
     name = dir[:posgrado_chief][:name].mb_chars.upcase
     job  = dir[:posgrado_chief][:job]
     text = "#{title} #{name}"
