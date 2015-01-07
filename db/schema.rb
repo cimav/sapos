@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140908214804) do
+ActiveRecord::Schema.define(:version => 20141204010312) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -42,10 +42,20 @@ ActiveRecord::Schema.define(:version => 20140908214804) do
     t.integer  "tutor3"
     t.integer  "tutor4"
     t.integer  "tutor5"
-    t.string   "status",       :limit => 1
+    t.string   "status",        :limit => 1
     t.text     "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "grade1"
+    t.integer  "grade2"
+    t.integer  "grade3"
+    t.integer  "grade4"
+    t.integer  "grade5"
+    t.integer  "grade1_status"
+    t.integer  "grade2_status"
+    t.integer  "grade3_status"
+    t.integer  "grade4_status"
+    t.integer  "grade5_status"
   end
 
   add_index "advances", ["student_id"], :name => "index_advances_on_student_id"
@@ -652,6 +662,16 @@ ActiveRecord::Schema.define(:version => 20140908214804) do
   add_index "theses", ["examiner4"], :name => "index_theses_on_examiner4"
   add_index "theses", ["examiner5"], :name => "index_theses_on_examiner5"
   add_index "theses", ["student_id"], :name => "index_theses_on_student_id"
+
+  create_table "tokens", :force => true do |t|
+    t.integer  "attachable_id"
+    t.integer  "attachable_type"
+    t.string   "token"
+    t.datetime "expires"
+    t.integer  "status"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "email"
