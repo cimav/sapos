@@ -10,7 +10,7 @@ namespace :grades do
   #####                                           TASK CHECK                                                                   #####
   ##################################################################################################################################
   task :check => :environment do
-    set_line("Iniciando script")
+    set_line("Iniciando script en check")
     #### NIVELES:
     # level (1) maestria, (2) doctorado, (3) propedeutico
     # Primero confirmamos los alumnos de maestria, luego doctorado que requiere otras confirmaciones
@@ -151,46 +151,51 @@ namespace :grades do
   #####                                              TASK ALARM                                                                #####
   ##################################################################################################################################
   task :alarm => :environment do
+    set_line("Iniciando script en alarm")
     ## comprobar si falta una semana para calificaciones
-    advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("terms.status=? AND terms.grade_start_date=date_sub(curdate(), INTERVAL 7 DAY) AND programs.level in (?) AND advance_date>terms.start_date AND advance_date<terms.end_date",3,[1,2]).select("advances.*,terms.id as terms_id")
+    #advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("terms.status in (?) AND terms.grade_start_date<=date_sub(curdate(), INTERVAL 15 DAY) AND programs.level in (?)",[3],[1,2]).select("advances.*,terms.id as terms_id")
+    advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("terms.status in (?) AND terms.grade_start_date=curdate() AND programs.level in (?)",[3],[1,2]).select("advances.*,terms.id as terms_id")
     counter = 1
-    advances.each do |a|
-      #puts "#{counter} #{a.student.full_name}"
-      t1 = Staff.find(a.tutor1) rescue nil
-      t2 = Staff.find(a.tutor2) rescue nil
-      t3 = Staff.find(a.tutor3) rescue nil
-      t4 = Staff.find(a.tutor4) rescue nil
-      t5 = Staff.find(a.tutor5) rescue nil
-      # avisarle a los asesores que deben calificar y a los externos la clave y el link de acceso
-
-      t_array = [t1,t2,t3,t4,t5]
-
-      t_array.each do |t|
-        if !t.nil?
-          ## puts t.full_name rescue "N.D"
-          ## DEV
-          if t.institution_id.eql? 1
-            content = "{:advance=>\"#{a.id}\",:view=>3}"
-          else
-            token = Token.new
-            token.attachable_id     = t1.id
-            token.attachable_type   = t1.class.to_s
-            token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
-            token.status            = 1
-            token.expires           = Term.find(a.terms_id).grade_end_date
-            token.save
-            content = "{:advance=>\"#{a.id}\",:staff=>\"#{t.id}\",:token=>\"#{token.token}\",:view=>4}"
+    if advances.size.eql? 0
+      set_line("No hay fechas de avances abiertas")
+    else
+      advances.each do |a|
+        #puts "#{counter} #{a.student.full_name}"
+        t1 = Staff.find(a.tutor1) rescue nil
+        t2 = Staff.find(a.tutor2) rescue nil
+        t3 = Staff.find(a.tutor3) rescue nil
+        t4 = Staff.find(a.tutor4) rescue nil
+        t5 = Staff.find(a.tutor5) rescue nil
+        # avisarle a los asesores que deben calificar y a los externos la clave y el link de acceso
+  
+        t_array = [t1,t2,t3,t4,t5]
+  
+        t_array.each do |t|
+          if !t.nil?
+            ## puts t.full_name rescue "N.D"
+            ## DEV
+            if t.institution_id.eql? 1
+              content = "{:advance=>\"#{a.id}\",:view=>3,:staff=>\"#{t.id}\"}"
+            else
+              token = Token.new
+              token.attachable_id     = t.id
+              token.attachable_type   = t.class.to_s
+              token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
+              token.status            = 1
+              token.expires           = Term.find(a.terms_id).grade_end_date
+              token.save
+              content = "{:advance=>\"#{a.id}\",:staff=>\"#{t.id}\",:token=>\"#{token.token}\",:view=>4}"
+            end
+            # DEV
+            send_mail("enrique.turcott@cimav.edu.mx","Alerta Calificaciones",content)
+            ## PROD
+            #send_mail(t.email,"Alerta Calificaciones",content)
           end
-          # DEV
-          send_mail("enrique.turcott@cimav.edu.mx","Alerta Calificaciones",content)
-          ## PROD
-          #send_mail(t.email,"Alerta Calificaciones",content)
         end
-      end
-
-      counter = counter + 1
-    end
-
+  
+        counter = counter + 1
+      end #end each
+    end #end if-else
     # buscar asesores con alumnos en fechas
 
 
