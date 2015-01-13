@@ -149,10 +149,10 @@ class ApplicantsController < ApplicationController
 
     if @applicant.update_attributes(params[:applicant])
 
-      if @applicant.status == 3 and @applicant.program_id != 0
+      if (@applicant.status.to_i.eql? 3 or  @applicant.status.to_i.eql? 5) and @applicant.program_id != 0
         if accepted_applicant_register @applicant
            parameters[:student_id] = @applicant.student_id
-           parameters[:status] = 3
+           parameters[:status] = @applicant.status
            @message = "Aspirante actualizado e inscrito"
         else
           @applicant.errors.add(:base,"Error al crear el estudiante")
@@ -177,13 +177,26 @@ class ApplicantsController < ApplicationController
     @student.first_name           = applicant.first_name
     @student.last_name            = "#{applicant.primary_last_name} #{applicant.second_last_name}"
     @student.campus_id            = applicant.campus_id
-    @student.program_id           = applicant.program_id
     @student.previous_institution = applicant.previous_institution
     @student.previous_degree_desc = applicant.previous_degree_type
     @student.supervisor           = applicant.staff_id
     @student.date_of_birth        = applicant.date_of_birth
     @student.email                = applicant.email
     @student.start_date           = Time.now
+ 
+    if applicant.status.eql? 5
+      if applicant.program_id = 1
+        @student.program_id = 6
+      elsif applicant.program_id = 3
+        @student.program_id = 7
+      else
+        @student.program_id           = applicant.program_id
+      end
+    else
+      @student.program_id           = applicant.program_id
+    end
+
+
 
     if @student.save 
       applicant.update_attribute(:student_id,@student.id)
