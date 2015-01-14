@@ -207,7 +207,6 @@ class ApplicantsController < ApplicationController
       return true
     else
       @applicant.errors.add(:base,@student.errors.full_messages)
-      @applicant.
       return false
     end
   end
