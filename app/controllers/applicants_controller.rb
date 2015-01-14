@@ -185,9 +185,9 @@ class ApplicantsController < ApplicationController
     @student.start_date           = Time.now
  
     if applicant.status.eql? 5
-      if applicant.program_id = 1
+      if applicant.program_id.eql? 1
         @student.program_id = 6
-      elsif applicant.program_id = 3
+      elsif applicant.program_id.eql? 3
         @student.program_id = 7
       else
         @student.program_id           = applicant.program_id
@@ -195,8 +195,6 @@ class ApplicantsController < ApplicationController
     else
       @student.program_id           = applicant.program_id
     end
-
-
 
     if @student.save 
       applicant.update_attribute(:student_id,@student.id)
