@@ -19,8 +19,8 @@ class Ability
     else
       can :live_search, :all  ## for default read all live_search
       if user.access == User::OPERATOR
-        can :manage, Student
-        cannot :destroy, Student
+        #can :manage, Student
+        #cannot :destroy, Student
         can :manage, Internship
       end
     end
