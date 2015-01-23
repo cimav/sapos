@@ -110,6 +110,13 @@ class InternshipsController < ApplicationController
     @internship = Internship.new
     @institutions = Institution.order('name')
     @internship_types = InternshipType.order('name')
+    @operator = false
+    if current_user.access == User::OPERATOR
+      @campus   = Campus.order('name').where(:id=> current_user.campus_id)
+      @operator = true
+    else
+      @campus = Campus.order('name')
+    end 
     render :layout => false
   end
 

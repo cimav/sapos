@@ -43,6 +43,15 @@
       .field#field_control_number
         = f.label :control_number, 'No. de Control'
         = f.text_field :control_number, :size=>100
+      
+      .field#field_internship_campus
+        = f.label :campus_id, 'Campus'
+        - if !@operator
+          - q = ["Ninguno",0]
+        - p = @campus.collect{|p|[p.name,p.id]}
+        - if !@operator
+          - p.insert(0,q)
+        = f.select :campus_id,p
 
     #notas
       %h2 Notas
