@@ -86,6 +86,10 @@ class StudentsController < ApplicationController
       @students = @students.where("status = #{Student::UNREGISTERED}")
     end
 
+    if params[:status] == 'preinscritos' then
+      @students = @students.where("status = #{Student::PENROLLMENT}")
+    end
+
 
     if !params[:q].blank?
       if params[:q].to_i != 0
@@ -1919,6 +1923,40 @@ class StudentsController < ApplicationController
         end
       end
     end
+  end
+
+  def student_exists
+    json = {}
+    s    = {}
+
+    @fname    = params[:f_name] rescue ""
+    @lname    = params[:l_name] rescue ""
+    if params[:curp].to_i.eql? 0
+      @student = Student.where("first_name like '%#{@fname}%' AND last_name like '%#{@lname}%' AND status=1")
+    else
+      @student = Student.where("curp=? AND status=1",params[:curp])
+    end
+
+    if @student.size.eql? 0
+      json[:message]= "No existe el alumno #{@name}|#{params[:curp]}"
+    else
+      @student.each_with_index do |ss,i|
+        s[:name] = ss.full_name
+        s[:curp] = ss.curp
+        json[i] = s
+      end
+    end
+
+    render :json => json
+  end
+
+
+  def enrollments_admin
+    @students = Student.where(:status=>6)
+  end
+
+  def payments
+    render :layout => 'standalone'
   end
 
 end

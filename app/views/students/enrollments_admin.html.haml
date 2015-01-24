@@ -1,0 +1,34 @@
+- @page_title = "Inscripciones"
+- @nav_icon   = "Inscripciones"
+
+#content-panel
+  :javascript
+    $(function(){
+      $('#resource-tabs').tabs();
+    });
+  #resource-tabs{:style=>"padding-top: 40px;"}
+    %ul
+      %li.first-tab= link_to "General","#general"
+      %li= link_to "Pagos","#pagos"
+      -# %li= link_to "Log","#log"
+
+    #general
+      %h2="Alumnos pre-inscritos"
+      %table.formatted-table
+        %tbody
+          %tr.header
+            %th="Alumno"
+            %th="Materias Elegidas"
+            %th="Pago"
+          - @students.each do |s|
+            %tr
+              %td= s.full_name
+              %td= "0"
+              %td= "No"
+
+    #pagos
+      %h2 Pagos
+      %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/inscripciones/pagos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
+
+    -#log
+      %h2 Log

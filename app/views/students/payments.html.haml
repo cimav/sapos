@@ -1,0 +1,5 @@
+= form_for(PaymentFile.new, :url => { :action => "upload_file" }, :html => {:id => 'item-upload-file-form', :multipart => true}) do |f|
+  #upload-box
+    = f.file_field :file, {"multiple" => "multiple"}
+    .upload Subir archivos
+    .upload-msg Puedes seleccionar varios archivos a la vez para subir.

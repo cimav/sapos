@@ -31,6 +31,10 @@ Sapos::Application.routes.draw do
   #match 'estudiantes/constancia_total/:thesis_id' => 'students#total_studies_certificate'
   match 'estudiantes/constancia_total/:thesis_id' => 'certificates#total_studies_certificate'
   match 'estudiantes/:id/borrar' => 'students#destroy'
+  match 'estudiantes/buscar/:curp' => 'students#student_exists'
+  
+  match 'inscripciones' => 'students#enrollments_admin'
+  match 'inscripciones/pagos' => 'students#payments'
   
   match 'estudiantes/archivos/avances/:id' => 'student_advances_file#index'
   
@@ -91,6 +95,7 @@ Sapos::Application.routes.draw do
   match 'instituciones/busqueda' => 'institutions#live_search'
   match 'instituciones/:id/cambiar_logo' => 'institutions#change_image'
   match 'instituciones/upload_image' => 'institutions#upload_image'
+
 
   match 'campus/busqueda' => 'campus#live_search'
   match 'campus/:id/cambiar_logo' => 'campus#change_image'
