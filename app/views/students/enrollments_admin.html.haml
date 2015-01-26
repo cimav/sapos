@@ -18,13 +18,26 @@
         %tbody
           %tr.header
             %th="Alumno"
+            %th="En ciclo"
             %th="Materias Elegidas"
             %th="Pago"
           - @students.each do |s|
+            - ts  = TermStudent.joins(:term).where("student_id=? AND terms.name like '%2015-1%'",s.id)
             %tr
               %td= s.full_name
-              %td= "0"
-              %td= "No"
+              %td
+                - if ts.size>0
+                  - tcs = TermCourseStudent.where(:term_student_id=>ts[0].id)
+                  - tsp = TermStudentPayment.where(:term_student_id=>ts[0].id,:status=>3)
+                  = "Si"
+                - else
+                  = "No"
+              %td= tcs.size
+              %td
+                - if tsp.size>0
+                  = "Si"
+                - else
+                  = "No"
 
     #pagos
       %h2 Pagos
