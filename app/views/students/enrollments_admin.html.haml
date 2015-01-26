@@ -22,6 +22,8 @@
             %th="Materias Elegidas"
             %th="Pago"
           - @students.each do |s|
+            - tcs = []
+            - tsp = []
             - ts  = TermStudent.joins(:term).where("student_id=? AND terms.name like '%2015-1%'",s.id)
             %tr
               %td= s.full_name
