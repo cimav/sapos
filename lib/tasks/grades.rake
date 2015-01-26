@@ -19,9 +19,12 @@ namespace :grades do
     filep     = "#{Rails.root}/log/inscripciones.log"
     @f        = File.open(filep,'a')
     @env      = Rails.env
+    @yaenciclo= false
     SEND_MAIL         = 0
     STATUS_CHANGE     = false
-    ADMIN_MAIL        = ""
+    ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx"
+    CICLO             = "2014-2"
+    NCICLO            = "2015-1"
     #### Descomentar las 2 lineas siguientes para ver la salida de sql del task
     #Rails.logger.level = Logger::DEBUG
     #ActiveRecord::Base.logger = Logger.new(STDOUT)
@@ -32,7 +35,9 @@ namespace :grades do
     # Ciclos en estatus de Calificando y con fecha de calificación al dia de la ejecucion del script
     #terms = Term.joins(:program).where("status=3 AND grade_end_date=CURDATE() AND programs.level in (1,2)")
     # Cualquier ciclo en cualquier estatus en el cual su fecha de final sea hoy 
-    terms = Term.joins(:program).where("end_date=CURDATE() AND programs.level in (1,2)")
+    #terms = Term.joins(:program).where("end_date=CURDATE() AND programs.level in (1,2)")
+    ## Alumnos con materias en el ciclo viejo con estatus en finalizado y/o calificando
+    terms = Term.joins(:program).where("programs.level in (1,2) AND name like '%#{CICLO}%' AND status in (3,4)")
 
     if terms.size.eql? 0 then
       set_line("No hay cierres de calificaciones")
@@ -51,8 +56,18 @@ namespace :grades do
           ## Se deben confirmar las materias calificadas, independientemente si han sido aprobadas o no
           ## Revisando cada materia con estatus 1 o sea activa
           set_line("<<<<< - alumno - >>>>>")
+
+          snc = TermStudent.joins(:term).where("terms.name like '%#{NCICLO}%' AND student_id=? AND term_students.status in (?)",ts.student.id,[1,2,6])
+          if snc.size>0
+            set_line("#{ts.student.full_name} ya tiene un registro en el #{NCICLO}")
+            @yaenciclo = true
+          end
           ts.term_course_student.where(:status=>1,:students=>{:status=>1}).each_with_index do |tcs,i2|
+            if @yaenciclo
+              break
+            end
             tcs_grade = tcs.grade
+            ## aqui vemos si el alumno es de doctorado y si la materia esta asociada a un avance
             if ts.student.program.level.to_i.eql? 2 and tcs.term_course.course.notes.eql? "[AI]"
                ## aqui es donde analizamos el avance y lo insertamos en la materia y mandamos un correo al asesor
                set_line("Alumno de doctorado y materia de avance de investigacion [AI]")
@@ -362,6 +377,11 @@ end ## namespace
     if reprobadas < 2
       if s.program.level.to_i.eql? 2
         if counter.nil?
+          ## si ya esta inscrito al ciclo no le damos acceso
+          if @yaenciclo
+            return false
+          end
+
           set_line("El alumno #{s.full_name} es de doctorado y no registra materias por lo que nos disponemos a analizar sus evaluaciones para el ciclo #{term.name}")
           return doc_advance_term(term,s)
         else
