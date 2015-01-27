@@ -21,7 +21,7 @@ namespace :grades do
     @env      = Rails.env
     @yaenciclo= false
     SEND_MAIL         = 0
-    STATUS_CHANGE     = false
+    STATUS_CHANGE     = true
     ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx"
     CICLO             = "2014-2"
     NCICLO            = "2015-1"
@@ -37,7 +37,8 @@ namespace :grades do
     # Cualquier ciclo en cualquier estatus en el cual su fecha de final sea hoy 
     #terms = Term.joins(:program).where("end_date=CURDATE() AND programs.level in (1,2)")
     ## Alumnos con materias en el ciclo viejo con estatus en finalizado y/o calificando
-    terms = Term.joins(:program).where("programs.level in (1,2) AND name like '%#{CICLO}%' AND status in (3,4)")
+    #terms = Term.joins(:program).where("programs.level in (1,2) AND name like '%#{CICLO}%' AND status in (3,4)")
+    terms = Term.joins(:program).where("programs.level in (1) AND terms.name like '%#{CICLO}%' AND terms.status in (3,4)")
 
     if terms.size.eql? 0 then
       set_line("No hay cierres de calificaciones")
@@ -67,11 +68,15 @@ namespace :grades do
               break
             end
             tcs_grade = tcs.grade
+            level     = ts.student.program.level.to_i
             ## aqui vemos si el alumno es de doctorado y si la materia esta asociada a un avance
-            if ts.student.program.level.to_i.eql? 2 and tcs.term_course.course.notes.eql? "[AI]"
+            if level.eql? 2 and tcs.term_course.course.notes.eql? "[AI]"
                ## aqui es donde analizamos el avance y lo insertamos en la materia y mandamos un correo al asesor
                set_line("Alumno de doctorado y materia de avance de investigacion [AI]")
-               tcs_grade = doc_advance(tcs)  
+               tcs_grade = check_advance(tcs)  
+            elsif level.eql? 1 and tcs.term_course.course.notes.eql? "[AI]"
+               set_line("Alumno de maestria y materia de avance de investigacion [AI]")
+               tcs_grade = check_advance(tcs)  
             end
 
             if !tcs_grade.nil?
@@ -81,7 +86,6 @@ namespace :grades do
               if tcs.grade.to_i <= 70
                 reprobadas = get_failing(tcs.term_student.student.id)
               end
-
               calificadas = calificadas + 1
             end ## tcs.grade
             counter = i2
@@ -207,7 +211,7 @@ end ## namespace
   end
 
   ## revisa si ya se califico el avance de investigación de doctorada asociado a una materia
-  def doc_advance(tcs)
+  def check_advance(tcs)
     if tcs.grade.nil?
       s        = tcs.term_student.student
       term     = tcs.term_student.term
@@ -254,7 +258,7 @@ end ## namespace
   end
   
   ## revisa si ya se califico el avance de investigación de doctorada asociado a un ciclo, recibe t = term, s= student
-  def doc_advance_term(t,s)
+  def check_advance_term(t,s)
     advances = s.advance.where("advances.advance_date between ? and ?",t.start_date,t.end_date)
     if advances.size.eql? 0
       set_line("No hay avances de investigacion registrados para #{s.full_name} para el ciclo #{t.name}")
@@ -383,7 +387,7 @@ end ## namespace
           end
 
           set_line("El alumno #{s.full_name} es de doctorado y no registra materias por lo que nos disponemos a analizar sus evaluaciones para el ciclo #{term.name}")
-          return doc_advance_term(term,s)
+          return check_advance_term(term,s)
         else
           counter = counter + 1
           set_line("El alumno #{s.full_name} esta inscrito a #{counter} materias de las cuales se han calificado #{calificadas}")
