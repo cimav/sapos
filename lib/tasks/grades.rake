@@ -21,8 +21,8 @@ namespace :grades do
     @env      = Rails.env
     @yaenciclo= false
     SEND_MAIL         = 0
-    STATUS_CHANGE     = true
-    ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx"
+    STATUS_CHANGE     = false
+    ADMIN_MAIL        = ""
     CICLO             = "2014-2"
     NCICLO            = "2015-1"
     #### Descomentar las 2 lineas siguientes para ver la salida de sql del task
@@ -38,7 +38,7 @@ namespace :grades do
     #terms = Term.joins(:program).where("end_date=CURDATE() AND programs.level in (1,2)")
     ## Alumnos con materias en el ciclo viejo con estatus en finalizado y/o calificando
     #terms = Term.joins(:program).where("programs.level in (1,2) AND name like '%#{CICLO}%' AND status in (3,4)")
-    terms = Term.joins(:program).where("programs.level in (1) AND terms.name like '%#{CICLO}%' AND terms.status in (3,4)")
+    terms = Term.joins(:program).where("programs.level in (2) AND terms.name like '%#{CICLO}%' AND terms.status in (3,4)")
 
     if terms.size.eql? 0 then
       set_line("No hay cierres de calificaciones")
@@ -53,6 +53,7 @@ namespace :grades do
           counter     = nil
           calificadas = 0
           reprobadas  = 0
+          @yaenciclo = false
           ## Ahora vamos revisando cada materia del alumno
           ## Se deben confirmar las materias calificadas, independientemente si han sido aprobadas o no
           ## Revisando cada materia con estatus 1 o sea activa
@@ -63,6 +64,7 @@ namespace :grades do
             set_line("#{ts.student.full_name} ya tiene un registro en el #{NCICLO}")
             @yaenciclo = true
           end
+
           ts.term_course_student.where(:status=>1,:students=>{:status=>1}).each_with_index do |tcs,i2|
             if @yaenciclo
               break
@@ -379,7 +381,7 @@ end ## namespace
     term =   ts.term
     ## si el numero de reprobadas es menor a 2 accesamos
     if reprobadas < 2
-      if s.program.level.to_i.eql? 2
+      if s.program.level.to_i.eql? 2 ## alumnos de doctorado
         if counter.nil?
           ## si ya esta inscrito al ciclo no le damos acceso
           if @yaenciclo
@@ -396,8 +398,13 @@ end ## namespace
           else
             return false
           end
+        end ##if counter.nil
+      else ## alumnos de maestria
+        if @yaenciclo
+          return false
         end
-      else
+
+
         if counter.nil?
           set_line("El alumno #{s.full_name} no curso ninguna materia pero aun asi fue inscrito al ciclo")
           return false
