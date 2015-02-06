@@ -12,7 +12,7 @@
   = fields_for "term_course[term_course_students_attributes][0]" do |fields|
     #course-student-new
       -# busca los alumnos ya inscritos al curso
-      - students_in_course = TermCourseStudent.where(:term_course_id => @tc.id).map(&:term_student_id)
+      - students_in_course = TermCourseStudent.where(:term_course_id => @tc.id,:status=>[1,6]).map(&:term_student_id)
       -# si hay alguno los filtramos en un not in, si no hay solo mostramos los que esten en el mismo ciclo
       - if students_in_course.count > 0
         - conditions = ['term_students.term_id = ? AND term_students.id not in (?)', @tc.term_id, students_in_course]
