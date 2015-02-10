@@ -1,7 +1,6 @@
 # coding: utf-8
 class StudentsController < ApplicationController
-  load_and_authorize_resource
-  before_filter :auth_required
+  before_filter :auth_required, :except=>:student_exists
   respond_to :html, :xml, :json
 
   def index
@@ -1929,16 +1928,22 @@ class StudentsController < ApplicationController
     json = {}
     s    = {}
 
-    @fname    = params[:f_name] rescue ""
-    @lname    = params[:l_name] rescue ""
-    if params[:curp].to_i.eql? 0
-      @student = Student.where("first_name like '%#{@fname}%' AND last_name like '%#{@lname}%' AND status=1")
+    @fname    = params[:fname] rescue ""
+    @lname    = params[:lname] rescue ""
+    @name     = "#{@fname} #{@lname}"
+
+    if (!@fname.blank?)&&(!@lname.blank?)
+      @student = Student.where("first_name like '%#{@fname}%' AND last_name like '%#{@lname}%' AND status in (1,6)")
+    elsif (@fname.blank?)&&(!@lname.blank?)
+      @student = Student.where("last_name like '%#{@lname}%' AND status in (1,6)")
+    elsif (@lname.blank?)&&(!@fname.blank?)
+      @student = Student.where("first_name like '%#{@fname}%' AND status in (1,6)")
     else
-      @student = Student.where("curp=? AND status=1",params[:curp])
+      @student = []
     end
 
     if @student.size.eql? 0
-      json[:message]= "No existe el alumno #{@name}|#{params[:curp]}"
+      json[:message]= "No existe el alumno [#{@name}]"
     else
       @student.each_with_index do |ss,i|
         s[:name] = ss.full_name
