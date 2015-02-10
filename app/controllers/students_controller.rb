@@ -1,6 +1,11 @@
 # coding: utf-8
+require 'digest/md5'
 class StudentsController < ApplicationController
+  REALM = "SuperSecret"
+  PASS  = Digest::MD5.hexdigest(["dap",REALM,"53cr3t"].join(":"))
+  USERS = {"u1"=>PASS}
   before_filter :auth_required, :except=>:student_exists
+  before_filter :auth_digest, :only=>:student_exists
   respond_to :html, :xml, :json
 
   def index
@@ -1963,5 +1968,13 @@ class StudentsController < ApplicationController
   def payments
     render :layout => 'standalone'
   end
+
+
+  private
+    def auth_digest
+      authenticate_or_request_with_http_digest(REALM) do |username|
+        USERS[username]
+      end
+    end
 
 end
