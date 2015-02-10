@@ -1,7 +1,7 @@
 # coding: utf-8
 require 'digest/md5'
 class StudentsController < ApplicationController
-  REALM = "SuperSecret"
+  REALM = "Students"
   PASS  = Digest::MD5.hexdigest(["dap",REALM,"53cr3t"].join(":"))
   USERS = {"u1"=>PASS}
   before_filter :auth_required, :except=>:student_exists
@@ -1931,7 +1931,6 @@ class StudentsController < ApplicationController
 
   def student_exists
     json = {}
-    s    = {}
 
     @fname    = params[:fname] rescue ""
     @lname    = params[:lname] rescue ""
@@ -1951,6 +1950,7 @@ class StudentsController < ApplicationController
       json[:message]= "No existe el alumno [#{@name}]"
     else
       @student.each_with_index do |ss,i|
+        s    = {}
         s[:name] = ss.full_name
         s[:curp] = ss.curp
         json[i] = s
