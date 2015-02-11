@@ -53,4 +53,17 @@ class Staff < ActiveRecord::Base
     self.save(:validate => false)
   end
 
+  def active_students
+    students = self.supervised.where(:status => Student::ACTIVE) + self.co_supervised.where(:status => Student::ACTIVE)
+    active_items = []
+    students.each do |s|
+      a_s = s
+      a_s['program_name'] = s.program.name
+      a_s['supervisor_name'] = s.staff_supervisor.full_name
+      a_s['co_supervisor_name'] = s.staff_co_supervisor.full_name rescue ''
+      active_items << a_s
+    end 
+    active_items
+  end
+
 end
