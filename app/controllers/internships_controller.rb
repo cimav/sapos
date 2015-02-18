@@ -8,39 +8,39 @@ class InternshipsController < ApplicationController
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
     @staffs = Staff.order('first_name').where("id IN (SELECT DISTINCT staff_id FROM internships)")
     @internship_types = InternshipType.order('name')
- 
+
     if current_user.access == User::OPERATOR
       @campus = Campus.order('name').where(:id=> current_user.campus_id)
     else
       @campus = Campus.order('name')
-    end 
+    end
   end
 
   def live_search
     if current_user.access == User::OPERATOR
       @internships = Internship.order("first_name").where(:campus_id => current_user.campus_id)
-    else    
+    else
       @internships = Internship.order("first_name")
-    end 
+    end
 
     if params[:institution] != '0' then
       @internships = @internships.where(:institution_id => params[:institution])
-    end 
+    end
 
     if params[:staff] != '0' then
       @internships = @internships.where(:staff_id => params[:staff])
-    end 
+    end
 
     if params[:internship_type] != '0' then
       @internships = @internships.where(:internship_type_id => params[:internship_type])
-    end 
-    
+    end
+
     if params[:campus] != '0' then
       @internships = @internships.where(:campus_id => params[:campus])
-    end 
+    end
 
     if !params[:q].blank?
-      @internships = @internships.where("(CONCAT(first_name,' ',last_name) LIKE :n OR id LIKE :n)", {:n => "%#{params[:q]}%"}) 
+      @internships = @internships.where("(CONCAT(first_name,' ',last_name) LIKE :n OR id LIKE :n)", {:n => "%#{params[:q]}%"})
     end
 
     s = []
@@ -101,7 +101,7 @@ class InternshipsController < ApplicationController
       @campus = Campus.order('name').where(:id=> current_user.campus_id)
     else
       @campus = Campus.order('name')
-    end 
+    end
 
     render :layout => false
   end
@@ -116,7 +116,7 @@ class InternshipsController < ApplicationController
       @operator = true
     else
       @campus = Campus.order('name')
-    end 
+    end
     render :layout => false
   end
 
@@ -135,7 +135,7 @@ class InternshipsController < ApplicationController
             json[:flash] = flash
             json[:uniq] = @internship.id
             render :json => json
-          else 
+          else
             redirect_to @internship
           end
         end
@@ -157,7 +157,7 @@ class InternshipsController < ApplicationController
     end
   end
 
-  def update 
+  def update
     flash = {}
     @internship = Internship.find(params[:id])
 
@@ -170,7 +170,7 @@ class InternshipsController < ApplicationController
             json = {}
             json[:flash] = flash
             render :json => json
-          else 
+          else
             redirect_to @internship
           end
         end
@@ -185,7 +185,7 @@ class InternshipsController < ApplicationController
             json[:errors] = @internship.errors
             json[:errors_full] = @internship.errors.full_messages
             render :json => json, :status => :unprocessable_entity
-          else 
+          else
             redirect_to @internship
           end
         end
@@ -253,7 +253,7 @@ class InternshipsController < ApplicationController
         @is_pdf = true
         html = render_to_string(:layout => false , :action => "id_card.html.haml")
         kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
-        kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}card.css"
+        kit.stylesheets << "#{Rails.root}/public/card.css"
         filename = "INTERN-#{@internship.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
@@ -279,7 +279,7 @@ class InternshipsController < ApplicationController
       job   = dir[:posgrado_chief][:job]
       @firma  = "#{title} #{name}"
       @puesto = "#{job}"
-    end 
+    end
 
     if params[:type] == "aceptacion"
       @consecutivo = get_consecutive(@internship, time, Certificate::ACCEPTANCE)
@@ -326,7 +326,7 @@ class InternshipsController < ApplicationController
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return
     end
-    
+
     if params[:type] == "liberacion"
       @consecutivo = get_consecutive(@internship, time, Certificate::RELEASE)
       @rails_root  = "#{Rails.root}"
@@ -363,14 +363,14 @@ class InternshipsController < ApplicationController
         @genero  = "x"
         @genero2 = "x"
       end
-      
+
       html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_liberacion')
       kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "carta-liberacion-#{@internship.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return
     end
-    
+
     if params[:type] == "uso"
       @consecutivo = get_consecutive(@internship, time, Certificate::USE)
       @rails_root  = "#{Rails.root}"
@@ -413,16 +413,16 @@ class InternshipsController < ApplicationController
       return
     end
   end
-  
+
   def get_consecutive(object, time, type)
     maximum = Certificate.where(:year => time.year).maximum("consecutive")
 
     if maximum.nil?
       maximum = 1
     else
-      maximum = maximum + 1 
+      maximum = maximum + 1
     end
- 
+
     certificate                 = Certificate.new()
     certificate.consecutive     = maximum
     certificate.year            = time.year
@@ -433,7 +433,7 @@ class InternshipsController < ApplicationController
 
     return "%03d" % maximum
   end
-  
+
 
   def get_month_name(number)
     months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
