@@ -203,6 +203,9 @@ Sapos::Application.routes.draw do
     #resources :studies_plans, :path => "planes_estudios"
   end
 
+  # API
+  get '/api/estudiantes-activos/:email' => 'api#active_students', :constraints  => { :email => /[0-z\.\@]+/ }
+
   match '/auth/:provider/callback' => 'sessions#create'
   match '/auth/failure' => 'sessions#failure'
   match "/logout" => 'sessions#destroy'
