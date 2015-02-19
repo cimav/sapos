@@ -1,20 +1,20 @@
 html,body{margin:0;padding:0;background:#154c97}
 hr{height:2px;background-color:#ffffff;width:110%;}
 hr.black{height:2px;background-color:#000000;border-color:#000000;width:100%;}
-h1{color:#fffafa;font-size:60px;text-align:center;position:relative;z-index:9999;}
+h1{color:#fffafa;font-size:50px;text-align:center;padding-left:101px;}
 #id_card{padding-top:20px;padding-bottom:30px;width:100%;}
 #id_card table#cont{width:100%,border:2px solid white;padding-left:50px;}
-#id_card table#cont tr td.photo img{border:20px solid #000000;border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:10px;width:400px;}
+#id_card table#cont tr td.photo img{border:20px solid #000000;border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:10px;width:280px;}
 #id_card table#data{width:100%;padding-left:40px;font-weight:bold;}
-#card_name{font-size:65px;font-weight:bold;height:65px;line-height:60px}
-#card_card{font-size:53px;height:50px}
-#card_start_date{font-size:53px;height:50px}
-#card_valid{font-size:53px;height:50px}
-table#card-back{margin-left:50px;width:100%;height:1050px;}
+#card_name{font-size:50px;font-weight:bold;height:65px;line-height:60px}
+#card_card{font-size:43px;height:50px}
+#card_start_date{font-size:43px;height:50px}
+#card_valid{font-size:43px;height:50px}
+table#card-back{margin-left:50px;width:100%;height:811px;}
 table#card-back tr td{padding-top:40px;vertical-align:top}
 table#card-back tr td.sep-logo{text-align:center}
-table#student-data{margin-left:50px;margin-right:150px;font-weight:bold;}
-table#student-data tr td{vertical-align:top;padding:10px;font-size:42px;}
-.separator{height:40px;border-bottom:1px solid #000}
+table#student-data{margin-left:20px;margin-right:20px;font-weight:bold;}
+table#student-data tr td{vertical-align:top;padding:10px;font-size:32px;}
+.separator{height:50px;border-bottom:1px solid #000}
 .back-name{color:#000000}
 .cimav-data{color:#000000}
