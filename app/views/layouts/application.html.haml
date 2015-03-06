@@ -18,6 +18,8 @@
     #nav-menu
       %ul.nav
         %li.op#op-home= link_to "Escritorio", root_url
+        - if can? :read, Area
+          %li.op#op-students= link_to "Areas", areas_path
         - if can? :read, Student
           %li.op#op-students= link_to "Estudiantes", students_path
         - if can? :read, Staff

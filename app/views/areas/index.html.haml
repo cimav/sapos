@@ -1,0 +1,15 @@
+- @include_js = 'areas'
+- @page_title = 'Areas'
+#items-panel.side-panel 
+  .panel-search{:style=>"height: 50px"}
+    = form_tag areas_path, :id => 'live-search', :method => 'get', :remote => true do
+      = select_tag "area_type", options_for_select(@area_types)
+      = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
+
+  #items-list.panel-items{:style=>"top: 73px"}
+ 
+  .panel-add
+    - if can? :create, Area
+      = link_to  'Agregar nueva area', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
+    
+#content-panel.main-panel

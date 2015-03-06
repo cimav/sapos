@@ -18,23 +18,40 @@
 
       .field#field_internship_internship_type_id
         = f.label :internship_type_id, mark_required(@internship, :internship_type_id) + 'Tipo'
-        = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo"} 
+        = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo"}
+
+      .field#field_internship_area_id
+        = f.label :area_id, mark_required(@internship, :area_id) + 'Area'
+        = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"}
 
       .field#field_internship_first_name
-        = f.label :first_name, mark_required(@internship, :first_name) + 'Nombre' 
-        = f.text_field :first_name 
-        
+        = f.label :first_name, mark_required(@internship, :first_name) + 'Nombre'
+        = f.text_field :first_name
+
       .field#field_internship_last_name
         = f.label :last_name, mark_required(@internship, :last_name) + 'Apellidos'
         = f.text_field :last_name
 
-      .field#field_internship_gender 
+      .field#field_internship_date_of_birth
+        = f.label :date_of_birth, 'Fecha de nacimiento'
+        = f.date_select :date_of_birth, :start_year => DateTime.now.year - 80
+
+      .field#field_internship_country_id
+        = f.label :country_id, 'País de nacimiento'
+        = f.collection_select :country_id, @countries, :id, :name, options = {:prompt => "Selecciona un país"}
+
+
+      .field#field_internship_state_id
+        = f.label :state_id, 'Estado de Nacimiento'
+        = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona un estado"}
+
+      .field#field_internship_gender
         = f.label :gender, 'Sexo'
         = f.select :gender,  [['Hombre', 'H'], ['Mujer', 'F']]
 
       .field#field_internship_institution_id
         = f.label :institution_id, mark_required(@internship, :institution_id) + 'Institución'
-        = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"} 
+        = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"}
 
       .field#field_internship_career
         = f.label :career,'Carrera'
@@ -43,7 +60,7 @@
       .field#field_control_number
         = f.label :control_number, 'No. de Control'
         = f.text_field :control_number, :size=>100
-      
+
       .field#field_internship_campus
         = f.label :campus_id, 'Campus'
         - if !@operator

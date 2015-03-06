@@ -2,46 +2,49 @@
 - @page_title = 'Servicios CIMAV'
 - @nav_icon = 'internships'
 #items-panel.side-panel.internships-side-panel
-  .panel-search
-    
+  .panel-search{:style=>'height: 200px;'}
+
     = form_tag internships_path, :id => 'live-search', :method => 'get', :remote => true do
 
       - internship_type_options = "<option value=\"0\">Todas los tipos</option>"
       - @internship_types.each do |internship_type|
-        - internship_type_options += "<option value=\"#{internship_type.id}\">#{internship_type.name}</option>" 
+        - internship_type_options += "<option value=\"#{internship_type.id}\">#{internship_type.name}</option>"
       = select_tag "internship_type", internship_type_options.html_safe
-  
+
       - institution_options = "<option value=\"0\">Todas las instituciones</option>"
       - @institutions.each do |institution|
-        - institution_options += "<option value=\"#{institution.id}\">#{institution.name}</option>" 
+        - institution_options += "<option value=\"#{institution.id}\">#{institution.name}</option>"
       = select_tag "institution", institution_options.html_safe
 
       - staff_options = "<option value=\"0\">Todas los responsables</option>"
       - @staffs.each do |staff|
-        - staff_options += "<option value=\"#{staff.id}\">#{staff.full_name}</option>" 
+        - staff_options += "<option value=\"#{staff.id}\">#{staff.full_name}</option>"
       = select_tag "staff", staff_options.html_safe
-      
+
       - campus_options = "<option value=\"0\">Todos los campus</option>"
       - @campus.each do |camp|
-        - campus_options += "<option value=\"#{camp.id}\">#{camp.name}</option>" 
+        - campus_options += "<option value=\"#{camp.id}\">#{camp.name}</option>"
       = select_tag "campus", campus_options.html_safe
-  
-  
+
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
-     
+
       .cbs
-        %span 
+        %span
           = check_box_tag 'status_activos', '0', true, :class => 'status-cbs'
           = label_tag 'status_activos', 'Activos'
-        %span   
+        %span
           = check_box_tag 'status_finalizados', '1', false, :class => 'status-cbs'
           = label_tag 'status_finalizados', 'Finalizados'
-        %span   
+        %span
           = check_box_tag 'status_inactivos', '2', false, :class => 'status-cbs'
           = label_tag 'status_inactivos', 'Baja'
-  
-  #items-list.panel-items
-  
+        %br
+        %span
+          = check_box_tag 'status_solicitudes', '3', false, :class => 'status-cbs'
+          = label_tag 'status_solicitudes', 'Solicitudes'
+
+  #items-list.panel-items{:style=>'top:290px'}
+
   .panel-add
     - if can? :create, Internship
       = link_to  'Agregar nuevo servicio', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}

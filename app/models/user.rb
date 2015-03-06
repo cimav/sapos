@@ -1,8 +1,8 @@
 # coding: utf-8
 class User < ActiveRecord::Base
-  attr_accessible :id,:email,:access,:status,:created_at,:updated_at,:program_id,:campus_id,:program_type,:permission_user_attributes
- 
-  belongs_to :campus 
+  attr_accessible :id,:email,:access,:status,:created_at,:updated_at,:program_id,:campus_id,:program_type,:areas,:permission_user_attributes
+
+  belongs_to :campus
   has_many :permission_user
   accepts_nested_attributes_for :permission_user
 
@@ -33,7 +33,7 @@ class User < ActiveRecord::Base
   def access_type
     ACCESS_TYPE[access]
   end
-  
+
   def delete_permissions
     PermissionUser.delete_all(:user_id => self.id)
   end

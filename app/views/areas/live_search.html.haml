@@ -1,0 +1,10 @@
+%ul.panel-list
+  - c = 0
+  - @areas.each do |area|
+    - c += 1
+    %li 
+      = link_to area, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "area_link_#{area.id}" do
+        .title= area.name
+        .comment= area.leader
+#counter
+  .inner= "#{c} areas"

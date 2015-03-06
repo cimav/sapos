@@ -23,9 +23,9 @@
     #detalles
       %h2 Detalles
       = hidden_field_tag :user_id, @user.id
-      
+
       .field#field_user_email
-        = f.label :email, mark_required(@user, :email) + 'Correo electrónico' 
+        = f.label :email, mark_required(@user, :email) + 'Correo electrónico'
         = f.text_field :email
 
       .field#field_user_access
@@ -35,7 +35,7 @@
       .field#field_user_status
         = f.label :status, 'Estado'
         = f.select :status,  User::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
-      
+
       .field#field_user_campus
         = f.label :campus_id, 'Campus'
         - q = ["Todos",0]
@@ -49,7 +49,7 @@
         - q = ["",""]
         - program_types.insert(0,q)
         = f.select :program_type, program_types
-       
+
       #specific_permissions
         - if @programs
           - @programs.each_with_index do |p,index|
@@ -62,3 +62,13 @@
                   - break
               = f.check_box :program_id, {:multiple=>false,:checked=>check}, p.id.to_s
               %br
+      #area_permissions
+        %br=""
+        %h4= "----------- Permisos de areas ------------"
+        - @areas.each do |a|
+          %br
+            - @checked = false
+            - if @permissions_areas.include? a.id.to_s
+              - @checked = true
+            =check_box_tag "areas[]", a.id, @checked
+            =a.name

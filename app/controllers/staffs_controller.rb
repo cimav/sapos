@@ -5,18 +5,39 @@ class StaffsController < ApplicationController
   respond_to :html, :xml, :json
 
   def index
+    @aareas       = get_areas(current_user)
     @institutions = Institution.order('name')
+    if current_user.access == User::OPERATOR
+      @areas        = Area.where(:id=> @aareas).order('name')
+    elsif current_user.access == User::MANAGER
+      @areas  = Area.order('name')
+    else
+      @areas        = Area.where(:id=> @aareas).order('name')
+    end
   end
 
   def live_search
     @staffs = Staff.order("first_name")
 
+    @aareas = get_areas(current_user)
+    if current_user.access == User::OPERATOR
+      @staffs = Staff.order("first_name").where(:area_id=>@aareas)
+    elsif current_user.access == User::MANAGER
+      @staffs = Staff.order("first_name")
+    else
+      @staffs = Staff.order("first_name").where(:area_id=>@aareas)
+    end
+
+    if params[:area] != '' then
+      @staffs = @staffs.where(:area_id => params[:area])
+    end
+
     if params[:institution] != '0' then
       @staffs = @staffs.where(:institution_id => params[:institution])
-    end 
+    end
 
     if !params[:q].blank?
-      @staffs = @staffs.where("(CONCAT(first_name,' ',last_name) LIKE :n OR id LIKE :n)", {:n => "%#{params[:q]}%"}) 
+      @staffs = @staffs.where("(CONCAT(first_name,' ',last_name) LIKE :n OR id LIKE :n)", {:n => "%#{params[:q]}%"})
     end
 
     s = []
@@ -41,7 +62,7 @@ class StaffsController < ApplicationController
         rows = Array.new
         @staffs.collect do |s|
           rows << {'Numero_Empleado' => s.employee_number,
-                   'Nombre' => s.first_name,   
+                   'Nombre' => s.first_name,
                    'Apellidos' => s.last_name,
                    'Correo_Elec' => s.email,
                    'Sexo' => s.gender,
@@ -53,15 +74,24 @@ class StaffsController < ApplicationController
         end
         column_order = ["Numero_Empleado","Nombre","Apellidos","Correo_Elec","Sexo","Fecha_Nac","CVU","SNI","Estado"]
         to_excel(rows,column_order,"Docentes","Docentes")
-      end 
+      end
     end
   end
 
   def show
-    @staff = Staff.find(params[:id])
-    @countries = Country.order('name')
+    @aareas       = get_areas(current_user)
+    @staff        = Staff.find(params[:id])
+    @countries    = Country.order('name')
     @institutions = Institution.order('name')
-    @states = State.order('code')
+    @states       = State.order('code')
+
+    if current_user.access == User::OPERATOR
+      @areas        = Area.where(:id=> @aareas).order('name')
+    elsif current_user.access == User::MANAGER
+      @areas  = Area.order('name')
+    else
+      @areas        = Area.where(:id=> @aareas).order('name')
+    end
     render :layout => false
   end
 
@@ -86,7 +116,7 @@ class StaffsController < ApplicationController
             json[:flash] = flash
             json[:uniq] = @staff.id
             render :json => json
-          else 
+          else
             redirect_to @staff
           end
         end
@@ -108,7 +138,7 @@ class StaffsController < ApplicationController
     end
   end
 
-  def update 
+  def update
     flash = {}
     @staff = Staff.find(params[:id])
 
@@ -121,7 +151,7 @@ class StaffsController < ApplicationController
             json = {}
             json[:flash] = flash
             render :json => json
-          else 
+          else
             redirect_to @staff
           end
         end
@@ -135,7 +165,7 @@ class StaffsController < ApplicationController
             json[:flash] = flash
             json[:errors] = @staff.errors
             render :json => json, :status => :unprocessable_entity
-          else 
+          else
             redirect_to @staff
           end
         end
@@ -181,12 +211,12 @@ class StaffsController < ApplicationController
     @seminar = Seminar.find(params[:seminar_id])
     render :layout => false
   end
-  
+
   def delete_seminar
     flash = {}
     @seminar = Seminar.find(params[:seminar_id])
     @seminar.status = 2
-    if @seminar.save 
+    if @seminar.save
       flash[:notice] = "Seminario eliminado"
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Seminar: #{@seminar.id}"}).save
       respond_with do |format|
@@ -194,7 +224,7 @@ class StaffsController < ApplicationController
           if request.xhr?
             json = {}
             json[:flash] = flash
-            json[:seminar_id] = params[:seminar_id] 
+            json[:seminar_id] = params[:seminar_id]
             render :json => json
           else
             redirect_to @staff
@@ -204,7 +234,7 @@ class StaffsController < ApplicationController
     else
       flash[:error] = "Error al eliminar seminario"
       respond_with do |format|
-        format.html do 
+        format.html do
           if request.xhr?
             json = {}
             json[:flash] = flash
@@ -214,16 +244,16 @@ class StaffsController < ApplicationController
           else
             redirect_to @staff
           end
-        end 
-      end      
+        end
+      end
     end
-  end 
-  
+  end
+
   def delete_external_course
     flash = {}
     @external_course  = ExternalCourse.find(params[:external_course_id])
     @external_course.status = 2
-    if @external_course.save 
+    if @external_course.save
       flash[:notice] = "Curso externo eliminado"
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete External Course: #{@external_course.id}"}).save
       respond_with do |format|
@@ -231,7 +261,7 @@ class StaffsController < ApplicationController
           if request.xhr?
             json = {}
             json[:flash] = flash
-            json[:external_course_id] = params[:external_course_id] 
+            json[:external_course_id] = params[:external_course_id]
             render :json => json
           else
             redirect_to @staff
@@ -241,7 +271,7 @@ class StaffsController < ApplicationController
     else
       flash[:error] = "Error al eliminar curso externo"
       respond_with do |format|
-        format.html do 
+        format.html do
           if request.xhr?
             json = {}
             json[:flash] = flash
@@ -251,16 +281,16 @@ class StaffsController < ApplicationController
           else
             redirect_to @staff
           end
-        end 
-      end      
+        end
+      end
     end
-  end 
-  
+  end
+
   def delete_lab_practice
     flash = {}
     @lab_practice  = LabPractice.find(params[:lab_practice_id])
     @lab_practice.status = 2
-    if @lab_practice.save 
+    if @lab_practice.save
       flash[:notice] = "Práctica eliminada"
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Lab Practice: #{@lab_practice.id}"}).save
       respond_with do |format|
@@ -268,7 +298,7 @@ class StaffsController < ApplicationController
           if request.xhr?
             json = {}
             json[:flash] = flash
-            json[:lab_practice_id] = params[:lab_practice_id] 
+            json[:lab_practice_id] = params[:lab_practice_id]
             render :json => json
           else
             redirect_to @staff
@@ -278,7 +308,7 @@ class StaffsController < ApplicationController
     else
       flash[:error] = "Error al eliminar la practica"
       respond_with do |format|
-        format.html do 
+        format.html do
           if request.xhr?
             json = {}
             json[:flash] = flash
@@ -288,10 +318,10 @@ class StaffsController < ApplicationController
           else
             redirect_to @staff
           end
-        end 
-      end      
+        end
+      end
     end
-  end 
+  end
 
   def seminars_table
     @staff = Staff.find(params[:id])
@@ -353,16 +383,16 @@ class StaffsController < ApplicationController
   end
 
   def schedule_table
-    @is_pdf = false 
+    @is_pdf = false
     @id	    = params[:id]
-			
+
     @start_date = params[:start_date]
     @end_date   = params[:end_date]
-      
+
     if @start_date.blank? or @end_date.blank?
       @error = 1 # No se pueden mandar fechas vacias
       render :layout => false and return
-    end 
+    end
 
     @sd  = Date.parse(@start_date)
     @ed  = Date.parse(@end_date)
@@ -375,7 +405,7 @@ class StaffsController < ApplicationController
     end
 
     @tcs = TermCourseSchedule.joins(:term_course).where("term_course_schedules.staff_id = :staff_id AND term_courses.status=1 AND term_course_schedules.status=1 AND ((start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date))",{:staff_id => @id,:start_date => @start_date,:end_date => @end_date});
-			
+
     @schedule = Hash.new
     (4..22).each do |i|
       @schedule[i] = Array.new
@@ -388,17 +418,17 @@ class StaffsController < ApplicationController
     courses = Hash.new
     @min_hour = 24
     @max_hour = 1
-			
-    @tcs.each do |session_item| 
+
+    @tcs.each do |session_item|
       hstart	= session_item.start_hour.hour
       hend   	= session_item.end_hour.hour - 1
-					
+
       (hstart..hend).each do |h|
         if courses[session_item.term_course.course.id].nil?
           n += 1
           courses[session_item.term_course.course.id] = n
         end
-   
+
         comments = ""
         if session_item.start_date != session_item.term_course.term.start_date
           comments += "Inicia: #{l session_item.start_date, :format => :long}\n"
@@ -407,9 +437,9 @@ class StaffsController < ApplicationController
         if session_item.end_date != session_item.term_course.term.end_date
           comments += "Finaliza: #{l session_item.end_date, :format => :long}"
         end
-    
+
         staff_name = session_item.staff.full_name rescue 'Sin docente'
-	
+
         details = {
           "name" 	   => session_item.term_course.course.name,
           "staff_name" => staff_name,
@@ -424,12 +454,12 @@ class StaffsController < ApplicationController
         @max_hour = h if h > @max_hour
       end
     end
-			
+
     respond_with do |format|
       format.html do
         render :layout => false
       end
-    
+
       format.pdf do
         institution = Institution.find(1)
         @logo = institution.image_url(:medium).to_s
@@ -440,10 +470,10 @@ class StaffsController < ApplicationController
         filename = "horario-#{@tcs[0].staff.id}-#{@tcs[0].term_course.term.id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
-      end   
+      end
     end
   end
-  
+
   def id_card
     @time    = Time.now + 31536000
     @staff = Staff.find(params[:id])
@@ -464,7 +494,7 @@ class StaffsController < ApplicationController
       end
     end
   end
-  
+
   def files
     @staff = Staff.includes(:staff_file).find(params[:id])
     @staff_file = StaffFile.new
@@ -492,7 +522,7 @@ class StaffsController < ApplicationController
     s = Staff.find(params[:id])
     sf = s.staff_file.find(params[:file_id]).file
     send_file sf.to_s, :x_sendfile=>true
-  end 
+  end
 
   def delete_file
   end

@@ -13,7 +13,7 @@ function calcFrameHeight(id) {
   try
   {
     var innerDoc = (iframe.contentDocument) ? iframe.contentDocument : iframe.contentWindow.document;
-    if (innerDoc.body.offsetHeight) { //ns6 syntax 
+    if (innerDoc.body.offsetHeight) { //ns6 syntax
       iframe.height = innerDoc.body.offsetHeight + 32; //Extra height FireFox
     } else if (iframe.Document && iframe.Document.body.scrollHeight) { //ie5+ syntax
       iframe.height = iframe.Document.body.scrollHeight;
@@ -31,13 +31,13 @@ function changeResourceImage(id, small, medium) {
 }
 
 function liveSearch() {
-    $("#search-box").addClass("loading"); 
-    var form = $("#live-search"); 
-    var url = location.pathname + "/busqueda"; 
-    var formData = form.serialize(); 
-    $.get(url, formData, function(html) { 
-        $("#search-box").removeClass("loading"); 
-        $("#items-list").html(html); 
+    $("#search-box").addClass("loading");
+    var form = $("#live-search");
+    var url = location.pathname + "/busqueda";
+    var formData = form.serialize();
+    $.get(url, formData, function(html) {
+        $("#search-box").removeClass("loading");
+        $("#items-list").html(html);
         $("#items-list li:first a").click();
     });
 }
@@ -55,18 +55,23 @@ function showFormErrors(xhr, status, error) {
     }
 
     errorMesg="";
-    $.each(res['errors_full'],function(key,value){
+    try{
+      $.each(res['errors_full'],function(key,value){
         numlist = key + 1
         errorMesg+=" "+numlist+": "+value+"<br>";
       });
-   
-     
+    }catch(err){
+      $.each(res['errors'],function(key,value){
+        numlist = key + 1
+        errorMesg+=" "+numlist+": "+value+"<br>";
+      });
+    }
+
     for ( e in res['errors'] ) {
-        
         errorMsg = $('<div>' + res['errors'][e] + '</div>').addClass('error-message');
         $('#field_' + model_name + '_' + e.replace('.', '_')).addClass('with-errors').append(errorMsg);
     }
-    
+
     showFlash(res['flash']['error'], 'error', errorMesg);
 }
 
@@ -107,19 +112,18 @@ $("#search-box")
   .live("click", function() {
     if (this.value == '') {
       liveSearch();
-    } 
+    }
   });
-
 
 // ** Get Item **
 $('.get-item')
-  .live('ajax:success', function(data, status, xhr) {  
+  .live('ajax:success', function(data, status, xhr) {
     $('.panel-list li').removeClass("selected");
     $('.panel-add').removeClass("selected");
-    $(this).closest('li').addClass("selected"); 
+    $(this).closest('li').addClass("selected");
     $('#content-panel').html(status);
-    $(function() {  
-      $('#resource-tabs').tabs(); 
+    $(function() {
+      $('#resource-tabs').tabs();
     });
 
     /** Disable/enable submit button **/
@@ -141,7 +145,7 @@ $('.get-item')
    })
 
   .live('ajax:complete', function(evt, xhr, status) {
-     $(this).closest('li').removeClass("loading"); 
+     $(this).closest('li').removeClass("loading");
   });
 
 $('#add-new-item')
@@ -155,7 +159,7 @@ $('#add-new-item')
     console.log(status);
    })
 
-  .live('ajax:success', function(data, status, xhr) {  
+  .live('ajax:success', function(data, status, xhr) {
     $('#content-panel').html(status);
     $(function() {  $('#resource-tabs').tabs(); });
 
@@ -177,7 +181,7 @@ $('#item-new-form')
         $('.error-message').remove();
         $('.with-errors').removeClass('with-errors');
     })
-    
+
     .live("ajax:success", function(evt, data, status, xhr) {
         // Load new
         var $form = $(this);
@@ -186,7 +190,7 @@ $('#item-new-form')
         $("#search-box").val(res['uniq']);
         try{
           initializeSearchForm();
-          liveSearch();       
+          liveSearch();
         }
         catch(e)
         {
@@ -197,7 +201,7 @@ $('#item-new-form')
     .live('ajax:complete', function(evt, xhr, status) {
         var $submitButton = $(this).find('input[type="submit"]');
         if(status=="error")
-        { 
+        {
           $submitButton.removeClass('disabled');
           $submitButton.attr('disabled',false);
         }
@@ -211,7 +215,44 @@ $('#item-new-form')
         showFormErrors(xhr, status, error);
     }
 );
-  
+
+$('#item-new-internship-applicant-form')
+    .live("ajax:beforeSend", function(evt, xhr, settings) {
+      var submitButton = $(this).find('input[type="submit"]');
+      submitButton.attr('disabled','disabled');
+      var text = $("#internship_email").val();
+      if(text==""){
+        alert("El email es obligatorio");
+        submitButton.attr('disabled',false);
+         $("#internship_email").focus();
+        return false;
+      }
+      $('.error-message').remove();
+      $('.with-errors').removeClass('with-errors');
+      $('#img_load').show();
+    })
+    .live("ajax:success", function(evt, data, status, xhr) {
+        // Load new
+        var res    = $.parseJSON(xhr.responseText);
+        if(res['uniq']!=0){
+          var uri = res['uri']
+          var html = "<h3>Se ha dado de alta su solicitud y se ha enviado un mensaje con instrucciones a su correo, puede descargar e imprimir su formato de registro: <a href="+uri+">Descargar</a></h3>"
+          $('#standalone-content').html(html);
+        }
+    })
+    .live("ajax:error", function(evt, xhr, status, error) {
+        var res = $.parseJSON(xhr.responseText);
+        var submitButton = $(this).find('input[type="submit"]');
+        submitButton.attr('disabled',false);
+        showFormErrors(xhr, status, error);
+
+    })
+    .live('ajax:complete', function(evt, xhr, status) {
+        var submitButton = $(this).find('input[type="submit"]');
+        submitButton.attr('disabled',false);
+        $('#img_load').hide();
+    })
+
 
 $('#item-edit-form')
     .live("ajax:beforeSend", function(evt, xhr, settings) {
@@ -221,7 +262,7 @@ $('#item-edit-form')
         $('.error-message').remove();
         $('.with-errors').removeClass('with-errors');
     })
-    
+
     .live("ajax:success", function(evt, data, status, xhr) {
         var $form = $(this);
         var res = $.parseJSON(xhr.responseText);

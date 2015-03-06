@@ -2,28 +2,30 @@
 - @include_js = 'staffs'
 - @page_title = 'Docentes'
 - @nav_icon = 'staffs'
-#items-panel.side-panel.staffs-side-panel
-  .panel-search
-    
+-#items-panel.side-panel.staffs-side-panel
+#items-panel.side-panel
+  .panel-search{:style=>"height: 90px"}
+
     = form_tag institutions_path, :id => 'live-search', :method => 'get', :remote => true do
-  
+
       - institution_options = "<option value=\"0\">Todas las instituciones</option>"
       - @institutions.each do |institution|
-        - institution_options += "<option value=\"#{institution.id}\">#{institution.name}</option>" 
+        - institution_options += "<option value=\"#{institution.id}\">#{institution.name}</option>"
       = select_tag "institution", institution_options.html_safe
-  
+      = select_tag "area", options_from_collection_for_select(@areas, "id", "name"), :prompt=> 'Todas las areas'
+
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
-     
+
       .cbs
-        %span 
+        %span
           = check_box_tag 'status_activos', '0', true, :class => 'status-cbs'
           = label_tag 'status_activos', 'Activos'
-        %span   
+        %span
           = check_box_tag 'status_inactivos', '1', false, :class => 'status-cbs'
           = label_tag 'status_inactivos', 'Inactivos'
-  
-  #items-list.panel-items
-  
+
+  #items-list.panel-items{:style=>"top: 115px"}
+
   .panel-add
     - if can? :create, Staff
       = link_to  'Agregar nuevo docente', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}

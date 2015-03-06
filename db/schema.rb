@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141204010312) do
+ActiveRecord::Schema.define(:version => 20150228010252) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -97,6 +97,16 @@ ActiveRecord::Schema.define(:version => 20141204010312) do
     t.text     "notes"
     t.integer  "campus_id"
     t.integer  "student_id"
+  end
+
+  create_table "areas", :force => true do |t|
+    t.string   "name",       :limit => 100, :null => false
+    t.integer  "area_type",                 :null => false
+    t.string   "leader",     :limit => 100
+    t.string   "position"
+    t.text     "notes"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
   end
 
   create_table "campus", :force => true do |t|
@@ -277,8 +287,8 @@ ActiveRecord::Schema.define(:version => 20141204010312) do
 
   create_table "internships", :force => true do |t|
     t.integer  "internship_type_id"
-    t.string   "first_name",         :limit => 50,                  :null => false
-    t.string   "last_name",          :limit => 50,                  :null => false
+    t.string   "first_name",         :limit => 50,                :null => false
+    t.string   "last_name",          :limit => 50,                :null => false
     t.string   "gender",             :limit => 1
     t.date     "date_of_birth"
     t.date     "start_date"
@@ -290,7 +300,7 @@ ActiveRecord::Schema.define(:version => 20141204010312) do
     t.integer  "staff_id"
     t.string   "thesis_title"
     t.text     "activities"
-    t.string   "status",             :limit => 20, :default => "0"
+    t.integer  "status",                           :default => 0
     t.string   "image"
     t.text     "notes"
     t.datetime "created_at"
@@ -303,6 +313,10 @@ ActiveRecord::Schema.define(:version => 20141204010312) do
     t.string   "schedule"
     t.string   "control_number"
     t.integer  "grade"
+    t.integer  "applicant_status"
+    t.integer  "area_id"
+    t.integer  "country_id"
+    t.integer  "state_id"
   end
 
   add_index "internships", ["contact_id"], :name => "index_internships_on_contact_id"
@@ -339,6 +353,14 @@ ActiveRecord::Schema.define(:version => 20141204010312) do
   end
 
   add_index "laboratories", ["campus_id"], :name => "index_laboratories_on_campus_id"
+
+  create_table "payment_files", :force => true do |t|
+    t.string   "descripcion"
+    t.string   "file"
+    t.integer  "status"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
 
   create_table "permission_users", :force => true do |t|
     t.integer  "user_id"
@@ -436,6 +458,7 @@ ActiveRecord::Schema.define(:version => 20141204010312) do
     t.text     "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "area_id"
   end
 
   create_table "stances", :force => true do |t|
@@ -665,7 +688,7 @@ ActiveRecord::Schema.define(:version => 20141204010312) do
 
   create_table "tokens", :force => true do |t|
     t.integer  "attachable_id"
-    t.integer  "attachable_type"
+    t.string   "attachable_type"
     t.string   "token"
     t.datetime "expires"
     t.integer  "status"
@@ -675,13 +698,14 @@ ActiveRecord::Schema.define(:version => 20141204010312) do
 
   create_table "users", :force => true do |t|
     t.string   "email"
-    t.integer  "access",       :default => 2
-    t.integer  "status",       :default => 1
+    t.integer  "access",                      :default => 2
+    t.integer  "status",                      :default => 1
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "program_id"
     t.integer  "campus_id"
     t.integer  "program_type"
+    t.string   "areas",        :limit => 150
   end
 
 end

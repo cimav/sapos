@@ -1,0 +1,35 @@
+= form_for @area, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
+  = hidden_field :area, :id
+  
+  .resource-header.student-header
+    .resource-picture
+    .resource-title
+      %h1
+        = "#{@area.name}"
+        
+    .resource-save
+      - if can? :update, @area
+        = f.submit 'Actualizar'
+  
+  #resource-tabs
+    %ul
+      %li.first-tab= link_to "Detalles", "#detalles"
+  
+  #detalles
+    %h2 Detalles
+    
+    .field#field_area_name
+      = f.label :name, 'Nombre del area'
+      = f.text_field :name
+   
+    .field#field_area_area_type
+      = f.label :area_type, 'Tipo'
+      = f.select :area_type, Area::TYPE.invert.sort {|a,b| a[1] <=> b[1] }
+    
+    .field#field_leader
+      = f.label :leader, 'Responsable'
+      = f.text_field :leader
+    
+    .field#field_position
+      = f.label :position, 'Cargo'
+      = f.text_field :position

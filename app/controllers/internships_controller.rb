@@ -1,7 +1,7 @@
 # coding: utf-8
 class InternshipsController < ApplicationController
   load_and_authorize_resource
-  before_filter :auth_required
+  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file]
   respond_to :html, :xml, :json
 
   def index
@@ -17,10 +17,13 @@ class InternshipsController < ApplicationController
   end
 
   def live_search
+    @aareas           = get_areas(current_user)
     if current_user.access == User::OPERATOR
-      @internships = Internship.order("first_name").where(:campus_id => current_user.campus_id)
-    else
+      @internships = Internship.order("first_name").where(:campus_id => current_user.campus_id,:area_id=>@aareas)
+    elsif current_user.access == User::MANAGER
       @internships = Internship.order("first_name")
+    else
+      @internships = Internship.order("first_name").where(:campus_id => current_user.campus_id,:area_id=>@aareas)
     end
 
     if params[:institution] != '0' then
@@ -57,6 +60,10 @@ class InternshipsController < ApplicationController
       s << params[:status_inactivos].to_i
     end
 
+    if !params[:status_solicitudes].blank?
+      s << params[:status_solicitudes].to_i
+    end
+
     if !s.empty?
       @internships = @internships.where("status IN (#{s.join(',')})")
     end
@@ -90,32 +97,57 @@ class InternshipsController < ApplicationController
   end
 
   def show
-    @internship = Internship.find(params[:id])
-    @countries = Country.order('name')
+    @internship   = Internship.find(params[:id])
+    @countries    = Country.order('name')
     @institutions = Institution.order('name')
     @internship_types = InternshipType.order('name')
-    @staffs = Staff.order('first_name').includes(:institution)
-    @states = State.order('code')
 
+    @states  = State.order('code')
+    @token   = Token.where(:attachable_id=>@internship.id,:attachable_type=>@internship.class.to_s)
+
+    @applicant_log = ActivityLog.where(:user_id=>0).where("activity like '%:internship_id=>#{@internship.id}%'")
+
+    @aareas           = get_areas(current_user)
+
+    @operator = false
     if current_user.access == User::OPERATOR
-      @campus = Campus.order('name').where(:id=> current_user.campus_id)
-    else
+      @campus   = Campus.order('name').where(:id=> current_user.campus_id)
+      @areas    = Area.where(:id=> @aareas).order('name')
+      @staffs   = Staff.where(:area_id=> @aareas).order('first_name').includes(:institution)
+      @operator = true
+    elsif current_user.access == User::MANAGER
+      @areas  = Area.order('name')
+      @staffs = Staff.order('first_name').includes(:institution)
       @campus = Campus.order('name')
+    else
+      @campus  = Campus.order('name')
+      @staffs  = Staff.where(:area_id=> @aareas).order('first_name').includes(:institution)
+      @areas   = Area.where(:id=> @aareas).order('name')
     end
 
     render :layout => false
   end
 
   def new
-    @internship = Internship.new
-    @institutions = Institution.order('name')
+    @internship       = Internship.new
+    @institutions     = Institution.order('name')
     @internship_types = InternshipType.order('name')
+    @countries        = Country.order('name')
+    @states           = State.order('name')
+
+    @aareas           = get_areas(current_user)
+
     @operator = false
     if current_user.access == User::OPERATOR
       @campus   = Campus.order('name').where(:id=> current_user.campus_id)
+      @areas    = Area.where(:id=> @aareas).order('name')
       @operator = true
+    elsif current_user.access == User::MANAGER
+      @areas  = Area.order('name')
+      @campus = Campus.order('name')
     else
       @campus = Campus.order('name')
+      @areas    = Area.where(:id=> @aareas).order('name')
     end
     render :layout => false
   end
@@ -141,7 +173,7 @@ class InternshipsController < ApplicationController
         end
       end
     else
-      flash[:error] = "Error al crear becario."
+      flash[:error] = "Error al crear servicio."
       respond_with do |format|
         format.html do
           if request.xhr?
@@ -412,6 +444,197 @@ class InternshipsController < ApplicationController
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return
     end
+  end
+
+  def applicant_form
+    @internship       = Internship.new
+    @institutions     = Institution.order('name')
+    @internship_types = InternshipType.order('name')
+    @countries        = Country.order('name')
+
+    @states           = State.order('name')
+
+    @areas  = Area.where("id not in (1,2)").order('name')
+    render :layout => 'standalone'
+  end
+
+  def applicant_create
+    flash = {}
+    @internship = Internship.new(params[:internship])
+    @internship.status=3
+    @internship.campus_id= 1 #Default Chihuahua
+    @internship.applicant_status=0
+
+    if params[:internship][:institution_id].to_i.eql? 0
+      @internship.institution_id=2
+      @internship.notes = "#{@internship.notes} \ninstitucion sugerida: #{params[:text_institution_id]}"
+    end
+
+    if params[:internship][:internship_type_id].to_i.eql? 0
+      @internship.notes = "#{@internship.notes} \nservicio sugerido: #{params[:text_internship_type_id]}"
+    end
+
+    if @internship.save
+      flash[:notice] = "Servicio creado para applicant."
+
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud por internet'}"}).save
+      @uri = generate_applicant_document(@internship)
+      send_mail(@internship,@uri,1,nil)
+      send_mail(@internship,@uri,2,nil)
+
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:uniq]  = @internship.id
+            json[:uri]   = @uri
+            render :json => json
+          else
+            redirect_to @internship
+          end
+        end
+      end
+    else
+      flash[:error] = "Error al crear servicio para applicant."
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:errors] = @internship.errors
+            render :json => json, :status => :unprocessable_entity
+          else
+            redirect_to @internship
+          end
+        end
+      end
+    end
+  end#applicant_create
+
+  def applicant_file
+    @internship = Internship.find(params[:id])
+    @token      = params[:token]
+
+    t = Token.where(:token=>@token,:attachable_id=>@internship.id)
+
+    @r_root  = Rails.root.to_s
+    filename = "#{@r_root}/private/files/internships/#{@internship.id}/registro.pdf"
+    send_file filename, :x_sendfile=>true
+  end#applicant_file
+
+  def applicant_interview
+    @internship = Internship.find(params[:id])
+    @staff      = Staff.find(params[:staff_id])
+    @user       = get_user(@internship.area_id)
+    @date       = params[:date]
+    @text       = params[:text]
+    @adate      = @date.split("-")
+    @ahour      = @adate[3].split(":")
+    @hour       = "#{@ahour[0].to_s.rjust(2,"0")}:#{@ahour[1].to_s.rjust(2,"0")}"
+
+    ## mail al entrevistado
+    @text       = "La entrevista se ha programado para el día #{@adate[0]} de #{get_month_name(@adate[1].to_i)} de #{@adate[2]} a las #{@hour} horas, deberá presentarse con #{@staff.full_name}. #{@text}"
+    send_mail(@internship,"",3,@text)
+
+    ## mail al entrevistador
+    @text = "Se ha programado la cita para entrevista de servicio social con #{@internship.full_name} [#{@internship.email}] para el día #{@adate[0]} de #{get_month_name(@adate[1].to_i)} de #{@adate[2]} a las #{@hour} horas."
+    @content= "{:full_name=>'',:email=>'#{@internship.email}',:view=>7,:reply_to=>'#{@user.email}',:text=>'#{@text}'}"
+    # @staff.email
+    send_simple_mail("enrique.turcott@cimav.edu.mx","Se ha programado un horario para entrevista de servicio social ",@content)
+    ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'Se manda un correo con el horario a #{@staff.full_name} - #{@staff.email}'}"}).save
+
+    json = {}
+    json[:status]= 1
+    render :json=> json
+  end#applicant_interview
+
+  def generate_applicant_document(i) #i for internship
+    @genero = ""
+    if i.gender.eql? "H"
+      @genero = "Masculino"
+    elsif i.gender.eql? "F"
+      @genero = "Femenino"
+    end
+
+    @db          = i.date_of_birth
+    @birth       = "#{@db.day} de #{get_month_name(@db.month)} de #{@db.year}"
+    @bp          = Country.find(i.country_id).name rescue "" #born_place
+    @institution = Institution.find(i.institution_id).name rescue ""
+    @email       = i.email
+
+    @r_root  = Rails.root.to_s
+    filename = "private/files/internships/#{i.id}"
+    FileUtils.mkdir_p(filename) unless File.directory?(filename)
+    template = "#{@r_root}/private/prawn_templates/form_reg_estudiantes_externos.pdf"
+    Prawn::Document.generate("#{filename}/registro.pdf", :template => template)
+    pdf = Prawn::Document.new(:template => template)
+    pdf.draw_text i.full_name,  :at=>[60,614], :size=>10
+    pdf.draw_text @genero,      :at=>[50,601], :size=>10
+    pdf.draw_text @birth,       :at=>[120,588], :size=>10
+    pdf.draw_text @bp,          :at=>[120,575], :size=>10
+    pdf.draw_text @institution, :at=>[142,562], :size=>10
+    pdf.draw_text @email,       :at=>[105,550], :size=>10
+    pdf.render_file "#{filename}/registro.pdf"
+
+    token = Token.new
+    token.attachable_id     = i.id
+    token.attachable_type   = i.class.to_s
+    token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
+    token.status            = 1
+    token.expires           = Date.today + 30
+    token.save
+
+    return "/internados/aspirante/#{i.id}/formato/#{token.token}"
+  end
+
+  def send_simple_mail(to,subject,content)
+    email = Email.new
+    email.from    ="atencion.posgrado@cimav.edu.mx"
+    email.to      = to
+    email.subject = subject
+    email.content = content
+
+    SystemMailer.notification_email(email).deliver
+  end
+
+
+  def send_mail(i,uri,opc,text)
+    user    = get_user(i.area_id)
+    if opc.eql? 1
+      @u_email   = i.email
+      subject = "Solicitud Servicio Social CIMAV"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>5,:reply_to=>'#{user.email}',:uri=>'#{uri}'}"
+    elsif opc.eql? 2
+      @u_email   = user.email
+      subject = "Se ha realizado una Solicitud Servicio Social CIMAV"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>6,:reply_to=>'#{i.email}',:uri=>'#{uri}'}"
+    elsif opc.eql? 3
+      @u_email   = user.email
+      subject = "Se ha programado fecha para entrevista Solicitud Servicio Social CIMAV"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>7,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+    end
+
+    email = Email.new
+    email.from    ="atencion.posgrado@cimav.edu.mx"
+    email.to      = @u_email
+    email.subject = subject
+    email.content = content
+    SystemMailer.notification_email(email).deliver
+
+    if opc.eql? 1
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al solicitante'}"}).save
+    elsif opc.eql? 2
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al asistente'}"}).save
+    elsif opc.eql? 3
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El usuario programa fecha de entrevista'}"}).save
+    end
+
+  end#send_mail
+
+  def get_user(area_id)
+     users = User.where("areas like '%\"#{area_id}\"%'")
+     return users[0]
   end
 
   def get_consecutive(object, time, type)

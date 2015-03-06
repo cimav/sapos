@@ -5,6 +5,10 @@ $('#institution').live("change", function() {
   liveSearch();
 });
 
+$('#area').live("change", function() {
+  liveSearch();
+});
+
 // ** On change Status
 $('.status-cbs').live("click", function() {
   liveSearch();
@@ -225,7 +229,7 @@ $(".lab-practice-item").live("click", function() {
 
 $('#search-staff-schedule').live("click",function(){
 	url = location.pathname + '/horario/' + $('#staff_id').val()
-  
+
 	start_date  = $('#start_date').val();
   end_date    = $('#end_date').val();
 

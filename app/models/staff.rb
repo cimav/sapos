@@ -1,6 +1,6 @@
 # coding: utf-8
 class Staff < ActiveRecord::Base
-  attr_accessible :id,:employee_number,:title,:first_name,:last_name,:gender,:date_of_birth,:location,:email,:institution_id,:contact_id,:cvu,:sni,:status,:image,:notes,:created_at,:updated_at,:lab_practices_attributes,:seminars_attributes,:external_courses_attributes,:contact_attributes
+  attr_accessible :id,:employee_number,:title,:first_name,:last_name,:gender,:date_of_birth,:location,:email,:institution_id,:contact_id,:cvu,:sni,:status,:image,:notes,:created_at,:updated_at,:area_id,:lab_practices_attributes,:seminars_attributes,:external_courses_attributes,:contact_attributes
   belongs_to :institution
   has_many :term_course_schedule
 
@@ -28,7 +28,7 @@ class Staff < ActiveRecord::Base
   validates :first_name, :presence => true
   validates :last_name, :presence => true
   validates :institution_id, :presence => true
-  
+
   after_create :add_extra
 
   mount_uploader :image, StaffImageUploader
@@ -47,7 +47,7 @@ class Staff < ActiveRecord::Base
   def full_name_by_last
     "#{last_name} #{first_name}" rescue ''
   end
-  
+
   def add_extra
     self.build_contact()
     self.save(:validate => false)
@@ -62,7 +62,7 @@ class Staff < ActiveRecord::Base
       a_s['supervisor_name'] = s.staff_supervisor.full_name
       a_s['co_supervisor_name'] = s.staff_co_supervisor.full_name rescue ''
       active_items << a_s
-    end 
+    end
     active_items
   end
 

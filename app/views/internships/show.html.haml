@@ -5,7 +5,7 @@
       $('#resource-tabs').tabs();
       $("#change-img-dialog").remove();
       $('#content-panel').append('<div title="Cambiar fotografía" id="change-img-dialog"><iframe width="430" height="450" src="/internados/#{@internship.id}/cambiar_foto" scrolling="no"></iframe></div>');
-      $("#change-img-dialog").dialog({ autoOpen: false, width: 470, height: 550, modal:true });   
+      $("#change-img-dialog").dialog({ autoOpen: false, width: 470, height: 550, modal:true });
       $("#a-change-image").live("click", function() {
         $("#change-img-dialog").dialog('open');
       });
@@ -16,6 +16,7 @@
           var iid    = $(this).attr("internship_id");
           window.location.href="internados/constancias/"+c_type+"/"+iid;
         });
+
       });
     });
 
@@ -27,7 +28,7 @@
       = link_to 'Cambiar foto', '#', :id=>'a-change-image'
     .resource-title
       %h1= "#{@internship.first_name} #{@internship.last_name}"
-      .comment= @internship.institution.name
+      .comment= @internship.institution.name rescue ""
       .comment= "ID: #{@internship.id}"
       .resource-card
         = link_to 'Credencial', "/internados/#{@internship.id}/credencial.pdf", :id=>'a-id-card'
@@ -42,17 +43,22 @@
       %li= link_to "Archivos", "#archivos"
       %li= link_to "Notas", "#notas"
       %li= link_to "Constancias", "#constancias"
+      %li= link_to "Seguimiento de ingreso", "#seguimiento"
 
     #detalles
       %h2 Detalles
 
       .field#field_internship_internship_type_id
         = f.label :internship_type_id, mark_required(@internship, :internship_type_id) + 'Tipo'
-        = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo"} 
+        = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo"}
+
+      .field#field_internship_area_id
+        = f.label :area_id, mark_required(@internship, :area_id) + 'Area'
+        = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"}
 
       .field#field_internship_first_name
         = f.label :first_name, mark_required(@internship, :first_name) + 'Nombre'
-        = f.text_field :first_name 
+        = f.text_field :first_name
 
       .field#field_internship_last_name
         = f.label :last_name, mark_required(@internship, :last_name) + 'Apellidos'
@@ -66,11 +72,11 @@
         .field#field_internship_institution_id
           = f.label :institution_id, 'Institucion'
           = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"}
-      
+
       .field#field_internship_career
         = f.label :career,'Carrera'
         = f.text_field :career,:size=>100
-      
+
       .field#field_control_number
         = f.label :control_number, 'No. de Control'
         = f.text_field :control_number, :size=>100
@@ -85,28 +91,27 @@
 
       .field#field_internship_staff_id
         = f.label :staff_id, 'Docente responsable'
-        = f.grouped_collection_select :staff_id, @institutions, :staffs_active, :name, :id, :full_name
- 
+        = f.collection_select :staff_id, @staffs, :id, :full_name, options = {:prompt=> "Selecciona el responsable"}
       .field#field_internship_campus
         = f.label :campus_id, 'Campus'
         - q = ["Ninguno",0]
         - p = @campus.collect{|p|[p.name,p.id]}
         - p.insert(0,q)
         = f.select :campus_id,p
-      
+
       .field#field_internship_office
         = f.label :office,'Departamento'
         = f.text_field :office,:size=>100
-      
+
       .field#field_internship_total_hours
         = f.label :total_hours,'Horas totales'
         = f.text_field :total_hours,:size=>5
-      
+
       .field#field_internship_schedule
         = f.label :schedule,'Horario'
         = f.text_field :schedule,:size=>100
 
-      .field#field_internship_gender 
+      .field#field_internship_gender
         = f.label :gender, 'Sexo'
         = f.select :gender,  [['Hombre', 'H'], ['Mujer', 'F']]
 
@@ -114,10 +119,19 @@
         = f.label :date_of_birth, 'Fecha de nacimiento'
         = f.date_select :date_of_birth, :start_year => DateTime.now.year - 80
 
+      .field#field_internship_country_id
+        = f.label :country_id, 'País de nacimiento'
+        = f.collection_select :country_id, @countries, :id, :name, options = {:prompt => "Selecciona un país"}
+
+
+      .field#field_internship_state_id
+        = f.label :state_id, 'Estado de Nacimiento'
+        = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona un estado"}
+
       .field#field_internship_thesis_title
         = f.label :thesis_title, 'Tesis'
         = f.text_field :thesis_title
-      
+
       .field#field_internship_grade
         = f.label :grade, 'Puntuación'
         = f.text_field :grade
@@ -142,19 +156,67 @@
     #archivos
       %h2 Archivos
       %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/internados/#{@internship.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
-	
+
     #constancias
       %h2 Constancias
       .field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
-        = label_tag 'Carta de aceptación' 
-        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"aceptacion",:internship_id=>@internship.id  
+        = label_tag 'Carta de aceptación'
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"aceptacion",:internship_id=>@internship.id
       .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
-        = label_tag 'Carta de liberación' 
-        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"liberacion",:internship_id=>@internship.id  
+        = label_tag 'Carta de liberación'
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"liberacion",:internship_id=>@internship.id
       .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
-        = label_tag 'Carta de uso de información' 
-        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"uso",:internship_id=>@internship.id  
+        = label_tag 'Carta de uso de información'
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"uso",:internship_id=>@internship.id
+
+
     #notas
       %h2 Notas
       = f.text_area :notes
 
+    #seguimiento
+      %h2 Seguimiento de Ingreso
+      - if @token.size>0
+        %a{:href=>"/internados/aspirante/#{@internship.id}/formato/#{@token[0].token}"}="Formato de registro"
+      %br=""
+      - counter = 1
+      %table{:width=>'70%',:align=>'left'}
+        - @applicant_log.each do |a|
+          - a_h = eval(a.activity)
+          - colore='#E0ECF8'
+          - if (counter%2).eql? 0
+            - colore = '#FFFFFF'
+          %tr{:bgcolor=>colore}
+            %td{:width=>'50px'}= counter
+            %td= a_h[:activity]
+            %td= a.created_at
+          - counter = counter + 1
+
+      %p=""
+      %br=""
+      %br=""
+      %br=""
+
+      - @display = "display: none;"
+      - if @internship.status.to_i.eql? 3
+        - @display = "display: block;"
+      - else
+
+      =hidden_field_tag "aplicant_id",@internship.id
+      %table{:width=>'40%',:align=>'left',:style=>@display}
+        %tr
+          %td{:colspan=>2}=text_area_tag :iapplicant_contenido, nil, :cols=>45, :rows=>5
+        %tr
+          %td{:align=>:left,:width=>'140px'}="Fecha de reunion:"
+          %td{:align=>:left}
+            =select_date Time.now
+            =select_tag "date_hour", options_for_select(0..23)
+            =":"
+            =select_tag "date_minutes", options_for_select(0..59)
+        %tr
+          %td{:align=>:left,:width=>'140px'}="Recibe:"
+          %td{:align=>:left}=select_tag :iapplicant_staff, options_from_collection_for_select(@staffs, "id", "full_name")
+        %tr
+          %td{:colspan=>2}
+            = button_tag "Responder", :id=>"iapplicant_button", :type=>'button'
+            = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'

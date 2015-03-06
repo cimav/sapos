@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
     #@user = User.where(:email => session[:admin_user], :status => User::STATUS_ACTIVE).first
     #@user && @user.email == session[:admin_user]
 
-    if session[:user_auth].blank? 
+    if session[:user_auth].blank?
       user = User.where(:email => session[:admin_user], :status => User::STATUS_ACTIVE).first
       session[:user] = user
       session[:user_auth] = user && user.email == session[:admin_user]
@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
     sheet1 = book.create_worksheet :name => sheetname
     header_format = Spreadsheet::Format.new :color => :black, :weight => :bold
     sheet1.row(0).default_format = header_format
- 
+
     rownum = 0
     for column in column_order
       sheet1.row(rownum).push column
@@ -65,14 +65,14 @@ class ApplicationController < ActionController::Base
     # send_file("tmp/#{filename}.xls", :type=>"application/ms-excel", :x_sendfile=>true)
     send_file "tmp/#{filename}.xls", :x_sendfile=>true
   end
-  
+
   helper_method :current_user
 
   def get_month_name(number)
     months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
     name = months[number - 1]
-    return name 
-  end 
+    return name
+  end
 
   def get_cardinal_name(number)
     cardinals = [
@@ -180,7 +180,13 @@ class ApplicationController < ActionController::Base
 
       name = cardinals[number]
       return name
-    end
+  end#get_cardinal_name
+
+
+  def get_areas(u)
+    areas= (eval u.areas) rescue []
+    return areas
+  end
 
   private
   def current_user
@@ -195,9 +201,9 @@ class ApplicationController < ActionController::Base
         if request.xhr?
           json = {}
           json[:flash] = flash
-          render :json => json, :status => :unprocessable_entity   
-        end 
-      end     
+          render :json => json, :status => :unprocessable_entity
+        end
+      end
     end
   end
 end

@@ -2,7 +2,9 @@ Sapos::Application.routes.draw do
   get "scholarship_categories/index"
 
   root :to => 'welcome#index'
-  
+
+  match 'areas/busqueda' => 'areas#live_search'
+
   match 'egresados/busqueda' => 'graduates#live_search'
   match 'egresados/analizar/:student_id' => 'graduates#analizer'
   match 'egresados/nuevo/:id/:dialog' => 'graduates#new'
@@ -32,16 +34,16 @@ Sapos::Application.routes.draw do
   match 'estudiantes/constancia_total/:thesis_id' => 'certificates#total_studies_certificate'
   match 'estudiantes/:id/borrar' => 'students#destroy'
   match 'estudiantes/buscar' => 'students#student_exists'
-  
+
   match 'inscripciones' => 'students#enrollments_admin'
   match 'inscripciones/pagos' => 'students#payments'
-  
+
   match 'estudiantes/archivos/avances/:id' => 'student_advances_file#index'
-  
+
   match '/avances/borrar/:id' => 'student_advances_file#destroy'
   match '/avances/subir_archivo' => 'student_advances_file#upload_file'
   match '/avances/:id/file' => 'student_advances_file#file'
-  
+
   resources :student_files
   resources :applicant_files
 
@@ -77,7 +79,7 @@ Sapos::Application.routes.draw do
   match 'docentes/:id/archivo/:file_id' => 'staffs#file'
   match 'docentes/upload_file' => 'staffs#upload_file'
   match 'docentes/delete_file' => 'staffs#delete_file'
-  
+
   resources :staff_files
 
   match 'internados/busqueda' => 'internships#live_search'
@@ -89,6 +91,10 @@ Sapos::Application.routes.draw do
   match 'internados/delete_file' => 'internships#delete_file'
   match 'internados/:id/credencial' => 'internships#id_card'
   match 'internados/constancias/:type/:id' => 'internships#certificates'
+  match 'internados/aspirante' => 'internships#applicant_form'
+  match 'internados/aspirante/crear' => 'internships#applicant_create'
+  match 'internados/aspirante/:id/formato/:token' => 'internships#applicant_file'
+  match 'internados/aspirantes/cita/:id/:staff_id' => 'internships#applicant_interview'
 
   resources :internship_files
 
@@ -100,13 +106,13 @@ Sapos::Application.routes.draw do
   match 'campus/busqueda' => 'campus#live_search'
   match 'campus/:id/cambiar_logo' => 'campus#change_image'
   match 'campus/upload_image' => 'campus#upload_image'
-  
+
    match 'tipos_internados/busqueda' => 'internship_types#live_search'
    match 'departamentos/busqueda' => 'departments#live_search'
 
   match 'aulas/busqueda' => 'classrooms#live_search'
   match 'aulas/horario/:id' => 'classrooms#schedule_table'
-  
+
   match 'becas/:id/nueva_beca' => 'scholarship#new'
 
   match 'becas/categorias/busqueda' => 'scholarship_categories#live_search'
@@ -120,7 +126,7 @@ Sapos::Application.routes.draw do
 
   match 'usuarios/busqueda' => 'users#live_search'
   match 'usuarios/:id/permisos/:type' => 'users#permissions'
-  
+
   match 'programas/busqueda' => 'programs#live_search'
   match 'programas/:id/:studies_plan_id/nuevo_curso' => 'programs#new_course'
   match 'programas/create_course' => 'programs#create_course'
@@ -168,7 +174,7 @@ Sapos::Application.routes.draw do
   match 'programas/upload_file' => 'programs#upload_file'
   match 'programas/delete_file' => 'programs#delete_file'
   match 'programas/:id/documentos/:file_id' => 'programs#file'
-  
+
   match 'aspirantes/busqueda' => 'applicants#live_search'
   match 'aspirantes/:id/archivos' => 'applicants#files'
   match 'aspirantes/constancias/:type/:id' => 'applicants#certificates'
@@ -200,6 +206,7 @@ Sapos::Application.routes.draw do
     resources :graduates, :path => "egresados"
     resources :scholarship, :path => "becas"
     resources :applicants, :path => "aspirantes"
+    resources :areas, :path => "areas"
     #resources :studies_plans, :path => "planes_estudios"
   end
 

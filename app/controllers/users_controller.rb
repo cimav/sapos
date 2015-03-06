@@ -10,24 +10,26 @@ class UsersController < ApplicationController
   def live_search
     @users = User.order('email')
     if !params[:q].blank?
-      @users = @users.where("(email LIKE :n)", {:n => "%#{params[:q]}%"}) 
+      @users = @users.where("(email LIKE :n)", {:n => "%#{params[:q]}%"})
     end
     render :layout => false
   end
 
   def show
     @user = User.find(params[:id])
+    @areas = Area.order('name')
     @campus = Campus.all
     if @user.program_type != Program::ALL
       @programs = Program.where(:program_type => @user.program_type)
     end
 
     @permissions_user = PermissionUser.where(:user_id=>params[:id])
+    @permissions_areas = (eval @user.areas) rescue []
     render :layout => false
   end
 
   def new
-    @user = User.new
+    @user  = User.new
     render :layout => false
   end
 
@@ -46,7 +48,7 @@ class UsersController < ApplicationController
             json[:flash] = flash
             json[:uniq] = @user.email
             render :json => json
-          else 
+          else
             redirect_to @user
           end
         end
@@ -68,11 +70,18 @@ class UsersController < ApplicationController
     end
   end
 
-  def update 
-    flash = {}
-    @user = User.find(params[:id])
+  def update
+    flash  = {}
+    @user  = User.find(params[:id])
+    @areas = params[:areas]
+    if @areas.nil?
+      params[:user][:areas]=nil
+    else
+      params[:user][:areas]= @areas.to_s
+    end
+
+
     ActivityLog.new({:user_id=>current_user.id,:activity=>"Update User: #{@user.id},#{@user.email}"}).save
-    
     if @user.update_attributes(params[:user])
       flash[:notice] = "Usuario actualizado."
       respond_with do |format|
@@ -81,7 +90,7 @@ class UsersController < ApplicationController
             json = {}
             json[:flash] = flash
             render :json => json
-          else 
+          else
             redirect_to @user
           end
         end
@@ -96,14 +105,14 @@ class UsersController < ApplicationController
             json[:errors] = @user.errors
             json[:errors_full] = @program.errors.full_messages
             render :json => json, :status => :unprocessable_entity
-          else 
+          else
             redirect_to @user
           end
         end
       end
     end
   end
-  
+
   def permissions
     @user = User.find(params[:id])
     @type = params[:type]
