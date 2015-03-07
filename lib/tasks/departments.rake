@@ -36,9 +36,13 @@ namespace :departments do
             s = Staff.where(:employee_number=>l[0])
             @employees << "#{l[0]} #{l[1]} #{l[2]} #{s.size>0 ? '[YES]':'-NO-'}"
             if s.size>0
-              #s[0].area_id = 5
-              #s[0].save
-              @counter_yes = @counter_yes + 1
+              s[0].area_id = 5
+              if s[0].save
+               puts "Todo ok"
+               @counter_yes = @counter_yes + 1
+              else
+                puts "Algo fallo: #{s[0].errors.full_messages}"
+              end
             end
             @counter = @counter + 1
           end#if
@@ -88,9 +92,13 @@ namespace :departments do
       end#@areas
       print "#{i.id} #{i.first_name} #{i.last_name} #{i.office} #{@flag==true ? '[YES]':'-NO-'}\n"
       if @flag
-        #i.area_id= @area_id
-        #i.save
-        @counter_yes = @counter_yes + 1
+        i.area_id= @area_id
+        if i.save
+          puts "Todo ok"
+          @counter_yes = @counter_yes + 1
+        else
+          puts "Algo fallo: #{i.errors.full_messages}"
+        end
       end#@flag
       @flag    = false
       @area_id = 0
