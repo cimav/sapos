@@ -541,7 +541,7 @@ class InternshipsController < ApplicationController
     @text = "Se ha programado la cita para entrevista de servicio social con #{@internship.full_name} [#{@internship.email}] para el día #{@adate[0]} de #{get_month_name(@adate[1].to_i)} de #{@adate[2]} a las #{@hour} horas."
     @content= "{:full_name=>'',:email=>'#{@internship.email}',:view=>7,:reply_to=>'#{@user.email}',:text=>'#{@text}'}"
     # @staff.email
-    send_simple_mail("enrique.turcott@cimav.edu.mx","Se ha programado un horario para entrevista de servicio social ",@content)
+    send_simple_mail(@staff.email,"Se ha programado un horario para entrevista de servicio social ",@content)
     ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'Se manda un correo con el horario a #{@staff.full_name} - #{@staff.email}'}"}).save
 
     json = {}
