@@ -23,6 +23,10 @@ class Ability
         #cannot :destroy, Student
         can :manage, Internship
       end
+
+      if user.access == User::STUDENT
+        can :manage, Internship
+      end
     end
   end
 end
