@@ -113,14 +113,10 @@ class InternshipsController < ApplicationController
       @areas    = Area.where(:id=> @aareas).order('name')
       @staffs   = Staff.where(:area_id=> @aareas).order('first_name').includes(:institution)
       @operator = true
-    elsif current_user.access == User::MANAGER
+    else
       @areas  = Area.order('name')
       @staffs = Staff.order('first_name').includes(:institution)
       @campus = Campus.order('name')
-    else
-      @campus  = Campus.order('name')
-      @staffs  = Staff.where(:area_id=> @aareas).order('first_name').includes(:institution)
-      @areas   = Area.where(:id=> @aareas).order('name')
     end
 
     render :layout => false
