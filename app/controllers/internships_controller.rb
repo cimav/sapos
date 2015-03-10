@@ -20,10 +20,8 @@ class InternshipsController < ApplicationController
     @aareas           = get_areas(current_user)
     if current_user.access == User::OPERATOR
       @internships = Internship.order("first_name").where(:campus_id => current_user.campus_id,:area_id=>@aareas)
-    elsif current_user.access == User::MANAGER
-      @internships = Internship.order("first_name")
     else
-      @internships = Internship.order("first_name").where(:campus_id => current_user.campus_id,:area_id=>@aareas)
+      @internships = Internship.order("first_name")
     end
 
     if params[:institution] != '0' then
