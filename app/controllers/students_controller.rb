@@ -1,4 +1,4 @@
-# coding: utf-8
+  # coding: utf-8
 require 'digest/md5'
 class StudentsController < ApplicationController
   REALM = "Students"
@@ -10,15 +10,15 @@ class StudentsController < ApplicationController
 
   def index
     @remote_id = params[:student_id]
-    
+
     if current_user.campus_id == 0
       @campus     = Campus.order('name')
-      @all_campus = 1 
+      @all_campus = 1
     else
       @campus = Campus.joins(:user).where(:users=>{:id=>current_user.id})
       @all_campus = 0
-    end 
-    
+    end
+
     if current_user.program_type == Program::ALL
       @programs     = Program.order('name')
       @program_type = Program::PROGRAM_TYPE.invert.sort {|a,b| a[1] <=> b[1] }
@@ -43,18 +43,18 @@ class StudentsController < ApplicationController
 
     if params[:program] != '0' then
       @students = @students.where(:program_id => params[:program])
-    end 
-     
-    if current_user.campus_id != 0 
+    end
+
+    if current_user.campus_id != 0
       params[:campus] = current_user.campus_id
     end
 
     if params[:campus] != '0' then
       @students = @students.where(:campus_id => params[:campus])
-    end 
+    end
 
     if params[:supervisor] != '0' then
-      @students = @students.where("(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]}) 
+      @students = @students.where("(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]})
     end
 
     if params[:status] == 'todos_activos' then
@@ -99,7 +99,7 @@ class StudentsController < ApplicationController
       if params[:q].to_i != 0
         @students = @students.where("id = ?",params[:q].to_i)
       else
-        @students = @students.where("(CONCAT(first_name,' ',last_name) LIKE :n OR card LIKE :n)", {:n => "%#{params[:q]}%"}) 
+        @students = @students.where("(CONCAT(first_name,' ',last_name) LIKE :n OR card LIKE :n)", {:n => "%#{params[:q]}%"})
       end
     end
 
@@ -120,7 +120,7 @@ class StudentsController < ApplicationController
     if !s.empty?
       @students = @students.where("status IN (#{s.join(',')})")
     end
-    
+
     # Descartamos los que tienen status de borrado
     #@students = @students.where("status<>0")
 
@@ -133,8 +133,8 @@ class StudentsController < ApplicationController
 	@students.collect do |s|
 	  if s.status == Student::GRADUATED || s.status == Student::FINISH
 	    end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
-	    
-	    if end_date.blank? 
+
+	    if end_date.blank?
 	      months = ''
 	    else
 	      months = months_between(s.start_date,end_date)
@@ -143,10 +143,10 @@ class StudentsController < ApplicationController
 	    end_date = ''
 	  end
 
-	  
+
 	  rows << {'Matricula' => s.card,
-		   'Nombre' => s.first_name, 
-		   'Apellidos' => s.last_name, 
+		   'Nombre' => s.first_name,
+		   'Apellidos' => s.last_name,
                    'Sexo' => s.gender,
 		   'Estado' => s.status_type,
 		   "Fecha_Nac" => s.date_of_birth,
@@ -195,44 +195,44 @@ class StudentsController < ApplicationController
     @staffs = Staff.order('first_name').includes(:institution)
     @countries = Country.order('name')
     @institutions = Institution.order('name')
-    @states = State.order('code')  
+    @states = State.order('code')
     @status = Student::STATUS
-    
+
     if @student.thesis.status.eql? "C"
       today = @student.thesis.defence_date
     else
       today = Date.today
-    end 
+    end
 
     yyyy  = today.year - @student.start_date.year
     m = today.month - @student.start_date.month
-    
+
     if m >= 0
       @year  = yyyy
       @month = m
-    else 
+    else
       @year  = yyyy - 1
-      @month = 12 + m  
+      @month = 12 + m
     end
 
     if @year == 1
       @text_year = " año"
     else
       @text_year = " años"
-    end 
-   
+    end
+
     if @month == 1
       @text_month = "mes"
     else
       @text_month = "meses"
-    end 
+    end
 
 
     if current_user.access == User::OPERATOR
       @campus = Campus.order('name').where(:id=> current_user.campus_id)
-    else    
+    else
       @campus = Campus.order('name')
-    end 
+    end
     render :layout => false
   end
 
@@ -240,11 +240,11 @@ class StudentsController < ApplicationController
     @student = Student.new
     if current_user.campus_id == 0
       @campus     = Campus.order('name')
-      @all_campus = 1 
+      @all_campus = 1
     else
       @campus = Campus.joins(:user).where(:users=>{:id=>current_user.id})
       @all_campus = 0
-    end 
+    end
 
     if current_user.program_type == Program::ALL
       @programs     = Program.order('name')
@@ -269,7 +269,7 @@ class StudentsController < ApplicationController
 	    json[:flash] = flash
 	    json[:uniq] = @student.card
 	    render :json => json
-	  else 
+	  else
 	    redirect_to @student
 	  end
 	end
@@ -291,10 +291,10 @@ class StudentsController < ApplicationController
     end
   end
 
-  def update 
+  def update
     flash = {}
     @student = Student.find(params[:id])
- 
+
     if current_user.access != User::MANAGER
       my_hash = params[:student]
       status = my_hash[:status]
@@ -308,15 +308,15 @@ class StudentsController < ApplicationController
 	      json[:errors] = @student.errors
 	      json[:errors_full] = @student.errors.full_messages
 	      render :json => json, :status => :unprocessable_entity
-	    else 
+	    else
 	      redirect_to @student
 	    end
 	  end
 	end
 	return false
-      end 
+      end
     end
-    
+
     if @student.update_attributes(params[:student])
       graduated = 0
       if (@student.status.to_i==Student::GRADUATED and @student.graduate.nil?)
@@ -329,10 +329,10 @@ class StudentsController < ApplicationController
 	  if request.xhr?
 	    json = {}
 	    json[:flash] = flash
-	    json[:graduated] = graduated 
+	    json[:graduated] = graduated
 	    json[:thesis_status] = @student.thesis.status
 	    render :json => json
-	  else 
+	  else
 	    redirect_to @student
 	  end
 	end
@@ -347,7 +347,7 @@ class StudentsController < ApplicationController
 	    json[:errors] = @student.errors
 	    json[:errors_full] = @student.errors.full_messages
 	    render :json => json, :status => :unprocessable_entity
-	  else 
+	  else
 	    redirect_to @student
 	  end
 	end
@@ -411,12 +411,34 @@ class StudentsController < ApplicationController
 
     redirect_to :action => 'files', :id => params[:id]
   end
+  
+  def upload_one_file
+    flash = {}
+    if params[:student_file].nil?
+      render :inline => "<status>0</status><reference>upload</reference><errors>No ha seleccionado archivo</errors>"
+      return
+    end
+
+    f = params[:student_file]['file']
+    @student_file = StudentFile.new
+    @student_file.student_id = params[:student_id]
+    @student_file.file_type = params[:file_type]
+    @student_file.file = f
+    @student_file.description = f.original_filename
+    if @student_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@student_file.id}</id>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@student_file.errors.full_messages}</errors>"
+    end
+  #rescue  
+  #  render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
+  end
 
   def file
     s = Student.find(params[:id])
     sf = s.student_file.find(params[:file_id]).file
     send_file sf.to_s, :x_sendfile=>true
-  end 
+  end
 
   def delete_file
   end
@@ -494,7 +516,7 @@ class StudentsController < ApplicationController
 	hstart = session_item.start_hour.hour
 	hend = session_item.end_hour.hour - 1
 	(hstart..hend).each do |h|
-	   if courses[c.term_course.course.id].nil? 
+	   if courses[c.term_course.course.id].nil?
 	     n += 1
 	     courses[c.term_course.course.id] = n
 	   end
@@ -505,15 +527,15 @@ class StudentsController < ApplicationController
 	   if session_item.end_date != @ts.term.end_date
 	     comments += "Finaliza: #{l session_item.end_date, :format => :long}"
 	   end
-	   
+
 	   staff_name = session_item.staff.full_name rescue 'Sin docente'
 
 	   details = {
-	     "name" => c.term_course.course.name, 
+	     "name" => c.term_course.course.name,
 	     "staff_name" => staff_name,
              "classroom" => session_item.classroom.name,
 	     "comments" => comments,
-	     "id" => session_item.id, 
+	     "id" => session_item.id,
 	     "n" => courses[c.term_course.course.id]
 	   }
 	   @schedule[h][session_item.day] << details
@@ -521,7 +543,7 @@ class StudentsController < ApplicationController
 	   @max_hour = h if h > @max_hour
 	end
       end
-    end 
+    end
     respond_with do |format|
       format.html do
 	render :layout => false
@@ -567,13 +589,13 @@ class StudentsController < ApplicationController
     @tcs = TermCourseSchedule.where("start_date>=CURDATE() AND start_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY)").order("start_date, start_hour")
     render :layout => false
   end
-  
+
   def advances_list
     if current_user.access == User::ADMINISTRATOR
       @advances = Advance.where("advance_date>=CURDATE() AND advance_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY)")
     elsif  current_user.access == User::OPERATOR
       @advances = Advance.joins(:student).where("advance_date>=CURDATE() AND advance_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY) AND campus_id=:campus_id",{:campus_id=>current_user.campus_id})
-    end 
+    end
     render :layout => false
   end
 
@@ -597,13 +619,13 @@ class StudentsController < ApplicationController
     end
   end
 
-  def kardex 
+  def kardex
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
-	
+
     respond_with do |format|
       format.html do
 	render :layout => false
-      end 
+      end
       format.pdf do
 	institution = Institution.find(1)
 	@logo = institution.image_url(:medium).to_s
@@ -628,7 +650,7 @@ class StudentsController < ApplicationController
     else
       @op_asesor = 0
     end
-    
+
     time = Time.new
     year = time.year.to_s
     dir  = t(:directory)
@@ -637,32 +659,32 @@ class StudentsController < ApplicationController
       title    = dir[:academic_director][:title]
       name     = dir[:academic_director][:name]
       job      = dir[:academic_director][:job]
-      @sgender = dir[:academic_director][:gender] 
+      @sgender = dir[:academic_director][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "2"
       title    = dir[:posgrado_chief][:title]
       name     = dir[:posgrado_chief][:name]
       job      = dir[:posgrado_chief][:job]
-      @sgender = dir[:posgrado_chief][:gender] 
+      @sgender = dir[:posgrado_chief][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "3"
       title    = dir[:scholar_control][:title]
       name     = dir[:scholar_control][:name]
       job      = dir[:scholar_control][:job]
-      @sgender = dir[:scholar_control][:gender] 
+      @sgender = dir[:scholar_control][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "4"
       title    = dir[:academic_coordinator_monterrey][:title]
       name     = dir[:academic_coordinator_monterrey][:name]
       job      = dir[:academic_coordinator_monterrey][:job]
-      @sgender = dir[:academic_coordinator_monterrey][:gender] 
+      @sgender = dir[:academic_coordinator_monterrey][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
-    end 
-    
+    end
+
     ##### GENERO GRAMATICAL #####
     if @student.gender == 'F'
       @genero  = "a"
@@ -697,14 +719,14 @@ class StudentsController < ApplicationController
       @nombre      = @student.full_name
       @matricula   = @student.card
       @programa    = @student.program.name
-      
-      
+
+
       html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_estudios')
       kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-estudios-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return # to avoid double render call
-    end 
+    end
 
     ################################ CONSTANCIA DE INSCRIPCION  ##################################
     if params[:type] == "inscripcion"
@@ -727,7 +749,7 @@ class StudentsController < ApplicationController
       filename = "constancia-inscripcion-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return
-    end 
+    end
 
     ################################ CONSTANCIA PARA VISA  ##################################
     if params[:type] == "visa"
@@ -742,9 +764,9 @@ class StudentsController < ApplicationController
       @asesor      = Staff.find(@student.supervisor).full_name
       @programa    = @student.program.name
       @student_image_uri = @student.image_url.to_s
-	      
+
       scholarship = @student.scholarship.where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE()")
- 
+
       @scholarship = @student.scholarship.joins(:scholarship_type=>[:scholarship_category]).where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE() AND scholarship_categories.id=1")
 
       html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_visa')
@@ -753,7 +775,7 @@ class StudentsController < ApplicationController
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return # to avoid double render call
     end
-    
+
     ################################ CONSTANCIA DE PROMEDIO GENERAL  ##################################
     if params[:type] == "promedio"
       @consecutivo = get_consecutive(@student, time, Certificate::AVERAGE)
@@ -767,7 +789,7 @@ class StudentsController < ApplicationController
       @asesor      = Staff.find(@student.supervisor).full_name
       @programa    = @student.program.name
       @semestre    = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.code
-      
+
       counter = 0
       counter_grade = 0
       sum = 0
@@ -779,14 +801,14 @@ class StudentsController < ApplicationController
             if !(tcs.grade<70)
               counter_grade += 1
               sum = sum + tcs.grade
-            end 
-          end 
-        end 
-      end 
-    
-      if counter > 0 
-        avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0 
-      end 
+            end
+          end
+        end
+      end
+
+      if counter > 0
+        avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
+      end
       @promedio = avg.to_s
 
       html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_promedio_general')
@@ -795,7 +817,7 @@ class StudentsController < ApplicationController
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return # to avoid double render call
     end
-    
+
     ################################ CONSTANCIA DE PROMEDIO SEMESTRAL  ##################################
     if params[:type] == "semestral"
       @consecutivo = get_consecutive(@student, time, Certificate::SEMESTER_AVERAGE)
@@ -813,22 +835,22 @@ class StudentsController < ApplicationController
       term = ts.last.term
       @semestre = term.code
       avg = get_semester_average(term)
-      
+
       if avg.eql? 0
         term = ts[ts.size - 2].term
         avg = get_semester_average(term)
       end
-      
+
       @promedio         = avg.to_s
       @semestre_cursado = term.code
-      
+
       html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_promedio_semestral')
       kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-promedio-semestral-#{@student.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return # to avoid double render call
     end
-    
+
     ################################ CONSTANCIA DE TRAMITE DE SEGURO  ##################################
     if params[:type] == "seguro"
       @consecutivo  = get_consecutive(@student, time, Certificate::SOCIAL_WELFARE)
@@ -847,13 +869,13 @@ class StudentsController < ApplicationController
       @end_month    = get_month_name(@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.month).capitalize
       @start_year   = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.start_date.year.to_s
       @end_year     = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.year.to_s
-      
+
       @creditos     =  get_credits(@student)
       @promedio     = get_average(@student)
       @result = @student.scholarship.where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE()")
-      
+
       @semestre = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.code
-      
+
       html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_tramite_seguro')
       kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "constancia-tramite-seguro-#{@student.id}.pdf"
@@ -875,7 +897,7 @@ class StudentsController < ApplicationController
       @programa     = @student.program.name
       @creditos     = get_credits(@student)
       @promedio     = get_average(@student)
-      
+
       if @student.program.level.eql? "1"
         @creditos_totales = "75.0"
         @nivel            = "de la Maestría"
@@ -900,14 +922,14 @@ class StudentsController < ApplicationController
     total_years = (recent_date.year - past_date.year)
 
     if total_years > 0
-      rdm   = recent_date.month - 12    
+      rdm   = recent_date.month - 12
       pdm   = past_date.month - 12
 
       ((rdm - pdm) + 12 * total_years)
     else
       (recent_date.month - past_date.month)
     end
-  end 
+  end
 
   def get_consecutive(object, time, type)
     maximum = Certificate.where(:year => time.year).maximum("consecutive")
@@ -915,9 +937,9 @@ class StudentsController < ApplicationController
     if maximum.nil?
       maximum = 1
     else
-      maximum = maximum + 1 
+      maximum = maximum + 1
     end
- 
+
     certificate                 = Certificate.new()
     certificate.consecutive     = maximum
     certificate.year            = time.year
@@ -928,7 +950,7 @@ class StudentsController < ApplicationController
 
     return "%03d" % maximum
   end
-  
+
   def get_average(student)
     counter = 0
     counter_grade = 0
@@ -949,7 +971,7 @@ class StudentsController < ApplicationController
     if counter > 0
       avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
     end
-    
+
     return avg.to_s
   end
 
@@ -964,7 +986,7 @@ class StudentsController < ApplicationController
         end
       end
     end
-    
+
     return credits.to_s
   end
 
@@ -975,7 +997,7 @@ class StudentsController < ApplicationController
 
   def get_semester_text(total)
    semester_text = case total
-     when 1 then "primer" 
+     when 1 then "primer"
      when 2 then "segundo"
      when 3 then "tercero"
      when 4 then "cuarto"
@@ -987,7 +1009,7 @@ class StudentsController < ApplicationController
      when 10 then "decimo"
      else "desconocido"
    end
-   
+
     return semester_text
   end
 
@@ -1003,14 +1025,14 @@ class StudentsController < ApplicationController
           if !(tcs.grade<70)
             counter_grade += 1
             sum = sum + tcs.grade
-          end 
-        end 
-      end 
-    end 
-  
-    if counter > 0 
-      avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0 
-    end 
+          end
+        end
+      end
+    end
+
+    if counter > 0
+      avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
+    end
     return avg
   end
 
@@ -1021,7 +1043,7 @@ class StudentsController < ApplicationController
     year = time.year.to_s
     head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
     base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
-    dir  = t(:directory)    
+    dir  = t(:directory)
 
     if current_user.campus_id == 2
       title = dir[:academic_coordinator_monterrey][:title]
@@ -1035,8 +1057,8 @@ class StudentsController < ApplicationController
       job   = dir[:posgrado_chief][:job]
       @firma  = "#{title} #{name}"
       @puesto = "#{job}"
-    end 
-    
+    end
+
     @consecutivo = get_consecutive(@student, time, Certificate::EXAMINER)
     @rails_root  = "#{Rails.root}"
     @year_s      = year[2,4]
@@ -1049,9 +1071,9 @@ class StudentsController < ApplicationController
     @asesor      = Staff.find(params[:staff_id]).full_name
     @institution = Staff.find(params[:staff_id]).institution.name
     @thesis_title= @student.thesis.title
-	      
+
     scholarship = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
- 
+
     if @student.gender == 'F'
       @genero  = "a"
       @genero2 = "la"
@@ -1100,7 +1122,7 @@ class StudentsController < ApplicationController
       x = 240   #388
       y = 631   #629
       w = 290   #150
-      h = 35    #11 
+      h = 35    #11
       size = 10 #10
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
@@ -1143,7 +1165,7 @@ class StudentsController < ApplicationController
         space6="  "
         space7="  "
       end
-      
+
       @m_y = "MES#{space1} DE#{space2} #{month.upcase}#{space3} DEL#{space4} #{year}.#{space5} SE#{space6} REUNIERON#{space7} LOS"
       l = 0
       pdf.bounding_box [x + 5,y - 2],:width => w + 10, :height=> h,:kerning=>true do
@@ -1152,7 +1174,7 @@ class StudentsController < ApplicationController
         pdf.text @m_y, :size=> size, :leading=>l,:character_spacing=>0.8
         pdf.text "MIEMBROS DEL JURADO INTEGRADO POR LOS SEÑORES:", :size=> size, :leading=>l, :character_spacing=>0.3
       end
-     
+
       # SET  THESIS EXAMINERS
       if (@level.to_i.eql? 1)||(@level.to_i.eql? 2)
         pdf.fill_color "ffffff"
@@ -1161,22 +1183,22 @@ class StudentsController < ApplicationController
         text = "#{@examiner1.title.to_s.mb_chars.upcase} #{@examiner1.full_name.mb_chars.upcase}"
 
         pdf.draw_text text, :at=>[246,576], :size=>11
-      
+
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [245,574], 100, 11
         pdf.fill_color "373435"
         text = "#{@examiner2.title.to_s.mb_chars.upcase} #{@examiner2.full_name.mb_chars.upcase}"
-      
+
         pdf.draw_text text, :at=>[246,564], :size=>11
-      
+
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [245,562], 100, 11
         pdf.fill_color "373435"
         text = "#{@examiner3.title.to_s.mb_chars.upcase} #{@examiner3.full_name.mb_chars.upcase}"
-      
+
         pdf.draw_text text, :at=>[246,552], :size=>11
       end
-      
+
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [245,550], 100, 11
         pdf.fill_color "373435"
@@ -1186,14 +1208,14 @@ class StudentsController < ApplicationController
         end
 
         pdf.draw_text text.upcase, :at=>[246,540], :size=>11
-      
+
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [245,538], 100, 11
         pdf.fill_color "373435"
         if @level.to_i.eql? 2
           text = "#{@examiner5.title.to_s.mb_chars.upcase} #{@examiner5.full_name.mb_chars.upcase}"
         end
-      
+
         pdf.draw_text text.upcase, :at=>[246,528], :size=>11
 
       ##  SET TEXT
@@ -1223,10 +1245,10 @@ class StudentsController < ApplicationController
       h = 40
       size  = 14
       text = @thesis.title
-      text = "\"#{text}\""  
-      
+      text = "\"#{text}\""
+
       if text.size >= 110 && text.size <= 165
-        size = 12 
+        size = 12
       elsif text.size > 165 && text.size <= 220
         size = 10
       elsif text.size > 220
@@ -1251,11 +1273,11 @@ class StudentsController < ApplicationController
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
       text = @thesis.student.full_name.mb_chars.upcase
-      
+
       if text.size >= 40
         size = 16
       end
-      
+
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=>:bold, :align=> :center, :valign=> :center
 
 
@@ -1275,7 +1297,7 @@ class StudentsController < ApplicationController
         rest_of_words = ""
         a = grado.split(/ /)
         a.each_with_index do |g,i|
-          if grado.size>55 
+          if grado.size>55
             if i<=2
               first_word = "#{first_word} #{g}"
             else
@@ -1289,34 +1311,34 @@ class StudentsController < ApplicationController
             end
           end
         end
-        
-        
+
+
         pdf.text "PARA OBTENER EL GRADO DE #{first_word}", :size=> size, :align=> :center
         pdf.text "#{rest_of_words}", :size=> size, :align=> :center
         pdf.text "HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS", :size=> size, :align=> :center
         pdf.text "EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:", :size=> size, :align=> :center
       end
-      #text = "PARA OBTENER EL GRADO DE #{grado} HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:" 
-      
+      #text = "PARA OBTENER EL GRADO DE #{grado} HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:"
+
       #pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
       # SET PRESIDENT
       x = 5
       y = 225
       w = 225
-      h = 15 
+      h = 15
       size = 10
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
       text = "#{@examiner1.title.to_s.mb_chars.upcase} #{@examiner1.full_name.mb_chars.upcase}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-     
+
       # SET SECRETARY
       x = 307
       y = 225
       w = 225
-      h = 15 
+      h = 15
       size = 10
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
@@ -1327,7 +1349,7 @@ class StudentsController < ApplicationController
         text = "#{@examiner5.title.to_s.mb_chars.upcase} #{@examiner5.full_name.mb_chars.upcase}"
       end
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      
+
       # SET  THIRD VOCAL
       if @level.to_i.eql? 1
         x = 153
@@ -1340,7 +1362,7 @@ class StudentsController < ApplicationController
         x = 153
         y = 115
         w = 225
-        h = 15 
+        h = 15
         size = 10
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x,y], w, h
@@ -1348,28 +1370,28 @@ class StudentsController < ApplicationController
         text = "#{@examiner4.title.to_s.mb_chars.upcase} #{@examiner4.full_name.mb_chars.upcase}"
         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
       end
-      
+
       # SET SECOND VOCAL
       if @level.to_i.eql? 1
         x = 307
         y = 168
         w = 225
-        h = 115 
+        h = 115
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x,y], w, h
       elsif  @level.to_i.eql? 2
         x = 307
         y = 158
         w = 225
-        h = 15 
+        h = 15
         size = 10
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x,y], w, h
         pdf.fill_color "373435"
         text = "#{@examiner3.title.to_s.mb_chars.upcase} #{@examiner3.full_name.mb_chars.upcase}"
         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      end 
-      
+      end
+
       # SET FIRST VOCAL
       if @level.to_i.eql? 1
         x = 5
@@ -1378,10 +1400,10 @@ class StudentsController < ApplicationController
         h = 70
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x,y], w, h
-        x = 155 
+        x = 155
         y = 154
         w = 225
-        h = 15 
+        h = 15
         size = 10
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x,y], w, h
@@ -1399,7 +1421,7 @@ class StudentsController < ApplicationController
         x = 5
         y = 158
         w = 225
-        h = 15 
+        h = 15
         size = 10
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x,y], w, h
@@ -1447,7 +1469,7 @@ class StudentsController < ApplicationController
         pdf.stroke_line [x2,y + 6],[x2+183,y + 6]
         # text
         dir = t(:directory)
-        title = dir[:general_director][:title].mb_chars.upcase 
+        title = dir[:general_director][:title].mb_chars.upcase
         name  = dir[:general_director][:name].mb_chars.upcase
         job   = dir[:general_director][:job].mb_chars.upcase
         text = "#{title} #{name}"
@@ -1459,7 +1481,7 @@ class StudentsController < ApplicationController
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
   end
-  
+
   def total_studies_certificate
     @r_root    = Rails.root.to_s
     t = Thesis.find(params[:thesis_id])
@@ -1480,13 +1502,13 @@ class StudentsController < ApplicationController
         :normal      => "#{@r_root}/private/fonts/arial/arial.ttf"
       })
       pdf.font "Times"
- 
+
       # SET FOLIO
       x = 462
       y = 626
       w = 40
       h = 9
-      size = 9 
+      size = 9
       pdf.fill_color "ffffff"
       pdf.fill_rectangle [x,y], w, h
       pdf.fill_color "373435"
@@ -1504,7 +1526,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "000000"
       text = t.student.full_name.mb_chars.upcase
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
-      
+
       # SET PROGRAM NAME
       x = 179
       y = 546
@@ -1539,10 +1561,10 @@ class StudentsController < ApplicationController
       # CODE INITIAL DATA
       pdf.go_to_page(1)
       x = 64
-      y = 191 
-      w = 20 
+      y = 191
+      w = 20
       h = 9
-      size = 8 
+      size = 8
       # COURSE NAME INITIAL DATA
       x_1 = 117
       y_1 = 197
@@ -1581,9 +1603,9 @@ class StudentsController < ApplicationController
         # CODE INITIAL DATA
         x = 64
         y = 210
-        w = 20 
+        w = 20
         h = 9
-        size = 6 
+        size = 6
         # COURSE NAME INITIAL DATA
         x_1 = 117
         y_1 = 216
@@ -1620,7 +1642,7 @@ class StudentsController < ApplicationController
           pdf.fill_rectangle [x,y], w, h
           pdf.fill_color "000000"
           pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
-          
+
           ## SET INTERLINE SPACE
           if tcss.size > 11
             y = y - 30
@@ -1630,7 +1652,7 @@ class StudentsController < ApplicationController
 
           ## SET COURSE NAME
           text= tcs.term_course.course.name.mb_chars.upcase
-          
+
           pdf.fill_color "ffffff"
           pdf.fill_rectangle [x_1,y_1], w_1, h_1
           pdf.fill_color "000000"
@@ -1639,7 +1661,7 @@ class StudentsController < ApplicationController
             y_1 = y_1 + 10
             h_1 = h_1 + 20
           elsif  tcs.term_course.course.name.size > 36
-            y_1 = y_1 + 5 
+            y_1 = y_1 + 5
             h_1 = h_1 + 10
           end
 
@@ -1654,7 +1676,7 @@ class StudentsController < ApplicationController
             y_1 = y_1 - 10
             h_1 = h_1 - 20
           elsif  tcs.term_course.course.name.size > 36
-            y_1 = y_1 - 5 
+            y_1 = y_1 - 5
             h_1 = h_1 - 10
           end
 
@@ -1686,7 +1708,7 @@ class StudentsController < ApplicationController
           else
             y_3 = y_3 - 50
           end
-          
+
           ## SET GRADE ON TEXT
           text = get_cardinal_name(tcs.grade.to_i)
           pdf.fill_color "ffffff"
@@ -1731,11 +1753,11 @@ class StudentsController < ApplicationController
             end
          end
       end
-      
+
       pdf.font "Times"
       # COUNTER COURSES
       pdf.go_to_page(2)
-      x = 260 
+      x = 260
       y = 168
       w =  6
       h =  9
@@ -1749,7 +1771,7 @@ class StudentsController < ApplicationController
         pdf.fill_rectangle [x,y], w, h
         pdf.fill_color "000000"
         text = "#{counter} ASIGNATURAS. LA ESCALA DE CALIFICACIONES"
-        
+
         pdf.stroke_color= "FFFFFF"
         pdf.line_width= 2
         pdf.stroke_line [34,233],[508,233]
@@ -1767,14 +1789,14 @@ class StudentsController < ApplicationController
         pdf.stroke_line [329.3,234],[329.3,200]
         pdf.stroke_line [414.4,234],[414.4,200]
         pdf.stroke_line [505.2,234],[505.2,200]
-      else      
+      else
         text = "#{tcss.size}"
-      end 
+      end
 
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
 
       time = Time.new
-      x = 150 
+      x = 150
       y = 145
       w = 250
       h = 9
@@ -1796,7 +1818,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "000000"
       # Load locale config
       dir = t(:directory)
-      title = dir[:general_director][:title].mb_chars.upcase 
+      title = dir[:general_director][:title].mb_chars.upcase
       name = dir[:general_director][:name].mb_chars.upcase
       job  = dir[:general_director][:job]
       text = "#{title} #{name}"
@@ -1812,7 +1834,7 @@ class StudentsController < ApplicationController
       pdf.fill_color "000000"
       text = "#{job}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      
+
       # RENDER
       send_data pdf.render, type: "application/pdf", disposition: "inline"
     end
@@ -1822,7 +1844,7 @@ class StudentsController < ApplicationController
 
   def diploma
     time = Time.new
-    
+
     t = Thesis.find(params[:thesis_id])
     libro = params[:libro]
     foja  = params[:foja]
@@ -1832,10 +1854,10 @@ class StudentsController < ApplicationController
 
     ruta_template = Rails.root.join('private','docx','diploma-template.docx')
     ruta_destino = Rails.root.join('tmp',diploma)
-    
+
     xml_template = Rails.root.join('private','docx','document-template.xml')
     xml_destino = Rails.root.join('tmp',documento_xml)
- 
+
     $stdout.binmode
 
     logger.debug ruta_template.to_s
@@ -1844,10 +1866,10 @@ class StudentsController < ApplicationController
 
     FileUtils.cp ruta_template.to_s,ruta_destino.to_s
     FileUtils.cp xml_template.to_s,xml_destino.to_s
- 
+
     if t.student.program.level.to_i.eql? 2
       program_title = /Doctorado/
-      if t.student.gender.eql? "F"     
+      if t.student.gender.eql? "F"
         student_title = "Doctora"
       else
         student_title = "Doctor"
@@ -1875,28 +1897,28 @@ class StudentsController < ApplicationController
     substring filename,/librox/,libro.to_s
     substring filename,/fojax/,foja.to_s
     bar_txt = open(filename)
- 
+
     Zip::Archive.open(ruta_destino.to_s) do |ar|
       ar.replace_io("word/document.xml", bar_txt)
     end
 
     zip_data = File.read(ruta_destino.to_s)
-    
+
     send_data(zip_data, :filename => documento_xml.to_s , :type => "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     return
-  end 
+  end
 
   def substring(filename,regexp,replacestring)
-    text = File.read(filename) 
+    text = File.read(filename)
     puts = text.gsub(regexp,replacestring)
     File.open(filename, "w") { |file| file << puts }
   end
- 
+
   def render_error(object,message,parameters)
     flash = {}
     flash[:error] = message
     respond_with do |format|
-      format.html do 
+      format.html do
         if request.xhr?
           json = {}
           json[:flash] = flash
@@ -1910,6 +1932,13 @@ class StudentsController < ApplicationController
       end
     end
   end
+
+  def record
+    @student = Student.find(params[:id])
+    @s_files = StudentFile.where(:student_id=>params[:id]).map{|i| [i.id,i.file_type]}
+    render :layout => 'standalone'
+  end
+
 
   def render_message(object,message,parameters)
     flash = {}

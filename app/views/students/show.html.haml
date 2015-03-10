@@ -222,6 +222,7 @@
 
     #archivos
       %h2 Archivos
+      %iframe{"name" => "submit_iframe", "id" => "files_iframe_1", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/expediente", "scrolling" => "yes"}
       %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
       %h2 Archivos avances
       %iframe{"name" => "submit_iframe_2", "id" => "files_iframe_2", "width" => "900px", "height" => "300px", "src" => "/estudiantes/archivos/avances/#{@student.id}", "scrolling" => "yes"}

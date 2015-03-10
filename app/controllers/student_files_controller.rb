@@ -37,6 +37,15 @@ class StudentFilesController < ApplicationController
     end
 
   end
+  
+  def destroy_file
+    @student_file = StudentFile.find(params[:id])
+    if @student_file.destroy
+      render :inline => "<status>1</status><reference>destroy</reference>"
+    else
+      render :inline => "<status>0</status><reference>destroy</reference><errors>#{@student_file.errors.full_messages}</errors>"
+    end
+  end
 
   def update
     flash = {}
@@ -75,6 +84,11 @@ class StudentFilesController < ApplicationController
         end
       end
     end
+  end
+  
+  def  download
+    af = StudentFile.find(params[:id]).file
+    send_file af.to_s, :x_sendfile=>true
   end
 
 end

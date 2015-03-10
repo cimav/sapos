@@ -34,6 +34,11 @@ Sapos::Application.routes.draw do
   match 'estudiantes/constancia_total/:thesis_id' => 'certificates#total_studies_certificate'
   match 'estudiantes/:id/borrar' => 'students#destroy'
   match 'estudiantes/buscar' => 'students#student_exists'
+  match 'estudiantes/:id/expediente' => 'students#record'
+  match 'estudiantes/upload_one_file' => 'students#upload_one_file'
+
+  match 'estudiantes/destroy_file/:id' => 'student_files#destroy_file'
+  match 'estudiantes/file/:id' => 'student_files#download'
 
   match 'inscripciones' => 'students#enrollments_admin'
   match 'inscripciones/pagos' => 'students#payments'

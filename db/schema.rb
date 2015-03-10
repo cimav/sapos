@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150228010252) do
+ActiveRecord::Schema.define(:version => 20150306213423) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -507,6 +507,7 @@ ActiveRecord::Schema.define(:version => 20150228010252) do
     t.string   "file"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "file_type"
   end
 
   add_index "student_files", ["student_id"], :name => "index_student_files_on_student_id"

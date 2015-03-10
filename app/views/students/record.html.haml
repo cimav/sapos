@@ -1,0 +1,169 @@
+-# @include_js = 'students'
+:javascript
+  var my_id;    
+  function display_status(type,my_id){
+    if(type=="ok"){
+      $("#img_ok_"+my_id).css("display","block");
+      $("#img_load_"+my_id).css("display","none");
+      $("#img_fail_"+my_id).css("display","none");
+    }
+    else if(type=="load"){
+      $("#img_ok_"+my_id).css("display","none");
+      $("#img_load_"+my_id).css("display","block");
+      $("#img_fail_"+my_id).css("display","none");
+    }
+    else if(type=="fail"){
+      $("#img_ok_"+my_id).css("display","none");
+      $("#img_load_"+my_id).css("display","none");
+      $("#img_fail_"+my_id).css("display","block");
+    }
+  }
+
+  $(document).ready(function() {
+    $('.folder-record')
+      .live('click',function(){
+        var arr = $(this).attr("id").split("_");
+        var id  = arr[1];
+        if(isNaN(id)){
+          $(".content-folder:hidden").show();
+          $(".folder:visible").hide();
+          $(".return:visible").hide();
+          $(".return").first().show();
+        }
+        else{
+          $(".content-folder:visible").hide();
+          $(".folder:visible").hide();
+          $(".return:hidden").show();
+          cf = $("#cf-"+id)
+          cf.show();
+        }
+      })
+      .live('mouseover',function(){
+        $(this).attr("height","60px");
+      })
+      .live('mouseout',function(){
+        $(this).attr("height","50px");
+      });
+
+    $(".return")
+      .live('click',function(){
+        $(".content-folder:visible").hide();
+        $(".folder:hidden").show();
+      })
+      .live('mouseover',function(){
+        $(this).attr("height","45px");
+      })
+      .live('mouseout',function(){
+        $(this).attr("height","40px");
+      });
+    
+    $(".reqdoc_button_download").click(function(){
+      my_id           = $(this).attr("my_id");
+      var my_file_id  = $(this).attr("my_file_id");
+      $("#files_iframe2").attr("src","/estudiantes/file/"+my_file_id);
+    });
+
+    $(".reqdoc_button_delete").click(function(){
+      my_id           = $(this).attr("my_id");
+      var my_file_id  = $(this).attr("my_file_id");
+      display_status("load",my_id);
+      $("#files_iframe2").attr("src","/estudiantes/destroy_file/"+my_file_id);
+    });
+    
+    $(".reqdoc_button").click(function(){
+      my_id   = $(this).attr("my_id");
+      display_status("load",my_id);
+
+      var form_id = "#reqdoc-form-"+my_id;
+      $(form_id).submit();
+    });  
+    
+    $("#files_iframe2").load(function(){
+      var sts = $('#files_iframe2').contents().find("status").html();
+      var ref = $('#files_iframe2').contents().find("reference").html();
+      
+      if(sts=="0")
+      {
+        errors  = $('#files_iframe2').contents().find("errors").html();
+        alert(errors);
+
+        if(ref=="upload"){
+          display_status("fail",my_id);
+        }
+        else if(ref=='destroy')
+        {
+          display_status("ok",my_id);
+        }
+      }
+      else if(sts=="1")
+      {
+        if(ref=="upload")
+        {
+          var new_id = $('#files_iframe2').contents().find("id").html();
+          display_status("ok",my_id);
+          $("#applicant_file_file_"+my_id).css("display","none");
+          $("#reqdoc_button_"+my_id).css("display","none");
+          $("#reqdoc_button_download_"+my_id).css("display","block");
+          $("#reqdoc_button_delete_"+my_id).css("display","block");
+          
+          $("#reqdoc_button_"+my_id).attr("my_file_id",new_id);
+          $("#reqdoc_button_download_"+my_id).attr("my_file_id",new_id);
+          $("#reqdoc_button_delete_"+my_id).attr("my_file_id",new_id);
+        }
+        else if(ref=="destroy")
+        {
+          display_status("fail",my_id);
+          $("#applicant_file_file_"+my_id).css("display","block");
+          $("#reqdoc_button_"+my_id).css("display","block");
+          $("#reqdoc_button_download_"+my_id).css("display","none");
+          $("#reqdoc_button_delete_"+my_id).css("display","none");
+        }
+      }
+    });//fin files_iframe
+  });
+
+.fields_requested
+  - StudentFile::FOLDERS.each do |fs|
+    .folder
+      = image_tag "folder-icon-512x512.png", :id=> "folder_#{fs[0]}" ,:align=> 'center',:height=>'50px',:class=>'folder-record',:style=>'cursor: pointer;'
+      = fs[1]
+    .content-folder{:id=>"cf-#{fs[0]}",:style=>'display: none;'}
+      = image_tag "back_button.png", :align=> 'left',:height=>'40px',:class=>'return',:style=>'cursor: pointer;'
+      %br=""
+      %br
+        %h2="#{fs[1]}"
+      - StudentFile::FILE_TYPE.select {|h| h[:folder]==fs[0]}.each do |ft|
+        .file
+          - my_id = ft[:id]
+          - @s_f =  @s_files.select {|l| l[1]==my_id}
+          - if @s_f.size > 0
+            - @fail  = "none"
+            - @load  = "none"
+            - @ok    = "block"
+            - @subir = "none"
+            - @descargar = "block"
+            - @myid  =  @s_f[0][0]
+          - else
+            - @fail  = "block"
+            - @load  = "none"
+            - @ok    = "none"
+            - @subir = "block"
+            - @descargar = "none"
+            - @myid  =  0
+          = form_for(StudentFile.new, :url => {:action => "upload_one_file"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
+            = hidden_field_tag :student_id, @student.id
+            = hidden_field_tag :file_type, my_id
+            = label_tag "#{ft[:description]}"
+            = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center', :style=>"display: #{@fail};"
+            = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>"display: #{@load};"
+            = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>"display: #{@ok};"
+            = f.file_field :file,:id=>"applicant_file_file_#{my_id}", :style=>"display: #{@subir};"
+            = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}", :style=>"display: #{@subir};"
+            = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}",:my_file_id=> @myid, :style=>"display: #{@descargar}"
+            = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}",:my_file_id=> @myid, :style=>"display: #{@descargar}"
+  
+  .folder
+    = image_tag "folder-icon-512x512.png", :id=> "folder_all" ,:align=> 'center',:height=>'50px',:class=>'folder-record',:style=>'cursor: pointer;'
+    = "Todo"
+    
+%iframe{"name" => "files_iframe2", "id" => "files_iframe2" ,:style=> "display: none;"}
