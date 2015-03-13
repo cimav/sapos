@@ -136,12 +136,9 @@ class InternshipsController < ApplicationController
       @campus   = Campus.order('name').where(:id=> current_user.campus_id)
       @areas    = Area.where(:id=> @aareas).order('name')
       @operator = true
-    elsif current_user.access == User::MANAGER
-      @areas  = Area.order('name')
-      @campus = Campus.order('name')
     else
-      @campus = Campus.order('name')
-      @areas    = Area.where(:id=> @aareas).order('name')
+      @areas    = Area.order('name')
+      @campus   = Campus.order('name')
     end
     render :layout => false
   end
