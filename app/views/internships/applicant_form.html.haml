@@ -41,9 +41,17 @@
     = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo de servicio"}
     = text_field_tag :text_internship_type_id, '', :size=>25, :placeholder=>"¿Cual?"
 
-  .field#field_internship_area_id
+
+  - if @option.eql? "monterrey"
+    - f_class = "v-hidden"
+  - else
+    - f_class = "field"
+  .field#field_internship_area_id{:class=>f_class}
     = f.label :area_id, 'Area'
-    = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"}
+    - if @option.eql? "monterrey"
+      = f.collection_select :area_id, @areas, :id, :name
+    - else
+      = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"}
 
   .field#field_internship_submit
     %table

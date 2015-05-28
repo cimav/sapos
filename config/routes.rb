@@ -97,6 +97,7 @@ Sapos::Application.routes.draw do
   match 'internados/:id/credencial' => 'internships#id_card'
   match 'internados/constancias/:type/:id' => 'internships#certificates'
   match 'internados/aspirante' => 'internships#applicant_form'
+  match 'internados/aspirante/area/:option' => 'internships#applicant_form'
   match 'internados/aspirante/crear' => 'internships#applicant_create'
   match 'internados/aspirante/:id/formato/:token' => 'internships#applicant_file'
   match 'internados/aspirantes/cita/:id/:staff_id' => 'internships#applicant_interview'

@@ -1,8 +1,8 @@
 # coding: utf-8
 class InternshipsController < ApplicationController
   load_and_authorize_resource
-  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file]
   respond_to :html, :xml, :json
+  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file]
 
   def index
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
@@ -438,6 +438,7 @@ class InternshipsController < ApplicationController
   end
 
   def applicant_form
+    @option           = params[:option]
     @internship       = Internship.new
     @institutions     = Institution.order('name')
     @internship_types = InternshipType.order('name')
@@ -445,7 +446,11 @@ class InternshipsController < ApplicationController
 
     @states           = State.order('name')
 
-    @areas  = Area.where("id not in (1,2)").order('name')
+    if @option.eql? "monterrey"
+      @areas  = Area.where("id not in (1,2) and id=14") 
+    else    
+      @areas  = Area.where("id not in (1,2)").order('name') 
+    end
     render :layout => 'standalone'
   end
 
@@ -453,7 +458,11 @@ class InternshipsController < ApplicationController
     flash = {}
     @internship = Internship.new(params[:internship])
     @internship.status=3
-    @internship.campus_id= 1 #Default Chihuahua
+    if @internship.area_id = 14
+      @internship.campus_id = 2 #Monterrey
+    else
+      @internship.campus_id = 1 #Default Chihuahua
+    end
     @internship.applicant_status=0
 
     if params[:internship][:institution_id].to_i.eql? 0
