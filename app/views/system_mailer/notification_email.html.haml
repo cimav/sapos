@@ -7,7 +7,7 @@
   = "Falta una semana para que inicie el alta de calificaciones en linea, se deben dar de alta las calificaciones de los avances de investigación del alumno #{a.student.full_name} <#{a.student.email}> a travez de la siguiente liga: http://academicos.cimav.edu.mx/calificar/avance/#{a.id}"
 - elsif @view.eql? 4
   - a   = Advance.find(@advance)
-  - uri = "http://academicos.cimav.edu.mx/calificar/avance/#{a.id}/#{@token}"
+  - uri = "http://academicos.cimav.edu.mx/calificar/avance/#{a.id}/get/#{@token}"
   = "Falta una semana para que inicie el alta de calificaciones en linea, el cimav le ha asignado a usted uná liga donde puede dar de alta la calificación del avance de investigación del alumno  #{a.student.full_name} <#{a.student.email}>, tome en cuenta que una vez capturada la calificación el link se desactivara: #{uri}"
   = "Si existe algún error por favor comunicarse al departamento de posgrado de cimav."
 - elsif @view.eql? 5

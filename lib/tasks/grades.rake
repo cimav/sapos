@@ -4,6 +4,16 @@ namespace :grades do
   ##################################################################################################################################
   #####                                           TASK CHECK                                                                   #####
   ##################################################################################################################################
+    filep     = "#{Rails.root}/log/inscripciones.log"
+    @f        = File.open(filep,'a')
+    @env      = Rails.env
+    SEND_MAIL         = 1
+    STATUS_CHANGE     = false
+    ADMIN_MAIL        = ""
+    CICLO             = "2015-1"
+    NCICLO            = "2015-2"
+   # CICLO             = "2014-2"
+   # NCICLO            = "2015-1"
   task :check => :environment do
     ################################################################################################################################
     ###########################################        NOTAS        ################################################################
@@ -16,15 +26,7 @@ namespace :grades do
     #  STATUS_CHANGE = true
     ################################################################################################################################
     ################################################################################################################################
-    filep     = "#{Rails.root}/log/inscripciones.log"
-    @f        = File.open(filep,'a')
-    @env      = Rails.env
     @yaenciclo= false
-    SEND_MAIL         = 0
-    STATUS_CHANGE     = false
-    ADMIN_MAIL        = ""
-    CICLO             = "2014-2"
-    NCICLO            = "2015-1"
     #### Descomentar las 2 lineas siguientes para ver la salida de sql del task
     #Rails.logger.level = Logger::DEBUG
     #ActiveRecord::Base.logger = Logger.new(STDOUT)
@@ -129,7 +131,15 @@ namespace :grades do
     set_line("Iniciando script en alarm")
     ## comprobar si falta una semana para calificaciones
     #advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("terms.status in (?) AND terms.grade_start_date<=date_sub(curdate(), INTERVAL 15 DAY) AND programs.level in (?)",[3],[1,2]).select("advances.*,terms.id as terms_id")
-    advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("terms.status in (?) AND terms.grade_start_date=curdate() AND programs.level in (?)",[3],[1,2]).select("advances.*,terms.id as terms_id")
+    #advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("terms.status in (?) AND terms.grade_start_date=curdate() AND programs.level in (?)",[3],[1,2]).select("advances.*,terms.id as terms_id")
+    advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date and advances.id=666",['P'],[3],[1,2]).select("advances.*,terms.id as terms_id")
+
+=begin
+    advances.each do |a|
+     puts "#{a.id} #{a.student_id} #{a.status} #{a.title}"
+    end
+=end
+
     counter = 1
     if advances.size.eql? 0
       set_line("No hay fechas de avances abiertas")
@@ -162,7 +172,8 @@ namespace :grades do
               content = "{:advance=>\"#{a.id}\",:staff=>\"#{t.id}\",:token=>\"#{token.token}\",:view=>4}"
             end
             ## PROD
-            send_mail(t.email,"Alerta Calificaciones",content)
+            ##send_mail(t.email,"Alerta Calificaciones",content)
+            send_mail("enrique.turcott@cimav.edu.mx","Alerta Calificaciones",content)
           end
         end
   
@@ -170,7 +181,6 @@ namespace :grades do
       end #end each
     end #end if-else
     # buscar asesores con alumnos en fechas
-
 
   end ## task alarm
 

@@ -445,7 +445,7 @@ class StudentsController < ApplicationController
 
   def new_advance
     @student = Student.find(params[:id])
-    @staffs = Staff.order('first_name')
+    @staffs = Staff.where(:status=>0).order('first_name')
     render :layout => 'standalone'
   end
 
