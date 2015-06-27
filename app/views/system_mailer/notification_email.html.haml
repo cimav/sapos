@@ -11,8 +11,8 @@
   = "Falta una semana para que inicie el alta de calificaciones en linea, el cimav le ha asignado a usted uná liga donde puede dar de alta la calificación del avance de investigación del alumno  #{a.student.full_name} <#{a.student.email}>, tome en cuenta que una vez capturada la calificación el link se desactivara: #{uri}"
   = "Si existe algún error por favor comunicarse al departamento de posgrado de cimav."
 - elsif @view.eql? 5
-  = "Su solicitud ha sido recibida, se esta programando la entrevista y en un máximo de 2 días recibirá respuesta en este mismo correo. Debe descargar el formato de la siguiente liga y llevarlo impreso el día de la reunión: http://tsukuba.cimav.edu.mx:3000#{@uri}. Para cualquier asunto por favor responder este correo a #{@reply_to}."
+  = "Su solicitud ha sido recibida, se esta programando la entrevista y en un máximo de 2 días recibirá respuesta en este mismo correo. Debe descargar el formato de la siguiente liga y llevarlo impreso el día de la reunión: http://posgrado.cimav.edu.mx#{@uri}. Para cualquier asunto por favor responder este correo a #{@reply_to}."
 - elsif @view.eql? 6
-  = "#{@full_name} ha realizado una solicitud de servicio social, puede revisarlo en la página: http://tsukuba.cimav.edu.mx:3000/internados"
+  = "#{@full_name} ha realizado una solicitud de servicio social, puede revisarlo en la página: http://posgrado.cimav.edu.mx/internados"
 - elsif @view.eql? 7
   = @text

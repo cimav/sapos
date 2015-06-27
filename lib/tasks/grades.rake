@@ -7,13 +7,11 @@ namespace :grades do
     filep     = "#{Rails.root}/log/inscripciones.log"
     @f        = File.open(filep,'a')
     @env      = Rails.env
-    SEND_MAIL         = 1
-    STATUS_CHANGE     = false
+    SEND_MAIL         = 2
+    STATUS_CHANGE     = true
     ADMIN_MAIL        = ""
     CICLO             = "2015-1"
     NCICLO            = "2015-2"
-   # CICLO             = "2014-2"
-   # NCICLO            = "2015-1"
   task :check => :environment do
     ################################################################################################################################
     ###########################################        NOTAS        ################################################################
@@ -26,21 +24,22 @@ namespace :grades do
     #  STATUS_CHANGE = true
     ################################################################################################################################
     ################################################################################################################################
+
     @yaenciclo= false
     #### Descomentar las 2 lineas siguientes para ver la salida de sql del task
     #Rails.logger.level = Logger::DEBUG
     #ActiveRecord::Base.logger = Logger.new(STDOUT)
     set_line("Iniciando script en check")
     #### NIVELES:
-    # level (1) maestria, (2) doctorado, (3) propedeutico
-    # Primero confirmamos los alumnos de maestria, luego doctorado que requiere otras confirmaciones
-    # Ciclos en estatus de Calificando y con fecha de calificación al dia de la ejecucion del script
+    ## level (1) maestria, (2) doctorado, (3) propedeutico
+    ## Primero confirmamos los alumnos de maestria, luego doctorado que requiere otras confirmaciones
+    ## Ciclos en estatus de Calificando y con fecha de calificación al dia de la ejecucion del script
     #terms = Term.joins(:program).where("status=3 AND grade_end_date=CURDATE() AND programs.level in (1,2)")
-    # Cualquier ciclo en cualquier estatus en el cual su fecha de final sea hoy 
+    ## Cualquier ciclo en cualquier estatus en el cual su fecha de final sea hoy 
     #terms = Term.joins(:program).where("end_date=CURDATE() AND programs.level in (1,2)")
     ## Alumnos con materias en el ciclo viejo con estatus en finalizado y/o calificando
-    #terms = Term.joins(:program).where("programs.level in (1,2) AND name like '%#{CICLO}%' AND status in (3,4)")
-    terms = Term.joins(:program).where("programs.level in (2) AND terms.name like '%#{CICLO}%' AND terms.status in (3,4)")
+    terms = Term.joins(:program).where("programs.level in (1,2) AND terms.name like '%#{CICLO}%' AND status in (3,4)")
+    #terms = Term.joins(:program).where("programs.level in (2) AND terms.code = '#{CICLO}' AND terms.status in (3,4)")
 
     if terms.size.eql? 0 then
       set_line("No hay cierres de calificaciones")
@@ -52,10 +51,12 @@ namespace :grades do
         tss = TermStudent.joins(:student).where(:term_id=>t.id,:students=>{:status=>1})
         ## Vamos revisando alumno por alumno (i1)
         tss.each_with_index do |ts,i1|
-          counter     = nil
-          calificadas = 0
-          reprobadas  = 0
-          @yaenciclo = false
+          counter        = nil
+          tcs_grade_sum  = 0
+          calificadas    = 0
+          reprobadas     = 0
+          avances        = 0
+          @yaenciclo     = false
           ## Ahora vamos revisando cada materia del alumno
           ## Se deben confirmar las materias calificadas, independientemente si han sido aprobadas o no
           ## Revisando cada materia con estatus 1 o sea activa
@@ -67,7 +68,10 @@ namespace :grades do
             @yaenciclo = true
           end
 
+          tcs_grade = nil
           ts.term_course_student.where(:status=>1,:students=>{:status=>1}).each_with_index do |tcs,i2|
+             #prom = get_promedio(ts)
+             #puts "#{ts.student.full_name}|#{prom[:avg]}|#{prom[:adv_avg]}"
             if @yaenciclo
               break
             end
@@ -78,15 +82,18 @@ namespace :grades do
                ## aqui es donde analizamos el avance y lo insertamos en la materia y mandamos un correo al asesor
                set_line("Alumno de doctorado y materia de avance de investigacion [AI]")
                tcs_grade = check_advance(tcs)  
+               avances   = avances + 1
             elsif level.eql? 1 and tcs.term_course.course.notes.eql? "[AI]"
                set_line("Alumno de maestria y materia de avance de investigacion [AI]")
                tcs_grade = check_advance(tcs)  
+               avances = avances + 1
             end
 
             if !tcs_grade.nil?
               ## Hay que meterlo al log
               set_line("#{i2} | #{tcs.term_student.student.full_name} | #{tcs.term_course.course.name} | #{tcs.grade}")
               ## Si reprueba una materia hay que checar si es su segunda reprobada
+              tcs_grade_sum = tcs_grade_sum + tcs_grade
               if tcs.grade.to_i <= 70
                 reprobadas = get_failing(tcs.term_student.student.id)
               end
@@ -94,22 +101,24 @@ namespace :grades do
             end ## tcs.grade
             counter = i2
           end  ## ts.term_course_student
-
           # Si counter es nulo es que el alumno fue inscrito al ciclo pero no a las materias
           # excepto en doctorado que si puede cursarse sin materias
-          if get_access(ts,counter,reprobadas,calificadas)
+          if get_access(ts,counter,reprobadas,calificadas,avances)
             set_line("Activando inscripción para #{ts.student.full_name}")
             ## Le ponemos al alumno el estatus de p_enrollment(pending enrollment)
             if STATUS_CHANGE
               ts.student.status = Student::PENROLLMENT
               ts.student.save
             end
+            #set_line("Activando inscripción para #{ts.student.full_name}")
             ## Enviamos correo a su asesor
             staff   = Staff.find(ts.student.supervisor)
             if staff.email.empty?
               set_line("No se pudo enviar correo a #{staff.full_name}")
             else
-              content = "{:full_name=>\"#{ts.student.full_name}\",:email=>\"#{ts.student.email}\",:view=>1}"
+              prom = get_promedio(ts)
+              #puts "#{ts.student.full_name}|#{prom[:avg]}|#{prom[:adv_avg]}
+              content = "{:full_name=>\"#{ts.student.full_name}\",:email=>\"#{ts.student.email}\",:view=>1,:avg=>\"#{prom[:avg]}\",:adv_avg=>\"#{prom[:adv_avg]}\"}"
               send_mail(staff.email,"Alumno preparado para la inscripcion",content)
             end ## staff.empty
           else
@@ -118,7 +127,6 @@ namespace :grades do
         end ## tss
       end  ## terms.each
     end ## if terms.size
-
     set_line("Finalizando script")
     
   end ## task grades
@@ -129,10 +137,8 @@ namespace :grades do
   ##################################################################################################################################
   task :alarm => :environment do
     set_line("Iniciando script en alarm")
-    ## comprobar si falta una semana para calificaciones
-    #advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("terms.status in (?) AND terms.grade_start_date<=date_sub(curdate(), INTERVAL 15 DAY) AND programs.level in (?)",[3],[1,2]).select("advances.*,terms.id as terms_id")
-    #advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("terms.status in (?) AND terms.grade_start_date=curdate() AND programs.level in (?)",[3],[1,2]).select("advances.*,terms.id as terms_id")
-    advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date and advances.id=666",['P'],[3],[1,2]).select("advances.*,terms.id as terms_id")
+    ## advances.status = 'P' (PRogramado), term.status=3 (Calificando) y progams.levels 1 y 2 (maestria y doctorado) 
+    advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date",['P'],[3],[1,2]).select("advances.*,terms.id as terms_id")
 
 =begin
     advances.each do |a|
@@ -172,8 +178,8 @@ namespace :grades do
               content = "{:advance=>\"#{a.id}\",:staff=>\"#{t.id}\",:token=>\"#{token.token}\",:view=>4}"
             end
             ## PROD
-            ##send_mail(t.email,"Alerta Calificaciones",content)
-            send_mail("enrique.turcott@cimav.edu.mx","Alerta Calificaciones",content)
+            send_mail(t.email,"Alerta Calificaciones",content)
+             ##send_mail("enrique.turcott@cimav.edu.mx","Alerta Calificaciones",content)
           end
         end
   
@@ -187,6 +193,54 @@ namespace :grades do
 end ## namespace
 
   ####################################################### METODOS ##############################################################
+  ## Obtiene promedio del ciclo actual vato loco ese
+  def get_promedio(ts)
+    courses_number = ts.term_course_student.size
+    counter   = 0
+    tcs_sum   = 0
+    avg       = 0
+    ai        = 0
+    ev        = 0
+    adv_grade = nil
+
+    ts.term_course_student.each do |tcs|
+      #puts "#{tcs.term_course.course.name} #{tcs.grade} #{tcs.grade.nil?}"
+      if tcs.term_course.course.notes.eql? "[AI]"
+        ai = ai + 1
+      end
+
+      if !tcs.grade.nil?
+        tcs_sum = tcs_sum + tcs.grade 
+        counter = counter + 1
+      end
+    end
+
+    ## si no hay materia relacionada buscamos la evaluacion
+    if ai.eql? 0
+      s        = ts.student
+      term     = ts.term
+      # buscamos el avance para este ciclo
+      advances = s.advance.where("advances.advance_date between ? and ?",term.start_date,term.end_date)
+      if !advances.size.eql? 0
+        a = advances[0]
+        t_g = get_tutors_and_grades(a)
+        tutors = t_g[0]
+        grades = t_g[1]
+        sum    = t_g[2]
+        quorum = t_g[3]
+        if !grades.eql? 0
+          adv_grade   = sum / grades
+        end
+      end
+    end
+
+    if !counter.eql? 0
+      avg = tcs_sum/counter
+    end
+
+    #puts "El alumno #{ts.student.full_name} tiene un promedio de #{avg} con #{counter} materias calificadas lo que incluye #{ev} evaluacion"
+    return {:avg=>avg,:adv_avg=>adv_grade}
+  end
   ## Inserta una linea en el log
   def set_line(text)
     @f.write "[#{Time.now.to_s}] "
@@ -200,6 +254,7 @@ end ## namespace
 
   ## pone un mail en la pila
   def send_mail(to,subject,content)
+    set_line("Entrando a send_mail")
     if [1,2,3].include? SEND_MAIL
       if to.nil?
         set_line("Error, email vacio. #{content}")
@@ -227,7 +282,7 @@ end ## namespace
     if tcs.grade.nil?
       s        = tcs.term_student.student
       term     = tcs.term_student.term
-      ## Aparte DEbería estar en estatus de concluida
+      # buscamos el avance para este ciclo
       advances = s.advance.where("advances.advance_date between ? and ?",term.start_date,term.end_date)
       if advances.size.eql? 0
         set_line("No hay avances de investigacion registrados para #{s.full_name} #{tcs.term_course.course.name}")
@@ -249,6 +304,9 @@ end ## namespace
             if STATUS_CHANGE
               tcs.grade = prom
               tcs.save
+              # Cambiamos el estatus del avance a Concluido
+              a.status = 'C'
+              a.save
               return tcs.grade
             else
               return prom
@@ -287,6 +345,9 @@ end ## namespace
         if quorum
           prom   = sum / grades
           set_line("Se han calificado #{grades} grados de #{tutors} tutores. El promedio es #{prom}.")
+          # Cambiamos el estatus del avance a Concluido
+          a.status = 'C'
+          a.save
           if prom.to_i <= 70
             set_line("Se ha reprobado el avance de investigacion")
             return false
@@ -386,13 +447,13 @@ end ## namespace
   end
 
   ## Define acceso a la activación de la inscripción para el alumno
-  def get_access(ts,counter,reprobadas,calificadas)
+  def get_access(ts,counter,reprobadas,calificadas,avances)
     s    = ts.student
     term =   ts.term
     ## si el numero de reprobadas es menor a 2 accesamos
     if reprobadas < 2
-      if s.program.level.to_i.eql? 2 ## alumnos de doctorado
-        if counter.nil?
+      if s.program.level.to_i.eql? 2 ############################## Alumnos de doctorado
+        if counter.nil? ## sin materias
           ## si ya esta inscrito al ciclo no le damos acceso
           if @yaenciclo
             return false
@@ -400,25 +461,41 @@ end ## namespace
 
           set_line("El alumno #{s.full_name} es de doctorado y no registra materias por lo que nos disponemos a analizar sus evaluaciones para el ciclo #{term.name}")
           return check_advance_term(term,s)
-        else
-          counter = counter + 1
-          set_line("El alumno #{s.full_name} esta inscrito a #{counter} materias de las cuales se han calificado #{calificadas}")
+        
+        else  ## con materias
+          pasa    = true
+          counter = counter + 1   
+          if avances.eql? 0 and counter>0 ## Si no tiene avances hay que ver si los tiene
+            if check_advance_term(term,s)
+               set_line("El alumno ha aprobado el avance sin materia relacionada") 
+            else
+              set_line("El alumno no ha pasado el avance sin materia relacionada")
+              pasa = false
+            end
+          end
+          
+          if pasa
+            set_line("El alumno #{s.full_name} esta inscrito a #{counter} materias de las cuales se han calificado #{calificadas}")
+          else
+            set_line("El alumno #{s.full_name} esta inscrito a #{counter} materias de las cuales se han calificado #{calificadas} pero no ha pasado el avance")
+            return false
+          end
+
           if counter.eql? calificadas
             return true
           else
             return false
           end
         end ##if counter.nil
-      else ## alumnos de maestria
+      else ############################################## Alumnos de maestria
         if @yaenciclo
           return false
         end
 
-
-        if counter.nil?
+        if counter.nil? ## sin materias
           set_line("El alumno #{s.full_name} no curso ninguna materia pero aun asi fue inscrito al ciclo")
           return false
-        else
+        else  ## con materias
           counter = counter + 1
           set_line("El alumno #{s.full_name} esta inscrito a #{counter} materias de las cuales se han calificado #{calificadas}")
           if counter.eql? calificadas
@@ -426,8 +503,8 @@ end ## namespace
           else
             return false
           end
-        end ## if counter
-      end # if level
+        end ## if counter.nil?
+      end # if level.eql? 2
     else ## Si las reprobadas son 2 o mas avisamos de la baja
       staff   = Staff.find(s.supervisor).email
       set_line("El alumno #{s.full_name} sera dado de baja del programa #{s.program.name}")

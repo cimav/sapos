@@ -207,7 +207,7 @@
         = render :partial => 'shared/contact', :locals => {:table => 'student', :fields => contact_fields, :countries => @countries, :states => @states}
  
     #avances 
-      = render :partial => 'advances', :locals => {:student => @student, :staffs => @staffs, :f => f}
+      = render :partial => 'advances', :locals => {:student => @student, :staffs => @staffs.where(:status=>0), :f => f}
 
     #tesis 
       %h2 Tesis
