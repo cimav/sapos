@@ -458,7 +458,7 @@ class InternshipsController < ApplicationController
     flash = {}
     @internship = Internship.new(params[:internship])
     @internship.status=3
-    if @internship.area_id = 14
+    if @internship.area_id.eql? 14
       @internship.campus_id = 2 #Monterrey
     else
       @internship.campus_id = 1 #Default Chihuahua
