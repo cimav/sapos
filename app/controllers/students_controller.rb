@@ -1130,7 +1130,7 @@ class StudentsController < ApplicationController
 
       # SET MONTH AND YEAR
       month = get_month_name(@thesis.defence_date.month)
-      year = @time.year
+      year = @thesis.defence_date.year
       space1 = ""
       space2 = ""
       space3 = ""
