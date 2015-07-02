@@ -569,12 +569,12 @@ class InternshipsController < ApplicationController
     template = "#{@r_root}/private/prawn_templates/form_reg_estudiantes_externos.pdf"
     Prawn::Document.generate("#{filename}/registro.pdf", :template => template)
     pdf = Prawn::Document.new(:template => template)
-    pdf.draw_text i.full_name,  :at=>[60,614], :size=>10
-    pdf.draw_text @genero,      :at=>[50,601], :size=>10
-    pdf.draw_text @birth,       :at=>[120,588], :size=>10
-    pdf.draw_text @bp,          :at=>[120,575], :size=>10
-    pdf.draw_text @institution, :at=>[142,562], :size=>10
-    pdf.draw_text @email,       :at=>[105,550], :size=>10
+    pdf.draw_text i.full_name,  :at=>[60,613], :size=>10
+    pdf.draw_text @genero,      :at=>[50,600], :size=>10
+    pdf.draw_text @birth,       :at=>[120,587], :size=>10
+    pdf.draw_text @bp,          :at=>[120,574], :size=>10
+    pdf.draw_text @institution, :at=>[142,561], :size=>10
+    pdf.draw_text @email,       :at=>[105,548], :size=>10
     pdf.render_file "#{filename}/registro.pdf"
 
     token = Token.new
