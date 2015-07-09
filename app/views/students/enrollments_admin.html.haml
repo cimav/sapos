@@ -1,5 +1,7 @@
 - @page_title = "Inscripciones"
 - @nav_icon   = "Inscripciones"
+- @new_term   = "2015-2"
+- @old_term   = "2015-1"
 
 #content-panel
   :javascript
@@ -9,23 +11,25 @@
   #resource-tabs{:style=>"padding-top: 40px;"}
     %ul
       %li.first-tab= link_to "General","#general"
-      %li= link_to "Pagos","#pagos"
+      -#%li= link_to "Pagos","#pagos"
       -# %li= link_to "Log","#log"
 
     #general
-      %h2="Alumnos pre-inscritos"
+      %h2="Alumnos pre-inscritos [#{@new_term}]"
       %table.formatted-table
         %tbody
           %tr.header
+            %th="#"
             %th="Alumno"
             %th="En ciclo"
             %th="Materias Elegidas"
             %th="Pago"
-          - @students.each do |s|
+          - @students.each_with_index do |s,index|
             - tcs = []
             - tsp = []
-            - ts  = TermStudent.joins(:term).where("student_id=? AND terms.name like '%2015-1%'",s.id)
+            - ts  = TermStudent.joins(:term).where("student_id=? AND terms.name like '%#{@new_term}%'",s.id)
             %tr
+              %td= index + 1
               %td= s.full_name
               %td
                 - if ts.size>0
@@ -40,10 +44,31 @@
                   = "Si"
                 - else
                   = "No"
+      
+      %h2="Alumnos inscritos [#{@new_term}]"
+      
+      %table.formatted-table
+        %tbody
+          %tr.header
+            %th="#"
+            %th="Alumno"
+          - @s = Student.joins(:term_students=>:term).where("students.status=? and terms.name like '%#{@new_term}%'",1)
+          - @s.each_with_index do |s,index|
+            %tr
+              %td= index + 1
+              %td= s.full_name
 
-    #pagos
-      %h2 Pagos
-      %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/inscripciones/pagos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
+      %b= "Notas: "
+      %br
+      %b= "1) Si ya esta en ciclo pero no tiene materias elegidas es que el asesor aprobó la inscripción sin materias lo cual es válido"
+      %br
+      %b= "2) Si ya esta en ciclo y ya pagó pero todavía aparece en la lista de preinscritos es que no ha aceptado su inscripción desde el sitio de alumnos"
+      %br
+      %b= "3) Si no aparece en las listas es que no se ha aprobado su inscripción y no ha pasado a estatus de preinscrito"
+      
+    -#pagos
+      -#%h2 Pagos
+      -#%iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/inscripciones/pagos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
 
     -#log
       %h2 Log
