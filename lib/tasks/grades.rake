@@ -7,11 +7,11 @@ namespace :grades do
     filep     = "#{Rails.root}/log/inscripciones.log"
     @f        = File.open(filep,'a')
     @env      = Rails.env
-    SEND_MAIL         = 2
-    STATUS_CHANGE     = true
+    SEND_MAIL         = 0 
+    STATUS_CHANGE     = false
     ADMIN_MAIL        = ""
-    CICLO             = "2015-1"
-    NCICLO            = "2015-2"
+    CICLO             = ""
+    NCICLO            = ""
   task :check => :environment do
     ################################################################################################################################
     ###########################################        NOTAS        ################################################################
@@ -41,6 +41,9 @@ namespace :grades do
     terms = Term.joins(:program).where("programs.level in (1,2) AND terms.name like '%#{CICLO}%' AND status in (3,4)")
     #terms = Term.joins(:program).where("programs.level in (2) AND terms.code = '#{CICLO}' AND terms.status in (3,4)")
 
+    @counter_alumnos = 0
+    @counter_no      = 0
+    @counter_si      = 0
     if terms.size.eql? 0 then
       set_line("No hay cierres de calificaciones")
     else
@@ -61,6 +64,7 @@ namespace :grades do
           ## Se deben confirmar las materias calificadas, independientemente si han sido aprobadas o no
           ## Revisando cada materia con estatus 1 o sea activa
           set_line("<<<<< - alumno - >>>>>")
+          @counter_alumnos = @counter_alumnos + 1
 
           snc = TermStudent.joins(:term).where("terms.name like '%#{NCICLO}%' AND student_id=? AND term_students.status in (?)",ts.student.id,[1,2,6])
           if snc.size>0
@@ -105,6 +109,7 @@ namespace :grades do
           # excepto en doctorado que si puede cursarse sin materias
           if get_access(ts,counter,reprobadas,calificadas,avances)
             set_line("Activando inscripción para #{ts.student.full_name}")
+            @counter_si      = @counter_si + 1
             ## Le ponemos al alumno el estatus de p_enrollment(pending enrollment)
             if STATUS_CHANGE
               ts.student.status = Student::PENROLLMENT
@@ -123,12 +128,15 @@ namespace :grades do
             end ## staff.empty
           else
             set_line("No se activa la inscripción para #{ts.student.full_name}")
+            @counter_no = @counter_no + 1
           end ## get_access
         end ## tss
       end  ## terms.each
     end ## if terms.size
+    set_line("El numero de alumnos analizados fue #{@counter_alumnos}")
+    set_line("No se activaron: #{@counter_no}")
     set_line("Finalizando script")
-    
+
   end ## task grades
 
 
@@ -223,7 +231,7 @@ end ## namespace
       advances = s.advance.where("advances.advance_date between ? and ?",term.start_date,term.end_date)
       if !advances.size.eql? 0
         a = advances[0]
-        t_g = get_tutors_and_grades(a)
+        t_g = get_tutors_and_grades(a,term)
         tutors = t_g[0]
         grades = t_g[1]
         sum    = t_g[2]
@@ -291,7 +299,7 @@ end ## namespace
         a      = advances[0]
         set_line("Procedemos a analizar el avance de investigacion de #{s.full_name} ... ")
 
-        t_g = get_tutors_and_grades(a)
+        t_g = get_tutors_and_grades(a,term)
         tutors = t_g[0]
         grades = t_g[1]
         sum    = t_g[2]
@@ -336,7 +344,7 @@ end ## namespace
     else
       a      = advances[0]
       set_line("Procedemos a analizar el avance de investigacion sin materias de #{s.full_name} ... ")
-      t_g = get_tutors_and_grades(a)
+      t_g = get_tutors_and_grades(a,t)
       tutors = t_g[0]
       grades = t_g[1]
       sum    = t_g[2]
@@ -366,11 +374,14 @@ end ## namespace
   end
   
   ## Para obtener los datos de un avance de investigacion
-  def get_tutors_and_grades(a)
+  ## a = advance, t= term
+  def get_tutors_and_grades(a,t)
     tutors = 0
     grades = 0
     sum    = 0
     quorum = false
+
+
     if !a.tutor1.nil?
       set_line("Tutor 1 activo")
       tutors = tutors + 1
@@ -441,6 +452,18 @@ end ## namespace
       quorum = true
     elsif grades>=3 and tutors.eql? 5
       quorum = true
+    end
+    
+    #a.student.term_students.find{|a| a.term.name.match("#{CICLO}")
+    today = Date.today
+    range = t.start_date
+    range = t.grade_start_date..t.grade_end_date
+    ## si estamos en fechas de calificaciones nos brincamos la evaluacion a menos que ya hayan calificado todos los tutores
+    if !grades.eql? tutors
+      if range===today
+        set_line("Todavia estamos en calificaciones de evaluaciones no se hace el analisis")
+        return [tutors,grades,0,false]
+      end
     end
 
     return [tutors,grades,sum,quorum]
