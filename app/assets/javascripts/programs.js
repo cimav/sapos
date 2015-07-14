@@ -399,7 +399,7 @@ function openAssignCoursesDialog() {
   term_id = $('#tc_term_id').val();
   $("#select-courses-dialog").remove();
   url = '/programas/' + program_id + '/periodo/' + term_id + '/seleccionar_cursos';
-  $('#content-panel').append('<div title="Asignar cursos" id="select-courses-dialog"><iframe width="550" height="440" src="' + url + '" scrolling="no"></iframe></div>');
+  $('#content-panel').append('<div title="Asignar cursos" id="select-courses-dialog"><iframe width="550" height="470" src="' + url + '" scrolling="no"></iframe></div>');
   $("#select-courses-dialog").dialog({ autoOpen: true, width: 590, height: 550, modal:true });
 }
 
@@ -567,7 +567,7 @@ function openNewGroupDialog() {
 
   $("#new-group-dialog").remove();
   url = '/programas/' + program_id + '/periodo/' + term_id + '/curso/' + course_id + '/nuevo_grupo';
-  $('#content-panel').append('<div title="Nuevo grupo" id="new-group-dialog"><iframe width="550" height="140" src="' + url + '" scrolling="no"></iframe></div>');
+  $('#content-panel').append('<div title="Nuevo grupo" id="new-group-dialog"><iframe width="550" height="240" src="' + url + '" scrolling="no"></iframe></div>');
   $("#new-group-dialog").dialog({ autoOpen: true, width: 590, height: 250, modal:true });
 }
 
@@ -594,7 +594,7 @@ function openUpdateStaffGroupDialog() {
 
   $("#update-group-dialog").remove();
   url = '/programas/' + program_id + '/periodo/' + term_id + '/curso/' + course_id + '/grupo/' + g + '/cambiar_titular';
-  $('#content-panel').append('<div title="Cambiar titular" id="update-group-dialog"><iframe width="550" height="140" src="' + url + '" scrolling="no"></iframe></div>');
+  $('#content-panel').append('<div title="Cambiar titular" id="update-group-dialog"><iframe width="550" height="180" src="' + url + '" scrolling="no"></iframe></div>');
   $("#update-group-dialog").dialog({ autoOpen: true, width: 590, height: 250, modal:true });
 }
 

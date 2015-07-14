@@ -20,7 +20,7 @@
               %td{:colspan=>3}= "#{@program.term_type} #{course.term}"
 
         %tr.course{:id=>"tr_#{course.id}", :course_id=>course.id}
-          %td= course.id
+          %td= course.code
           %td= course.name
           - if @term.status == Term::OPEN
             %td= check_box_tag "courses[]", course.id, @courses_assigned.include?(course.id), :id => "chk_#{course.id}"
