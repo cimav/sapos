@@ -610,7 +610,7 @@ class InternshipsController < ApplicationController
       subject = "Se ha realizado una Solicitud Servicio Social CIMAV"
       content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>6,:reply_to=>'#{i.email}',:uri=>'#{uri}'}"
     elsif opc.eql? 3
-      @u_email   = user.email
+      @u_email   = i.email
       subject = "Se ha programado fecha para entrevista Solicitud Servicio Social CIMAV"
       content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>7,:reply_to=>'#{user.email}',:text=>'#{text}'}"
     end
