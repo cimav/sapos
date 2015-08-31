@@ -26,6 +26,14 @@
       %h2 Datos
 
       = f.hidden_field :student_id, {:value => @student.id }
+      
+      .field#field_graduate_email
+        = f.label :email, "Correo Electrónico"
+        = f.text_field :email
+
+      .field#field_graduate_phone
+        = f.label :phone, "Teléfono"
+        = f.text_field :phone
 
       .field#field_graduate_workplace
         = f.label :workplace, "Lugar de Trabajo"
