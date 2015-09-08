@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150306213423) do
+ActiveRecord::Schema.define(:version => 20150908234515) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -256,6 +256,8 @@ ActiveRecord::Schema.define(:version => 20150306213423) do
     t.datetime "created_at",                        :null => false
     t.datetime "updated_at",                        :null => false
     t.text     "notes"
+    t.string   "email"
+    t.string   "phone"
   end
 
   add_index "graduates", ["student_id"], :name => "index_graduates_on_student_id"
@@ -287,9 +289,9 @@ ActiveRecord::Schema.define(:version => 20150306213423) do
 
   create_table "internships", :force => true do |t|
     t.integer  "internship_type_id"
-    t.string   "first_name",         :limit => 50,                :null => false
-    t.string   "last_name",          :limit => 50,                :null => false
-    t.string   "gender",             :limit => 1
+    t.string   "first_name",              :limit => 50,                 :null => false
+    t.string   "last_name",               :limit => 50,                 :null => false
+    t.string   "gender",                  :limit => 1
     t.date     "date_of_birth"
     t.date     "start_date"
     t.date     "end_date"
@@ -300,7 +302,7 @@ ActiveRecord::Schema.define(:version => 20150306213423) do
     t.integer  "staff_id"
     t.string   "thesis_title"
     t.text     "activities"
-    t.integer  "status",                           :default => 0
+    t.integer  "status",                                 :default => 0
     t.string   "image"
     t.text     "notes"
     t.datetime "created_at"
@@ -317,6 +319,10 @@ ActiveRecord::Schema.define(:version => 20150306213423) do
     t.integer  "area_id"
     t.integer  "country_id"
     t.integer  "state_id"
+    t.string   "phone",                   :limit => 20
+    t.string   "health_insurance",        :limit => 150
+    t.string   "health_insurance_number", :limit => 50
+    t.string   "accident_contact"
   end
 
   add_index "internships", ["contact_id"], :name => "index_internships_on_contact_id"
@@ -353,14 +359,6 @@ ActiveRecord::Schema.define(:version => 20150306213423) do
   end
 
   add_index "laboratories", ["campus_id"], :name => "index_laboratories_on_campus_id"
-
-  create_table "payment_files", :force => true do |t|
-    t.string   "descripcion"
-    t.string   "file"
-    t.integer  "status"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-  end
 
   create_table "permission_users", :force => true do |t|
     t.integer  "user_id"
@@ -557,6 +555,7 @@ ActiveRecord::Schema.define(:version => 20150306213423) do
     t.integer  "deleted",                            :default => 0
     t.datetime "deleted_at"
     t.integer  "studies_plan_id"
+    t.integer  "external_supervisor"
   end
 
   add_index "students", ["campus_id"], :name => "index_students_on_campus_id"

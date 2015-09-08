@@ -63,10 +63,15 @@
       .field#field_internship_last_name
         = f.label :last_name, mark_required(@internship, :last_name) + 'Apellidos'
         = f.text_field :last_name
+      
 
       .field#field_internship_email
         = f.label :email, 'Correo Electrónico'
         = f.email_field :email
+ 
+      .field#field_internship_phone
+        = f.label :phone, 'Teléfono de contacto'
+        = f.text_field :phone
 
       - if @internship.institution_id.to_i != 1
         .field#field_internship_institution_id
@@ -140,13 +145,22 @@
         = f.label :activities, 'Actividades a desempeñar'
         = f.text_area :activities
 
-      .field#field_internship_blood_type
-        = f.label :blood_type, 'Tipo de sangre'
-        = f.text_field :blood_type
-
       .field#field_internship_status
         = f.label :status, 'Estado'
         = f.select :status,  Internship::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+
+      .field#field_internship_health_insurance
+        = f.label :health_insurance, 'Servicio médico'
+        = f.text_field :health_insurance
+  
+      .field#field_internship_health_insurance_number
+        = f.label :health_insurance_number, 'Número de afiliación'
+        = f.text_field :health_insurance_number
+  
+      .field#field_internship_health_insurance_number
+        = f.label :accident_contact, "Avisar en caso de accidente"
+        = f.text_field :accident_contact
+
 
     #contacto
       %h2 Contacto

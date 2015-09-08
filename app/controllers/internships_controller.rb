@@ -562,6 +562,11 @@ class InternshipsController < ApplicationController
     @bp          = Country.find(i.country_id).name rescue "" #born_place
     @institution = Institution.find(i.institution_id).name rescue ""
     @email       = i.email
+    @i_type      = InternshipType.find(i.internship_type_id).name rescue ""
+    @phone       = i.phone
+    @smedico     = i.health_insurance
+    @nsmedico    = i.health_insurance_number
+    @contacto    = i.accident_contact
 
     @r_root  = Rails.root.to_s
     filename = "private/files/internships/#{i.id}"
@@ -569,12 +574,17 @@ class InternshipsController < ApplicationController
     template = "#{@r_root}/private/prawn_templates/form_reg_estudiantes_externos.pdf"
     Prawn::Document.generate("#{filename}/registro.pdf", :template => template)
     pdf = Prawn::Document.new(:template => template)
-    pdf.draw_text i.full_name,  :at=>[60,613], :size=>10
-    pdf.draw_text @genero,      :at=>[50,600], :size=>10
-    pdf.draw_text @birth,       :at=>[120,587], :size=>10
-    pdf.draw_text @bp,          :at=>[120,574], :size=>10
-    pdf.draw_text @institution, :at=>[142,561], :size=>10
-    pdf.draw_text @email,       :at=>[105,548], :size=>10
+    pdf.draw_text i.full_name,  :at=>[60,567], :size=>10
+    pdf.draw_text @genero,      :at=>[49,554], :size=>10
+    pdf.draw_text @birth,       :at=>[117,541], :size=>10
+    pdf.draw_text @bp,          :at=>[115,527], :size=>10
+    pdf.draw_text @institution, :at=>[142,514], :size=>10
+    pdf.draw_text @i_type,      :at=>[181,501], :size=>10
+    pdf.draw_text @phone,       :at=>[60,488], :size=>10
+    pdf.draw_text @email,       :at=>[105,475], :size=>10
+    pdf.draw_text @smedico,     :at=>[175,462], :size=>10
+    pdf.draw_text @nsmedico,    :at=>[152,448], :size=>10
+    pdf.draw_text @contacto,    :at=>[160,435], :size=>10
     pdf.render_file "#{filename}/registro.pdf"
 
     token = Token.new

@@ -30,6 +30,22 @@
   .field#field_internship_email
     = f.label :email, 'Correo Electrónico'
     = f.email_field :email
+  
+  .field#field_internship_phone
+    = f.label :phone, 'Teléfono de contacto'
+    = f.text_field :phone
+  
+  .field#field_internship_health_insurance
+    = f.label :health_insurance, 'Servicio médico'
+    = f.text_field :health_insurance
+  
+  .field#field_internship_health_insurance_number
+    = f.label :health_insurance_number, 'Número de afiliación o poliza'
+    = f.text_field :health_insurance_number
+  
+  .field#field_internship_health_insurance_number
+    = f.label :accident_contact, 'Contacto en caso de accidente'
+    = f.text_field :accident_contact
 
   .field#field_internship_institution_id
     = f.label :institution_id, 'Institución'
