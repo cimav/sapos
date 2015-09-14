@@ -17,5 +17,6 @@ db/seed-data/
 .swo
 sapos.esproj
 Gemfile.lock
+nohup.out
 
 config/environment.rb
