@@ -130,6 +130,7 @@ class StudentsController < ApplicationController
       end
       format.xls do
 	rows = Array.new
+        now = Time.now.utc
 	@students.collect do |s|
 	  if s.status == Student::GRADUATED || s.status == Student::FINISH
 	    end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
@@ -144,12 +145,16 @@ class StudentsController < ApplicationController
 	  end
 
 
+          age = now.year - s.date_of_birth.year - (s.date_of_birth.to_time.change(:year => now.year) > now ? 1 : 0)
+
+
 	  rows << {'Matricula' => s.card,
 		   'Nombre' => s.first_name,
 		   'Apellidos' => s.last_name,
                    'Sexo' => s.gender,
 		   'Estado' => s.status_type,
 		   "Fecha_Nac" => s.date_of_birth,
+                   "Edad(#{now.year})" => age, 
 		   "Ciudad_Nac" => s.city,
 		   "Estado_Nac" => (s.state.name rescue ''),
 		   "Pais_Nac" => (s.country.name rescue ''),
@@ -169,7 +174,7 @@ class StudentsController < ApplicationController
 		   'Sinodal5' => (Staff.find(s.thesis.examiner5).full_name rescue ''),
 		   }
 	end
-	column_order = ["Matricula", "Nombre", "Apellidos", "Sexo", "Estado", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
+	column_order = ["Matricula", "Nombre", "Apellidos", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
 	to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
