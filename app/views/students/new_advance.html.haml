@@ -1,4 +1,4 @@
-= form_for(@student, :remote=>true,:url => { :action => "create_advance" }) do |f|
+= form_for(@student, :url => { :action => "create_advance" }) do |f|
   = hidden_field_tag 'student_id', @student.id
   = hidden_field_tag 'student[advance_attributes][0][student_id]', @student.id
   = fields_for "student[advance_attributes][0]" do |fields|
