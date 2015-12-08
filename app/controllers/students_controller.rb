@@ -146,7 +146,7 @@ class StudentsController < ApplicationController
 
 
           age = now.year - s.date_of_birth.year - (s.date_of_birth.to_time.change(:year => now.year) > now ? 1 : 0)
-
+          last_advance = s.advance.where(:status=>["P"],).order(:advance_date).first
 
 	  rows << {'Matricula' => s.card,
 		   'Nombre' => s.first_name,
@@ -172,9 +172,15 @@ class StudentsController < ApplicationController
 		   'Sinodal3' => (Staff.find(s.thesis.examiner3).full_name rescue ''),
 		   'Sinodal4' => (Staff.find(s.thesis.examiner4).full_name rescue ''),
 		   'Sinodal5' => (Staff.find(s.thesis.examiner5).full_name rescue ''),
+                   'Fecha_Avance' => last_advance.advance_date,
+                   'Tutor1' => (Staff.find(last_advance.tutor1).full_name rescue ''),
+                   'Tutor2' => (Staff.find(last_advance.tutor2).full_name rescue ''),
+                   'Tutor3' => (Staff.find(last_advance.tutor3).full_name rescue ''),
+                   'Tutor4' => (Staff.find(last_advance.tutor4).full_name rescue ''),
+                   'Tutor5' => (Staff.find(last_advance.tutor5).full_name rescue ''),
 		   }
 	end
-	column_order = ["Matricula", "Nombre", "Apellidos", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
+	column_order = ["Matricula", "Nombre", "Apellidos", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
 	to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
@@ -449,8 +455,9 @@ class StudentsController < ApplicationController
   end
 
   def new_advance
-    @student = Student.find(params[:id])
-    @staffs = Staff.where(:status=>0).order('first_name')
+    @student      = Student.find(params[:id])
+    @staffs       = Staff.where(:status=>0).order('first_name')
+    @last_advance = @student.advance.where(:status=>["P","C"],).order(:advance_date).first
     render :layout => 'standalone'
   end
 
