@@ -1,0 +1,38 @@
+= form_for @committee_session, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
+  .resource-header
+    .resource-picture
+    .resource-title
+      %h1= "Programar Sesión"
+    .resource-save
+      = f.submit 'Programar'
+  
+  #resource-tabs
+    %ul
+      %li.first-tab= link_to "Sesión", "#sesion"
+    
+    #sesion
+      %h2= "Sesión"
+      .field#field_committee_session_type
+        = f.label :session_type, 'Tipo'
+        = f.select :session_type, CommitteeSession::TYPES.invert.sort {|a,b| a[1] <=> b[1]}.unshift(["Selecciona el tipo",""])
+      .field#field_committee_session_date
+        = f.label :date, 'Fecha y hora'
+        = f.text_field :date, :readonly=>true
+        =select_tag :session_hour,options_for_select(("00".."23").to_a), :prompt=> "--"
+        = ":"
+        =select_tag :session_minutes,options_for_select(("00".."59").to_a), :prompt=> "--"
+      .field#div_attendees
+        =hidden_field_tag "hidden_attendees",""
+      .field#field_committee_session_attendees
+        = label_tag "staff_label","Asistentes"
+        = select_tag "staff_combo", options_from_collection_for_select(@staffs, "id", "full_name_upcase"), :prompt=>"-- SELECCIONA ASISTENTE --"
+      .field#div_attendees_total
+        = "Total:"
+        %span{:id=>"staff_span_total"}="0"
+:javascript
+  $(document).ready(function(){
+    start_datepicker();
+    $('#staff_combo').select2();
+    $('#session_hour').select2();
+    $('#session_minutes').select2();
+  });

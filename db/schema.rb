@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150908234515) do
+ActiveRecord::Schema.define(:version => 20151126212139) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -135,6 +135,66 @@ ActiveRecord::Schema.define(:version => 20150908234515) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "status"
+  end
+
+  create_table "committee_agreement_files", :force => true do |t|
+    t.integer  "committee_agreement_id"
+    t.string   "description"
+    t.string   "file"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
+  add_index "committee_agreement_files", ["committee_agreement_id"], :name => "index_committee_agreement_files_on_committee_agreement_id"
+
+  create_table "committee_agreement_notes", :force => true do |t|
+    t.integer  "committee_agreement_id"
+    t.text     "notes"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
+  create_table "committee_agreement_people", :force => true do |t|
+    t.integer  "committee_agreement_id"
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
+  add_index "committee_agreement_people", ["committee_agreement_id"], :name => "index_committee_agreement_people_on_committee_agreement_id"
+
+  create_table "committee_agreement_types", :force => true do |t|
+    t.string   "description"
+    t.integer  "authorization"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  create_table "committee_agreements", :force => true do |t|
+    t.integer  "committee_agreement_type_id"
+    t.integer  "committee_session_id"
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
+    t.text     "notes"
+    t.string   "auth"
+  end
+
+  create_table "committee_session_attendees", :force => true do |t|
+    t.integer  "committee_session_id"
+    t.integer  "staff_id"
+    t.integer  "department_id"
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
+    t.boolean  "checked",              :default => false
+  end
+
+  create_table "committee_sessions", :force => true do |t|
+    t.integer  "session_type"
+    t.integer  "status"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+    t.datetime "date"
   end
 
   create_table "contacts", :force => true do |t|

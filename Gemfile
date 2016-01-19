@@ -1,7 +1,9 @@
+#ruby=ruby-2.0.0-p643
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.3'
-gem 'mysql2'
+gem 'rails', '3.2.14'
+#gem 'mysql2'
+gem 'mysql2', '~> 0.3.10'
 gem 'json'
 gem 'jquery-rails'
 
@@ -23,8 +25,8 @@ gem 'rmagick'
 gem 'spreadsheet'
 gem 'pdfkit'
 gem 'cancan'
-gem 'prawn', '0.11.1'
-#gem 'prawn-table'
+gem 'prawn'
+gem 'prawn-table'
 
 gem 'zipruby'
 gem 'fileutils'

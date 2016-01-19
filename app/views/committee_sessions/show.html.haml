@@ -1,0 +1,89 @@
+= form_for @c_session, :remote => true, :html => { :'data-type' => 'html', :id => 'item-edit-form' } do |f|
+  - if @c_session.status.eql? 3
+    - readonly     = true
+    - display_type = "none"
+    - display_memo = "block"
+  - else
+    - readonly     = false 
+    - display_type = "inline-block"
+    - display_memo = "none"
+ 
+  = hidden_field :c_session, :id
+  .resource-header
+    .resource-picture
+    .resource-title
+      %h1= "Sesión"
+    .resource-save
+      = f.submit 'Finalizar'
+  
+  #resource-tabs
+    %ul
+      %li.first-tab= link_to "Sesión", "#sesion"
+      %li= link_to "Acuerdos", "#agreements"
+    
+    #sesion
+      %h2= "Sesión #{@c_session.id}"
+      .field#field_committee_session_type
+        = f.label :session_type, 'Tipo'
+        =# f.select :session_type, CommitteeSession::TYPES.invert.sort {|a,b| a[1] <=> b[1]}.unshift(["Selecciona el tipo",""])
+        = CommitteeSession::TYPES[@c_session.session_type]
+      .field#field_committee_session_date
+        = f.label :date, 'Fecha y hora'
+        = f.text_field :date, :readonly=>true, :disabled=>readonly
+        =select_tag :session_hour,options_for_select(("00".."23").to_a,@hour), :prompt=> "--", :disabled=>readonly
+        = ":"
+        =select_tag :session_minutes,options_for_select(("00".."59").to_a,@minutes), :prompt=> "--", :disabled=>readonly
+      .field#div_attendees
+        =hidden_field_tag "hidden_attendees",""
+        = "Asistencia"
+        %br
+        = image_tag "/images/ajax-load2.gif", :id=> "img_load_sesion" , :align=> 'center',:style=>'display: none;'
+        .rolldiv
+          - @attendees.each do |a|
+            %span{:id=>"staff_span_#{a.id}",:class=>"staff-span"}
+              = hidden_field_tag "staff_#{a.id}",a.staff_id,:class=>"staff_hidden"
+              = a.staff.full_name
+              = check_box_tag "chbx_#{a.id}", a.id, a.checked, :class=>"roll-checkbox",:disabled=>readonly
+              - if !readonly
+                %span{:class=>"delete-attendee-span"}
+                  = "["
+                  %u{:class=>"delete-attendee",:id=>"delete_attendee_#{a.id}",:my_id=>a.id,:style=>"cursor: pointer"}="eliminar"
+                  = "]"
+              %br
+      .field#field_committee_session_attendees
+        = label_tag "staff_label","Asistentes"
+        = select_tag "staff_combo", options_from_collection_for_select(@staffs, "id", "full_name_upcase"), prompt: "--Seleccionar asistente--",:disabled=>readonly
+    #agreements
+      %h2= "Acuerdos Sesión #{@c_session.id}"
+      .field#div_agreements
+        = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
+      .field#div_agreements_combo
+
+        = label_tag "agreement_label", "Acuerdos", :style=>"display:#{display_type}",:class=>"agreement-group"
+        - if !display_type.eql? "none"
+          = select_tag "agreement_combo", options_from_collection_for_select(@agreement_types,"id","name"), prompt: "--Seleccionar tipo de acuerdo--", :class=>"agreement-group",:disabled=>readonly
+        = button_tag "Agregar acuerdo", :type=>"button", :id=>"agreement_button", :style=>"display:#{display_type}",:class=>"agreement-group"
+        = button_tag "Imprimir minuta", :type=>"button", :id=>"memorandum_button",:style=>"display:#{display_memo}"
+        #signatories{:style=>"display:#{display_memo}"}
+          %br
+          = radio_button_tag "signer","1",true
+          = "Lic. Sandra Luz Beltrán Lagunas"
+          %br
+          = radio_button_tag "signer","2"
+          = "M.H. Carmen Nicté Ortiz Villanueva"
+          %br
+          = radio_button_tag "signer","3"
+          = "Dr. Erasmo Orrantia Borunda"
+        -# @agreement_types.each do |at|
+          = at.name
+          %br
+      
+:javascript
+  $(document).ready(function(){
+    start_datepicker();
+    get_committee_agreements();
+    $('#staff_combo').select2();
+    $('#session_hour').select2();
+    $('#session_minutes').select2();
+    $('#agreement_combo').select2();
+  });

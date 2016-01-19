@@ -39,13 +39,24 @@ class Staff < ActiveRecord::Base
   STATUS = {ACTIVE    => 'Activo',
             INACTIVE  => 'Inactivo'}
 
-
   def full_name
     "#{first_name} #{last_name}" rescue ''
   end
 
   def full_name_by_last
     "#{last_name} #{first_name}" rescue ''
+  end
+
+  def full_name_upcase
+     self.full_name.mb_chars.upcase rescue ''
+  end
+
+  def full_name_cap
+    new_name = ""
+    self.full_name.split(" ").each do |word|
+      new_name = "#{new_name} #{word.mb_chars.capitalize}"
+    end
+    return new_name
   end
 
   def add_extra
@@ -65,5 +76,4 @@ class Staff < ActiveRecord::Base
     end
     active_items
   end
-
 end

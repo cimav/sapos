@@ -1,0 +1,12 @@
+%ul.panel-list
+  - c = 0
+  - @c_sessions.each do |cs|
+    - c += 1
+    %li 
+      = link_to cs, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "c_session_link_#{cs.id}" do
+        = "#{cs.id}"
+        .title= "Sesión #{CommitteeSession::TYPES[cs.session_type]}"
+        .comment{:id=>"comment_session_#{cs.id}"}= CommitteeSession::STATUS[cs.status]
+        .comment= cs.date
+#counter
+  .inner= "#{c} sesiones"
