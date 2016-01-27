@@ -1,7 +1,7 @@
 - @page_title = "Inscripciones"
 - @nav_icon   = "Inscripciones"
-- @new_term   = "2015-2"
-- @old_term   = "2015-1"
+- @new_term   = "2016-1"
+- @old_term   = "2015-2"
 
 #content-panel
   :javascript
@@ -23,7 +23,7 @@
             %th="Alumno"
             %th="En ciclo"
             %th="Materias Elegidas"
-            %th="Pago"
+            %th="Folio"
           - @students.each_with_index do |s,index|
             - tcs = []
             - tsp = []
@@ -34,16 +34,16 @@
               %td
                 - if ts.size>0
                   - tcs = TermCourseStudent.where(:term_student_id=>ts[0].id)
-                  - tsp = TermStudentPayment.where(:term_student_id=>ts[0].id,:status=>3)
+                  - tsp = TermStudentPayment.where(:term_student_id=>ts[0].id)
                   = "Si"
+                  - if ts[0].status.eql? 7
+                    = "(Rechazado)"
                 - else
                   = "No"
               %td= tcs.size
               %td
                 - if tsp.size>0
-                  = "Si"
-                - else
-                  = "No"
+                  = tsp[0].folio
       
       %h2="Alumnos inscritos [#{@new_term}]"
       
@@ -52,19 +52,25 @@
           %tr.header
             %th="#"
             %th="Alumno"
+            %th="Programa"
           - @s = Student.joins(:term_students=>:term).where("students.status=? and terms.name like '%#{@new_term}%'",1)
           - @s.each_with_index do |s,index|
             %tr
-              %td= index + 1
-              %td= s.full_name
+              - if s.term_students.size>1 and !s.program.level.eql? 3
+                %td= index + 1
+                %td= s.full_name
+                %td= s.program.name
+
 
       %b= "Notas: "
       %br
       %b= "1) Si ya esta en ciclo pero no tiene materias elegidas es que el asesor aprobó la inscripción sin materias lo cual es válido"
       %br
-      %b= "2) Si ya esta en ciclo y ya pagó pero todavía aparece en la lista de preinscritos es que no ha aceptado su inscripción desde el sitio de alumnos"
+      %b= "2) Si ya esta en ciclo y tiene folio pero todavía aparece en la lista de preinscritos es que el asesor no ha aceptado la inscripción"
       %br
-      %b= "3) Si no aparece en las listas es que no se ha aprobado su inscripción y no ha pasado a estatus de preinscrito"
+      %b= "3) Si no aparece en las listas es que no se ha aprobado su inscripción y no ha pasado a estatus de preinscrito para el ciclo indicado"
+      %br
+      %b= "4) Si aparece rechazado es que su asesor le devolvio las materias, esperamos a que vuelva a elegir"
       
     -#pagos
       -#%h2 Pagos
