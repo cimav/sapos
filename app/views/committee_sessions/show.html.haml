@@ -33,6 +33,11 @@
         =select_tag :session_hour,options_for_select(("00".."23").to_a,@hour), :prompt=> "--", :disabled=>readonly
         = ":"
         =select_tag :session_minutes,options_for_select(("00".."59").to_a,@minutes), :prompt=> "--", :disabled=>readonly
+      .field#field_committe_session_end_date
+        = "Hora de termino de la sesión"
+        = select_tag :end_session_hour,options_for_select(("00".."23").to_a,@ehour), :prompt=> "--", :disabled=>readonly
+        = ":"
+        = select_tag :end_session_minutes,options_for_select(("00".."59").to_a,@eminutes), :prompt=> "--", :disabled=>readonly
       .field#div_attendees
         =hidden_field_tag "hidden_attendees",""
         = "Asistencia"
@@ -85,5 +90,7 @@
     $('#staff_combo').select2();
     $('#session_hour').select2();
     $('#session_minutes').select2();
+    $('#end_session_hour').select2();
+    $('#end_session_minutes').select2();
     $('#agreement_combo').select2();
   });

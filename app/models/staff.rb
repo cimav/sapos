@@ -51,6 +51,12 @@ class Staff < ActiveRecord::Base
      self.full_name.mb_chars.upcase rescue ''
   end
 
+  def full_name_upcase_origin
+      name_upcase = self.full_name.mb_chars.upcase rescue ''
+      origin  = self.institution.short_name
+      return "#{name_upcase} (#{origin})"
+  end
+
   def full_name_cap
     new_name = ""
     self.full_name.split(" ").each do |word|

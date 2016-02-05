@@ -49,7 +49,8 @@ class CommitteeSessionsController < ApplicationController
   def update
     parameters = {}
     @committee_session = CommitteeSession.find(params[:id])
-    @committee_session.status= 3
+    @committee_session.status = 3
+    @committee_session.end_session    = get_end_datetime(params)
     if @committee_session.save
       @message = "Sesion finalizada"
       render_message @committee_session,@message,parameters
@@ -59,6 +60,13 @@ class CommitteeSessionsController < ApplicationController
   end
 
 
+  def get_end_datetime(params)
+    date    = params[:committee_session][:date]
+    hour    = params[:end_session_hour]
+    minutes = params[:end_session_minutes]
+    return "#{date} #{hour}:#{minutes}:00"
+  end
+  
   def get_datetime(params)
     date    = params[:committee_session][:date]
     hour    = params[:session_hour]
@@ -68,21 +76,26 @@ class CommitteeSessionsController < ApplicationController
 
   def show
     @c_session       = CommitteeSession.find(params[:id])
-    @attendees       = CommitteeSessionAttendee.where(:committee_session_id=>params[:id]) 
+    @attendees       = CommitteeSessionAttendee.where(:committee_session_id=>params[:id])
     @staffs          = Staff.where(:status=>0,:institution_id=>1)
     @agreement_types = CommitteeAgreementType.all
- 
+
     my_date          = @c_session.date.to_s()
     @c_session.date  = my_date.split(" ")[0]
     @hour            = my_date.split(" ")[1].split(":")[0] rescue ""
     @minutes         = my_date.split(" ")[1].split(":")[1] rescue ""
+    
+    my_date                 = @c_session.end_session.to_s()
+    #@c_session.end_session  = my_date.split(" ")[0]
+    @ehour            = my_date.split(" ")[1].split(":")[0] rescue ""
+    @eminutes         = my_date.split(" ")[1].split(":")[1] rescue ""
     render :layout => false
   end
 
   def agreements
     @a_id = params[:a_id]
     @s_id = params[:s_id]
- 
+
     @committee_agreements = []
     @committee_session = CommitteeSession.find(@s_id)
     if @a_id.eql? "todos"
@@ -90,13 +103,13 @@ class CommitteeSessionsController < ApplicationController
     else
       ## NUEVO INGRESO
       @committee_agreement = CommitteeAgreement.new
-    
+
       @committee_agreement.committee_agreement_type_id= @a_id
       @committee_agreement.committee_session_id= @s_id
       @committee_agreement.save
-    
+
       @committee_agreements << @committee_agreement
-     
+
     end
     render :layout => false
   end
@@ -110,7 +123,7 @@ class CommitteeSessionsController < ApplicationController
     CommitteeAgreementPerson.find(params[:s_id]).delete
     render :layout => false
   end
-  
+
   def save_text_agreement
     @a_id= params[:a_id]
     @can = CommitteeAgreementNote.where(:committee_agreement_id=>@a_id)[0]
@@ -127,10 +140,11 @@ class CommitteeSessionsController < ApplicationController
   end
 
   def add_person
-    @a_id        = params[:a_id] 
+    @a_id        = params[:a_id]
     @p_id        = params[:id]
     @person_type = params[:person]
-    
+    @aux         = nil
+
     json       = {}
     @action    = "new"
     @estatus   = 1
@@ -167,7 +181,9 @@ class CommitteeSessionsController < ApplicationController
       @cap = @cap[0]
     elsif @person_type.eql? "sinodales"
       @cap = CommitteeAgreementPerson.where(:committee_agreement_id=>@a_id,:attachable_type=>"Staff")
-      if @cap.size>4
+      @aux = params[:aux]
+      if @cap.size>10
+      #if @cap.size>4
        ## mas de 5 sinodales
         @estatus = 4
         json[:estatus] = 4
@@ -192,6 +208,7 @@ class CommitteeSessionsController < ApplicationController
       if @action.eql? "new"
         @cap = CommitteeAgreementPerson.new
         @cap.committee_agreement_id = @a_id
+        @cap.aux = @aux
       end
         @cap.attachable_id   = @person.id
         @cap.attachable_type = @person.class.to_s
@@ -205,19 +222,19 @@ class CommitteeSessionsController < ApplicationController
   end
 
   def add_auth
-    @a_id        = params[:a_id] 
+    @a_id        = params[:a_id]
     @p_id        = params[:id]
-   
+
     @ca = CommitteeAgreement.find(@a_id)
     @ca.auth = @p_id
     @ca.save
     render :layout => false
   end
-  
+
   def add_note
-    @a_id        = params[:a_id] 
+    @a_id        = params[:a_id]
     @note        = params[:note]
-   
+
     @ca = CommitteeAgreement.find(@a_id)
     @ca.notes = "[#{@note}]"
     @ca.save
@@ -229,7 +246,7 @@ class CommitteeSessionsController < ApplicationController
     @term_program = Term.find(@term).program_id rescue nil
     @courses = Course.select("id,name").where(:status=>1)
     @courses = Course.joins(:program).select("courses.id,courses.name,programs.prefix").where(:status=>1)
-    
+
     json = {}
     json[:courses] = @courses
     render :json => json
@@ -247,7 +264,7 @@ class CommitteeSessionsController < ApplicationController
     @csa.committee_session_id = params[:cs_id]
     @csa.staff_id             = params[:st_id]
     @csa.save
-     
+
     render :layout => false
   end
 
@@ -255,14 +272,14 @@ class CommitteeSessionsController < ApplicationController
     CommitteeSessionAttendee.find(params[:csa_id]).delete
     return :layout=> false
   end
-  
+
   def document_agreement
     @r_root = Rails.root.to_s
- 
+
     @s_id = params[:s_id]  ## signer_id
     @c_a  = CommitteeAgreement.find(params[:a_id])  ## committee_agreement
     @c_s  = @c_a.committee_session                  ## committee_agreement_session
-    @type = @c_a.committee_agreement_type.id 
+    @type = @c_a.committee_agreement_type.id
 
     if @s_id.to_i.eql? 1
       @signer = "Lic. Sandra Luz Beltrán Lagunas\nUnidad de Servicios Escolares"
@@ -292,7 +309,7 @@ class CommitteeSessionsController < ApplicationController
     @render_pdf = false
     @rectangles = false
     @nbsp = Prawn::Text::NBSP
- 
+
     filename = "/home/enrique/sapos/private/prawn_templates/membretado_2.png"
     Prawn::Document.new(:background => filename, :background_scale=>0.33, :margin=>60 ) do |pdf|
       ############# CABECERA
@@ -307,28 +324,28 @@ class CommitteeSessionsController < ApplicationController
       @session_type    = CommitteeSession::TYPES[@c_s.session_type].downcase
 
       pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{today.day} de #{get_month_name(today.month)} de #{today.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h
- 
+
       ## corpo segun tipo
       ############################### NUEVO INGRESO ###################################
       if @type.eql? 1
         @render_pdf = true
-        x = 0 
+        x = 0
         y = 500
       ############################### PERMANENCIA ###################################
       elsif @type.eql? 2
         @render_pdf = true
         # PRESENTE
-        x = 0 
+        x = 0
         y = 555
         w = 300
         h = 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         s     = @c_a.committee_agreement_person.where(:attachable_type=>"Student")
-        notes = @c_a.committee_agreement_note[0].notes
+        notes = @c_a.committee_agreement_note[0].notes rescue ""
         l_date     = Date.parse(@c_a.notes[/\[(.*?)\]/m,1]) rescue ""
-        student    = Student.find(s[0].id)
+        student    = Student.find(s[0].attachable_id)
         supervisor = Staff.find(student.supervisor)
-     
+
         if @c_a.auth.to_i.eql? 1 ####### Si
           ############ PRORROGA
           pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
@@ -336,12 +353,12 @@ class CommitteeSessionsController < ApplicationController
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
           # CONTENIDO
-          y = y - 60 
+          y = y - 60
           w = 510
           h = 180
           texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del pasado #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} del Comité de Estudios de Posgrado se ha autorizado una prórroga para presentar sus requisitos de titulación ante este comité a mas tardar el #{l_date.day} de #{get_month_name(l_date.month)} de #{l_date.year}."
- 
-          if notes.blank? 
+
+          if notes.blank?
             texto = "#{texto}\n\n"
           else
             texto = "#{texto}\n\n#{notes}\n\n"
@@ -359,14 +376,14 @@ class CommitteeSessionsController < ApplicationController
           texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
           pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
-        else 
+        else
           ############ CONSTANCIA DE BAJA
           pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
           y = y - 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
           # CONTENIDO
-          y = y - 60 
+          y = y - 60
           w = 510
           h = 80
           texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del pasado #{s_date.day} de #{get_month_name(s_date.month)} del Comité de Estudios de Posgrado, se ha determinado su baja definitiva por incumplimiento del Programa de #{student.program.name}, con base en el artículo 30 del Reglamento de Estudios de Posgrado vigente que establece que el estudiante podrá ser dado de baja por:\n\n"
@@ -401,7 +418,7 @@ class CommitteeSessionsController < ApplicationController
       ############################### CAMBIO DE PROGRAMA ###################################
       elsif @type.eql? 3
         #@rectangles  = true
-        x = 0 
+        x = 0
         y = 555
         w = 300
         h = 15
@@ -416,7 +433,7 @@ class CommitteeSessionsController < ApplicationController
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
-        y = y - 60 
+        y = y - 60
         w = 510
         h = 80
         texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del pasado #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.month} del Comité de Estudios de Posgrado, se ha autorizado el cambio de programa de #{student.program.name} al de #{program.name},\n\n Por lo anterior, deberá cumplir con la carga académica de acuerdo al plan de estudios aplicable en el Programa de posgrado que fue autorizado.\n\n Me encuentro a sus ordenes cualquier duda al respecto\n\n"
@@ -440,7 +457,7 @@ class CommitteeSessionsController < ApplicationController
         supervisor     = Staff.find(student.supervisor)
         new_supervisor = Staff.find(tutor[0].attachable_id)
         # PRESENTE
-        x = 0 
+        x = 0
         y = 555
         w = 300
         h = 15
@@ -450,7 +467,7 @@ class CommitteeSessionsController < ApplicationController
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
-        y = y - 60 
+        y = y - 60
         w = 510
         h = 100
         texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del Comité de Estudios de Posgrado del pasado #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} se le ha nombrado como director de tesis de #{student.full_name} del Programa de #{student.program.name}.\n\n A continuación le informo los avances que deberá tener el estudiante durante su trayectoria académica: \n\n"
@@ -488,8 +505,8 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 5
         @render_pdf  = true
         s            = @c_a.committee_agreement_person.where(:attachable_type=>"Student")
-        tutors       = @c_a.committee_agreement_person.where(:attachable_type=>"Staff")
-        student      = Student.find(s[0].id)
+        tutors       = @c_a.committee_agreement_person.where(:attachable_type=>"Staff",:aux=>1)
+        student      = Student.find(s[0].attachable_id)
         supervisor   = Staff.find(student.supervisor)
         comma_tutors = ""
         tutors.each do |t|
@@ -497,7 +514,7 @@ class CommitteeSessionsController < ApplicationController
           comma_tutors = "#{comma_tutors}#{tutor.title} #{tutor.full_name_cap}, "
         end
         # PRESENTE
-        x = 0 
+        x = 0
         y = 555
         w = 480
         h = 15
@@ -513,14 +530,14 @@ class CommitteeSessionsController < ApplicationController
         w = 200
         h = 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presentes.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a ustedes que el comité de estudios de posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} los ha nombrado sinodales de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} lo ha nombrado sinodal de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
@@ -551,7 +568,7 @@ class CommitteeSessionsController < ApplicationController
           comma_tutors = "#{comma_tutors}#{tutor.title} #{tutor.full_name_cap}, "
         end
         # PRESENTE
-        x = 0 
+        x = 0
         y = 555
         w = 480
         h = 15
@@ -575,7 +592,7 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a ustedes que el comité de estudios de posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} los nombró integrantes del Comité Tutoral de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} lo ha nombrado integrante del Comité Tutoral de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
@@ -599,9 +616,9 @@ class CommitteeSessionsController < ApplicationController
         cap1        = @c_a.committee_agreement_person.where(:attachable_type=>"Student").first
         student     = Student.find(cap1.attachable_id) rescue nil
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
-        staff       = Staff.find(cap.attachable_id) 
+        staff       = Staff.find(cap.attachable_id)
         notes       = @c_a.committee_agreement_note[0].notes rescue ""
-        mtype       = @c_a.notes[/\[(.*?)\]/m,1]
+        mtype       = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
 
 
         if mtype.to_i.eql? 1
@@ -610,7 +627,7 @@ class CommitteeSessionsController < ApplicationController
           mtype = "Miembro del Comité Tutoral"
         end
         ## PRESENTACION
-        x = 0 
+        x = 0
         y = 555
         w = 300
         h = 15
@@ -624,7 +641,7 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el comité de estudios de posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} lo ha nombrado #{mtype rescue "N.D"} del alumno #{student.full_name rescue "N.D"} adscrito al programa de #{student.program.name rescue "N.D"}.\n\n Lo anterior con base en la normatividad aplicable, articulo 11 del Reglamento de Estudios de Posgrado.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} lo ha nombrado #{mtype rescue "N.D"} del alumno #{student.full_name rescue "N.D"} adscrito al programa de #{student.program.name rescue "N.D"}.\n\n Lo anterior con base en la normatividad aplicable, articulo 11 del Reglamento de Estudios de Posgrado.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
@@ -638,13 +655,13 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 8
         @render_pdf = true
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
-        staff       = Staff.find(cap.attachable_id) 
-        c_id        = @c_a.notes[/\[(.*?)\]/m,1]
-        course      = Course.find(c_id) 
+        staff       = Staff.find(cap.attachable_id)
+        c_id        = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
+        course      = Course.find(c_id)
         t_id        = @c_a.auth
-        term        = Term.find(t_id) 
+        term        = Term.find(t_id)
         ## PRESENTACION
-        x = 0 
+        x = 0
         y = 555
         w = 300
         h = 15
@@ -658,8 +675,8 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el comité de estudios de posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} lo ha nombrado docente responsable del curso #{course.name} correspondiente al ciclo escolar #{term.code} que se llevará a cabo del #{term.start_date.day} de #{get_month_name(term.start_date.month)} de #{term.start_date.year} al #{term.end_date.day} de #{get_month_name(term.end_date.month)} de #{term.end_date.year}."     
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
+        text = "#{text} lo ha nombrado docente responsable del curso #{course.name} correspondiente al ciclo escolar #{term.code} que se llevará a cabo del #{term.start_date.day} de #{get_month_name(term.start_date.month)} de #{term.start_date.year} al #{term.end_date.day} de #{get_month_name(term.end_date.month)} de #{term.end_date.year}."
         text = "#{text} \n\nEn caso de ser un curso coordinado, le pido nos haga llegar la distribución de docentes por fechas con el fin de que sean cargados en el sistema administrativo de posgrado."
         text = "#{text}\n\n Agradecemos de antemano su apoyo en la formación de recursos humanos y quedamos a sus ordenes para cualquier duda al respecto."
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
@@ -672,19 +689,19 @@ class CommitteeSessionsController < ApplicationController
         texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
         pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
-        
+
       ############################### AUTORIZACION DE MATERIAS NUEVAS ###################################
       elsif @type.eql? 9
         @render_pdf = true
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
-        staff       = Staff.find(cap.attachable_id) 
-        c_id        = @c_a.notes[/\[(.*?)\]/m,1]
-        course      = Course.find(c_id) 
+        staff       = Staff.find(cap.attachable_id)
+        c_id        = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
+        course      = Course.find(c_id)
         t_id        = @c_a.auth
-        term        = Term.find(t_id) 
+        term        = Term.find(t_id)
         notes       = @c_a.committee_agreement_note[0].notes rescue ""
         ## PRESENTACION
-        x = 0 
+        x = 0
         y = 555
         w = 300
         h = 15
@@ -698,8 +715,8 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por instrucciones del comité de estudios de posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} me permito solicitar su apoyo para impartir el Curso \"#{notes}\" dentro de #{course.name} durante el ciclo escolar #{term.code} que se llevará a cabo del #{term.start_date.day} de #{get_month_name(term.start_date.month)} de #{term.start_date.year} al #{term.end_date.day} de #{get_month_name(term.end_date.month)} de #{term.end_date.year}."     
+        text = "Por instrucciones del Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
+        text = "#{text} me permito solicitar su apoyo para impartir el Curso \"#{notes}\" dentro de #{course.name} durante el ciclo escolar #{term.code} que se llevará a cabo del #{term.start_date.day} de #{get_month_name(term.start_date.month)} de #{term.start_date.year} al #{term.end_date.day} de #{get_month_name(term.end_date.month)} de #{term.end_date.year}."
         text = "#{text} \n\n Agradezco de antemano su apoyo y me encuentro a sus ordenes para cualquier duda al respecto."
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
@@ -721,13 +738,13 @@ class CommitteeSessionsController < ApplicationController
       ############################### PERMISO DE AUSENCIA ###################################
       elsif @type.eql? 12
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Student").first
-        student     = Student.find(cap.attachable_id) 
+        student     = Student.find(cap.attachable_id)
         auth        = @c_a.auth
         notes       = @c_a.committee_agreement_note[0].notes rescue ""
         if auth.to_i.eql? 1
           @render_pdf = true
           ## PRESENTACION
-          x = 0 
+          x = 0
           y = 555
           w = 300
           h = 15
@@ -762,13 +779,13 @@ class CommitteeSessionsController < ApplicationController
         @render_pdf = true
         auth   = @c_a.auth
         area   = Area.find(auth)
-        amount = @c_a.notes[/\[(.*?)\]/m,1]
-        notes  = @c_a.committee_agreement_note[0].notes
+        amount = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
+        notes  = @c_a.committee_agreement_note[0].notes rescue ""
         ## PRESENTACION
-        x = 0 
+        x = 0
         y = 555
         w = 300
-        h = 15
+        h = 30
         pdf.text_box "</b>#{area.leader}\n Jefe de #{area.name}\n CIMAV</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
         # CONTENIDO
         x = 0
@@ -777,8 +794,12 @@ class CommitteeSessionsController < ApplicationController
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         text = "En seguimiento al acuerdo tomado por el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} para la distribución de becas de posgrado me permito informar a usted que el monto total asignado a su departamento es por la cantidad de $#{amount}"
-        text = "#{text}\n\n #{notes}"
+        text = "#{text} para la distribución de becas de posgrado me permito informar a usted que el monto total asignado a su departamento es por la cantidad de $#{amount}."
+
+        if !notes.empty?
+          text = "#{text}\n\n #{notes}"
+        end
+
         text = "#{text} \n\n Es importante destacar que deberá presentarse un informe mensual del ejercicio de este presupuesto al Comité de Estudios de Posgrado en su sesión ordinaria"
         text = "#{text} \n\n Sin otro particular de momento me despido."
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
@@ -796,12 +817,12 @@ class CommitteeSessionsController < ApplicationController
         @render_pdf = true
         auth       = @c_a.auth
         area       = Area.find(auth)
-        amount     = @c_a.notes[/\[(.*?)\]/m,1]
-        notes      =   @c_a.committee_agreement_note[0].notes
+        amount     = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
+        notes      =   @c_a.committee_agreement_note[0].notes rescue ""
         cap        = @c_a.committee_agreement_person.where(:attachable_type=>"Internship").first
         internship = Internship.find(cap.attachable_id)
         ## PRESENTACION
-        x = 0 
+        x = 0
         y = 555
         w = 300
         h = 15
@@ -841,11 +862,61 @@ class CommitteeSessionsController < ApplicationController
       ###############################  ###################################
       elsif @type.eql? 18
         @render_pdf = false
+      ############################### ASIGNACION DE DIRECTOR ###################################
+      elsif @type.eql? 19
+        @render_pdf = true
+        cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Student").first
+        student     = Student.find(cap.attachable_id)
+        cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
+        staff       = Staff.find(cap.attachable_id)
+        director    = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
+        auth        = @c_a.auth
+        if director.to_i.eql? 1
+          director = "Director"
+        elsif director.to_i.eql? 2
+          director = "Co-Director"
+        elsif director.to_i.eql? 3
+          director = "Director Externo"
+        end
+        ## PRESENTACION
+        x = 0
+        y = 555
+        w = 300
+        h = 15
+        pdf.text_box "<b>#{staff.title} #{staff.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        y = y - 15
+        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        # CONTENIDO
+        x = 0
+        y = y - 60
+        w = 510
+        h = 170
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
+        if auth.to_i.eql? 1
+          auth = "lo ha nombrado"
+        elsif auth.to_i.eql? 2
+          auth = "ha rechazado su nombramiento como"
+        end
+        text = "#{text} #{auth} <b>#{director}</b> de <b>#{student.full_name}</b> del programa de <b>#{student.program.name}</b>."
+        text = "#{text} \n\n Me encuentro a sus ordenes para cualquier duda al respecto."
+        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        #  FIRMA
+        x = x + 110
+        y = y - 200
+        w = 300
+        h = 80
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+
       ############################### NO IDENTIFICADO ###################################
       else
         @render_pdf = false
       end
-      
+
       if @render_pdf
         send_data pdf.render, type: "application/pdf", disposition: "inline"
       else
@@ -859,10 +930,10 @@ class CommitteeSessionsController < ApplicationController
   def memorandum
     @rectangles = false
     @nbsp = Prawn::Text::NBSP
-    
+
     @c_s = CommitteeSession.find(params[:s_id])
     s_date           = @c_s.date
-    last_change      = @c_s.updated_at
+    last_change      = @c_s.end_session
     today            = Date.today
 
     filename = "/home/enrique/sapos/private/prawn_templates/membretado_2.png"
@@ -884,19 +955,15 @@ class CommitteeSessionsController < ApplicationController
           data << Array(Staff.find(csa.staff_id).full_name_cap)
         end
       end
-      
+
       tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>10,:padding=>3,:inline_format => true},:position=>:right)
       tabla.row(0).background_color = "F0F0F0"
       tabla.draw
-      
+
       pdf.move_down 20
       data = []
       data << ["<b>Orden del día</b>"]
-      @committee_agreements = CommitteeAgreement.where(:committee_session_id=>@c_s.id)
-      @committee_agreements.each do |ca|
-        data << get_array_agreement_order(ca)
-      end
-      data << ["Asuntos generales"]
+      data = get_array_agreement_order(@c_s,data)
       tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>10,:padding=>3,:inline_format => true},:position=>:right)
       tabla.row(0).background_color = "F0F0F0"
       tabla.draw
@@ -905,12 +972,9 @@ class CommitteeSessionsController < ApplicationController
       data = []
       data << [{:content=>"<b>Acuerdos</b>",:colspan=>3}]
       data << ["<b>No.de acuerdo</b>","<b>Asunto</b>","<b>Resolución</b>"]
-      counter = 1
-      @committee_agreements.each do |ca|
-        data << get_array_agreement(ca,@c_s,last_change)
-        counter = counter + 1
-      end
-      
+      data = get_array_agreement(@c_s,last_change,data)
+      data = get_general_issues(@c_s,data)
+
       tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>10,:padding=>3,:inline_format => true},:position=>:right,:column_widths=>[80,206,206])
       tabla.rows(0).background_color = "F0F0F0"
       tabla.draw
@@ -920,182 +984,259 @@ class CommitteeSessionsController < ApplicationController
     end
   end
 
-  def get_array_agreement_order(ca)
-    involved = ""
-    cat      =  CommitteeAgreementType.find(ca.committee_agreement_type_id)
-    if cat.id.eql? 1 ## Nuevo ingreso
-      name = Applicant.find(ca.committee_agreement_person[0].attachable_id).full_name
-      involved = "de #{name} "
-    elsif cat.id.eql? 2 ## Permanencia
-      name = Student.find(ca.committee_agreement_person[0].attachable_id).full_name
-      involved = "de #{name} "
-    elsif cat.id.eql? 4 ## Cambio de director de tesis
-      name = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
-      involved = "de #{name} "
-    elsif cat.id.eql? 5 ## Designación de sinodales
-      name = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
-      involved = "de #{name}"
-    elsif cat.id.eql? 6 ## Designación de comité tutoral
-      name = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
-      involved = "de #{name}"
-    elsif cat.id.eql? 7 ## Dispensa de grado para personal academico
-      name = Staff.find(ca.committee_agreement_person.where(:attachable_type=>"Staff")[0].attachable_id).full_name
-      involved = "de #{name}"
-    elsif cat.id.eql? 12  ## Permiso de ausencia
-      name = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
-      involved = "para #{name}"
-    else
-      involved= ""
-    end
+  def get_array_agreement_order(c_s,data)
+    @committee_agreements = CommitteeAgreement.where(:committee_session_id=>c_s.id)
+    repeaters = Array.new
+    @committee_agreements.each do |ca|
+      involved = ""
+      insert   = false
+      cat      =  CommitteeAgreementType.find(ca.committee_agreement_type_id)
+      if cat.id.eql? 1 ## Nuevo ingreso
+        name = Applicant.find(ca.committee_agreement_person[0].attachable_id).full_name
+        involved = "de #{name} "
+        insert   = true
+      elsif cat.id.eql? 2 ## Permanencia
+        name = Student.find(ca.committee_agreement_person[0].attachable_id).full_name
+        involved = "de #{name} "
+        insert   = true
+      elsif cat.id.eql? 4 ## Cambio de director de tesis
+        name = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
+        involved = "de #{name} "
+        insert   = true
+      elsif cat.id.eql? 5 ## Designación de sinodales
+        name = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
+        involved = "de #{name}"
+        insert   = true
+      elsif cat.id.eql? 6 ## Designación de comité tutoral
+        name = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
+        involved = "de #{name}"
+        insert   = true
+      elsif cat.id.eql? 7 ## Dispensa de grado para personal academico
+        name = Staff.find(ca.committee_agreement_person.where(:attachable_type=>"Staff")[0].attachable_id).full_name
+        involved = "de #{name}"
+        insert   = true
+      elsif cat.id.eql? 12  ## Permiso de ausencia
+        name = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
+        involved = "para #{name}"
+        insert   = true
+      else
+        involved = ""
+        if repeaters.include? cat.id
+          insert   = false
+        else
+          repeaters << cat.id
+          insert   = true
+        end
+      end
 
-    return Array("#{cat.description} #{involved}")
+      if insert
+        data << Array("#{cat.description} #{involved}")
+      end
+    end
+    return data
   end
 
-  def get_array_agreement(ca,c_s,last_change)
-    cat   = CommitteeAgreementType.find(ca.committee_agreement_type_id)
-    issue = "<b><i>#{cat.description}</i></b>"
+  def get_array_agreement(c_s,last_change,data)
+    @committee_agreements = CommitteeAgreement.where(:committee_session_id=>c_s.id)
+    @committee_agreements.each do |ca|
+      authorized = ""
+      show = true
+      cat   = CommitteeAgreementType.find(ca.committee_agreement_type_id)
+      issue = "<b><i>#{cat.description}</i></b>"
+
+      if cat.id.eql? 1 ## Nuevo ingreso
+        name = Applicant.find(ca.committee_agreement_person[0].attachable_id).full_name
+        issue = "#{issue}\n\n<b>#{name}</b>"
+        if ca.auth.to_i.eql? 1
+          authorized = "<b>Autorizado</b>"
+        elsif ca.auth.to_i.eql? 2
+          authorized = "<b>Rechazado</b>"
+        end
+      elsif cat.id.eql? 2 ## Permanencia
+        name       = Student.find(ca.committee_agreement_person[0].attachable_id).full_name
+        l_date     = Date.parse(ca.notes[/\[(.*?)\]/m,1]) rescue ""
+        issue = "#{issue}\n\n<b>#{name}</b>\n\n"
+        if ca.auth.to_i.eql? 1
+          authorized = "<b>Autorizado</b>\nCon prórroga para entregar requisitos de titulación a mas tardar el #{l_date.day} de #{get_month_name(l_date.month)} de #{l_date.year}"
+        elsif ca.auth.to_i.eql? 2
+          authorized = "<b>Rechazado</b>"
+        end
+      elsif cat.id.eql? 3 ## Cambio de programa
+        s       = ca.committee_agreement_person.where(:attachable_type=>"Student")
+        student = Student.find(s[0].attachable_id)
+        program = Program.find(ca.auth)
+        name    = Student.find(ca.committee_agreement_person[0].attachable_id).full_name
+        issue = "#{issue}\n\n<b>#{name}</b>\n\n"
+        authorized = "<b>Autorizado</b>\n\nPara el programa #{program.name}"
+      elsif cat.id.eql? 4 ## Cambio de director de tesis
+        name  = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
+        name1 = Staff.find(ca.committee_agreement_person.where(:attachable_type=>"Staff")[0].attachable_id).full_name_cap rescue nil
+        issue = "#{issue}\n\n <b>#{name}</b>\n\n"
+        if !name1.nil?
+          authorized = "<b>Se autorizó como director de tesis a: #{name1}</b>"
+        else
+          authorized = "<b>Rechazado</b>"
+        end
+      elsif cat.id.eql? 5 ## Designación de sinodales
+        student  = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id)
+        name     = student.full_name
+        director = Staff.find(student.supervisor).full_name_cap
+        issue = "#{issue}\n\n <b>#{name}</b>\n\n Director de tesis: #{director} \n\n"
+        sinodales = ""
+        ca.committee_agreement_person.where(:attachable_type=>"Staff").each do |cap|
+          s = Staff.find(cap.attachable_id)
+          aux = ""
+          if cap.aux.eql? 2
+            aux = "(suplente)"
+          end
+          
+          sinodales = "#{sinodales} #{s.full_name_cap} #{aux}\n"
+        end
+        if !sinodales.eql? ""
+          authorized = "<b>Se autorizó el siguiente sínodo:</b>\n\n#{sinodales}\n\n"
+        else
+          authorized = "<b>Rechazado</b>"
+        end
+      elsif cat.id.eql? 6 ## Designación de comité tutoral
+        student  = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id)
+        name     = student.full_name
+        director = Staff.find(student.supervisor).full_name_cap rescue "N.D."
+        issue = "#{issue}\n\n <b>#{name}</b>\n\n Director de tesis: #{director} \n\n"
+        sinodales = ""
+        ca.committee_agreement_person.where(:attachable_type=>"Staff").each do |s|
+          s = Staff.find(s.attachable_id)
+          sinodales = "#{sinodales} #{s.full_name_cap}\n"
+        end
+        if !sinodales.eql? ""
+          authorized = "<b>Se autorizó el siguiente comité tutoral:</b>\n\n#{sinodales}\n\n"
+        else
+          authorized = "<b>Rechazado</b>"
+        end
+      elsif cat.id.eql? 7 ## Dispensa de grado para personal academico
+        cap1        = ca.committee_agreement_person.where(:attachable_type=>"Student").first
+        student     = Student.find(cap1.attachable_id) rescue nil
+        cap         = ca.committee_agreement_person.where(:attachable_type=>"Staff").first
+        staff       = Staff.find(cap.attachable_id)
+        notes       = ca.committee_agreement_note[0].notes rescue ""
+        mtype       = ca.notes[/\[(.*?)\]/m,1] rescue ""
+
+        if mtype.to_i.eql? 1
+          mtype = "Director de Tesis"
+        elsif mtype.to_i.eql? 2
+          mtype = "Miembro del Comité Tutoral"
+        end
+        issue = "#{issue}\n\n <b>#{staff.title} #{staff.full_name_cap}</b>\n\n"
+        if ca.auth.to_i.eql? 1
+          authorized = "<b>Autorizado</b>\n Como #{mtype} del alumno #{student.full_name}. #{notes}"
+        elsif ca.auth.to_i.eql? 2
+          authorized = "<b>Rechazado</b>\n#{notes}"
+        end
+      elsif cat.id.eql? 8 ## Designacion de docentes para cursos
+        cap         = ca.committee_agreement_person.where(:attachable_type=>"Staff").first
+        staff       = Staff.find(cap.attachable_id)
+        c_id        = ca.notes[/\[(.*?)\]/m,1] rescue ""
+        course      = Course.find(c_id)
+        t_id        = ca.auth
+        term        = Term.find(t_id)
+        issue = "#{issue}\n\n <b>#{staff.title} #{staff.full_name_cap}</b>\n\n Curso: #{course.name}\n"
+        authorized = "<b>Autorizado</b>\n Para el curso #{course.name} correspondiente al ciclo escolar <b>#{term.name}</b> del programa #{term.program.name}."
+      elsif cat.id.eql? 9 ## Asignacion de materias nuevas
+        cap         = ca.committee_agreement_person.where(:attachable_type=>"Staff").first
+        staff       = Staff.find(cap.attachable_id)
+        c_id        = ca.notes[/\[(.*?)\]/m,1] rescue ""
+        course      = Course.find(c_id)
+        t_id        = ca.auth
+        term        = Term.find(t_id)
+        notes       = ca.committee_agreement_note[0].notes rescue ""
+        issue = "#{issue}\n\n <b>#{staff.title} #{staff.full_name_cap}</b>\n\n Curso: #{course.name}\n"
+        authorized = "<b>Autorizado</b>\n Para el curso titulado #{notes} correspondiente al ciclo escolar <b>#{term.name}</b> del programa #{term.program.name}."
+      elsif cat.id.eql? 10 ## Cuotas
+        inscripciones= ca.auth rescue ""
+        titulaciones = ca.notes[/\[(.*?)\]/m,1] rescue ""
+        notes        = ca.committee_agreement_note[0].notes rescue ""
+        issue = "#{issue}\n\n <b></b>\n\n"
+        authorized = "<b>Autorizado</b>\n Con un monto de inscripción de $#{inscripciones} y un monto de titulacion de $#{titulaciones}. #{notes}"
+      elsif cat.id.eql? 12  ## Permiso de ausencia
+        cap         = ca.committee_agreement_person.where(:attachable_type=>"Student").first
+        student     = Student.find(cap.attachable_id)
+        auth        = ca.auth
+        notes       = ca.committee_agreement_note[0].notes rescue ""
+        issue = "#{issue}\n\n <b>Estudiante #{student.full_name}</b>\n\n"
+        if ca.auth.to_i.eql? 1
+          authorized = "<b>Autorizado</b>\n #{notes}"
+        elsif ca.auth.to_i.eql? 2
+          authorized = "<b>Rechazado</b>\n #{notes}"
+        end
+      elsif cat.id.eql? 13 ## Presupuesto de becas
+        auth   = ca.auth
+        area   = Area.find(auth)
+        amount = ca.notes[/\[(.*?)\]/m,1] rescue ""
+        notes  = ca.committee_agreement_note[0].notes rescue ""
+        issue = "#{issue}\n\n <b>#{area.name}</b>\n\n#{area.leader}"
+        authorized = "<b>Autorizado</b>\n Con un monto de #{amount}. #{notes}"
+      elsif cat.id.eql? 14 ## Posdoctorado
+        auth       = ca.auth
+        area_id    = ca.notes[/\[(.*?)\]/m,1] rescue ""
+        area       = Area.find(area_id)
+        notes      = ca.committee_agreement_note[0].notes rescue ""
+        cap        = ca.committee_agreement_person.where(:attachable_type=>"Internship").first
+        internship = Internship.find(cap.attachable_id)
+        issue      = "#{issue}\n\n <b>#{internship.full_name}</b>"
+        if ca.auth.to_i.eql? 1
+          authorized = "<b>Autorizado</b>\n Para el #{area.name} bajo la asesoria de #{area.leader} #{notes}"
+        elsif ca.auth.to_i.eql? 2
+          authorized = "<b>Rechazado</b>\n #{notes}"
+        end
+      elsif cat.id.eql? 15 ## Actualizacion de normatividad
+        authorized = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
+      elsif cat.id.eql? 19 ## Asignacion de director
+        cap         = ca.committee_agreement_person.where(:attachable_type=>"Student").first
+        student     = Student.find(cap.attachable_id)
+        cap         = ca.committee_agreement_person.where(:attachable_type=>"Staff").first
+        staff       = Staff.find(cap.attachable_id)
+        auth        = ca.auth
+        director    = ca.notes[/\[(.*?)\]/m,1] rescue ""
+        if director.to_i.eql? 1
+          director = "Director"
+        elsif director.to_i.eql? 2
+          director = "Co-Director"
+        elsif director.to_i.eql? 3
+          director = "Director Externo"
+        end
+        issue = "#{issue}\n\n <b>#{staff.full_name} (#{director})</b>\n <b>#{student.full_name}</b> \n<b>#{student.program.name}</b>\n\n"
+        if ca.auth.to_i.eql? 1
+          authorized = "<b>Autorizado</b>\n"
+        elsif ca.auth.to_i.eql? 2
+          authorized = "<b>Rechazado</b>\n"
+        end
+      elsif cat.id.eql? 20 ## ASuntos generales
+        show = false
+      end
+
+      if show
+        data << ["<b>A#{ca.get_agreement_number}.#{last_change.month}<sup>#{c_s.folio_sup}</sup>.#{last_change.year}</b>",issue,authorized]
+      end
+    end
+
+    return data
+  end
+
+  def get_general_issues(c_s,data)
+    issue = "<b><i>Asuntos Generales</i></b>"
     authorized = ""
-    if cat.id.eql? 1 ## Nuevo ingreso
-      name = Applicant.find(ca.committee_agreement_person[0].attachable_id).full_name
-      issue = "#{issue}\n\n<b>#{name}</b>"
-      if ca.auth.to_i.eql? 1
-        authorized = "<b>Autorizado</b>"
-      elsif ca.auth.to_i.eql? 2
-        authorized = "<b>Rechazado</b>"
-      end
-    elsif cat.id.eql? 2 ## Permanencia
-      name       = Student.find(ca.committee_agreement_person[0].attachable_id).full_name
-      l_date     = Date.parse(ca.notes[/\[(.*?)\]/m,1]) rescue ""
-      issue = "#{issue}\n\n<b>#{name}</b>\n\n"
-      if ca.auth.to_i.eql? 1
-        authorized = "<b>Autorizado</b>\nCon prórroga para entregar requisitos de titulación a mas tardar el #{l_date.day} de #{get_month_name(l_date.month)} de #{l_date.year}"
-      elsif ca.auth.to_i.eql? 2
-        authorized = "<b>Rechazado</b>"
-      end
-    elsif cat.id.eql? 3 ## Cambio de programa
-      s       = ca.committee_agreement_person.where(:attachable_type=>"Student")
-      student = Student.find(s[0].attachable_id)
-      program = Program.find(ca.auth)
-      name    = Student.find(ca.committee_agreement_person[0].attachable_id).full_name
-      issue = "#{issue}\n\n<b>#{name}</b>\n\n"
-      authorized = "<b>Autorizado</b>\n\nPara el programa #{program.name}"
-    elsif cat.id.eql? 4 ## Cambio de director de tesis
-      name  = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id).full_name
-      name1 = Staff.find(ca.committee_agreement_person.where(:attachable_type=>"Staff")[0].attachable_id).full_name_cap rescue nil
-      issue = "#{issue}\n\n <b>#{name}</b>\n\n"
-      if !name1.nil?
-        authorized = "<b>Se autorizó como director de tesis a: #{name1}</b>"
-      else
-        authorized = "<b>Rechazado</b>"
-      end
-    elsif cat.id.eql? 5 ## Designación de sinodales
-      student  = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id)
-      name     = student.full_name
-      director = Staff.find(student.supervisor).full_name_cap
-      issue = "#{issue}\n\n <b>#{name}</b>\n\n Director de tesis: #{director} \n\n"
-      sinodales = ""
-      ca.committee_agreement_person.where(:attachable_type=>"Staff").each do |s|
-        s = Staff.find(s.attachable_id)
-        sinodales = "#{sinodales} #{s.full_name_cap}\n"
-      end
-      if !sinodales.eql? ""
-        authorized = "<b>Se autorizó el siguiente sínodo:</b>\n\n#{sinodales}\n\n"
-      else
-        authorized = "<b>Rechazado</b>"
-      end
-    elsif cat.id.eql? 6 ## Designación de comité tutoral
-      student  = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id)
-      name     = student.full_name
-      director = Staff.find(student.supervisor).full_name_cap rescue "N.D."
-      issue = "#{issue}\n\n <b>#{name}</b>\n\n Director de tesis: #{director} \n\n"
-      sinodales = ""
-      ca.committee_agreement_person.where(:attachable_type=>"Staff").each do |s|
-        s = Staff.find(s.attachable_id)
-        sinodales = "#{sinodales} #{s.full_name_cap}\n"
-      end
-      if !sinodales.eql? ""
-        authorized = "<b>Se autorizó el siguiente comité tutoral:</b>\n\n#{sinodales}\n\n"
-      else
-        authorized = "<b>Rechazado</b>"
-      end
-    elsif cat.id.eql? 7 ## Dispensa de grado para personal academico
-      cap1        = ca.committee_agreement_person.where(:attachable_type=>"Student").first
-      student     = Student.find(cap1.attachable_id) rescue nil
-      cap         = ca.committee_agreement_person.where(:attachable_type=>"Staff").first
-      staff       = Staff.find(cap.attachable_id) 
-      notes       = ca.committee_agreement_note[0].notes rescue ""
-      mtype       = ca.notes[/\[(.*?)\]/m,1]
-
-      if mtype.to_i.eql? 1
-        mtype = "Director de Tesis"
-      elsif mtype.to_i.eql? 2
-        mtype = "Miembro del Comité Tutoral"
-      end
-      issue = "#{issue}\n\n <b>#{staff.title} #{staff.full_name_cap}</b>\n\n"
-      if ca.auth.to_i.eql? 1
-        authorized = "<b>Autorizado</b>\n Como #{mtype} del alumno #{student.full_name}. #{notes}"
-      elsif ca.auth.to_i.eql? 2
-        authorized = "<b>Rechazado</b>\n#{notes}"
-      end
-    elsif cat.id.eql? 8 ## Designacion de docentes para cursos
-      cap         = ca.committee_agreement_person.where(:attachable_type=>"Staff").first
-      staff       = Staff.find(cap.attachable_id) 
-      c_id        = ca.notes[/\[(.*?)\]/m,1]
-      course      = Course.find(c_id) 
-      t_id        = ca.auth
-      term        = Term.find(t_id) 
-      issue = "#{issue}\n\n <b>#{staff.title} #{staff.full_name_cap}</b>\n\n Curso: #{course.name}\n"
-      authorized = "<b>Autorizado</b>\n Para el curso #{course.name} correspondiente al ciclo escolar <b>#{term.name}</b> del programa #{term.program.name}."
-    elsif cat.id.eql? 9 ## Asignacion de materias nuevas
-      cap         = ca.committee_agreement_person.where(:attachable_type=>"Staff").first
-      staff       = Staff.find(cap.attachable_id) 
-      c_id        = ca.notes[/\[(.*?)\]/m,1]
-      course      = Course.find(c_id) 
-      t_id        = ca.auth
-      term        = Term.find(t_id) 
-      notes       = ca.committee_agreement_note[0].notes rescue ""
-      issue = "#{issue}\n\n <b>#{staff.title} #{staff.full_name_cap}</b>\n\n Curso: #{course.name}\n"
-      authorized = "<b>Autorizado</b>\n Para el curso titulado #{notes} correspondiente al ciclo escolar <b>#{term.name}</b> del programa #{term.program.name}."
-    elsif cat.id.eql? 10 ## Cuotas
-      inscripciones= ca.auth rescue ""
-      titulaciones = ca.notes[/\[(.*?)\]/m,1] rescue ""
-      notes        = ca.committee_agreement_note[0].notes rescue ""
-      issue = "#{issue}\n\n <b></b>\n\n"
-      authorized = "<b>Autorizado</b>\n Con un monto de inscripción de $#{inscripciones} y un monto de titulacion de $#{titulaciones}. #{notes}"
-    elsif cat.id.eql? 12  ## Permiso de ausencia
-      cap         = ca.committee_agreement_person.where(:attachable_type=>"Student").first
-      student     = Student.find(cap.attachable_id) 
-      auth        = ca.auth
-      notes       = ca.committee_agreement_note[0].notes rescue ""
-      issue = "#{issue}\n\n <b>Estudiante #{student.full_name}</b>\n\n"
-      if ca.auth.to_i.eql? 1
-        authorized = "<b>Autorizado</b>\n #{notes}"
-      elsif ca.auth.to_i.eql? 2
-        authorized = "<b>Rechazado</b>\n #{notes}"
-      end
-    elsif cat.id.eql? 13 ## Presupuesto de becas 
-      auth   = ca.auth
-      area   = Area.find(auth)
-      amount = ca.notes[/\[(.*?)\]/m,1]
-      notes  = ca.committee_agreement_note[0].notes
-      issue = "#{issue}\n\n <b>#{area.name}</b>\n\n#{area.leader}"
-      authorized = "<b>Autorizado</b>\n Con un monto de #{amount}. #{notes}"
-    elsif cat.id.eql? 14 ## Posdoctorado
-      auth       = ca.auth
-      area_id    = ca.notes[/\[(.*?)\]/m,1]
-      area       = Area.find(area_id)
+    counter    = 1
+    @committee_agreements = CommitteeAgreement.where(:committee_session_id=>c_s.id)
+    @committee_agreements.where(:committee_agreement_type_id=>20).each do |ca|
       notes      = ca.committee_agreement_note[0].notes rescue ""
-      cap        = ca.committee_agreement_person.where(:attachable_type=>"Internship").first
-      internship = Internship.find(cap.attachable_id)
-      issue      = "#{issue}\n\n <b>#{internship.full_name}</b>"
-      if ca.auth.to_i.eql? 1
-        authorized = "<b>Autorizado</b>\n Para el #{area.name} bajo la asesoria de #{area.leader} #{notes}"
-      elsif ca.auth.to_i.eql? 2
-        authorized = "<b>Rechazado</b>\n #{notes}"
+      if counter.eql? 1
+        authorized = "#{notes}"
+      else
+        authorized = "#{authorized}\n\n #{notes}"
       end
-    elsif cat.id.eql? 15 ## Actualizacion de normatividad
-      authorized = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
+      counter = counter + 1
     end
-    return ["<b>A#{ca.get_agreement_number}.#{last_change.month}<sup>#{c_s.folio_sup}</sup>.#{last_change.year}</b>",issue,authorized]
+    data << ["",issue,authorized]
+    return data
   end
+
 end

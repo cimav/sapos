@@ -1,5 +1,5 @@
 var model_name = 'committee_session'
-var counter    = 1 
+var counter    = 1
 
 $(document).ready(function() {
   liveSearch();
@@ -11,6 +11,18 @@ function initializeSearchForm() {
 }
 
 $('#item-edit-form')
+  .live("ajax:beforeSend", function(evt, xhr, settings) {
+    var esh = $("#end_session_hour").val();
+    var esm = $("#end_session_minutes").val();
+    if(!esh){
+      alert("Debe capturar la hora de termino de la sesion");
+      return false;
+    }else if(!esm){
+      alert("Debe capturar correctamente la hora de termino de la sesion");
+      return false;
+    }
+  })
+
   .live('ajax:success', function(evt, data, status, xhr) {
     $(".delete-agreement").hide();
     $(".save-text-agreement").hide();
@@ -33,6 +45,8 @@ $('#item-edit-form')
 
     $("#session_hour").select2("disable");
     $("#session_minutes").select2("disable");
+    $("#end_session_hour").select2("disable");
+    $("#end_session_minutes").select2("disable");
     $("#staff_combo").select2("disable");
 
     $("#comment_session_"+$("#c_session_id").val()).html("Finalizada")
@@ -42,7 +56,7 @@ $("#staff_combo").live("change",function(e){
   if(e.val!=""){
     var session_id = $("#c_session_id").val();
     var len= $(".staff_hidden[value="+e.val+"]").size();
- 
+
     if(len==0){
       text = $("#staff_combo option[value='"+e.val+"']").text();
       if(!isNaN(session_id)){
@@ -102,7 +116,7 @@ function reset_total(){
 
 $(".roll-checkbox").live("click",function(){
    $("#img_load_sesion").show();
-   var valor = $(this).val(); 
+   var valor = $(this).val();
    var url   = "/comite/sesion/asistencia/"+valor+"/"+$(this).prop("checked");
   var data =  "";
   $.ajax({
@@ -269,6 +283,7 @@ function get_committee_agreements()
       $("select.save-note-agreement").select2();
       $("select.agreement_auth").select2();
       $("select.agreement_people").select2();
+      $("select.agreement-aux").select2();
       $("#img_load").hide();
     },
   });
@@ -352,10 +367,14 @@ $(".agreement_people").live("change",function(e){
   var p      = $(this).parent();
   var people = $(this).attr("autt");
   var a_id   = p.find("#my_id").val();
+  var aux    = $("#agreement_aux_"+a_id).val();
   var valor  = $(this).val();
   var nombre = $(this).find('option:selected').text();
   var url    =  "/comite/acuerdos/"+a_id+"/agregar/"+people+"/"+valor;
   var data= ""
+  if (people=='sinodales'){
+    data = "aux="+aux
+  }
   $.ajax({
     type:  'POST',
     url:   url,
@@ -371,7 +390,8 @@ $(".agreement_people").live("change",function(e){
       }
       else{
         if(people=="sinodales"){
-          html = "<div class='agreement-staff'><input id='my_sinodal_id' name='my_sinodal_id' value='"+data.person_id+"' type='hidden'>"+nombre+"<img alt='Grey_action_delete' class='delete-agreement-staff' src='/images/grey_action_delete.png' style='cursor: pointer; opacity: 0.3;' valign='center'></div>";
+          if(aux==2){aux="suplente"}else{aux=""}
+          html = "<div class='agreement-staff'><input id='my_sinodal_id' name='my_sinodal_id' value='"+data.person_id+"' type='hidden'>"+nombre+" "+aux+"<img alt='Grey_action_delete' class='delete-agreement-staff' src='/images/grey_action_delete.png' style='cursor: pointer; opacity: 0.3;' valign='center'></div>";
           $("#agreement-staffs_"+a_id).append(html);
         }
       }
@@ -436,7 +456,7 @@ $(".agreement_auth").live("change",function(e){
   var p    = $(this).parent();
   var a_id = p.find("#my_id").val();
   var mtype = p.find("#my_type").val();
-  var thisval = $(this).val(); 
+  var thisval = $(this).val();
   var url  =  "/comite/acuerdos/"+a_id+"/agregar/auth/"+thisval
   var data= ""
   $.ajax({

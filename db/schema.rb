@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151126212139) do
+ActiveRecord::Schema.define(:version => 20160204223503) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -160,6 +160,7 @@ ActiveRecord::Schema.define(:version => 20151126212139) do
     t.string   "attachable_type"
     t.datetime "created_at",             :null => false
     t.datetime "updated_at",             :null => false
+    t.integer  "aux"
   end
 
   add_index "committee_agreement_people", ["committee_agreement_id"], :name => "index_committee_agreement_people_on_committee_agreement_id"
@@ -195,6 +196,7 @@ ActiveRecord::Schema.define(:version => 20151126212139) do
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
     t.datetime "date"
+    t.datetime "end_session"
   end
 
   create_table "contacts", :force => true do |t|
@@ -684,12 +686,20 @@ ActiveRecord::Schema.define(:version => 20151126212139) do
   add_index "term_courses", ["staff_id"], :name => "index_term_courses_on_staff_id"
   add_index "term_courses", ["term_id"], :name => "index_term_courses_on_term_id"
 
+  create_table "term_student_messages", :force => true do |t|
+    t.integer  "term_student_id"
+    t.text     "message"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
   create_table "term_student_payments", :force => true do |t|
     t.integer  "term_student_id"
     t.decimal  "amount",          :precision => 10, :scale => 0
     t.integer  "status"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "folio"
   end
 
   create_table "term_students", :force => true do |t|

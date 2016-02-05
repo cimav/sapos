@@ -1,6 +1,6 @@
 # coding: utf-8
 class CommitteeSession < ActiveRecord::Base
-  attr_accessible :id, :session_type, :status, :created_at, :updated_at, :date
+  attr_accessible :id, :session_type, :status, :created_at, :updated_at, :date, :end_session
   has_many :committe_session_attendee
   has_many :committe_agreement
   accepts_nested_attributes_for :committe_session_attendee 
