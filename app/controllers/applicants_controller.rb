@@ -66,10 +66,11 @@ class ApplicantsController < ApplicationController
                    "Telefono" => s.phone,
                    "Celular" => s.cell_phone,
                    "Direccion" => s.address,
+                   "Email" => s.email,
                    'Asesor' => (Staff.find(s.staff_id).full_name rescue ''),
                   }
         end 
-        column_order = ["Folio","Nombre","Primer_Apellido","Segundo_Apellido","Fecha_Nac","Estado_Civil","Programa","Institucion_Anterior","Promedio","Telefono","Celular","Direccion","Asesor"]
+        column_order = ["Folio","Nombre","Primer_Apellido","Segundo_Apellido","Fecha_Nac","Estado_Civil","Programa","Institucion_Anterior","Promedio","Telefono","Celular","Direccion","Email","Asesor"]
         to_excel(rows,column_order,"Aspirantes","Aspirantes")
       end 
     end 
