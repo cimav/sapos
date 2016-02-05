@@ -191,6 +191,22 @@ Sapos::Application.routes.draw do
   match 'planes_estudios/:program_id/combo' => 'studies_plans#combo'
   match 'planes_estudios/:id' => 'studies_plans#show'
   match 'planes_estudios/editar/:id' => 'studies_plans#update'
+  
+  match 'comite/busqueda' => 'committee_sessions#live_search'
+  
+  match 'comite/sesion/minuta/:s_id' => 'committee_sessions#memorandum'
+  match 'comite/acuerdos/imprimir/:a_id/:s_id' => 'committee_sessions#document_agreement'
+  match 'comite/sesion/asistencia/agregar/:cs_id/:st_id' => 'committee_sessions#add_attendee'
+  match 'comite/sesion/asistencia/borrar/:csa_id' => 'committee_sessions#delete_attendee'
+  match 'comite/sesion/asistencia/:id/:checked' => 'committee_sessions#roll_attendee'
+  match 'comite/acuerdos/persona/borrar/:s_id' => 'committee_sessions#delete_person'
+  match 'comite/acuerdos/texto/:a_id' => 'committee_sessions#save_text_agreement'
+  match 'comite/acuerdos/borrar/:a_id' => 'committee_sessions#delete_agreement'
+  match 'comite/acuerdos/:a_id/agregar/auth/:id' => 'committee_sessions#add_auth'
+  match 'comite/acuerdos/:a_id/agregar/note/:note' => 'committee_sessions#add_note'
+  match 'comite/acuerdos/:a_id/agregar/:person/:id' => 'committee_sessions#add_person'
+  match 'comite/acuerdos/:s_id/:a_id' => 'committee_sessions#agreements'
+  match 'comite/traer/cursos/:term' => 'committee_sessions#get_courses'
 
   resources :documentation_files
 
@@ -213,6 +229,7 @@ Sapos::Application.routes.draw do
     resources :scholarship, :path => "becas"
     resources :applicants, :path => "aspirantes"
     resources :areas, :path => "areas"
+    resources :committee_sessions, :path => "comite"
     #resources :studies_plans, :path => "planes_estudios"
   end
 

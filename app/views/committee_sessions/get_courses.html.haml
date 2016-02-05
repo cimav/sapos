@@ -1,0 +1,8 @@
+= "{\"courses\":["
+- @courses.each_with_index do |c,index|
+  - if index.eql? (@courses.size - 1)
+    = "{\"id\":\"#{c.id}\",\"name\":\"#{c.name}\"}"
+  - else
+    = "{\"id\":\"#{c.id}\",\"name\":\"#{c.name}\"},"
+  
+= "]}"
