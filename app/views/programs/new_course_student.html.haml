@@ -28,7 +28,8 @@
 
       -# mostramos los alumnos en el resto de los programas que esten en ciclos vigentes
       - other_program_options = ""
-      - Term.where("id <> #{@tc.term_id} AND status = #{Term::OPEN} AND curdate() between start_date-20  AND end_date").each do |other_term|
+      -# Term.where("id <> #{@tc.term_id} AND status = #{Term::OPEN} AND curdate() between start_date-20  AND end_date").each do |other_term|
+      - Term.where("id <> #{@tc.term_id} AND status = #{Term::OPEN}").each do |other_term|
         - other_program_options += "<optgroup label=\"Ciclo: #{other_term.name} #{other_term.program.name}\">"
         - other_term.term_students.each do |ts|
           - logger.debug students_in_course
