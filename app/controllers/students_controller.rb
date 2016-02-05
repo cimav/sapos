@@ -1926,48 +1926,10 @@ class StudentsController < ApplicationController
     File.open(filename, "w") { |file| file << puts }
   end
 
-  def render_error(object,message,parameters)
-    flash = {}
-    flash[:error] = message
-    respond_with do |format|
-      format.html do
-        if request.xhr?
-          json = {}
-          json[:flash] = flash
-          json[:errors] = object.errors
-          json[:errors_full] = object.errors.full_messages
-          json[:params] = parameters
-          render :json => json, :status => :unprocessable_entity
-        else
-          redirect_to object
-        end
-      end
-    end
-  end
-
   def record
     @student = Student.find(params[:id])
     @s_files = StudentFile.where(:student_id=>params[:id]).map{|i| [i.id,i.file_type]}
     render :layout => 'standalone'
-  end
-
-
-  def render_message(object,message,parameters)
-    flash = {}
-    flash[:notice] = message
-    respond_with do |format|
-      format.html do
-        if request.xhr?
-          json = {}
-          json[:flash] = flash
-          json[:uniq]  = object.id
-          json[:params] = parameters
-          render :json => json
-        else
-          redirect_to object
-        end
-      end
-    end
   end
 
   def student_exists
@@ -2009,7 +1971,6 @@ class StudentsController < ApplicationController
   def payments
     render :layout => 'standalone'
   end
-
 
   private
     def auth_digest

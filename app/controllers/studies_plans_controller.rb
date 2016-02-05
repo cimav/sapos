@@ -51,42 +51,4 @@ class StudiesPlansController < ApplicationController
     @program = Program.find(params[:program_id])
     render :layout => false
   end
-
-  def render_error(object,message,parameters)
-    flash = {}
-    flash[:error] = message
-    respond_with do |format|
-      format.html do 
-        if request.xhr?
-          json = {}
-          json[:flash] = flash
-          json[:errors] = object.errors
-          json[:errors_full] = object.errors.full_messages
-          json[:params] = parameters
-          render :json => json, :status => :unprocessable_entity
-        else
-          redirect_to object
-        end
-      end
-    end
-  end
-
-  def render_message(object,message,parameters)
-    flash = {}
-    flash[:notice] = message
-    respond_with do |format|
-      format.html do
-        if request.xhr?
-          json = {}
-          json[:flash] = flash
-          json[:uniq]  = object.id
-          json[:params] = parameters
-          render :json => json
-        else
-          redirect_to object
-        end
-      end
-    end
-  end
-
 end

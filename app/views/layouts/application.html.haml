@@ -3,11 +3,17 @@
   %head
     %title= @page_title || 'CIMAV'
     = stylesheet_link_tag    "application"
+    - if !@include_css.nil?
+      = stylesheet_link_tag @include_css
     = javascript_include_tag "application"
     = javascript_include_tag "jquery.ui.datepicker.js"
     = javascript_include_tag "jquery.ui.datepicker-es.js"
     - if !@include_js.nil?
       = javascript_include_tag @include_js
+    - if !@include2_js.nil?
+      = javascript_include_tag @include2_js
+    - if !@include3_js.nil?
+      = javascript_include_tag @include3_js
     = csrf_meta_tag
   %body
     #top-bar
@@ -50,6 +56,7 @@
           %li.op#op-users= link_to "Aspirantes", applicants_path
         - if current_user.access.eql? User::ADMINISTRATOR or current_user.access.eql? User::MANAGER
           %li.op#op-users= link_to "Inscripciones", "/inscripciones"
+          %li.op#op-users= link_to "Comité de Estudios de Posgrado", "/comite"
 
     #flash-notice
 
