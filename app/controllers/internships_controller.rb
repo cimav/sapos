@@ -479,8 +479,8 @@ class InternshipsController < ApplicationController
 
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud por internet'}"}).save
       @uri = generate_applicant_document(@internship)
-      send_mail(@internship,@uri,1,nil)
-      send_mail(@internship,@uri,2,nil)
+      #send_mail(@internship,@uri,1,nil)
+      #send_mail(@internship,@uri,2,nil)
 
       respond_with do |format|
         format.html do
@@ -571,9 +571,8 @@ class InternshipsController < ApplicationController
     @r_root  = Rails.root.to_s
     filename = "private/files/internships/#{i.id}"
     FileUtils.mkdir_p(filename) unless File.directory?(filename)
-    template = "#{@r_root}/private/prawn_templates/form_reg_estudiantes_externos.pdf"
-    Prawn::Document.generate("#{filename}/registro.pdf", :template => template)
-    pdf = Prawn::Document.new(:template => template)
+    template = "#{@r_root}/private/prawn_templates/form_reg_estudiantes_externos.png"
+    pdf = Prawn::Document.new(:background => template, :background_scale=>0.36, :right_margin=>20)
     pdf.draw_text i.full_name,  :at=>[60,567], :size=>10
     pdf.draw_text @genero,      :at=>[49,554], :size=>10
     pdf.draw_text @birth,       :at=>[117,541], :size=>10
@@ -596,6 +595,7 @@ class InternshipsController < ApplicationController
     token.save
 
     return "/internados/aspirante/#{i.id}/formato/#{token.token}"
+    #send_data pdf.render, type: "application/pdf", disposition: "inline"
   end
 
   def send_simple_mail(to,subject,content)

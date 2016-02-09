@@ -88,7 +88,7 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Designación de sinodales: "
-      - @students = Student.where(:status=>1)
+      - @students = Student.where(:status=>[1,6])
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       - @staffs = Staff.where(:status=>0)
