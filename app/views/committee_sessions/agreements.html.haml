@@ -175,6 +175,8 @@
       - @selected = ca.notes[/\[(.*?)\]/m,1] rescue 0
       = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@courses,"id","name",@selected),:prompt=>"--Elige curso--",:class=>"save-note-agreement",:disabled=>readonly
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
+      %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 550px;"}="Notas"
+      = text_area_tag "my_notes_#{my_id}",text,:style=>"display: none"
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 60px;"}="eliminar"
       = button_tag "Imprimir respuesta", :type=>'button', :class=>'response-agreement', :my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}",:style=>"display:#{display_button}"
       %hr
