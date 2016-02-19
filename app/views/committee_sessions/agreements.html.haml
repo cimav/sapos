@@ -175,6 +175,8 @@
       - @selected = ca.notes[/\[(.*?)\]/m,1] rescue 0
       = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@courses,"id","name",@selected),:prompt=>"--Elige curso--",:class=>"save-note-agreement",:disabled=>readonly
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
+      %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width:60px;"}="Notas"
+      = text_area_tag "my_notes_#{my_id}",text,:style=>"display: none"
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 60px;"}="eliminar"
       = button_tag "Imprimir respuesta", :type=>'button', :class=>'response-agreement', :my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}",:style=>"display:#{display_button}"
       %hr
@@ -185,9 +187,6 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Autorización de materias nuevas: "
-      - @staffs = Staff.where(:status=>0,:institution_id=>1)
-      - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
       - @terms    = Term.where(:status=>[1,2])
       - @selected = ca.auth rescue 0
       = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
@@ -196,6 +195,30 @@
         - @courses = Course.joins(:program).select("courses.id,courses.name,programs.prefix").where(:status=>1)
       - @selected = ca.notes[/\[(.*?)\]/m,1] rescue 0
       = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@courses,"id","name",@selected),:prompt=>"--Elige curso--",:class=>"save-note-agreement",:disabled=>readonly
+      - @staffs = Staff.where(:status=>0)
+      %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
+        - titular = false
+        - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
+          .agreement-staff
+            = hidden_field_tag "my_sinodal_id",cap.id
+            = hidden_field_tag "my_sinodal_type_id",cap.aux
+            - staff = Staff.find(cap.attachable_id)
+            = staff.full_name_upcase
+            = "(#{staff.institution.short_name})"
+            - if cap.aux.eql? 4
+              = " evaluador"
+            - elsif cap.aux.eql? 3
+              = " titular"
+              - titular = true
+            - if !readonly
+              = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-staff'
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase_origin"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
+      - options = {"Titular"=>3,"Evaluador"=>4}
+      - selected = 3
+      - if titular
+        - options = {"Evaluador"=>4}
+        - selected = 4
+      = select_tag "agreement_aux_#{my_id}",options_for_select(options,selected),:class=>"agreement-aux",:disabled=>readonly
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
       %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 150px;"}="Nombre del curso"
       = text_area_tag "my_notes_#{my_id}",text,:style=>"display: none"

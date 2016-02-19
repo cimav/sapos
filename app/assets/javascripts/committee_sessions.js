@@ -390,8 +390,15 @@ $(".agreement_people").live("change",function(e){
       }
       else{
         if(people=="sinodales"){
-          if(aux==2){aux="suplente"}else{aux=""}
-          html = "<div class='agreement-staff'><input id='my_sinodal_id' name='my_sinodal_id' value='"+data.person_id+"' type='hidden'>"+nombre+" "+aux+"<img alt='Grey_action_delete' class='delete-agreement-staff' src='/images/grey_action_delete.png' style='cursor: pointer; opacity: 0.3;' valign='center'></div>";
+          if(aux==2){aux_text="suplente";}
+          else if(aux==3){
+            aux_text="titular";
+            $("#agreement_aux_"+a_id+" option[value='3']").remove();
+            $("#agreement_aux_"+a_id).select2("val","Evaluador");
+          }
+          else if(aux==4){aux_text="evaluador";}
+          else{aux_text="";}
+          html = "<div class='agreement-staff'><input id='my_sinodal_id' name='my_sinodal_id' value='"+data.person_id+"' type='hidden'><input id='my_sinodal_type_id' name='my_sinodal_type_id' value='"+aux+"' type='hidden'>"+nombre+" "+aux_text+"<img alt='Grey_action_delete' class='delete-agreement-staff' src='/images/grey_action_delete.png' style='cursor: pointer; opacity: 0.3;' valign='center'></div>";
           $("#agreement-staffs_"+a_id).append(html);
         }
       }
@@ -421,7 +428,9 @@ $(".delete-agreement-staff").live({
   click: function(){
     $("#img_load").show();
     var p     = $(this).parent();
+    var a_id  = p.parent().parent().find("#my_id").val();
     var valor = p.find("#my_sinodal_id").val();
+    var tipo  = p.find("#my_sinodal_type_id").val();
     var url   = "/comite/acuerdos/persona/borrar/"+valor;
     var data= ""
     $.ajax({
@@ -432,6 +441,10 @@ $(".delete-agreement-staff").live({
       },
       success:  function(data){
         p.remove();
+        if(tipo==3){
+          $("#agreement_aux_"+a_id).append(new Option("Titular",3));
+          $("#agreement_aux_"+a_id).select2().val(3).trigger("change");
+        }
       },
       error: function(xhr, textStatus, error){
          var text = xhr.responseText;
