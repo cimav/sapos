@@ -1,0 +1,81 @@
+= form_for Applicant.new, :url=>{action: "new_register"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
+  %h2="Registro de solicitud de ingreso"
+  #first_screen
+    .field#field_applicant_program
+      = f.label :program_id, 'Programa'
+      = f.collection_select :program_id, @programs, :id, :name, options = {:prompt => "Elige el programa"},:class=>"first-page"
+      = image_tag "/images/ajax-load2.gif", :id=> "img_load_program" , :align=> 'center',:style=>'display: none; width:20px;'
+    .field#field_applicant_campus
+      .aux_field_campus{:style=>"display:none;"}
+        = f.label :campus_id, 'Campus'
+        = f.collection_select :campus_id, [], :id, :name, options = {:prompt => "Elige el campus"},:class=>"first-page"
+      = image_tag "/images/ajax-load2.gif", :id=> "img_load_campus" , :align=> 'center',:style=>'display: none; width:20px;'
+    .field#field_applicant_place
+      .aux_field_place{:style=>"display:none;"}
+        = f.label :place_id, 'Sede'
+        = f.select :place_id, @places, {:include_blank => 'Selecciona la sede'},:class=>"first-page"
+        = "Sede es el lugar donde vas a aplicar el exámen de admisión"
+    .field#buttons
+      = button_tag "Continuar", :type=>"button", :id=>"ok_button", :style=>"display:none",:class=>"button"
+  = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
+  #my_fields{:style=>"display:none;"}
+    #info
+
+    .field#field_applicant_first_name
+      = f.label :first_name, 'Nombre'
+      = f.text_field :first_name 
+
+
+    .field#field_applicant_primary_last_name
+      = f.label :primary_last_name, 'Apellido Paterno'
+      = f.text_field :primary_last_name
+
+    .field#field_applicant_second_last_name
+      = f.label :second_last_name, 'Apellido Materno'
+      = f.text_field :second_last_name
+
+    .field#field_applicant_address
+      = f.label :address, 'Dirección'
+      = f.text_field :address, :size => 100
+      = "Debe incluir ciudad, estado y municipio"
+
+    .field#field_applicant_email
+      = f.label :email, 'Email'
+      = f.text_field :email, :size => 50
+
+    .field#field_applicant_phone
+      = f.label :phone, 'Teléfono'
+      = f.text_field :phone
+
+    .field#field_applicant_cell_phone
+      = f.label :cell_phone, 'Celular'
+      = f.text_field :cell_phone
+   
+    .field#field_applicant_date_of_birth
+      = f.label :date_of_birth, 'Fecha de nacimiento'
+      = f.date_select :date_of_birth, :start_year => DateTime.now.year - 100
+ 
+    .field#field_applicant_previous_institution
+      = f.label :previous_institution, 'Institución'
+      = f.select :previous_institution, @institutions.collect {|p| [ p.name, p.id ] }.push(["Otras",0]), {:include_blank => 'Selecciona la institucion'}
+
+    .field#field_applicant_previous_degree_type
+      = f.label :previous_degree_type, 'Carrera (Título)'
+      = f.text_field :previous_degree_type, :size => 65
+   
+    .field#field_applicant_average
+      = f.label :average, 'Promedio'
+      = f.text_field :average
+
+    .field#field_applicant_civil_status
+      = f.label :civil_status, 'Estado Civil'
+      = f.select :civil_status, Applicant::CIVIL_STATUS.invert.sort {|a,b| a[1] <=> b[1] }.unshift(["Selecciona el estado civil",""])
+
+    .field#field_applicant_staff_id{:style=>"display:none;"}
+      = f.label :staff_id, 'Supervisor'
+      = f.collection_select :staff_id, @staffs, :id, :full_name, options = {:prompt => "Selecciona el asesor"}
+
+    .field#send_button
+      = f.submit "Continuar", :id=>"send_button", :style=>"display:block",:class=>"button"
+  #messages
+

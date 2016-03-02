@@ -1,6 +1,7 @@
 class ApplicantsController < ApplicationController
   before_filter :auth_required
   respond_to :html, :xml, :json
+  before_filter :auth_required, :except=>[:register,:new_register,:get_campus,:files,:upload_file,:download_app_file]
 
   def show
     @applicant = Applicant.find(params[:id])
@@ -89,6 +90,7 @@ class ApplicantsController < ApplicationController
   def create
     flash = {}
     @applicant = Applicant.new(params[:applicant])
+    @applicant.status = 1
 
     if @applicant.save
       flash[:notice] = "Aspirante registrado."
@@ -122,6 +124,233 @@ class ApplicantsController < ApplicationController
         end
       end
     end
+  end
+
+  def register
+    @include_js   = "applicants.register.js"
+    @programs     = Program.where(:program_type=>2).order('name')
+    @places       = Applicant::PLACES.invert.sort {|a,b| a[1] <=> b[1] }
+    @institutions = Institution.order('name')
+    @staffs       = Staff.select("id,first_name,last_name").where(:institution_id=>1,:status=>0).order("first_name")
+    render :layout => 'standalone'
+  end
+ 
+  def get_campus
+    program_id = params[:program_id]
+    json = {}
+    @campus= []
+    if program_id.to_i.eql? 1  ##MCM
+      @campus = Campus.select("id,name").find([1,2])
+    elsif program_id.to_i.eql? 2 ##DCM
+      @campus = Campus.select("id,name").find([1,2])
+    elsif program_id.to_i.eql? 3 ## MCTA
+      @campus = Campus.select("id,name").find([1,4])
+    elsif program_id.to_i.eql? 4 ## DCTA
+      @campus = Campus.select("id,name").find([1,4])
+    elsif program_id.to_i.eql? 10 ## DN
+      @campus = Campus.select("id,name").find([2])
+    end
+    json[:campus] = @campus
+    #render :layout => 'standalone'
+    render :json => json
+  end
+
+  def new_register
+    flash = {}
+    @applicant = Applicant.new(params[:applicant])
+    @applicant.status = 7  ### REQUEST
+    #@applicant = Applicant.find(355)
+    #create_document(@applicant)
+
+#=begin
+    if @applicant.save
+      flash[:notice] = "Aspirante registrado correctamente."
+
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:uniq] = @applicant.id
+            render :json => json
+          else 
+            redirect_to @applicant
+          end
+        end
+      end
+    else
+      flash[:error] = "Error al crear aspirante."
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash]  = flash
+            json[:errors] = @applicant.errors
+            json[:errors_full] = @applicant.errors.full_messages
+            render :json => json, :status => :unprocessable_entity
+          else
+            redirect_to @applicant
+          end
+        end
+      end
+    end
+#=end
+  end
+
+  def create_document(a) ## a for applicant
+    @r_root  = Rails.root.to_s
+    @rectangles = false
+    @doctorates = [2,4,10]
+    
+    today = Date.today
+
+    filename  = "private/files/applicants/#{a.id}"
+    pdf_route = "#{filename}/solicitud_nuevo.pdf"
+    FileUtils.mkdir_p(filename) unless File.directory?(filename)
+    
+    if !File.exist?(pdf_route)
+      pdf = Prawn::Document.new(:margin=>20)
+      ## SET LOGO
+      image = "#{Rails.root}/app/assets/images/pdf-logo-card.jpg"
+      y = 750
+      pdf.image image, :at => [70,y], :height => 80
+      
+      ## SET TITLE
+      x = 10
+      y = y - 90
+      w = 550
+      h = 20
+      size = 19
+      text = "Solicitud de ingreso a posgrado"
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :center
+      
+      ## SET DATE
+      y = y - 30
+      h = 13
+      size = 12
+      text = "Chihuahua, Chihuahua a #{today.day} de #{get_month_name(today.month)} de #{today.year}"
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :normal, :align=> :right, :inline_format=>true
+  
+      pdf.move_down 150
+      data= []
+      data << [{:content=>"<b>Datos Solicitud</b>",:colspan=>2,:align=>:center}]
+      data << ["<b>Programa:</b>",a.program.name]
+      data << ["<b>Campus:</b>",a.campus.name]
+      if !(@doctorates.include? a.program_id)
+        data << ["<b>Sede:</b>",Applicant::PLACES[a.place_id]]
+      else
+        staff_name = Staff.find(a.staff_id).full_name rescue ""
+        data << ["<b>Asesor:</b>",staff_name]
+      end
+      tabla = pdf.make_table(data,:width=>530,:cell_style=>{:size=>12,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths=>[130,400])
+      tabla.draw
+      
+      pdf.move_down 20
+      data= []
+      data << [{:content=>"<b>Datos Personales</b>",:colspan=>2,:align=>:center}]
+      data << ["<b>Nombre:</b>",a.full_name]
+      data << ["<b>Correo Electrónico:</b>",a.email]
+      data << ["<b>Telefono:</b>",a.phone]
+      data << ["<b>Celular:</b>",a.cell_phone]
+      data << ["<b>Dirección:</b>",a.address]
+      data << ["<b>Estado Civil:</b>",Applicant::CIVIL_STATUS[a.civil_status]]
+      data << ["<b>Grado Anterior:</b>",a.previous_degree_type]
+      data << ["<b>Institucion de origen:</b>",Institution.find(a.previous_institution).name]
+      data << ["<b>Promedio:</b>",a.average]
+      tabla = pdf.make_table(data,:width=>530,:cell_style=>{:size=>12,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths=>[130,400])
+      tabla.draw
+  
+      pdf.move_down 20
+      data= []
+      data << [{:content=>"<b>Documentos</b><br>",:colspan=>4,:align=>:center}]
+  
+      @applicant_files = ApplicantFile.where(:applicant_id=>a.id)
+  
+      content1 = pdf.table_icon('fa-square-o')
+      content2 = pdf.table_icon('fa-square-o')
+      if @applicant_files.where(:file_type=>ApplicantFile::BIRTH_CERTIFICATE).size > 0
+        content1 = pdf.table_icon('fa-check-square-o')
+      end
+      if @applicant_files.where(:file_type=>ApplicantFile::PREVIOUS_DEGREE_TEST_CERTIFICATE).size > 0
+        content2 = pdf.table_icon('fa-check-square-o')
+      end
+      data << [{:content=>"<b>Acta de Nacimiento:<b>",:align=>:right},content1,{:content=>"<b>Acta de exámen grado anterior:<b>",:align=>:right},content2]
+  
+      content1 = pdf.table_icon('fa-square-o')
+      content2 = pdf.table_icon('fa-square-o')
+      if @applicant_files.where(:file_type=>ApplicantFile::CURP).size > 0
+        content1 = pdf.table_icon('fa-check-square-o')
+      end
+      if @applicant_files.where(:file_type=>ApplicantFile::PREVIOUS_DEGREE_STUDIES_CERTIFICATE).size > 0
+        content2 = pdf.table_icon('fa-check-square-o')
+      end
+      data << [{:content=>"<b>Curp:<b>",:align=>:right},content1,{:content=>"<b>Certificado de estudios del grado anterior:<b>",:align=>:right},content2]
+  
+  
+      content1 = pdf.table_icon('fa-square-o')
+      content2 = pdf.table_icon('fa-square-o')
+      if @applicant_files.where(:file_type=>ApplicantFile::PROOF_OF_ADDRESS).size > 0
+        content1 = pdf.table_icon('fa-check-square-o')
+      end
+      if @applicant_files.where(:file_type=>ApplicantFile::ACADEMIC_CURRICULUM).size > 0
+        content2 = pdf.table_icon('fa-check-square-o')
+      end
+      data << [{:content=>"<b>Comprobante de domicilio:<b>",:align=>:right},content1,{:content=>"<b>Curriculum académico:<b>",:align=>:right},content2]
+      
+      content1 = pdf.table_icon('fa-square-o')
+      content2 = pdf.table_icon('fa-square-o')
+      if @applicant_files.where(:file_type=>ApplicantFile::VOTING_CARD).size > 0
+        content1 = pdf.table_icon('fa-check-square-o')
+      end
+      if @applicant_files.where(:file_type=>ApplicantFile::CONACYT_ENDED_SCHOLARSHIP_CERTIFICATE).size > 0
+        content2 = pdf.table_icon('fa-check-square-o')
+      end
+      data << [{:content=>"<b>Credencial para votar:<b>",:align=>:right},content1,{:content=>"<b>Carta de finiquito de becario conacyt:<b>",:align=>:right},content2]
+  
+      content1 = pdf.table_icon('fa-square-o')
+      content2 = pdf.table_icon('fa-square-o')
+      if @applicant_files.where(:file_type=>ApplicantFile::PREVIOUS_DEGREE_CERTIFICATE).size > 0
+        content1 = pdf.table_icon('fa-check-square-o')
+      end
+      if @applicant_files.where(:file_type=>ApplicantFile::ACADEMIC_RECOMENDATION_LETTER).size > 0
+        content2 = pdf.table_icon('fa-check-square-o')
+      end
+      data << [{:content=>"<b>Título del grado anterior:<b>",:align=>:right},content1,{:content=>"<b>Carta de recomendación académica:<b>",:align=>:right},content2]
+      tabla = pdf.make_table(data,:width=>530,:cell_style=>{:size=>12,:padding=>2,:inline_format => true,:border_width=>0},:position=>:center)
+      tabla.draw
+      
+      pdf.move_down 90
+      pdf.text "<b>Firma del solicitante</b>", :inline_format=>true, :align=>:center
+      pdf.render_file "#{pdf_route}"
+   
+      #s = StringIO.new(pdf.render)
+      #logger.info "############## #{s.to_s}"
+      s = File.open("#{pdf_route}")
+      @applicant_file = ApplicantFile.new
+      @applicant_file.applicant_id = a.id
+      @applicant_file.file_type = ApplicantFile::APPLICATION
+      @applicant_file.description = "solicitud_nuevo.pdf"
+      @applicant_file.file = s
+      if @applicant_file.save
+        logger.info "############## YEEA!!"
+      else
+        logger.info "############## #{@applicant_file.errors}"
+      end
+    end## if file_exists
+=begin   
+=end
+
+    #send_data pdf.render, type: "application/pdf", disposition: "inline"
+    send_file "#{filename}/solicitud_nuevo.pdf", :x_sendfile=>true
+  end
+
+
+  def download_app_file
+    @applicant = Applicant.find(params[:applicant_id])
+    create_document(@applicant)
+    #send_file "#{Rails.root}/private/files/applicants/#{@applicant.id}/solicitud.pdf", :x_sendfile=>true
   end
 
   def update
@@ -210,6 +439,20 @@ class ApplicantsController < ApplicationController
   end
   
   def files
+    @req_docs = ApplicantFile::REQUESTED_DOCUMENTS.clone
+ 
+    if params[:register].eql? "registro"
+      @include_js   = "applicants.register.files.js"
+      @register     = true
+      @req_docs.delete(8)
+      @req_docs.delete(9)
+      @req_docs.delete(12)
+      @req_docs.delete(13)
+      @req_docs.delete(14)
+    else
+      @register = false
+    end
+
     @applicant = Applicant.find(params[:id])
     @applicant_files = ApplicantFile.where(:applicant_id=>params[:id])
     render :layout=> "standalone"
@@ -289,8 +532,6 @@ class ApplicantsController < ApplicationController
       return
     end
   end
-
-
 
   def  download_file
     af = ApplicantFile.find(params[:id]).file

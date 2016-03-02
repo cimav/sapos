@@ -81,12 +81,40 @@
           $("#reqdoc_button_download_"+my_id).css("display","none");
           $("#reqdoc_button_delete_"+my_id).css("display","none");
         }
+        
+        var rd  = $(".fields_requested .field_requested_document")
+        //var rbd = $(".fields_requested .field_requested_document .reqdoc_button_download:hidden")
+        var rbd = $(".fields_requested .field_requested_document .img-ok:hidden")
+        if(rbd.length==0){
+          $(".terms").show();
+        }
+        else{
+          $(".terms").hide();
+        }
+
       }
     });
   });
 
+-if @register
+  .header{:style=>"width:860px;height:100px;text-align:justify;margin:10px;"} 
+    %h3= "Debes de cargar todos los documentos para que el sistema le permita descargar su solicitud, los documentos deberán de estar en formato PDF y no mayores a 6mb, también te recomendamos no subir más de un archivo a la vez. Una vez que hayas subido los documentos podrás generar e imprimir tu solicitud. Los archivos serán revisador por la coordinación de estudios de posgrado y cualquier circunstancia se notificara a travez de la cuenta atencion.posgrado@cimav.edu.mx"
+  .terms{:style=>"display:none; width:460px;height:240px;text-align:justify;margin:10px;"} 
+    %br
+    #messages
+    %h4= "La información que se recibe y se genera con motivo de la presente solicitud está sujeta a los dispuesto por la Ley Federal de Transparencia y Acceso a la Información pública gubernamental según sea el caso. "
+    %br
+    %h4= "Informo que conozco el procedimiento de admisión de CIMAV y la normatividad aplicable al mismo por lo que me comprometo a cumplir las normas establecidas y respetar la resolución del Comité de Estudios de Posgrado."
+    %br
+    %h4= "Al aceptar las condiciones se descargará automáticamente la solicitud de ingreso la cual deberá imprimir."
+    %br
+    = button_tag "Aceptar", :type=>'button',:id=>"application_button"
+  %br
+-else
+  .terms
+
 .fields_requested
-  - ApplicantFile::REQUESTED_DOCUMENTS.each do |key, value|
+  - @req_docs.each do |key, value|
     - if  @applicant_files.where(:file_type=>key).size > 0
       - @applicant_files.where(:file_type=>key).each do |af|
         .field_requested_document
@@ -97,10 +125,11 @@
             = label_tag value
             = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center', :style=>'display: none;'
             = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
-            = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center'
+            = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center',:class=>"img-ok"
             = f.file_field :file,:id=>"applicant_file_file_#{my_id}", :style=>"display: none;"
             = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}", :style=>"display:none;"
-            = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}",:my_file_id=> af.id
+            - if !@register
+              = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}",:my_file_id=> af.id
             = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}",:my_file_id=> af.id
     - else
       .field_requested_document
@@ -112,10 +141,11 @@
           = label_tag value
           = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
           = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
-          = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none'
+          = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none',:class=>"img-ok"
           = f.file_field :file,:id=>"applicant_file_file_#{my_id}";
           = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
-          = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
+          - if !@register
+            = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
           = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'display:none;', :my_file_id=> 0
-
   %iframe{"name" => "files_iframe2", "id" => "files_iframe2" ,:style=> "display: none;"}
+
