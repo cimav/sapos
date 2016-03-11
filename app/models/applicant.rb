@@ -1,5 +1,5 @@
 class Applicant < ActiveRecord::Base
-  attr_accessible :id,:program_id,:folio,:first_name,:primary_last_name,:second_last_name,:previous_institution,:previous_degree_type,:average,:date_of_birth,:phone,:cell_phone,:email,:address,:civil_status,:created_at,:updated_at,:status,:consecutive,:staff_id, :notes, :campus_id, :student_id,:place_id
+  attr_accessible :id,:program_id,:folio,:first_name,:primary_last_name,:second_last_name,:previous_institution,:previous_degree_type,:average,:date_of_birth,:phone,:cell_phone,:email,:address,:civil_status,:created_at,:updated_at,:status,:consecutive,:staff_id, :notes, :campus_id, :student_id,:place_id,:password
 
   belongs_to :program
   belongs_to :campus
@@ -13,7 +13,8 @@ class Applicant < ActiveRecord::Base
   DELETED       = 4
   ACCEPTED_PROP = 5
   DESISTS       = 6
-  REQUEST       = 7
+  REQUEST_PASS  = 7
+  REQUEST       = 8
   
   SINGLE   = 1
   MARRIED  = 2
@@ -33,6 +34,7 @@ class Applicant < ActiveRecord::Base
     ACCEPTED_PROP => 'Aceptado a propedeutico',
     DELETED       => 'Borrado',
     DESISTS       => 'Desiste',
+    REQUEST_PASS  => 'Solicitud de password',
     REQUEST       => 'Solicitud',
   }
 
@@ -64,20 +66,20 @@ class Applicant < ActiveRecord::Base
 
   belongs_to :program
 
-  validates :first_name, :presence => true
-  validates :primary_last_name, :presence => true
-  validates :previous_institution, :presence => true
-  validates :previous_degree_type, :presence => true
-  validates :program_id, :presence => true
-  validates :date_of_birth, :presence => true
+  validates :first_name, :presence => true, :if=>"status.in? [1,2,3,4,5,6,7,8]"
+  validates :primary_last_name, :presence => true, :if=>"status.in? [1,2,3,4,5,6,7,8]"
+  validates :previous_institution, :presence => true, :if=>"status.in? [1,2,3,4,5,6,8]"
+  validates :previous_degree_type, :presence => true, :if=>"status.in? [1,2,3,4,5,6,8]"
+  validates :program_id, :presence => true, :if=>"status.in? [1,2,3,4,5,6,7,8]"
+  validates :date_of_birth, :presence => true, :if=>"status.in? [1,2,3,4,5,6,8]"
   validates :notes, :presence => true, :if=> "status.eql? 4" 
-  validates :staff_id, :presence => true, :if=> :campus_valid?
-  validates :campus_id, :presence => true
-  validates :civil_status, :presence => true, :if=> "status.eql? 7"
-  validates :phone, :presence => true, :if=> "status.eql? 7"
-  validates :cell_phone, :presence => true, :if=> "status.eql? 7"
-  validates :email, :presence => true, :if=> "status.eql? 7"
-  validates :address, :presence => true, :if=> "status.eql? 7"
+  validates :staff_id, :presence => true, :if=>"status.in? [1,2,3,4,5,6,8] and program_id.to_i.in? [2,4,10]"
+  validates :campus_id, :presence => true, :if=>"status.in? [1,2,3,4,5,6,7,8]"
+  validates :civil_status, :presence => true, :if=> "status.eql? 8"
+  validates :phone, :presence => true, :if=> "status.eql? 8"
+  validates :cell_phone, :presence => true, :if=> "status.eql? 8"
+  validates :email, :presence => true, :if=> "status.in? [7,8]"
+  validates :address, :presence => true, :if=> "status.eql? 8"
   validate :not_repeat_applicant, :on=>:create
 
 

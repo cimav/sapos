@@ -63,34 +63,16 @@ $(document).ready(function() {
   });
  
   $("#ok_button").live("click", function(){
-    var program_id = $("#applicant_program_id").val();
-    var campus_id  = $("#applicant_campus_id").val();
-    var place_id   = $("#applicant_place_id").val()
-    if(program_id && campus_id && place_id) {
-      var program = $("#applicant_program_id option:selected").text();
-      var campus  = $("#applicant_campus_id option:selected").text();
-      var place   = $("#applicant_place_id option:selected").text();
-      /*$("#applicant_program_id").prop("disabled","disabled");
-      $("#applicant_campus_id").prop("disabled","disabled");
-      $("#applicant_place_id").prop("disabled","disabled");
-      /*$(this).prop("disabled","disabled");*/
-      $("#info").html("<h4><b>Programa:</b> "+program+"<br><b>Campus: </b>"+campus+"<br><b>Sede: </b>"+place+"</h4>");
-      $("#img_load").show();
-      $("#first_screen").hide();
-      get_form(program_id);
-    }
-    else if(program_id && campus_id ) {
-      var program = $("#applicant_program_id option:selected").text();
-      var campus  = $("#applicant_campus_id option:selected").text();
-      $("#info").html("<h4><b>Programa:</b> "+program+"<br><b>Campus: </b>"+campus+"<br></h4>");
-      $("#img_load").show();
-      $("#first_screen").hide();
-      get_form(program_id);
-    }
-    else
-    {
-      alert("Ha dejado campos vacios");
-    }
+    $("#img_load").show();
+    $(this).hide();
+    /*$("#applicant_program_id").prop("disabled","disabled");
+    $("#applicant_campus_id").prop("disabled","disabled");
+    $("#applicant_place_id").prop("disabled","disabled");
+    $(this).prop("disabled","disabled");*/
+  });
+  
+  $("#logout_button").live("click", function(){
+    window.location="/aspirantes/applicant_logout";
   });
   
   $('#item-new-form')
@@ -98,7 +80,9 @@ $(document).ready(function() {
       var res = $.parseJSON(xhr.responseText);
       /*alert(res['flash']['notice']);*/
       if(res['uniq']){
-        window.location="/aspirantes/"+res['uniq']+"/archivos/registro";
+        //window.location="/aspirantes/"+res['uniq']+"/archivos/registro";
+        $("#first_screen").hide();
+        $("#info").show();
       }else{
         alert("Error: no se ha recibido id de aspirante");
       }
@@ -109,16 +93,74 @@ $(document).ready(function() {
         res = $.parseJSON(xhr.responseText);
         //alert(res['errors_full'])*/
         res = $.parseJSON(xhr.responseText);
+        acumul  = ''
         $.each(res['errors_full'],function(key,value){
           if(value.match("0x0")){
             alert("Ya existe un registro con ese nombre");
           }
+          acumul+= value
         })
-
+        
+        //alert(acumul);
+        
       } catch(err) {
         alert("Error general");
       }
     })//live error
+
+    .live("ajax:complete", function(evt, xhr, status) {
+        $("#img_load").hide();
+        $("#applicant_program_id").removeAttr("disabled");
+        $("#applicant_campus_id").removeAttr("disabled");
+        $("#applicant_place_id").removeAttr("disabled");
+        $("#ok_button").removeAttr("disabled");
+        $("#ok_button").show();
+    })//live error
+ 
+  $('#item-edit-form-applicant')
+    .live("ajax:beforeSend", function(evt, xhr, settings) {
+        $('.error-message').remove();
+        $('.with-errors').removeClass('with-errors');
+    })
+
+    .live('ajax:success', function(evt, data, status, xhr) {
+      var res = $.parseJSON(xhr.responseText);
+      /*alert(res['flash']['notice']);*/
+      if(res['uniq']){
+        window.location="/aspirantes/archivos/registro";
+        //$("#first_screen").hide();
+        //$("#info").show();
+      }else{
+        alert("Error: no se ha recibido id de aspirante");
+      }
+    })// live sucess
+
+    .live("ajax:error", function(evt, xhr, status, error) {
+      showFormErrors(xhr, status, error);
+      try {
+        res = $.parseJSON(xhr.responseText);
+        //alert(res['errors_full'])*/
+        res = $.parseJSON(xhr.responseText);
+        acumul  = ''
+        $.each(res['errors_full'],function(key,value){
+          if(value.match("0x0")){
+            alert("Ya existe un registro con ese nombre");
+          }
+          acumul+= value
+        })
+        
+        //alert(acumul);
+        
+      } catch(err) {
+        alert("Error general");
+      }
+    })//live error
+
+    .live("ajax:complete", function(evt, xhr, status) {
+      $("#img_load").hide();
+      $("#send_button").removeAttr("disabled");
+    })//live error
+
 
 });//document.ready
 
@@ -129,7 +171,8 @@ function set_campus(campus){
   api.find('option').remove().end();
   var option1 = document.createElement("option");
   $(option1).val("");
-  $(option1).append("Elige el campus");
+  var campus_choose = $("#campus_choose").val();
+  $(option1).append(campus_choose);
   api.append(option1);
   $(campus).each(function(index,c){
     var option = document.createElement("option");

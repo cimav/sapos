@@ -1,14 +1,20 @@
+# coding: utf-8
+
+require 'digest/md5'
+
 class ApplicantsController < ApplicationController
   before_filter :auth_required
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:register,:new_register,:get_campus,:files,:upload_file,:download_app_file]
+  before_filter :set_locale
+  before_filter :auth_required, :except=>[:register,:new_register,:get_campus,:files_register,:upload_file_register,:download_app_file,:data,:update_register,:applicant_logout]
+  before_filter :auth_indigest, :only=>[:data,:update_register,:files_register,:upload_file_register,:download_app_file]
 
   def show
-    @applicant = Applicant.find(params[:id])
+    @applicant    = Applicant.find(params[:id])
     @programs     = Program.where(:program_type=>2).order('name')
     @institutions = Institution.order('name')
     @staffs       = Staff.select("id,first_name,last_name").order("first_name")
-    @campus = Campus.order('name')
+    @campus       = Campus.order('name')
     render :layout => false
   end
 
@@ -128,10 +134,33 @@ class ApplicantsController < ApplicationController
 
   def register
     @include_js   = "applicants.register.js"
+    @t = t(:applicants)
+    @programs     = Program.where(:program_type=>2).order('name')
+    @places       = Applicant::PLACES.invert.sort {|a,b| a[1] <=> b[1] }
+    render :layout => 'standalone'
+  end
+  
+  def data
+    @t            = t(:applicants)
+    @include_js   = "applicants.register.js"
     @programs     = Program.where(:program_type=>2).order('name')
     @places       = Applicant::PLACES.invert.sort {|a,b| a[1] <=> b[1] }
     @institutions = Institution.order('name')
     @staffs       = Staff.select("id,first_name,last_name").where(:institution_id=>1,:status=>0).order("first_name")
+    @applicant    = Applicant.find(session[:applicant_user])
+    
+    program_id = @applicant.program_id
+    if program_id.to_i.eql? 1  ##MCM
+      @campus = Campus.select("id,name").find([1,2])
+    elsif program_id.to_i.eql? 2 ##DCM
+      @campus = Campus.select("id,name").find([1,2])
+    elsif program_id.to_i.eql? 3 ## MCTA
+      @campus = Campus.select("id,name").find([1,4])
+    elsif program_id.to_i.eql? 4 ## DCTA
+      @campus = Campus.select("id,name").find([1,4])
+    elsif program_id.to_i.eql? 10 ## DN
+      @campus = Campus.select("id,name").find([2])
+    end
     render :layout => 'standalone'
   end
  
@@ -155,10 +184,12 @@ class ApplicantsController < ApplicationController
     render :json => json
   end
 
+
   def new_register
     flash = {}
     @applicant = Applicant.new(params[:applicant])
-    @applicant.status = 7  ### REQUEST
+    @applicant.status = 7  ### REQUEST_PASS
+    @applicant.password = SecureRandom.base64(12)
     #@applicant = Applicant.find(355)
     #create_document(@applicant)
 
@@ -178,6 +209,11 @@ class ApplicantsController < ApplicationController
           end
         end
       end
+
+      content = "{:applicant_id=>\"#{@applicant.id}\",:view=>1}"
+      send_email(@applicant.email,"Solicitud nuevo ingreso CIMAV",content,@applicant)
+      content = "{:applicant_id=>\"#{@applicant.id}\",:view=>2}"
+      send_email(Sapos::Application.config.admin_email,"Un aspirante ha solicitado password",content,@applicant)
     else
       flash[:error] = "Error al crear aspirante."
       respond_with do |format|
@@ -195,6 +231,17 @@ class ApplicantsController < ApplicationController
       end
     end
 #=end
+  end
+
+  def update_register
+    parameters = {}
+    @applicant = Applicant.find(session[:applicant_user])
+    @message = "Aspirante actualizado."
+    if @applicant.update_attributes(params[:applicant])
+      render_message @applicant,@message,parameters
+    else
+      render_error @applicant, "Error al actualizar estudiante",parameters
+    end
   end
 
   def create_document(a) ## a for applicant
@@ -310,14 +357,15 @@ class ApplicantsController < ApplicationController
       data << [{:content=>"<b>Credencial para votar:<b>",:align=>:right},content1,{:content=>"<b>Carta de finiquito de becario conacyt:<b>",:align=>:right},content2]
   
       content1 = pdf.table_icon('fa-square-o')
-      content2 = pdf.table_icon('fa-square-o')
+      #content2 = pdf.table_icon('fa-square-o')
+      content2 = ""
       if @applicant_files.where(:file_type=>ApplicantFile::PREVIOUS_DEGREE_CERTIFICATE).size > 0
         content1 = pdf.table_icon('fa-check-square-o')
       end
-      if @applicant_files.where(:file_type=>ApplicantFile::ACADEMIC_RECOMENDATION_LETTER).size > 0
-        content2 = pdf.table_icon('fa-check-square-o')
-      end
-      data << [{:content=>"<b>Título del grado anterior:<b>",:align=>:right},content1,{:content=>"<b>Carta de recomendación académica:<b>",:align=>:right},content2]
+      #if @applicant_files.where(:file_type=>ApplicantFile::ACADEMIC_RECOMENDATION_LETTER).size > 0
+      #  content2 = pdf.table_icon('fa-check-square-o')
+      #end
+      data << [{:content=>"<b>Carta de recomendación académica:<b>",:align=>:right},content1,{:content=>"",:align=>:right},content2]
       tabla = pdf.make_table(data,:width=>530,:cell_style=>{:size=>12,:padding=>2,:inline_format => true,:border_width=>0},:position=>:center)
       tabla.draw
       
@@ -334,7 +382,10 @@ class ApplicantsController < ApplicationController
       @applicant_file.description = "solicitud_nuevo.pdf"
       @applicant_file.file = s
       if @applicant_file.save
-        logger.info "############## YEEA!!"
+        a.status = 8
+        a.save
+        content = "{:applicant_id=>\"#{a.id}\",:view=>3}"
+        send_email(Sapos::Application.config.admin_email,"Un aspirante ha generado su solicitud",content,a)
       else
         logger.info "############## #{@applicant_file.errors}"
       end
@@ -441,18 +492,6 @@ class ApplicantsController < ApplicationController
   def files
     @req_docs = ApplicantFile::REQUESTED_DOCUMENTS.clone
  
-    if params[:register].eql? "registro"
-      @include_js   = "applicants.register.files.js"
-      @register     = true
-      @req_docs.delete(8)
-      @req_docs.delete(9)
-      @req_docs.delete(12)
-      @req_docs.delete(13)
-      @req_docs.delete(14)
-    else
-      @register = false
-    end
-
     @applicant = Applicant.find(params[:id])
     @applicant_files = ApplicantFile.where(:applicant_id=>params[:id])
     render :layout=> "standalone"
@@ -461,7 +500,54 @@ class ApplicantsController < ApplicationController
     render :template=>"applicants/errors",:layout=> "standalone"
   end
 
+  def files_register
+    @t        = t(:applicants)
+    
+    if session[:locale].eql? "en"
+      @req_docs = ApplicantFile::REQUESTED_DOCUMENTS_EN.clone
+      @req_docs.delete(2)
+      @req_docs.delete(11)
+    else
+      @req_docs = ApplicantFile::REQUESTED_DOCUMENTS.clone
+    end
+ 
+    @include_js   = "applicants.register.files.js"
+    @register     = true
+    @req_docs.delete(5)
+    @req_docs.delete(8)
+    @req_docs.delete(9)
+    @req_docs.delete(12)
+    @req_docs.delete(13)
+    @req_docs.delete(14)
+
+    @applicant = Applicant.find(session[:applicant_user])
+    @applicant_files = ApplicantFile.where(:applicant_id=>session[:applicant_user])
+    render :layout=> "standalone"
+  rescue ActiveRecord::RecordNotFound
+    @error = 1
+    render :template=>"applicants/errors",:layout=> "standalone"
+  end
+
   def upload_file
+    json = {}
+    f = params[:applicant_file]['file']
+
+    @applicant_file = ApplicantFile.new
+    @applicant_file.applicant_id = params[:applicant_id]
+    @applicant_file.file_type = params[:file_type]
+    @applicant_file.file = f
+    @applicant_file.description = f.original_filename
+
+    if @applicant_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@applicant_file.id}</id>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@applicant_file.errors.full_messages}</errors>"
+    end 
+  rescue  
+    render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
+  end
+  
+  def upload_file_register
     json = {}
     f = params[:applicant_file]['file']
 
@@ -564,4 +650,60 @@ class ApplicantsController < ApplicationController
     name = months[number - 1]
     return name
   end
+
+  def applicant_logout
+    session[:applicant_user] = nil
+    session[:locale] = nil
+    @message = "Out of session"
+    @url = "/aspirantes/registro/datos"
+    render :template => "applicants/applicants_login",:layout=>false
+  end
+  
+  def set_locale
+    I18n.locale = params[:locale] || session[:locale] || I18n.default_locale
+ 
+    if params[:locale]
+      session[:locale]=params[:locale]
+    end
+  end
+
+private
+  def auth_indigest
+    user = params[:user]
+    password = params[:password]
+
+    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+
+    if user && password
+      if Applicant.where(:status=>[7,8],:id=>user,:password=>password).size.eql? 1
+        session[:applicant_user] = user
+      else
+        @user    = user
+        @message = "Usuario o password incorrectos"
+      end
+    end
+
+    if session_authenticated?
+      if !params[:action].eql? "download_app_file" # exception to download the file itself
+        if ApplicantFile.where(:applicant_id=>session[:applicant_user],:file_type=>12).size>0
+          @name = Applicant.find(session[:applicant_user]).full_name rescue ""
+          @include_js   = "applicants.register.js"
+          @t = t(:applicants)
+          render :template => "applicants/applicants_access",:layout=>'standalone'
+        end
+      end
+
+      return true
+    else
+      @url = "/aspirantes/registro/datos"
+      render :template => "applicants/applicants_login",:layout=>false
+    end
+  end ##auth_digest
+
+  def session_authenticated?
+    session[:applicant_user] rescue nil
+  end
+
 end

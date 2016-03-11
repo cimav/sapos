@@ -225,6 +225,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def send_email(to,subject,content,object)
+    mail    = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
+    if mail.save
+      SystemMailer.system_email(mail).deliver
+      mail.status= 1;
+      mail.save
+    else
+      ActivityLog.new({:user_id=>object.id,:activity=>"{:user_object=>'#{object.class}',:activity=>'Error al guardar email <#{to}>'}"}).save
+    end
+  end
+
+
   private
   def current_user
     @current_user ||= User.find(session[:user_id]) if session[:user_id]

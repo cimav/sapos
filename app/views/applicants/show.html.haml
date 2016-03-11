@@ -75,7 +75,6 @@
         = f.label :primary_last_name, 'Primer Apellido'
         = f.text_field :primary_last_name
 
-        
       .field#field_applicant_second_last_name
         = f.label :second_last_name, 'Segundo Apellido'
         = f.text_field :second_last_name
@@ -138,7 +137,7 @@
 
     #documentos
       %h2 Documentos
-      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "555", "src" => "/aspirantes/#{@applicant.id}/archivos", "scrolling" => "no", :frameborder=>"0"}
+      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "750", "src" => "/aspirantes/#{@applicant.id}/archivos", "scrolling" => "no", :frameborder=>"0"}
     
     #constancias
       %h2 Constancias
