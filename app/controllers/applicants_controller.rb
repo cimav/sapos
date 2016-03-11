@@ -357,14 +357,10 @@ class ApplicantsController < ApplicationController
       data << [{:content=>"<b>Credencial para votar:<b>",:align=>:right},content1,{:content=>"<b>Carta de finiquito de becario conacyt:<b>",:align=>:right},content2]
   
       content1 = pdf.table_icon('fa-square-o')
-      #content2 = pdf.table_icon('fa-square-o')
       content2 = ""
-      if @applicant_files.where(:file_type=>ApplicantFile::PREVIOUS_DEGREE_CERTIFICATE).size > 0
+      if @applicant_files.where(:file_type=>ApplicantFile::ACADEMIC_RECOMENDATION_LETTER).size > 0
         content1 = pdf.table_icon('fa-check-square-o')
       end
-      #if @applicant_files.where(:file_type=>ApplicantFile::ACADEMIC_RECOMENDATION_LETTER).size > 0
-      #  content2 = pdf.table_icon('fa-check-square-o')
-      #end
       data << [{:content=>"<b>Carta de recomendación académica:<b>",:align=>:right},content1,{:content=>"",:align=>:right},content2]
       tabla = pdf.make_table(data,:width=>530,:cell_style=>{:size=>12,:padding=>2,:inline_format => true,:border_width=>0},:position=>:center)
       tabla.draw
@@ -373,8 +369,6 @@ class ApplicantsController < ApplicationController
       pdf.text "<b>Firma del solicitante</b>", :inline_format=>true, :align=>:center
       pdf.render_file "#{pdf_route}"
    
-      #s = StringIO.new(pdf.render)
-      #logger.info "############## #{s.to_s}"
       s = File.open("#{pdf_route}")
       @applicant_file = ApplicantFile.new
       @applicant_file.applicant_id = a.id
@@ -390,10 +384,7 @@ class ApplicantsController < ApplicationController
         logger.info "############## #{@applicant_file.errors}"
       end
     end## if file_exists
-=begin   
-=end
 
-    #send_data pdf.render, type: "application/pdf", disposition: "inline"
     send_file "#{filename}/solicitud_nuevo.pdf", :x_sendfile=>true
   end
 
