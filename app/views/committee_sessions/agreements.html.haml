@@ -119,7 +119,7 @@
       - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
-      - @staffs = Staff.where(:status=>0,:institution_id=>1)
+      - @staffs = Staff.where(:status=>0)
       %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
         - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
           .agreement-staff
@@ -163,7 +163,7 @@
       = hidden_field_tag "my_type", ca.committee_agreement_type_id
       %b= my_id
       %b= "Designación de docentes para cursos: "
-      - @staffs = Staff.where(:status=>0,:institution_id=>1)
+      - @staffs = Staff.where(:status=>0)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
       - @terms    = Term.where(:status=>[1,2])
