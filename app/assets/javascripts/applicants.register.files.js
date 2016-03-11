@@ -27,7 +27,7 @@ $(document).ready(function() {
      $("#continue_button").hide();
   }
 
-  $("#logout_button").live("click", function(){
+  $(".logout-button").live("click", function(){
     window.location="/aspirantes/applicant_logout";
   });
 });//document.ready

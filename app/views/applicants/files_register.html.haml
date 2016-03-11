@@ -113,7 +113,7 @@
     .title{:style=>"width: 400px; display: block-inline;position:absolute"}
       %h2
         =@t[:title]
-        = button_tag @t[:logout], :type=>"button", :id=>"logout_button", :style=>"display:block-inline;font-size:70%;padding: 3px 4px;",:class=>"logout_button"
+        = button_tag @t[:logout], :type=>"button", :id=>"logout_button", :style=>"display:block-inline;font-size:70%;padding: 3px 4px;",:class=>"logout-button"
     .language{:style=>"width:180px;height:40px;text-align:left;display:block-inline;position:relative;margin-left:500px;top:7px;font-weight:bold;"} 
       - if I18n.locale.eql? :es
         =" Change language to " 
@@ -129,6 +129,7 @@
     %br
     = button_tag @t[:accept], :type=>'button',:id=>"application_button"
     = button_tag @t[:cancel_return], :type=>'button',:id=>"cancel_button"
+    = button_tag @t[:logout], :type=>"button", :id=>"logout_button_2",:class=>"logout-button"
   %br
 -else
   .terms
