@@ -6,14 +6,27 @@ class SystemMailer < ActionMailer::Base
     @email     = hash[:email]
     @to        = object.to
     @view      = hash[:view]
-    @reply_to  = hash[:reply_to] rescue ""
+    @reply_to  = hash[:reply_to] rescue nil
     @uri       = hash[:uri] rescue ""
     @text      = hash[:text] rescue ""
 
-  if @reply_to.empty?
-    mail(:to=> @to,:subject=>object.subject)
-  else
-    mail(:to=> @to,:subject=>object.subject,:reply_to=>@reply_to)
-  end
+   if @reply_to.empty?
+     mail(:to=> @to,:subject=>object.subject)
+   else
+     mail(:to=> @to,:subject=>object.subject,:reply_to=>@reply_to)
+   end
+ end
+
+ def system_email(object)
+   @hash       = eval object.content
+   @to         = object.to
+   @reply_to  = hash[:reply_to] rescue nil
+
+   mail(:to=> @to,:subject=>object.subject)
+   if @reply_to.nil?
+     mail(:to=> @to,:subject=>object.subject)
+   else
+     mail(:to=> @to,:subject=>object.subject,:reply_to=>@reply_to)
+   end
  end
 end

@@ -27,6 +27,7 @@ gem 'pdfkit'
 gem 'cancan'
 gem 'prawn'
 gem 'prawn-table'
+gem 'prawn-icon'
 
 gem 'zipruby'
 gem 'fileutils'

@@ -1,5 +1,5 @@
 class ApplicantFilesController < ApplicationController
-  before_filter :auth_required
+  before_filter :auth_required, :except=>[:download,:destroy]
   respond_to :html, :xml, :json
 
   def destroy

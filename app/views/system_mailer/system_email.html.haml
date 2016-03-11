@@ -1,0 +1,67 @@
+- if @hash[:view].eql? 1
+  - @applicant = Applicant.find(@hash[:applicant_id])
+  %b= "#{@applicant.full_name}"
+  %br
+  %br
+  = "Le informamos que los datos para continuar con su proceso de registro como aspirante para ingresar a un programa de posgrado de CIMAV son los siguientes:"
+  %br
+  %br
+  = "Id: #{@applicant.id}"
+  %br
+  = "Password: #{@applicant.password}"
+  %br
+  %br
+  = "Para continuar con su proceso de registro de su solicitud debe ingresar a la siguiente página http://tsukuba.cimav.edu.mx:3000/aspirantes/registro/datos"
+  %br
+  %br
+  = "El formato de registro le solicitará información personal y datos del programa que desea cursar. Al guardar la información solicitada, se despliega una pantalla donde se deberán subir los documentos que sustentan su solicitud. El sistema acepta documentos en pdf y no mayores 6 megabytes."
+  %br
+  %br
+  = "Una vez que haya subido los documentos marcados como obligatorios podra imprimir su solicitud. Para imprimir su solicitud, deberá aceptar los términos y condiciones del proceso de admisión por lo que le sugerimos revisar el procedimiento correspondiente en la página web de CIMAV.  Se puede interrumpir el proceso y volver a ingresar para continuar con el mismo. Pero, una vez que imprima su solicitud, ya no podrá realizar ningún cambio."
+  %br
+  %br
+  ="Le sugerimos al terminar el proceso o interrumpirlo seleccione la opción SALIR, por la seguridad e integridad de sus datos y documentos."
+  %br
+  %br
+  ="Cualquier duda o comentario al respecto, favor de contactar a la Lic. Sandra Beltrán en sandra.beltran@cimav.edu.mx o 6144391157."
+  %br
+  %br
+  ="Le deseamos mucho éxito en este proceso."
+  %br
+  %br
+  = "---------------------------------------- English translation -----------------------------------------"
+  %br
+  %br
+  %b= "#{@applicant.full_name}"
+  %br
+  %br
+  = "We are glad to inform you that has been generated the register of your application to be admitted to a posgraduate program in our Center:"
+  %br
+  %br
+  = "Id: #{@applicant.id}"
+  %br
+  = "Password: #{@applicant.password}"
+  %br
+  %br
+  = "To continue the process, please go to the link:"
+  %br
+  %br
+  = "The application form wil ask you to complete personal information. After these, you should upload the documents that complete your application. The documents must be uploaded in pdf format and no more of 6 megabytes each document."
+  %br
+  %br
+  = "Once you complete the application, it could be print. But first, you must accept the conditions of the admission process, thats why we ask you to read the application process. You could stop the process at any time. But after you send the application to print, it can not be change."
+  %br
+  %br
+  = "We suggest, if you stop or end the process, please click on the \"LOGOUT\" option, in order to secure your information and documents."
+  %br
+  %br
+  = "For information please contact Sandra Beltrán at sandra.beltran@cimav.edu.mx"
+  %br
+  %br
+  = "Best regards"
+- elsif @hash[:view].eql? 2
+  - @applicant = Applicant.find(@hash[:applicant_id])
+  = "Le informamos que el aspirante con nombre #{@applicant.full_name}(#{@applicant.id}) ha solicitado un password para iniciar el proceso para entrar al programa #{@applicant.program.name}"
+- elsif @hash[:view].eql? 3
+  - @applicant = Applicant.find(@hash[:applicant_id])
+  = "Le informamos que el aspirante con nombre #{@applicant.full_name}(#{@applicant.id}) ha generado una solicitud para entrar al programa #{@applicant.program.name}"

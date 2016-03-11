@@ -1,0 +1,40 @@
+#login-logo {
+  height: 130px;
+  width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#login-box {
+  height: 210px;
+  width: 210px;
+  border-radius: 15px;
+  padding: 20px 20px 10px 20px;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 1px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#language{
+  height: 30px;
+  width: 180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.field {
+  margin: 5px 0px;
+}
+
+.field#title{
+  font-size: 16px;
+  font-weight: bold;
+  padding-bottom: 20px;
+}
+
+.field#message{
+  padding-top: 10px;
+  color: red;
+}

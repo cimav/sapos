@@ -1,0 +1,98 @@
+= form_for @applicant, :url=>{action: "update_register"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-edit-form-applicant' } do |f|
+  #first_screen
+    .header{:style=>"width:880px;height:70px;text-align:justify;margin:2px;"} 
+      .title{:style=>"width: 400px; display: block-inline;position:absolute"}
+        %h2
+          = @t[:title]
+          = button_tag @t[:logout], :type=>"button", :id=>"logout_button", :style=>"display:block-inline;font-size:70%;padding: 3px 4px;",:class=>"logout_button"
+
+      .language{:style=>"width:180px;height:25px;text-align:left;display:block-inline;position:relative;margin-left:500px;top:7px;font-weight:bold;"} 
+        - if I18n.locale.eql? :es
+          =" Change language to " 
+          = link_to "English","?locale=en"
+        - elsif I18n.locale.eql? :en
+          ="Cambiar idioma a " 
+          = link_to "Español","?locale=es"
+      
+      .message{:style=>"text-align:justify;position:relative;"}
+        %br
+        %h4=@t[:instructions0]
+    .field#field_id
+      = f.label :id, 'Id'
+      = f.text_field :id,:size=>4,:disabled=>true
+    .field#field_applicant_program
+      = f.label :program_id, @t[:program]
+      = f.collection_select :program_id, @programs, :id, :name, options = {:prompt => "Elige el programa"},:class=>"first-page",:disabled=>true
+      = image_tag "/images/ajax-load2.gif", :id=> "img_load_program" , :align=> 'center',:style=>'display: none; width:20px;'
+    .field#field_applicant_campus
+      .aux_field_campus{:style=>"display:show;"}
+        = f.label :campus_id, @t[:campus]
+        = f.collection_select :campus_id, @campus, :id, :name, options = {:prompt => "Elige el campus"},:class=>"first-page",:disabled=>true
+      = image_tag "/images/ajax-load2.gif", :id=> "img_load_campus" , :align=> 'center',:style=>'display: none; width:20px;'
+    .field#field_applicant_place
+      .aux_field_place{:style=>"display:show;"}
+        = f.label :place_id, @t[:place]
+        = f.select :place_id, @places, {:include_blank => 'Selecciona la sede'},:class=>"first-page",:disabled=>true
+        = @t[:place_message]
+  = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
+  #my_fields{:style=>"display:block;"}
+    #info
+
+    .field#field_applicant_first_name
+      = f.label :first_name, @t[:name]
+      = f.text_field :first_name,:disabled=>true
+
+    .field#field_applicant_primary_last_name
+      = f.label :primary_last_name, @t[:primary_last_name]
+      = f.text_field :primary_last_name,:disabled=>true
+
+    .field#field_applicant_second_last_name
+      = f.label :second_last_name, @t[:second_last_name]
+      = f.text_field :second_last_name,:disabled=>true
+    
+    .field#field_applicant_email
+      = f.label :email, 'Email'
+      = f.text_field :email, :size => 50,:disabled=>true
+
+    .field#field_applicant_address
+      = f.label :address, @t[:address]
+      = f.text_field :address, :size => 100
+      = @t[:address_message]
+
+    .field#field_applicant_phone
+      = f.label :phone, @t[:phone]
+      = f.text_field :phone
+
+    .field#field_applicant_cell_phone
+      = f.label :cell_phone, @t[:mobile]
+      = f.text_field :cell_phone
+   
+    .field#field_applicant_date_of_birth
+      = f.label :date_of_birth, @t[:birthdate]
+      = f.date_select :date_of_birth, :start_year => DateTime.now.year - 100
+ 
+    .field#field_applicant_previous_institution
+      = f.label :previous_institution, @t[:school]
+      = f.select :previous_institution, @institutions.collect {|p| [ p.name, p.id ] }.push(["Otras",0]), {:include_blank => 'Selecciona la institucion'}
+
+    .field#field_applicant_previous_degree_type
+      = f.label :previous_degree_type, @t[:degree]
+      = f.text_field :previous_degree_type, :size => 65
+   
+    .field#field_applicant_average
+      = f.label :average, @t[:average]
+      = f.text_field :average
+
+    .field#field_applicant_civil_status
+      = f.label :civil_status, @t[:marital_status]
+      = f.select :civil_status, Applicant::CIVIL_STATUS.invert.sort {|a,b| a[1] <=> b[1] }.unshift(["Selecciona el estado civil",""])
+
+    - if @applicant.program.level.to_i.eql? 2
+      .field#field_applicant_staff_id{:style=>"display:show;"}
+        = f.label :staff_id, @t[:thesis_director]
+        = f.collection_select :staff_id, @staffs, :id, :full_name, options = {:prompt => "Selecciona el asesor"}
+
+    .field#send_button
+      = f.submit @t[:continue], :id=>"send_button", :style=>"display:block",:class=>"button"
+  #messages
+

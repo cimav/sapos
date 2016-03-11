@@ -1,0 +1,54 @@
+= form_for Applicant.new, :url=>{action: "new_register"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
+  #first_screen
+    .header{:style=>"width:800px;height:90px;margin:2px;"} 
+      .title{:style=>"width: 400px; display: block-inline;position:absolute"}
+        %h2=@t[:title]
+      .language{:style=>"width:180px;height:15px;text-align:left;display:block-inline;position:relative;margin-left:500px;top:7px;font-weight:bold;"} 
+        - if I18n.locale.eql? :es
+          =" Change language to " 
+          = link_to "English","?locale=en"
+        - elsif I18n.locale.eql? :en
+          ="Cambiar idioma a " 
+          = link_to "Español","?locale=es"
+      .message{:style=>"text-align:justify;position:relative;"}
+        %br
+        %h4=@t[:message0]
+    .field#field_applicant_first_name
+      = f.label :first_name, @t[:name]
+      = f.text_field :first_name 
+      = "*"
+    .field#field_applicant_primary_last_name
+      = f.label :primary_last_name, @t[:primary_last_name]
+      = f.text_field :primary_last_name
+      = "*"
+    .field#field_applicant_second_last_name
+      = f.label :second_last_name, @t[:second_last_name]
+      = f.text_field :second_last_name
+    .field#field_applicant_email
+      = f.label :email, 'Email'
+      = f.text_field :email, :size => 50
+      = "*"
+    .field#field_applicant_program
+      = f.label :program_id, @t[:program]
+      = f.collection_select :program_id, @programs, :id, :name, options = {:prompt =>@t[:program_choose]},:class=>"first-page"
+      = "*"
+      = image_tag "/images/ajax-load2.gif", :id=> "img_load_program" , :align=> 'center',:style=>'display: none; width:20px;'
+    .field#field_applicant_campus
+      .aux_field_campus{:style=>"display:none;"}
+        = f.label :campus_id, @t[:campus]
+        = hidden_field_tag "campus_choose",@t[:campus_choose]
+        = f.collection_select :campus_id, [], :id, :name, options = {:prompt => @t[:campus_choose]},:class=>"first-page"
+        = "*"
+      = image_tag "/images/ajax-load2.gif", :id=> "img_load_campus" , :align=> 'center',:style=>'display: none; width:20px;'
+    .field#field_applicant_place
+      .aux_field_place{:style=>"display:none;"}
+        = f.label :place_id, @t[:place]
+        = f.select :place_id, @places, {:include_blank => @t[:place_choose]},:class=>"first-page"
+        = "*"
+        = @t[:place_message]
+    .field#buttons
+      = f.submit @t[:accept], :id=>"ok_button", :style=>"display:none",:class=>"button"
+  = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
+  #info{:style=>"display:none;"}
+    .header{:style=>"width:860px;height:100px;text-align:justify;margin:0px;"} 
+      %h3= @t[:message1]

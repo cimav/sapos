@@ -1,11 +1,11 @@
 class Applicant < ActiveRecord::Base
-  attr_accessible :id,:program_id,:folio,:first_name,:primary_last_name,:second_last_name,:previous_institution,:previous_degree_type,:average,:date_of_birth,:phone,:cell_phone,:email,:address,:civil_status,:created_at,:updated_at,:status,:consecutive,:staff_id, :notes, :campus_id, :student_id
+  attr_accessible :id,:program_id,:folio,:first_name,:primary_last_name,:second_last_name,:previous_institution,:previous_degree_type,:average,:date_of_birth,:phone,:cell_phone,:email,:address,:civil_status,:created_at,:updated_at,:status,:consecutive,:staff_id, :notes, :campus_id, :student_id,:place_id,:password
 
   belongs_to :program
   belongs_to :campus
 
   after_create :set_folio
-  before_create :register
+  #before_create :register
 
   REGISTERED    = 1
   REJECTED      = 2
@@ -13,6 +13,8 @@ class Applicant < ActiveRecord::Base
   DELETED       = 4
   ACCEPTED_PROP = 5
   DESISTS       = 6
+  REQUEST_PASS  = 7
+  REQUEST       = 8
   
   SINGLE   = 1
   MARRIED  = 2
@@ -31,27 +33,61 @@ class Applicant < ActiveRecord::Base
     ACCEPTED      => 'Aceptado',
     ACCEPTED_PROP => 'Aceptado a propedeutico',
     DELETED       => 'Borrado',
-    DESISTS       => 'Desiste'
+    DESISTS       => 'Desiste',
+    REQUEST_PASS  => 'Solicitud de password',
+    REQUEST       => 'Solicitud',
+  }
+
+  CUU = 1
+  MTY = 2
+  DGO = 3
+  TIJ = 4
+  CUL = 5
+  HMO = 6
+  GDL = 7
+  QRO = 8
+  XAL = 9
+  MID = 10
+  MEX = 11
+
+  PLACES = {
+    CUU => "Chihuahua",
+    MTY => "Monterrey",
+    DGO => "Durango",
+    TIJ => "Tijuana",
+    CUL => "Culiacán",
+    HMO => "Hermosillo",
+    GDL => "Guadalajara",
+    QRO => "Querétaro",
+    XAL => "Jalapa",
+    MID => "Mérida",
+    MEX => "Ciudad de México",
   }
 
   belongs_to :program
 
-  validates :first_name, :presence => true
-  validates :primary_last_name, :presence => true
-  validates :previous_institution, :presence => true
-  validates :previous_degree_type, :presence => true
-  validates :program_id, :presence => true
-  validates :date_of_birth, :presence => true
+  validates :first_name, :presence => true, :if=>"status.in? [1,2,3,4,5,6,7,8]"
+  validates :primary_last_name, :presence => true, :if=>"status.in? [1,2,3,4,5,6,7,8]"
+  validates :previous_institution, :presence => true, :if=>"status.in? [1,2,3,4,5,6,8]"
+  validates :previous_degree_type, :presence => true, :if=>"status.in? [1,2,3,4,5,6,8]"
+  validates :program_id, :presence => true, :if=>"status.in? [1,2,3,4,5,6,7,8]"
+  validates :date_of_birth, :presence => true, :if=>"status.in? [1,2,3,4,5,6,8]"
   validates :notes, :presence => true, :if=> "status.eql? 4" 
-  validates :campus_id, :presence => true
+  validates :staff_id, :presence => true, :if=>"status.in? [1,2,3,4,5,6,8] and program_id.to_i.in? [2,4,10]"
+  validates :campus_id, :presence => true, :if=>"status.in? [1,2,3,4,5,6,7,8]"
+  validates :civil_status, :presence => true, :if=> "status.eql? 8"
+  validates :phone, :presence => true, :if=> "status.eql? 8"
+  validates :cell_phone, :presence => true, :if=> "status.eql? 8"
+  validates :email, :presence => true, :if=> "status.in? [7,8]"
+  validates :address, :presence => true, :if=> "status.eql? 8"
   validate :not_repeat_applicant, :on=>:create
 
 
   def not_repeat_applicant
-    applicants = Applicant.where("first_name=? and primary_last_name=? and second_last_name=? and status = 1",first_name.strip,primary_last_name.strip,second_last_name.strip) 
+    applicants = Applicant.where("first_name=? AND primary_last_name=? AND second_last_name=? AND program_id=? AND status in (1,3,5,7)",first_name.strip,primary_last_name.strip,second_last_name.strip,program_id) 
     
     if applicants.size > 0
-      errors.add(:base,"Ya existe un registro activo con ese nombre #{applicants.size}")
+      errors.add(:base,"0x0 Ya existe un registro activo con ese nombre #{applicants.size}")
     end
   end
 
@@ -59,9 +95,9 @@ class Applicant < ActiveRecord::Base
     "#{first_name} #{primary_last_name} #{second_last_name}" rescue ''
   end
 
-  def register
-    self.status = 1
-  end
+  #def register
+  #  self.status = 1
+  #end
 
   def create_folio
     cycle = String.new
@@ -114,4 +150,11 @@ class Applicant < ActiveRecord::Base
   def update_folio
     self.folio = self.create_folio
   end
+
+protected
+  def campus_valid? 
+    ([2,4,10].include? self.program_id.to_i)
+  end
+
+
 end

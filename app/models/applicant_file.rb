@@ -23,6 +23,7 @@ class ApplicantFile < ActiveRecord::Base
   APPLICATION = 12
   OTHER       = 13
   PRELIMINARY_RESEARCH = 14
+  ACADEMIC_RECOMENDATION_LETTER = 15
 
   REQUESTED_DOCUMENTS = {
     BIRTH_CERTIFICATE => 'Acta de Nacimiento',
@@ -38,6 +39,25 @@ class ApplicantFile < ActiveRecord::Base
     CONACYT_ENDED_SCHOLARSHIP_CERTIFICATE => 'Carta de finiquito de becario CONACyT',
     APPLICATION => 'Solicitud',
     PRELIMINARY_RESEARCH => "Anteproyecto de investigacion",
+    ACADEMIC_RECOMENDATION_LETTER => "Carta de recomendación académica", 
+    OTHER => 'Otro',
+ }
+  
+  REQUESTED_DOCUMENTS_EN = {
+    BIRTH_CERTIFICATE => 'Birth Certificate',
+    CURP              => 'C.U.R.P',
+    PROOF_OF_ADDRESS  => 'Proof of address',
+    VOTING_CARD       => 'Id',
+    PREVIOUS_DEGREE_CERTIFICATE         => 'Titulo del grado anterior',
+    PREVIOUS_DEGREE_TEST_CERTIFICATE    => 'Degree',
+    PREVIOUS_DEGREE_STUDIES_CERTIFICATE => 'Official transcript',
+    CENEVAL => 'Resultados del Examen Ceneval Exani III',
+    TOEFL    => 'Resultados del Examen TOEFL',
+    ACADEMIC_CURRICULUM => 'Curriculum Vitae',
+    CONACYT_ENDED_SCHOLARSHIP_CERTIFICATE => 'Carta de finiquito de becario CONACyT',
+    APPLICATION => 'Solicitud',
+    PRELIMINARY_RESEARCH => "Anteproyecto de investigacion",
+    ACADEMIC_RECOMENDATION_LETTER => "Recomendation letter", 
     OTHER => 'Otro',
  }
 
