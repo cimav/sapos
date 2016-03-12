@@ -2,6 +2,44 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  applicants:
+    title: "Application form"
+    message0: "Instructions: Fill in the information. Then click on the \"Accept\" option. The system will send you an email with your pasword and id to access the application form."
+    accept: "Accept"
+    message1: "The password and id has been send to your e mail. The process could take more than 30 minutes. In case that you wont recibe the information or something goes  wrong, please contact atencion.posgrado@cimav.edu.mx"
+    message2: "The documents to complete the application process must be uploaded in this section. Each document has to be uploaded individually, in pdf format, no more than 6 megabytes. Once the uploaded has been finished, you could print tha application form.<br><br>The documents  will be checked by the Posgraduate Coordination. In case of any problem, an e mail will  be send to inform you. "
+    terms: "<h4>Statement</h4>
+        <br><h4>The information contained in this application will be treated in accordance with the Mexican Laws.</h4>
+        <br><h4>I am aware of the application process and the normativity that applies. I will respect the regulations involved and the result of the process.</h4><br><h4>Note: When the conditions are accepted, tha application will be downloaded. Once tha aapplication has been print, the information contained can not be changed.</h4>" 
+    user: "User"
+    name: "First Name"
+    primary_last_name: "Lastname"
+    second_last_name: "Middle Name"
+    program: "Posgraduate Program"
+    program_choose: "Choose the program"
+    campus: "Campus"
+    campus_choose: "Choose the campus"
+    place: "Place"
+    place_choose: "Choose the place"
+    place_message: "Place to take the admission test for master programs only"
+    logout: "Logout"
+    instructions0: "Instructions: Fill in the information. To save the information click on the \"Continue\" option."
+    address: "Address"
+    address_message: "Must include city, state and country"
+    phone: "Phone"
+    mobile: "Mobile"
+    birthdate: "Birthdate"
+    school: "School"
+    degree: "Degree"
+    average: "Grade"
+    marital_status: "Marital Status"
+    thesis_director: "Thesis Director"
+    continue: "Continue"
+    download_file: "Download File"
+    upload_file: "Upload File"
+    delete_file: "Delete"
+    only_pdf_message: "Only pdf format"
+    cancel_return: "Cancel (Return)"
   date:
     formats:
       default: "%d-%m-%Y"

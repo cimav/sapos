@@ -1,0 +1,20 @@
+#first_screen
+  .header{:style=>"width:860px;height:80px;text-align:justify;margin:2px;"} 
+    .title{:style=>"width: 400px; height:80px; display: block-inline;position:absolute"}
+      %h2
+        ="Registro de solicitud de ingreso"
+        = button_tag "Salir", :type=>"button", :id=>"logout_button",:class=>"logout_button",:style=>"display:block-inline;font-size:70%;padding: 3px 4px;"
+    .language{:style=>"width:180px;height:40px;text-align:left;display:block-inline;position:relative;margin-left:500px;top:7px;font-weight:bold;"} 
+      - if I18n.locale.eql? :es
+        =" Change language to " 
+        = link_to "English","?locale=en"
+      - elsif I18n.locale.eql? :en
+        ="Cambiar idioma a " 
+        = link_to "Español","?locale=es"
+    .message{:style=>"text-align:justify;position:relative;"}
+      %h3{:style=>"color: #000000;"}=@name
+      %br
+      %h3
+        ="Usted ya ha impreso la solicitud por lo que no puede accesar a los datos, pero puede descargarla nuevamente "
+        = link_to "aquí","/aspirantes/descargar/solicitud/#{session[:applicant_user]}"
+     
