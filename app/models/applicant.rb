@@ -1,3 +1,11 @@
+class EmailValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    unless value =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
+      record.errors[attribute] << (options[:message] || "is not an email")
+    end
+  end
+end
+
 class Applicant < ActiveRecord::Base
   attr_accessible :id,:program_id,:folio,:first_name,:primary_last_name,:second_last_name,:previous_institution,:previous_degree_type,:average,:date_of_birth,:phone,:cell_phone,:email,:address,:civil_status,:created_at,:updated_at,:status,:consecutive,:staff_id, :notes, :campus_id, :student_id,:place_id,:password
 
@@ -78,7 +86,7 @@ class Applicant < ActiveRecord::Base
   validates :civil_status, :presence => true, :if=> "status.eql? 8"
   validates :phone, :presence => true, :if=> "status.eql? 8"
   validates :cell_phone, :presence => true, :if=> "status.eql? 8"
-  validates :email, :presence => true, :if=> "status.in? [7,8]"
+  validates :email, :presence => true, :email=>true, :if=> "status.in? [7,8]"
   validates :address, :presence => true, :if=> "status.eql? 8"
   validate :not_repeat_applicant, :on=>:create
 
