@@ -4,7 +4,7 @@ es:
     title: "Registro de solicitud de ingreso"
     message0: "Instrucciones: Registre los datos que se solicitan. Al terminar seleccione la opción \"Aceptar\". El sistema enviará al correo electrónico registrado identificación y contraseña para continuar con el proceso de registro de su solicitud de admisión. "
     accept: "Aceptar"
-    message1: "Se ha enviado identificación y contraseña al correo registrardo. El proceso puede tardar media hora. En caso de no recibir la contraseña o de presentarse algún error o problema, favor de contactar a atencion.posgrado@cimav.edu.mx"
+    message1: "Se ha enviado identificación y contraseña al correo registrado. El proceso puede tardar media hora. En caso de no recibir la contraseña o de presentarse algún error o problema, favor de contactar a atencion.posgrado@cimav.edu.mx"
     message2: "Los documentos soporte de su solicitud de admisión  se encuentran listados en la parte inferior. Los documentos se deberán subir en formato pdf y no mayores a 6 MB. Se recomienda subir un archivo a la vez. Cuando se hayan cargado los archivos, se podrá imprimir la solicitud de admisión.<br><br>Los documentos soporte de la solicitud serán revisados por la Coordinación de Estudios de Posgrado. En caso de existir alguna inconsistencia o error, se notificará a través del correo electrónico registrado."
     terms: "<h4>Declaración</h4><br><h4>La información que se recibe y se genera con motivo de la presente solicitud está sujeta a los dispuesto por la Ley Federal de Transparencia y Acceso a la Información pública gubernamental según sea el caso.</h4>
     <br>
