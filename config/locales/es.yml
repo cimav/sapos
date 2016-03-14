@@ -17,7 +17,7 @@ es:
     user: "Usuario"
     name: "Nombre"
     primary_last_name: "Apellido Paterno"
-    second_last_name: "Apellido Paterno"
+    second_last_name: "Apellido Materno"
     program: "Programa"
     program_choose: "Selecciona el programa"
     campus: "Campus"
