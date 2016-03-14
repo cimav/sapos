@@ -694,14 +694,14 @@ class CommitteeSessionsController < ApplicationController
         pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
 
-      ############################### AUTORIZACION DE MATERIAS NUEVAS ###################################
+      ############################### EVALUACION DE TEMARIOS PROPUESTOS ###################################
       elsif @type.eql? 9
         @render_pdf = true
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff",:aux=>3).first
         staff       = Staff.find(cap.attachable_id)
         evals       = @c_a.committee_agreement_person.where(:attachable_type=>"Staff",:aux=>4)
         c_id        = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
-        course      = Course.find(c_id)
+        course      = Course.find(c_id) rescue nil
         t_id        = @c_a.auth
         term        = Term.find(t_id)
         notes       = @c_a.committee_agreement_note[0].notes rescue ""
@@ -721,7 +721,7 @@ class CommitteeSessionsController < ApplicationController
         if evals_text.chop.chop.size > 170
           h = 45
         end
-        pdf.text_box "<>#{evals_text.chop.chop}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w+200, :height=>h,:inline_format=>true
+        pdf.text_box "<b>#{evals_text.chop.chop}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w+200, :height=>h,:inline_format=>true
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
@@ -732,9 +732,12 @@ class CommitteeSessionsController < ApplicationController
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         text = "Por este coducto me permito solicitar a ustedes su amable apoyo con la finalidad de evaluar el programa"
-        if !notes.empty?
+       
+        if !notes.empty? && course.nil?
+          text = "#{text} de la materia \"#{notes}\", propuesto por el #{staff.title} #{staff.full_name} para impartirse en el ciclo #{term.code}."
+        elsif !notes.empty? && !course.nil?
           text = "#{text} de la materia \"#{notes}\" dentro del curso #{course.name}, propuesto por el #{staff.title} #{staff.full_name} para impartirse en el ciclo #{term.code}."
-        else
+        elsif notes.empty? && !course.nil?
           text = "#{text} del curso #{course.name}, propuesto por el #{staff.title} #{staff.full_name} para impartirse en el ciclo #{term.code}."
         end
 
@@ -1161,15 +1164,23 @@ class CommitteeSessionsController < ApplicationController
         term        = Term.find(t_id)
         issue = "#{issue}\n\n <b>#{staff.title} #{staff.full_name_cap}</b>\n\n Curso: #{course.name}\n"
         authorized = "<b>Autorizado</b>\n Para el curso #{course.name} correspondiente al ciclo escolar <b>#{term.name}</b> del programa #{term.program.name}."
-      elsif cat.id.eql? 9 ## Asignacion de materias nuevas
+      elsif cat.id.eql? 9 ## Evaluación de temarios propuesto 
         cap         = ca.committee_agreement_person.where(:attachable_type=>"Staff",:aux=>3).first
         staff       = Staff.find(cap.attachable_id)
         c_id        = ca.notes[/\[(.*?)\]/m,1] rescue ""
-        course      = Course.find(c_id)
+        course      = Course.find(c_id) rescue nil
         t_id        = ca.auth
         term        = Term.find(t_id)
         notes       = ca.committee_agreement_note[0].notes rescue ""
-        issue = "#{issue}\n\n <b>Curso: #{course.name} - #{notes} - #{term.program.prefix} #{term.code}</b>\nDocente: #{staff.title} #{staff.full_name_cap}"
+        
+        if !notes.empty? && course.nil?
+          issue = "#{issue}\n\n <b>Curso: #{notes} - #{term.program.prefix} #{term.code}</b>\nDocente: #{staff.title} #{staff.full_name_cap}"
+        elsif !notes.empty? && !course.nil?
+          issue = "#{issue}\n\n <b>Curso: #{course.name} - #{notes} - #{term.program.prefix} #{term.code}</b>\nDocente: #{staff.title} #{staff.full_name_cap}"
+        elsif notes.empty? && !course.nil?
+          issue = "#{issue}\n\n <b>Curso: #{course.name} - #{term.program.prefix} #{term.code}</b>\nDocente: #{staff.title} #{staff.full_name_cap}"
+        end
+
         authorized = "\n\nEvaluadores:\n"
         ca.committee_agreement_person.where(:attachable_type=>"Staff",:aux=>4).each do |st|
           s = Staff.find(st.attachable_id) 

@@ -186,7 +186,7 @@
     .myagreement
       = hidden_field_tag "my_id",my_id
       %b= my_id
-      %b= "Autorización de materias nuevas: "
+      %b= "Evaluación de temarios propuestos: "
       - @terms    = Term.where(:status=>[1,2])
       - @selected = ca.auth rescue 0
       = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
