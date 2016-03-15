@@ -840,8 +840,8 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 14
         @render_pdf = true
         auth       = @c_a.auth
-        area       = Area.find(auth)
-        amount     = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
+        area_id    = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
+        area       = Area.find(area_id)
         notes      =   @c_a.committee_agreement_note[0].notes rescue ""
         cap        = @c_a.committee_agreement_person.where(:attachable_type=>"Internship").first
         internship = Internship.find(cap.attachable_id)
