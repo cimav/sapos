@@ -560,7 +560,7 @@ class CommitteeSessionsController < ApplicationController
         @render_pdf  = true
         s            = @c_a.committee_agreement_person.where(:attachable_type=>"Student")
         tutors       = @c_a.committee_agreement_person.where(:attachable_type=>"Staff")
-        student      = Student.find(s[0].id)
+        student      = Student.find(s[0].attachable_id)
         supervisor   = Staff.find(student.supervisor)
         comma_tutors = ""
         tutors.each do |t|
@@ -585,7 +585,7 @@ class CommitteeSessionsController < ApplicationController
         w = 200
         h = 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presentes.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
