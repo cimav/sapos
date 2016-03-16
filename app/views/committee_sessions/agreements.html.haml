@@ -36,7 +36,7 @@
       - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
-      = select_tag "agreement_auth_#{my_id}",options_for_select({"Si"=>1,"No"=>2},ca.auth),:prompt=>"--Autorizado--",:class=>"agreement_auth",:disabled=>readonly
+      = select_tag "agreement_auth_#{my_id}",options_for_select({"Si"=>1,"No"=>2,"Renuncia explícita"=>3},ca.auth),:prompt=>"--Autorizado--",:class=>"agreement_auth",:disabled=>readonly
       = "Fecha limite:"
       - date = CommitteeAgreement.where(:id=>ca.id)[0].notes rescue nil
       - if !date.nil?

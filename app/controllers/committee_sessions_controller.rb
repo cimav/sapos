@@ -347,7 +347,7 @@ class CommitteeSessionsController < ApplicationController
         supervisor = Staff.find(student.supervisor)
 
         if @c_a.auth.to_i.eql? 1 ####### Si
-          ############ PRORROGA
+          ############ PRORROGA ############
           pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
           y = y - 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
@@ -376,8 +376,8 @@ class CommitteeSessionsController < ApplicationController
           texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
           pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
-        else
-          ############ CONSTANCIA DE BAJA
+        elsif @c_a.auth.to_i.eql? 2 ####### No
+          ############ CONSTANCIA DE BAJA ############
           pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
           y = y - 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
@@ -413,7 +413,37 @@ class CommitteeSessionsController < ApplicationController
           h = 25
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-        pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+          pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+        elsif @c_a.auth.to_i.eql? 3 
+          ############ RENUNCIA EXPLICITA #############
+          pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+          y = y - 15
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+          # CONTENIDO
+          y = y - 60
+          w = 510
+          h = 180
+          texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del pasado #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} del Comité de Estudios de Posgrado se ha determinado su baja definitiva al programa de posgrado al que se encuentra adscrito por renuncia explícita."
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          #  FIRMA
+          x = x + 100
+          y = y - 130
+          w = 300
+          h = 80
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
+          pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+          # CCP
+          x = 0
+          y = y - 150
+          w = 350
+          h = 25
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
+          pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
       end
       ############################### CAMBIO DE PROGRAMA ###################################
       elsif @type.eql? 3
@@ -1084,6 +1114,8 @@ class CommitteeSessionsController < ApplicationController
           authorized = "<b>Autorizado</b>\nCon prórroga para entregar requisitos de titulación a mas tardar el #{l_date.day} de #{get_month_name(l_date.month)} de #{l_date.year}"
         elsif ca.auth.to_i.eql? 2
           authorized = "<b>Rechazado</b>"
+        elsif ca.auth.to_i.eql? 3
+          authorized = "<b>Baja explícita</b>"
         end
       elsif cat.id.eql? 3 ## Cambio de programa
         s       = ca.committee_agreement_person.where(:attachable_type=>"Student")
