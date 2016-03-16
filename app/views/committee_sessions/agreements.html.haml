@@ -2,6 +2,11 @@
 - @committee_agreements.each do |ca|
   - ca_type = ca.committee_agreement_type_id.to_i
   - my_id= ca.id
+  - @staffs_all   = Staff.includes(:institution).where(:status=>0)
+  - @staffs_cimav = Staff.includes(:institution).where(:status=>0,:institution_id=>1)
+  - @students_1   = Student.where(:status=>1)
+  - @students_1_6 = Student.where(:status=>[1,6])
+  
   - if @committee_session.status.eql? 3
     - readonly       = true
     - display_delete = "none"
@@ -10,6 +15,7 @@
     - readonly       = false
     - display_delete = "inline-block"
     - display_button = "none"
+
   - if ca_type.eql? 1
     .myagreement
       %b= my_id
@@ -33,9 +39,8 @@
       %b= "Permanencia:"
       = hidden_field_tag "my_id",my_id
       = hidden_field_tag "my_type", ca.committee_agreement_type_id
-      - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
+      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students_1,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       = select_tag "agreement_auth_#{my_id}",options_for_select({"Si"=>1,"No"=>2,"Renuncia explícita"=>3},ca.auth),:prompt=>"--Autorizado--",:class=>"agreement_auth",:disabled=>readonly
       = "Fecha limite:"
       - date = CommitteeAgreement.where(:id=>ca.id)[0].notes rescue nil
@@ -55,9 +60,8 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Cambio de programa: "
-      - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_cambio_prog_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
+      = select_tag "agreement_cambio_prog_#{my_id}", options_from_collection_for_select(@students_1,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       - @programs = Program.all
       - @selected   = ca.auth rescue 0
       = select_tag "agreement_cambio_prog_prog_#{my_id}", options_from_collection_for_select(@programs,"id","name",@selected),:prompt=>"--Elegir programa--",:class=>"agreement_auth",:autt=>"estudiante",:disabled=> readonly
@@ -72,12 +76,10 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Cambio de director de tesis:"
-      - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
-      = select_tag "agreement_student_dir_tesis_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
-      - @staffs = Staff.where(:status=>0,:institution_id=>1)
+      = select_tag "agreement_student_dir_tesis_#{my_id}", options_from_collection_for_select(@students_1,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff")[0].attachable_id rescue 0
-      = select_tag "agreement_dir_tesis_dir_tesis_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
+      = select_tag "agreement_dir_tesis_dir_tesis_#{my_id}", options_from_collection_for_select(@staffs_cimav,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 60px;"}="eliminar"
       = button_tag "Imprimir respuesta", :type=>'button', :class=>'response-agreement', :my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}",:style=>"display:#{display_button}"
       %hr
@@ -88,22 +90,20 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Designación de sinodales: "
-      - @students = Student.where(:status=>[1,6])
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
-      - @staffs = Staff.where(:status=>0)
+      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students_1_6,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
         - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
           .agreement-staff
             = hidden_field_tag "my_sinodal_id",cap.id
-            - staff = Staff.find(cap.attachable_id)
+            - staff = Staff.includes(:institution).find(cap.attachable_id)
             = staff.full_name_upcase
             = "(#{staff.institution.short_name})"
             - if cap.aux.eql? 2
               = " suplente"
             - if !readonly
               = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-staff'
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase_origin"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase_origin"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
       = select_tag "agreement_aux_#{my_id}",options_for_select({"Normal"=>1,"Suplente"=>2},1),:class=>"agreement-aux",:disabled=>readonly
       =#   CONTENIDO
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 60px;"}="eliminar"
@@ -116,18 +116,16 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Designación de comite tutoral:"
-      - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
-      - @staffs = Staff.where(:status=>0)
+      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students_1,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
         - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
           .agreement-staff
             = hidden_field_tag "my_sinodal_id",cap.id
-            = Staff.find(cap.attachable_id).full_name_upcase
+            = Staff.includes(:institution).find(cap.attachable_id).full_name_upcase
             - if !readonly
               = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-staff'
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 60px;"}="eliminar"
       = button_tag "Imprimir respuesta", :type=>'button', :class=>'response-agreement', :my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}",:style=>"display:#{display_button}"
       %hr
@@ -138,12 +136,10 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Dispensa de grado: "
-      - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_cambio_prog_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
-      - @staffs = Staff.where(:status=>0,:institution_id=>1)
+      = select_tag "agreement_cambio_prog_#{my_id}", options_from_collection_for_select(@students_1,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_cimav,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
       = select_tag "agreement_auth_#{my_id}",options_for_select({"Si"=>1,"No"=>2},ca.auth),:prompt=>"--Autorizado--",:class=>"agreement_auth",:disabled=>readonly
       - mtype = CommitteeAgreement.where(:id=>ca.id)[0].notes rescue nil
       - if !mtype.nil?
@@ -163,9 +159,8 @@
       = hidden_field_tag "my_type", ca.committee_agreement_type_id
       %b= my_id
       %b= "Designación de docentes para cursos: "
-      - @staffs = Staff.where(:status=>0)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
       - @terms    = Term.where(:status=>[1,2])
       - @selected = ca.auth rescue 0
       = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
@@ -195,14 +190,13 @@
         - @courses = Course.joins(:program).select("courses.id,courses.name,programs.prefix").where(:status=>1)
       - @selected = ca.notes[/\[(.*?)\]/m,1] rescue 0
       = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@courses,"id","name",@selected),:prompt=>"--Elige curso--",:class=>"save-note-agreement",:disabled=>readonly
-      - @staffs = Staff.where(:status=>0)
       %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
         - titular = false
         - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
           .agreement-staff
             = hidden_field_tag "my_sinodal_id",cap.id
             = hidden_field_tag "my_sinodal_type_id",cap.aux
-            - staff = Staff.find(cap.attachable_id)
+            - staff = Staff.includes(:institution).find(cap.attachable_id)
             = staff.full_name_upcase
             = "(#{staff.institution.short_name})"
             - if cap.aux.eql? 4
@@ -212,7 +206,7 @@
               - titular = true
             - if !readonly
               = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-staff'
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase_origin"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase_origin"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
       - options = {"Titular"=>3,"Evaluador"=>4}
       - selected = 3
       - if titular
@@ -250,9 +244,8 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Permiso de ausencia: "
-      - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
-      = select_tag "agreement_student_dir_tesis_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
+      = select_tag "agreement_student_dir_tesis_#{my_id}", options_from_collection_for_select(@students_1,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       = select_tag "agreement_auth_#{my_id}",options_for_select({"Si"=>1,"No"=>2},ca.auth),:prompt=>"--Autorizado--",:class=>"agreement_auth",:disabled=>readonly
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
       %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 170px;"}="Justificación y fechas"
@@ -350,12 +343,10 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Asignacion de Director: "
-      - @students = Student.where(:status=>1)
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
-      = select_tag "agreement_cambio_prog_#{my_id}", options_from_collection_for_select(@students,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
-      - @staffs = Staff.where(:status=>0)
+      = select_tag "agreement_cambio_prog_#{my_id}", options_from_collection_for_select(@students_1,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff")[0].attachable_id rescue 0
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
       - @selected = ca.notes[/\[(.*?)\]/m,1] rescue 0
       - @directors = {"Director"=>1,"Co-Director"=>2,"Director Externo"=>3}
       = select_tag "save_note_agreement_#{my_id}",options_for_select(@directors,@selected),:prompt=>"--Elegir Tipo--",:class=>"save-note-agreement",:disabled=>readonly

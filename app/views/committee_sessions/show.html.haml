@@ -61,7 +61,7 @@
     #agreements
       %h2= "Acuerdos Sesión #{@c_session.id}"
       .field#div_agreements
-        = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
+        = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: block;'
       .field#div_agreements_combo
 
         = label_tag "agreement_label", "Acuerdos", :style=>"display:#{display_type}",:class=>"agreement-group"
