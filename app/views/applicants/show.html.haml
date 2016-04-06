@@ -87,6 +87,11 @@
         = f.label :campus_id, 'Campus'
         - p = @campus.collect{|p|[p.name,p.id]}
         = f.select :campus_id,p
+ 
+      .field#field_internship_place
+        = f.label :place_id, 'Sede'
+        -# p = places.collect{|p|[p.name,p.id]}
+        = f.select :place_id,@places,{:include_blank => 'Selecciona la sede'}
 
       .field#field_applicant_date_of_birth
         = f.label :date_of_birth, 'Fecha de nacimiento'

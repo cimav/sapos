@@ -15,6 +15,7 @@ class ApplicantsController < ApplicationController
     @institutions = Institution.order('name')
     @staffs       = Staff.select("id,first_name,last_name").order("first_name")
     @campus       = Campus.order('name')
+    @places       = Applicant::PLACES.invert.sort {|a,b| a[1] <=> b[1]}
     render :layout => false
   end
 
