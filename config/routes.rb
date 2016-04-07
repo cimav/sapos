@@ -52,7 +52,7 @@ Sapos::Application.routes.draw do
   resources :student_files
   resources :applicant_files
 
-
+  match 'docentes/reporte' => 'staffs#report'
   match 'docentes/busqueda' => 'staffs#live_search'
   match 'docentes/:id/cambiar_foto' => 'staffs#change_image'
   match 'docentes/upload_image' => 'staffs#upload_image'
@@ -219,6 +219,7 @@ Sapos::Application.routes.draw do
   match 'comite/acuerdos/:a_id/agregar/:person/:id' => 'committee_sessions#add_person'
   match 'comite/acuerdos/:s_id/:a_id' => 'committee_sessions#agreements'
   match 'comite/traer/cursos/:term' => 'committee_sessions#get_courses'
+  match 'comite/revalidacion/cursos/:id' => 'committee_sessions#get_revalidation_courses'
 
   resources :documentation_files
 
@@ -242,6 +243,7 @@ Sapos::Application.routes.draw do
     resources :applicants, :path => "aspirantes"
     resources :areas, :path => "areas"
     resources :committee_sessions, :path => "comite"
+    resources :committee_agreement_objects, :path => "objetos"
     #resources :studies_plans, :path => "planes_estudios"
   end
 
