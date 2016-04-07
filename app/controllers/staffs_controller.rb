@@ -87,16 +87,36 @@ class StaffsController < ApplicationController
       format.xls do
         rows = Array.new
         @staffs.collect do |s|
-          active   = s.supervised.where(:status => Student::ACTIVE).count + s.co_supervised.where(:status => Student::ACTIVE).count
-          baja     = s.supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count + s.co_supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count
+          active   = s.supervised.joins(:program).where(:status => Student::ACTIVE).where("programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => Student::ACTIVE).where("programs.program_type=2").count
+          #active   = s.supervised.where(:status => Student::ACTIVE).count + s.co_supervised.where(:status => Student::ACTIVE).count
+          #baja     = s.supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count + s.co_supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count
+          baja     = s.supervised.joins(:program).where(:status => [Student::UNREGISTERED,Student::INACTIVE]).where("programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::UNREGISTERED,Student::INACTIVE]).where("programs.program_type=2").count
 
-=begin
           g_master_avg      = 0
+          g_master_sum      = 0
+          counter           = 0
           students = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2")
-          students.each do |s|
-            s. #### pending method
+
+          if students.size>0
+            students.each do |st|
+              g_master_sum = g_master_sum + st.time_studies
+              counter = counter + 1
+            end
+            g_master_avg = g_master_sum/counter
           end
-=end
+          
+          g_doc_avg = 0
+          g_doc_sum = 0
+          counter   = 0
+          students  = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2")
+
+          if students.size>0
+            students.each do |st|
+              g_doc_sum = g_doc_sum + st.time_studies
+              counter = counter + 1
+            end
+            g_doc_avg = g_doc_sum/counter
+          end
 
           g_master = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count
           g_doc    = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count
@@ -108,14 +128,14 @@ class StaffsController < ApplicationController
                    'Bajas' => baja,
                    'GraduadosM' => g_master,
                    'GraduadosD' => g_doc,
-                   'PGradMaestriaMeses' => "",
-                   'PGradDoctoradoMeses' => "",
+                   'PGradMaestriaMeses' => g_master_avg,
+                   'PGradDoctoradoMeses' => g_doc_avg,
                    'ETMaestria' => "",
                    'ETDoctorado' => ""
                  }
         end
 
-        column_order = ["Area","Nombre","Activos","Bajas","GraduadosM","GraduadosD"]
+        column_order = ["Area","Nombre","Activos","Bajas","GraduadosM","GraduadosD","PGradMaestriaMeses","PGradDoctoradoMeses","ETMaestria","ETDoctorado"]
         to_excel(rows,column_order,"Docentes","Docentes")
       end ## end format
     end ## end respond_with
