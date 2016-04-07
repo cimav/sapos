@@ -95,7 +95,7 @@ class StaffsController < ApplicationController
           g_master_avg      = 0
           g_master_sum      = 0
           counter           = 0
-          students = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2")
+          students = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2") + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2")
 
           if students.size>0
             students.each do |st|
@@ -108,7 +108,7 @@ class StaffsController < ApplicationController
           g_doc_avg = 0
           g_doc_sum = 0
           counter   = 0
-          students  = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2")
+          students  = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2") + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2")
 
           if students.size>0
             students.each do |st|
@@ -117,6 +117,9 @@ class StaffsController < ApplicationController
             end
             g_doc_avg = g_doc_sum/counter
           end
+          
+          ## Calculando eficiencia terminal (E.T.)    maestria = 24 meses, doctorado = 48 meses
+          ## PENDIENTE
 
           g_master = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count
           g_doc    = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count
