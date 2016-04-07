@@ -89,8 +89,18 @@ class StaffsController < ApplicationController
         @staffs.collect do |s|
           active   = s.supervised.where(:status => Student::ACTIVE).count + s.co_supervised.where(:status => Student::ACTIVE).count
           baja     = s.supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count + s.co_supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count
-          g_master = s.supervised.joins(:program).where(:status => [Student::GRADUATED,Student::FINISH]).where("programs.level=1").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED,Student::FINISH]).where("programs.level=1").count
-          g_doc    = s.supervised.joins(:program).where(:status => [Student::GRADUATED,Student::FINISH]).where("programs.level=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED,Student::FINISH]).where("programs.level=2").count
+
+=begin
+          g_master_avg      = 0
+          students = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2")
+          students.each do |s|
+            s. #### pending method
+          end
+=end
+
+          g_master = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count
+          g_doc    = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count
+
 
           rows << {'Area' => s.area.name,
                    'Nombre' => s.full_name,
