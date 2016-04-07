@@ -2,6 +2,8 @@
 class Area < ActiveRecord::Base
   attr_accessible :name, :area_type, :leader, :position, :notes
 
+  has_one :staff
+
   validates :name, :presence => true
   validates :area_type, :presence=>true, :numericality => {:greater_than => 0}
 

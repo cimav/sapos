@@ -78,6 +78,39 @@ class StaffsController < ApplicationController
     end
   end
 
+  def report
+    @staffs = Staff.includes(:area).where("area_id in (?)",[10,11,12,13,14,15]).order(:area_id)
+    respond_with do |format|
+      format.html do
+        render :layout => false
+      end
+      format.xls do
+        rows = Array.new
+        @staffs.collect do |s|
+          active   = s.supervised.where(:status => Student::ACTIVE).count + s.co_supervised.where(:status => Student::ACTIVE).count
+          baja     = s.supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count + s.co_supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count
+          g_master = s.supervised.joins(:program).where(:status => [Student::GRADUATED,Student::FINISH]).where("programs.level=1").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED,Student::FINISH]).where("programs.level=1").count
+          g_doc    = s.supervised.joins(:program).where(:status => [Student::GRADUATED,Student::FINISH]).where("programs.level=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED,Student::FINISH]).where("programs.level=2").count
+
+          rows << {'Area' => s.area.name,
+                   'Nombre' => s.full_name,
+                   'Activos' => active,
+                   'Bajas' => baja,
+                   'GraduadosM' => g_master,
+                   'GraduadosD' => g_doc,
+                   'PGradMaestriaMeses' => "",
+                   'PGradDoctoradoMeses' => "",
+                   'ETMaestria' => "",
+                   'ETDoctorado' => ""
+                 }
+        end
+
+        column_order = ["Area","Nombre","Activos","Bajas","GraduadosM","GraduadosD"]
+        to_excel(rows,column_order,"Docentes","Docentes")
+      end ## end format
+    end ## end respond_with
+  end ## end reporte
+
   def show
     @aareas       = get_areas(current_user)
     @staff        = Staff.find(params[:id])
