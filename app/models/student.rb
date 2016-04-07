@@ -120,4 +120,14 @@ class Student < ActiveRecord::Base
     "#{card}: #{first_name} #{last_name}" rescue ''
   end
 
+  def time_studies
+    if thesis.status.eql? "C"
+      today = thesis.defence_date
+    else
+      today = Date.today
+    end
+    yesterday = start_date
+    
+    (today.year * 12 + today.month) - (yesterday.year * 12 + yesterday.month)
+  end
 end
