@@ -90,7 +90,6 @@ class StaffsController < ApplicationController
           active   = s.supervised.joins(:program).where(:status => Student::ACTIVE).where("programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => Student::ACTIVE).where("programs.program_type=2").count
           baja     = s.supervised.joins(:program).where(:status => [Student::UNREGISTERED,Student::INACTIVE]).where("programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::UNREGISTERED,Student::INACTIVE]).where("programs.program_type=2").count
 
-    
           et_master_percent = 0  ## et = eficiencia terminal
           et_master_counter = 0
           g_master_avg      = 0
@@ -108,7 +107,6 @@ class StaffsController < ApplicationController
               end
               counter = counter + 1
             end
-            et_master_percent = (et_master_counter * 100)/counter
             g_master_avg      = g_master_sum/counter
           end
           
@@ -129,13 +127,18 @@ class StaffsController < ApplicationController
               end
               counter = counter + 1
             end
-            et_doc_percent = (et_doc_counter * 100)/counter
             g_doc_avg = g_doc_sum/counter
           end
           
           g_master = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count
           g_doc    = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count
 
+          the_status = [Student::GRADUATED,Student::ACTIVE,Student::UNREGISTERED,Student::INACTIVE]
+          all_master = s.supervised.joins(:program).where(:status => the_status).where("programs.level=1 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => the_status).where("programs.level=1 AND programs.program_type=2").count
+          all_doc = s.supervised.joins(:program).where(:status => the_status).where("programs.level=2 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => the_status).where("programs.level=2 AND programs.program_type=2").count
+
+          et_master_percent = (et_master_counter.to_f/all_master.to_f)*100 rescue 0
+          et_doc_percent    = (et_doc_counter.to_f/all_doc.to_f)*100 rescue 0
 
           rows << {'Area' => s.area.name,
                    'Nombre' => s.full_name,
@@ -145,8 +148,8 @@ class StaffsController < ApplicationController
                    'GraduadosD' => g_doc,
                    'PGradMaestriaMeses' => g_master_avg,
                    'PGradDoctoradoMeses' => g_doc_avg,
-                   'ETMaestria' => et_master_percent,
-                   'ETDoctorado' => et_doc_percent
+                   'ETMaestria' => et_master_percent.round(2),
+                   'ETDoctorado' => et_doc_percent.round(2)
                  }
         end
 
