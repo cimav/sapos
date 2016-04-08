@@ -88,10 +88,11 @@ class StaffsController < ApplicationController
         rows = Array.new
         @staffs.collect do |s|
           active   = s.supervised.joins(:program).where(:status => Student::ACTIVE).where("programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => Student::ACTIVE).where("programs.program_type=2").count
-          #active   = s.supervised.where(:status => Student::ACTIVE).count + s.co_supervised.where(:status => Student::ACTIVE).count
-          #baja     = s.supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count + s.co_supervised.where(:status => [Student::UNREGISTERED,Student::INACTIVE]).count
           baja     = s.supervised.joins(:program).where(:status => [Student::UNREGISTERED,Student::INACTIVE]).where("programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::UNREGISTERED,Student::INACTIVE]).where("programs.program_type=2").count
 
+    
+          et_master_percent = 0  ## et = eficiencia terminal
+          et_master_counter = 0
           g_master_avg      = 0
           g_master_sum      = 0
           counter           = 0
@@ -99,12 +100,20 @@ class StaffsController < ApplicationController
 
           if students.size>0
             students.each do |st|
-              g_master_sum = g_master_sum + st.time_studies
+              logger.info "INFOOOOOOOOOOOOOO #{s.full_name} | #{st.full_name} #{st.time_studies}"
+              st_time_studies = st.time_studies
+              g_master_sum = g_master_sum + st_time_studies
+              if st_time_studies<=24
+                et_master_counter = et_master_counter + 1
+              end
               counter = counter + 1
             end
-            g_master_avg = g_master_sum/counter
+            et_master_percent = (et_master_counter * 100)/counter
+            g_master_avg      = g_master_sum/counter
           end
           
+          et_doc_percent = 0
+          et_doc_counter = 0
           g_doc_avg = 0
           g_doc_sum = 0
           counter   = 0
@@ -112,15 +121,18 @@ class StaffsController < ApplicationController
 
           if students.size>0
             students.each do |st|
-              g_doc_sum = g_doc_sum + st.time_studies
+              logger.info "INFOOOOOOOOOOOOOODOC #{s.full_name} | #{st.full_name} #{st.time_studies}"
+              st_time_studies = st.time_studies
+              g_doc_sum = g_doc_sum + st_time_studies
+              if st_time_studies<=48
+                et_doc_counter = et_doc_counter + 1
+              end
               counter = counter + 1
             end
+            et_doc_percent = (et_doc_counter * 100)/counter
             g_doc_avg = g_doc_sum/counter
           end
           
-          ## Calculando eficiencia terminal (E.T.)    maestria = 24 meses, doctorado = 48 meses
-          ## PENDIENTE
-
           g_master = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=1 AND programs.program_type=2").count
           g_doc    = s.supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count + s.co_supervised.joins(:program).where(:status => [Student::GRADUATED]).where("programs.level=2 AND programs.program_type=2").count
 
@@ -133,8 +145,8 @@ class StaffsController < ApplicationController
                    'GraduadosD' => g_doc,
                    'PGradMaestriaMeses' => g_master_avg,
                    'PGradDoctoradoMeses' => g_doc_avg,
-                   'ETMaestria' => "",
-                   'ETDoctorado' => ""
+                   'ETMaestria' => et_master_percent,
+                   'ETDoctorado' => et_doc_percent
                  }
         end
 
