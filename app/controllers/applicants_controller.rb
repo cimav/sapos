@@ -69,6 +69,7 @@ class ApplicantsController < ApplicationController
                    "Estado_Civil" => (Applicant::CIVIL_STATUS[s.civil_status] rescue ''),
                    'Programa' => (s.program_id==0 ? 'Otro' : s.program.name),
                    "Campus"   => (s.campus.name rescue ''),
+                   "Sede"     => (Applicant::PLACES[s.place_id] rescue ''),
                    "Institucion_Anterior" => (s.previous_institution==0 ? 'Otras' : (Institution.find(s.previous_institution).full_name rescue '')),
                    "Promedio" => s.average,
                    "Telefono" => s.phone,
@@ -78,7 +79,7 @@ class ApplicantsController < ApplicationController
                    'Asesor' => (Staff.find(s.staff_id).full_name rescue ''),
                   }
         end 
-        column_order = ["Folio","Nombre","Primer_Apellido","Segundo_Apellido","Fecha_Nac","Estado_Civil","Programa","Institucion_Anterior","Promedio","Telefono","Celular","Direccion","Email","Asesor"]
+        column_order = ["Folio","Nombre","Primer_Apellido","Segundo_Apellido","Fecha_Nac","Estado_Civil","Programa","Campus","Sede","Institucion_Anterior","Promedio","Telefono","Celular","Direccion","Email","Asesor"]
         to_excel(rows,column_order,"Aspirantes","Aspirantes")
       end 
     end 
