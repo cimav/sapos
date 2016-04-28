@@ -12,6 +12,7 @@ class CertificatesController < ApplicationController
     dir = t(:directory)
     avg = 0.0
     sum = 0.0
+    @text_color = "373435" #373435
     #Prawn::Document.new(:top_margin => 20.0, :bottom_margin=> 20.0, :left_margin=>30.0, :right_margin=>30.0) do |pdf|
     Prawn::Document.new do |pdf|
       pdf.font_families.update("Times" => {
@@ -37,27 +38,28 @@ class CertificatesController < ApplicationController
       w = 360
       h = 50
 
+      pdf.fill_color @text_color
       ## SET FOLIO TITLE, LINE AND FOLIO
       # SET FOLIO TITLE
       x = 349
       y = y - 72
       w = 100
-      h =  11
-      size = 10
+      h =  13
+      size = 12
       text = "Certificado No."
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left
       ## SET FOLIO LINE
-      y = y - 8
-      pdf.stroke_color= "373435"
+      y = y - 9
+      pdf.stroke_color= @text_color
       pdf.line_width= 0.2
-      pdf.stroke_line [x + 88,y],[485,y]
+      pdf.stroke_line [x + 81,y],[485,y]
       ## SET FOLIO
       x = 440
       y = y + 8
       w = 40
-      h = 10
+      h = 13
       text = "#{libro}-#{foja}"
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :center
+      pdf.text_box text , :at=>[x,y + 2], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :center
 
       ## SET NAME AND PROGRAM NAME
       # SET NAME
@@ -65,32 +67,32 @@ class CertificatesController < ApplicationController
       y = y - 54
       w = 550
       h = 13
-      size = 12
+      size = 14
       text = "Hace constar que #{t.student.full_name.mb_chars}"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
       # SET PROGRAM NAME
       y = y - 14
-      w = 400
-      h = 26
-      size = 12
-      text = "Cursó y Acreditó: #{t.student.program.name.mb_chars}"
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
+      w = 445
+      h = 30
+      size = 14
+      text = "Cursó y acreditó: #{t.student.program.name.mb_chars}"
+      pdf.text_box text , :at=>[x,y - 4] , :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
 
       # SET ROLLOTE
-      pdf.stroke_color= "000000"
+      pdf.stroke_color= @text_color
       x = 158
       y = y - 78
       w = 310
       h = 80
       size = 12
 
-      l = 7
-      @size_box = 13
+      l = 3.8
+      @size_box = 16
       pdf.bounding_box([x,y],:width=>w + 20, :height=>h + 33,:kerning=>true) do
-        pdf.text "Conforme a los planes de estudio vigentes", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>2.3, :size=>@size_box
-        pdf.text "conservandose las evaluaciones", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>5.17, :size=>@size_box
-        pdf.text "de la totalidad de los programas vigentes", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>2.4, :size=>@size_box
-        pdf.text "en los archivos de esta Institución", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>4.025, :size=>@size_box
+        pdf.text "Conforme a los planes de estudio vigentes", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>1.07, :size=>@size_box
+        pdf.text "conservandose las evaluaciones", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>3.923, :size=>@size_box
+        pdf.text "de la totalidad de los programas vigentes", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>1.2, :size=>@size_box
+        pdf.text "en los archivos de esta Institución", :style=>:bold, :align=>:justify,:leading=>l,:character_spacing=>2.87, :size=>@size_box
       end
 
       # SET PHOTO
@@ -111,7 +113,7 @@ class CertificatesController < ApplicationController
       y    = y - 7
       w    = 100
       h    = 10
-      size = 8
+      size = 9
       text = "Firma del alumno"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left
 
@@ -120,7 +122,7 @@ class CertificatesController < ApplicationController
       y    = y - 41
       w    = 300
       h    = 20
-      size = 18
+      size = 22
       text = "Certificado Total de Estudios"
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :center
 
@@ -204,25 +206,34 @@ class CertificatesController < ApplicationController
         ## SET CODE
         text= tcs.term_course.course.code
 
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-        pdf.fill_color "000000"
+        pdf.fill_color @text_color
         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
         ## SET COURSE NAME
         text= tcs.term_course.course.name.mb_chars
 
-        #pdf.fill_color "ffffff"
-        #pdf.fill_rectangle [x_1,y_1], w_1, h_1
-        pdf.fill_color "000000"
+        pdf.fill_color @text_color
 
-        if tcs.term_course.course.name.size > 52
-          y_1 = y_1 + 10
-          h_1 = h_1 + 20
-        elsif  tcs.term_course.course.name.size > 36
-          y_1 = y_1 + 5
-          h_1 = h_1 + 10
+        #text = "Medición y caracterización"  #26
+        #text = "Medición y caracterización de recursos energéticos y" #52
+        #text = "Medición y caracterización de recursos energéticos y evaluación económica de" #76
+        #text = "Medición y caracterización de recursos energéticos y evaluación económica de proyectos" #86
+        
+        if text.size <=26
+          y_1 = y
+          h_1 = size_1 
+        elsif text.size <= 52
+          h_1 = (size_1 * 2) + 2
+          y_1 = y + (h_1/4)
+        elsif text.size <= 76
+          h_1 = (size_1 * 3) + 2
+          y_1 = y + (h_1/4)
+        elsif text.size <= 100
+          h_1 = (size_1 * 4) + 2
+          y_1 = y + (h_1/4)
         end
-
+        
+        @rectangles = false
+        if @rectangles then pdf.stroke_rectangle [x_1,y_1], w_1, h_1 end
         pdf.text_box text , :at=>[x_1,y_1], :width => w_1, :height=> h_1, :size=>size_1, :style=> :bold, :align=> :center, :valign=> :center
 
         ## SET TERM
@@ -233,7 +244,7 @@ class CertificatesController < ApplicationController
         text = "#{year}/#{subterm}"
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x_2,y_2], w_2, h_2
-        pdf.fill_color "000000"
+        pdf.fill_color @text_color
         pdf.text_box text , :at=>[x_2,y_2], :width => w_2, :height=> h_2, :size=>size_2, :style=> :bold, :align=> :center, :valign=> :center
 
         ## SET GRADE
@@ -241,14 +252,14 @@ class CertificatesController < ApplicationController
         text = tcs.grade.to_s
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x_3,y_3], w_3, h_3
-        pdf.fill_color "000000"
+        pdf.fill_color @text_color
         pdf.text_box text , :at=>[x_3,y_3], :width => w_3, :height=> h_3, :size=>size_3, :style=> :bold, :align=> :center, :valign=> :center
 
         ## SET GRADE ON TEXT
         text = get_cardinal_name(tcs.grade.to_i)
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x_4,y_4], w_4, h_4
-        pdf.fill_color "000000"
+        pdf.fill_color @text_color
         pdf.text_box text.capitalize, :at=>[x_4,y_4], :width => w_4, :height=> h_4, :size=>size_4, :style=> :bold, :align=> :center, :valign=> :center
         ## SET INTERLINE SPACE
         if tcss.size >= 11
@@ -295,9 +306,9 @@ class CertificatesController < ApplicationController
       y    = 202
       w    = 435
       h    = 20
-      size = 9
+      size = 10
       text =  "El presente certificado total ampara #{counter + 1} asignaturas. La escala de calificaciones es de 00 a 100  y la mínima aprobatoria es de 70."
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :justify, :valign=> :center, :character_spacing=>1.5
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :justify, :valign=> :center, :character_spacing=>1.3
       #@rectangles = true
       #if @rectangles then pdf.stroke_rectangle [x,y], w, h end
       ## SET AVERAGE
@@ -320,9 +331,9 @@ class CertificatesController < ApplicationController
       h = 9
       size = 9
       text = "#{time.day.to_s} de #{get_month_name(time.month)} de #{time.year.to_s}"
-      pdf.text_box text , :at=>[x+30,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
+      pdf.text_box text , :at=>[x+45,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
       pdf.line_width   = 0.5
-      pdf.stroke_line [x + 2, y - 10],[x + 176,y - 8.5]
+      pdf.stroke_line [x + 10, y - 10],[x + 176,y - 8.5]
 
       set_general_director_sign(pdf,16,71)
       set_posgrado_chief_sign(pdf,250,71)
@@ -334,7 +345,7 @@ class CertificatesController < ApplicationController
   ####################################################################################################
   # SET LINES
   def set_lines(pdf,y1,y2)
-    pdf.stroke_color= "000000"
+    pdf.stroke_color= @text_color
     pdf.line_width= 0.5
     y_aux = 52
     y3 = y1 - y_aux
@@ -373,7 +384,7 @@ class CertificatesController < ApplicationController
   # SET GENERAL DIRECTOR SIGN
   def set_general_director_sign(pdf,x,y)
     ## SET LINE
-    pdf.stroke_color= "373435"
+    pdf.stroke_color= @text_color
     pdf.line_width= 0.5
     pdf.stroke_line [x + 32,y + 10],[232,y + 10]
     ## SET GENERAL DIRECTOR NAME
@@ -401,7 +412,7 @@ class CertificatesController < ApplicationController
   # SET POSGRADO CHIEF SIGN
   def set_posgrado_chief_sign(pdf,x,y)
     ## SET LINE
-    pdf.stroke_color= "373435"
+    pdf.stroke_color= @text_color
     pdf.line_width= 0.5
     pdf.stroke_line [x + 32,y + 10],[462,y + 10]
     ## SET NAME
