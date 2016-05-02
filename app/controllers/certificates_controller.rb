@@ -12,7 +12,7 @@ class CertificatesController < ApplicationController
     dir = t(:directory)
     avg = 0.0
     sum = 0.0
-    @text_color = "373435" #373435
+    @text_color = "000000" #373435
     #Prawn::Document.new(:top_margin => 20.0, :bottom_margin=> 20.0, :left_margin=>30.0, :right_margin=>30.0) do |pdf|
     Prawn::Document.new do |pdf|
       pdf.font_families.update("Times" => {
