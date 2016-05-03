@@ -4,11 +4,71 @@ var counter    = 1
 $(document).ready(function() {
   liveSearch();
   $("#new-term-dialog").dialog({ autoOpen: false, width: 640, height: 450, modal:true });
+  $("#new-term-dialog-courses").dialog({ 
+    autoOpen: false, 
+    width: 720, 
+    height: 450, 
+    modal:true,
+  });
+
+  $("#new-term-dialog-unlock").dialog({ 
+    autoOpen: false, 
+    width: 350, 
+    height: 150, 
+    modal:false,
+   });
+
+  $("#unlock_submit").live("click",function(){
+    var session_id = $("#c_session_id").val();
+    var data = "pwd="+$("#password").val();
+    uri = '/comite/desbloquear/'+session_id
+    $.ajax({
+      type:  'POST',
+      url:   uri,
+      data:  data,
+      success:  function(data){
+        var jq   = jQuery.parseJSON(data);
+        $("#new-term-dialog-unlock").dialog('close');
+        $("#search-box").val(jq.uniq);
+        try{
+          initializeSearchForm();
+          liveSearch();
+        }
+        catch(e)
+        {
+         // let it pass
+        }
+      },
+      error: function(xhr, textStatus, error){
+         var text = xhr.responseText;
+         try{
+           var jq   = jQuery.parseJSON(xhr.responseText);
+           alert(jq.flash.error);
+         }
+         catch(e){
+           alert("Error desconocido: "+e.message)
+         }
+      },
+    });
+  });
+ 
+  $("#unlock_cancel").live("click",function(){
+    $("#new-term-dialog-unlock").dialog('close');
+  });
 });
 
 function initializeSearchForm() {
   var a = 1;
 }
+
+$(".unlocker").live("click",function(){
+  $("#new-term-dialog-unlock").dialog('open');
+  $("#password").val("");
+});
+
+$("#courses-agreement").live("click",function(){
+      $("#new-term-dialog-courses").dialog('close');
+  });
 
 $('#item-edit-form')
   .live("ajax:beforeSend", function(evt, xhr, settings) {
@@ -24,6 +84,7 @@ $('#item-edit-form')
   })
 
   .live('ajax:success', function(evt, data, status, xhr) {
+    var sesion_id = $("#c_session_id").val();
     $(".delete-agreement").hide();
     $(".save-text-agreement").hide();
     $(".agreement-group").hide();
@@ -39,7 +100,7 @@ $('#item-edit-form')
     $(".roll-checkbox").prop("disabled","disabled")
     $("#committee_session_date").prop("disabled","disabled");
 
-    $("#div_agreements").find("div[class*='select2-container']").each(function(){
+    $("#div_agreements_"+sesion_id).find("div[class*='select2-container']").each(function(){
       $(this).select2("disable");
     });
 
@@ -192,6 +253,14 @@ $(".save-text-agreement").live("click",function(){
   $("#new-term-dialog").dialog('open');
 });
 
+$(".add-course-agreement").live("click",function(){
+  var p     = $(this).parent();
+  var my_id = p.find("#my_id").val();
+  $("#new-term-dialog-courses").dialog('open');
+  uri = "/comite/revalidacion/cursos/"+my_id
+  $("#the_iframe").attr('src',uri);
+});
+
 $(".notes-agreement").live("click",function(){
   var my_id = $(this).attr("my_id");
   var texto = $("#commitee_agreement_notes").val();
@@ -268,7 +337,7 @@ function get_committee_agreements()
     beforeSend: function( xhr ) {
     },
     success:  function(data){
-      $("#div_agreements").append(data);
+      $("#div_agreements_"+sesion_id).append(data);
     },
     error: function(xhr, textStatus, error){
        var text = xhr.responseText;
@@ -313,7 +382,7 @@ $("#agreement_button").live("click",function(e){
     beforeSend: function( xhr ) {
     },
     success:  function(data){
-      $("#div_agreements").append(data);
+      $("#div_agreements_"+sesion_id).append(data);
     },
     error: function(xhr, textStatus, error){
        var text = xhr.responseText;
@@ -326,7 +395,7 @@ $("#agreement_button").live("click",function(e){
     },
     complete: function(){
       var arr = new Array();
-      $("#div_agreements").find("input:hidden[name='my_id']").each(function(){
+      $("#div_agreements_"+sesion_id).find("input:hidden[name='my_id']").each(function(){
          arr.push($(this).val());
       });
       var max  = Math.max.apply(Math,arr);

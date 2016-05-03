@@ -310,7 +310,13 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Revalidación de cursos: "
-      =#   CONTENIDO
+      - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
+      = select_tag "agreement_reval_cursos_#{my_id}", options_from_collection_for_select(@students_1,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
+      - @institutions = []
+      - @institutions = Institution.all
+      - @selected = ca.notes[/\[(.*?)\]/m,1] rescue 0
+      = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@institutions,"id","name",@selected),:prompt=>"--Elige institución--",:class=>"save-note-agreement",:disabled=>readonly
+      %u{:id=>"add_course_agreement_#{my_id}",:class=>"add-course-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 170px;"}="Agregar curso"
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}"}="eliminar"
       = button_tag "Imprimir respuesta", :type=>'button', :class=>'response-agreement', :my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}",:style=>"display:#{display_button}"
       %hr

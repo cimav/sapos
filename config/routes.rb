@@ -220,6 +220,7 @@ Sapos::Application.routes.draw do
   match 'comite/acuerdos/:s_id/:a_id' => 'committee_sessions#agreements'
   match 'comite/traer/cursos/:term' => 'committee_sessions#get_courses'
   match 'comite/revalidacion/cursos/:id' => 'committee_sessions#get_revalidation_courses'
+  match 'comite/desbloquear/:id' => 'committee_sessions#unlock'
 
   resources :documentation_files
 

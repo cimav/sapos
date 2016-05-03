@@ -1,0 +1,2 @@
+module CommitteeAgreementObjectsHelper
+end

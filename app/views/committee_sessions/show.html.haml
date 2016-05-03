@@ -13,6 +13,10 @@
     .resource-picture
     .resource-title
       %h1= "Sesión"
+      - if @c_session.status.eql? 3
+        .comment{:id=>"my_unlock_#{@c_session.id}",:class=>"unlocker",:style=>"cursor: pointer;"}
+          = "Desbloquear"
+          = image_tag "/images/unlock.png", :id=> "img_unblock",:style=>'display: inline-block;',:width=>10
     .resource-save
       = f.submit 'Finalizar'
   
@@ -60,7 +64,7 @@
         = select_tag "staff_combo", options_from_collection_for_select(@staffs, "id", "full_name_upcase"), prompt: "--Seleccionar asistente--",:disabled=>readonly
     #agreements
       %h2= "Acuerdos Sesión #{@c_session.id}"
-      .field#div_agreements
+      .field{:id=>"div_agreements_#{@c_session.id}"}
         = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: block;'
       .field#div_agreements_combo
 

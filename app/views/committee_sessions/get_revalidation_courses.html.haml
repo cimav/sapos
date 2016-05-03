@@ -1,0 +1,33 @@
+= stylesheet_link_tag 'custom-theme/jquery-ui.css'
+:css
+  .select2-container .select2-choice { width: 620px; }
+- @include2_js = 'select2'
+- @include3_js = 'select2_locale_es'
+- @include_css = 'select2/select2'
+
+- @committee_agreement_courses.each do |cac|
+  %div{:id=>"cac_#{cac.id}"}
+    - course = Course.find(cac.attachable_id)
+    = hidden_field_tag "my_cac_id",cac.id
+    = course.name
+    = cac.aux
+    = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-course'
+
+= form_for CommitteeAgreementObject.new, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
+  = hidden_field_tag :attachable_type,"Course"
+  = hidden_field_tag :committee_agreement_id,@committee_agreement.id
+  .field#field_courses
+    = f.label :attachable_id, 'Curso CIMAV'
+    - courses = Course.includes(:program).all
+    = select_tag :attachable_id,options_from_collection_for_select(courses, "id", "full_name_extras"),:prompt=> '-- Selecciona un Curso --'
+    %br
+  .field#field_aux
+    = f.label :aux, 'Curso externo'
+    = text_field_tag :aux,'',:size=>"70"
+  .field#field_button
+    = button_tag "Agregar", :type=>"submit"
+
+:javascript
+  $(document).ready(function(){
+    $('#attachable_id').select2();
+  });

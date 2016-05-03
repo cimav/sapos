@@ -5,6 +5,7 @@ class CommitteeAgreement < ActiveRecord::Base
   belongs_to :committee_agreement_type
   has_many :committee_agreement_person, :dependent => :destroy
   has_many :committee_agreement_note, :dependent => :destroy
+  has_many :committee_agreement_object, :dependent => :destroy
 
   YESNO          = 1
   ACADEMIC_STAFF = 2

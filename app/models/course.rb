@@ -1,6 +1,7 @@
 # coding: utf-8
 class Course < ActiveRecord::Base
   attr_accessible :id,:program_id,:code,:name,:lecture_hours,:lab_hours,:credits,:description,:term,:prereq1,:prereq2,:prereq3,:coreq1,:coreq2,:coreq3,:notes,:status,:created_at,:updated_at,:studies_plan_id
+  #attr_accesor :full_name_extras
   belongs_to :program
   belongs_to :studies_plan
 
@@ -9,6 +10,10 @@ class Course < ActiveRecord::Base
 
   def full_name
     "#{code}: #{name}" rescue name
+  end
+
+  def full_name_extras
+    "#{name} (#{program.prefix rescue "n.d"} #{studies_plan.code rescue "n.d"})"
   end
 
   def lecture_hours_int

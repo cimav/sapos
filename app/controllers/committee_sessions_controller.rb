@@ -252,6 +252,13 @@ class CommitteeSessionsController < ApplicationController
     render :json => json
   end
 
+  def get_revalidation_courses
+    @include_js   = "committee_sessions.reval.js"
+    @committee_agreement = CommitteeAgreement.find(params[:id])
+    @committee_agreement_courses = CommitteeAgreementObject.where(:committee_agreement_id=>params[:id],:attachable_type=>"Course")
+    render :layout => 'standalone'
+  end
+
   def roll_attendee
     @csa = CommitteeSessionAttendee.find(params[:id])
     @csa.checked = params[:checked]
@@ -271,6 +278,24 @@ class CommitteeSessionsController < ApplicationController
   def delete_attendee
     CommitteeSessionAttendee.find(params[:csa_id]).delete
     return :layout=> false
+  end
+
+  def unlock
+    parameters = {}
+    pwd = "p0p0p2"
+
+    @c_session = CommitteeSession.find(params[:id])
+
+    if pwd.eql? params[:pwd]
+      @c_session.status = 1
+      if @c_session.save
+        render_message(@c_session,"Desbloqueo exitoso",parameters);
+      else
+        render_error(@c_session,"Error al cambiar el estatus",parameters);
+      end
+    else
+      render_error(@c_session,"Password erroneo",parameters);
+    end
   end
 
   def document_agreement
@@ -872,7 +897,7 @@ class CommitteeSessionsController < ApplicationController
         auth       = @c_a.auth
         area_id    = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
         area       = Area.find(area_id)
-        notes      =   @c_a.committee_agreement_note[0].notes rescue ""
+        notes      = @c_a.committee_agreement_note[0].notes rescue ""
         cap        = @c_a.committee_agreement_person.where(:attachable_type=>"Internship").first
         internship = Internship.find(cap.attachable_id)
         ## PRESENTACION
@@ -891,7 +916,7 @@ class CommitteeSessionsController < ApplicationController
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} se le ha autorizado realizar estancia posdoctoral en este Centro, bajo la asesoria de #{area.leader} Jefe de #{area.name} durante el periodo #{notes}."
+        text = "#{text} se le ha autorizado realizar estancia posdoctoral en este Centro en el area de #{area.name}, bajo la asesoria de #{internship.staff.full_name} durante el periodo #{notes}."
         text = "#{text} \n\n Anexo formato y requisitos para el registro correspondiente y quedo a sus ordenes para cualquier duda al respecto."
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
@@ -907,9 +932,55 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 15
         @render_pdf = false
         ## SE VA DIRECTO A MINUTA
-      ###############################  ###################################
+      ############################### REVALIDACION DE CURSOS ###################################
       elsif @type.eql? 16
-        @render_pdf = false
+        @render_pdf = true
+        i_id        = @c_a.notes[/\[(.*?)\]/m,1] rescue ""
+        institution =  Institution.find(i_id)
+        s           = @c_a.committee_agreement_person.where(:attachable_type=>"Student").first
+        student     = Student.find(s.attachable_id)
+        materias    = @c_a.committee_agreement_object.where(:attachable_type=>"Course")
+        ## PRESENTACION
+        x = 0
+        y = 555
+        w = 300
+        h = 15
+        pdf.text_box "</b>#{student.full_name}\n\n</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        y = y - 15
+        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        # CONTENIDO
+        x = 0
+        y = y - 35
+        w = 510
+        h = 170
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} autorizó la revalidación de los siguientes cursos:"
+        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        
+        pdf.move_down 220
+        data = []
+        data << ["<b>Curso Externo</b>","<b>Equivalente en CIMAV</b>","<b>Créditos</b>"]
+        
+        materias.each do |m|
+          m_local = Course.find(m.attachable_id)
+          data << [m.aux,m_local.name,m_local.credits]
+        end
+        
+        tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>10,:padding=>3,:inline_format => true},:position=>:right)
+        tabla.row(0).background_color = "F0F0F0"
+        tabla.draw
+        
+        #  FIRMA
+        x = x + 110
+        y = y - 200
+        w = 300
+        h = 80
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+       
       ###############################  ###################################
       elsif @type.eql? 17
         @render_pdf = false

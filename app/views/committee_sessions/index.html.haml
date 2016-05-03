@@ -20,3 +20,12 @@
   %center
     = text_area_tag "commitee_agreement_notes", nil,:rows=>18, :cols=>63
     = button_tag "Guardar y cerrar", :type=>'button', :class=>'notes-agreement', :id=>'notes-agreement'
+#new-term-dialog-courses{:title=>"Courses"}
+  %center
+    %iframe{"name" => "the_iframe", "id" => "the_iframe", "width" => "670px", "height" => "370px", "scrolling" => "no", :frameborder=>"0"}
+#new-term-dialog-unlock{:title=>"Desbloqueo"}
+  %center
+    = "Password de Desbloqueo:"
+    %input{:name=>"password", :id=>"password", :type=>"password"}
+    %button{:id=>"unlock_submit", :type=>"submit"}= "Desbloquear"
+    %button{:id=>"unlock_cancel"}= "Cancelar"
