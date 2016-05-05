@@ -27,6 +27,9 @@ class Student < ActiveRecord::Base
 
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact
+  
+  has_one :graduate
+  accepts_nested_attributes_for :graduate
 
   has_one :thesis
   accepts_nested_attributes_for :thesis
@@ -43,8 +46,7 @@ class Student < ActiveRecord::Base
   has_many :term_students
   accepts_nested_attributes_for :term_students
   
-  has_one :graduate
-  accepts_nested_attributes_for :graduate
+  has_many :protocols
 
   validates :first_name, :presence => true
   validates :last_name, :presence => true

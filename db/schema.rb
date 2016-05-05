@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160303235014) do
+ActiveRecord::Schema.define(:version => 20160503180607) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(:version => 20160303235014) do
     t.integer  "grade3_status"
     t.integer  "grade4_status"
     t.integer  "grade5_status"
+    t.integer  "advance_type"
   end
 
   add_index "advances", ["student_id"], :name => "index_advances_on_student_id"
@@ -64,6 +65,15 @@ ActiveRecord::Schema.define(:version => 20160303235014) do
   add_index "advances", ["tutor3"], :name => "index_advances_on_tutor3"
   add_index "advances", ["tutor4"], :name => "index_advances_on_tutor4"
   add_index "advances", ["tutor5"], :name => "index_advances_on_tutor5"
+
+  create_table "answers", :force => true do |t|
+    t.integer  "question_id"
+    t.integer  "protocol_id"
+    t.integer  "answer"
+    t.text     "comments"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
 
   create_table "applicant_files", :force => true do |t|
     t.integer "applicant_id"
@@ -155,6 +165,17 @@ ActiveRecord::Schema.define(:version => 20160303235014) do
     t.datetime "created_at",             :null => false
     t.datetime "updated_at",             :null => false
   end
+
+  create_table "committee_agreement_objects", :force => true do |t|
+    t.integer  "committee_agreement_id"
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.text     "aux"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
+  add_index "committee_agreement_objects", ["committee_agreement_id"], :name => "index_committee_agreement_objects_on_committee_agreement_id"
 
   create_table "committee_agreement_people", :force => true do |t|
     t.integer  "committee_agreement_id"
@@ -441,6 +462,25 @@ ActiveRecord::Schema.define(:version => 20160303235014) do
     t.integer  "terms_duration"
     t.integer  "terms_qty"
     t.integer  "program_type"
+  end
+
+  create_table "protocols", :force => true do |t|
+    t.integer  "advance_id"
+    t.integer  "staff_id"
+    t.integer  "group"
+    t.integer  "grade"
+    t.integer  "status"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "questions", :force => true do |t|
+    t.integer  "group"
+    t.integer  "question_type"
+    t.integer  "order"
+    t.text     "question"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   create_table "scholarship_categories", :force => true do |t|

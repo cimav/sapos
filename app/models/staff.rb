@@ -16,6 +16,8 @@ class Staff < ActiveRecord::Base
 
   has_many :internships
 
+  has_many :protocols
+
   has_many :supervised, :class_name => "Student", :foreign_key => :supervisor
   has_many :co_supervised, :class_name => "Student", :foreign_key => :co_supervisor
 

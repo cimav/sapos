@@ -451,6 +451,14 @@ class StudentsController < ApplicationController
     send_file sf.to_s, :x_sendfile=>true
   end
 
+  def get_protocol
+    advance   = Advance.find(params[:id])
+    staff_id  = params[:staff_id]
+    filename  = "#{Settings.sapos_route}/private/files/students/#{advance.student.id}"
+    pdf_route = "#{filename}/protocol-#{advance.id}-#{staff_id}.pdf"
+    send_file pdf_route, :x_sendfile=>true
+  end
+
   def delete_file
   end
 

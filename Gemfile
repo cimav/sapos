@@ -31,3 +31,5 @@ gem 'prawn-icon'
 
 gem 'zipruby'
 gem 'fileutils'
+
+gem 'config', '1.0.0'

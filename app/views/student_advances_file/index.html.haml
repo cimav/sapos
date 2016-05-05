@@ -45,8 +45,10 @@
   #record-box
     %h2="Historial"
     - @student_advances_files.each do |saf|
+      %br
       %b= saf.term_student.term.name
-      = ": #{l saf.created_at, :format => :long} :"
+      %b= "(#{StudentAdvancesFile::STUDENT_ADVANCE_TYPE[saf.student_advance_type]})"
+      = " #{l saf.created_at, :format => :long} "
       %a{'href' => "/avances/#{saf.id}/file"}= saf.description
 
 

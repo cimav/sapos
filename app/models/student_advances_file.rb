@@ -9,9 +9,11 @@ class StudentAdvancesFile < ActiveRecord::Base
 
   SEMESTER = 1
   INTERSEMESTER = 2
+  PROTOCOL = 3
   STUDENT_ADVANCE_TYPE  = {
     SEMESTER => "Semestral",
     INTERSEMESTER => "Intersemestral",
+    PROTOCOL => "Protocolo",
   }
 
   before_destroy :delete_linked_file
