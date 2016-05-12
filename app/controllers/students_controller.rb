@@ -151,6 +151,7 @@ class StudentsController < ApplicationController
 	  rows << {'Matricula' => s.card,
 		   'Nombre' => s.first_name,
 		   'Apellidos' => s.last_name,
+                   'Correo'  => s.email,
                    'Sexo' => s.gender,
 		   'Estado' => s.status_type,
 		   "Fecha_Nac" => s.date_of_birth,
@@ -180,7 +181,7 @@ class StudentsController < ApplicationController
                    'Tutor5' => (Staff.find(last_advance.tutor5).full_name rescue ''),
 		   }
 	end
-	column_order = ["Matricula", "Nombre", "Apellidos", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+	column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
 	to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
