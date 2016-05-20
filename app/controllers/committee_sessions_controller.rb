@@ -1068,7 +1068,7 @@ class CommitteeSessionsController < ApplicationController
       pdf.text texto, :align=>:center, :inline_format=>true, :size=>13
 
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      texto = "Reunidos en la sala de Nanotecnología el día <b>#{s_date.day} de #{get_month_name(s_date.month)} del año #{s_date.year},</b> a las #{s_date.hour.to_s.rjust(2,"0")}:#{s_date.min.to_s.rjust(2,"0")} h. con la asistencia de las siguientes personas: </b>"
+      texto = "Reunidos en la Sala de Posgrado planta alta el día <b>#{s_date.day} de #{get_month_name(s_date.month)} del año #{s_date.year},</b> a las #{s_date.hour.to_s.rjust(2,"0")}:#{s_date.min.to_s.rjust(2,"0")} h. con la asistencia de las siguientes personas: </b>"
       pdf.text texto, :align=>:justify, :valign=>:top, :inline_format=>true, :size=>10
 
       pdf.move_down 10
@@ -1328,6 +1328,18 @@ class CommitteeSessionsController < ApplicationController
         end
       elsif cat.id.eql? 15 ## Actualizacion de normatividad
         authorized = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
+      elsif cat.id.eql? 16 ## Revalidacion de cursos
+        cap         = ca.committee_agreement_person.where(:attachable_type=>"Student").first
+        cac         = ca.committee_agreement_object.where(:attachable_type=>"Course")
+        student     = Student.find(cap.attachable_id)
+
+        courses = ""
+        cac.each do |c|
+          courses = "#{courses} <br>* #{c.aux}"
+        end
+        
+        issue = "#{issue}\n\n <b>Estudiante: #{student.full_name}</b>\n\n"
+        authorized = "<b>Se autorizó la revalidación de los siguientes cursos:</b><br>#{courses}"
       elsif cat.id.eql? 19 ## Asignacion de director
         cap         = ca.committee_agreement_person.where(:attachable_type=>"Student").first
         student     = Student.find(cap.attachable_id)
