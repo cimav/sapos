@@ -611,26 +611,36 @@ class InternshipsController < ApplicationController
 
   def send_mail(i,uri,opc,text)
     user    = get_user(i.area_id)
+    
+    if opc.eql? 1
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo al solicitante'}"}).save
+    elsif opc.eql? 2
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo al asistente'}"}).save
+    elsif opc.eql? 3
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de fecha de entrevista'}"}).save
+    end
+
     if opc.eql? 1
       @u_email   = i.email
       subject = "Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>5,:reply_to=>'#{user.email}',:uri=>'#{uri}'}"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>10,:reply_to=>'#{user.email}',:uri=>'#{uri}'}"
     elsif opc.eql? 2
       @u_email   = user.email
       subject = "Se ha realizado una Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>6,:reply_to=>'#{i.email}',:uri=>'#{uri}'}"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>11,:reply_to=>'#{i.email}',:uri=>'#{uri}'}"
     elsif opc.eql? 3
       @u_email   = i.email
       subject = "Se ha programado fecha para entrevista Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>7,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>12,:reply_to=>'#{user.email}',:text=>'#{text}'}"
     end
 
-    email = Email.new
+    email         = Email.new
     email.from    ="atencion.posgrado@cimav.edu.mx"
     email.to      = @u_email
     email.subject = subject
     email.content = content
-    SystemMailer.notification_email(email).deliver
+    email.status  = 0
+    email.save
 
     if opc.eql? 1
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al solicitante'}"}).save
@@ -639,7 +649,6 @@ class InternshipsController < ApplicationController
     elsif opc.eql? 3
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El usuario programa fecha de entrevista'}"}).save
     end
-
   end#send_mail
 
   def get_user(area_id)
