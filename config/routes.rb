@@ -205,6 +205,8 @@ Sapos::Application.routes.draw do
   match 'planes_estudios/:id' => 'studies_plans#show'
   match 'planes_estudios/editar/:id' => 'studies_plans#update'
   
+  match 'reportes' => 'reports#index'
+
   match 'comite/busqueda' => 'committee_sessions#live_search'
   
   match 'comite/sesion/minuta/:s_id' => 'committee_sessions#memorandum'
