@@ -1335,11 +1335,12 @@ class CommitteeSessionsController < ApplicationController
 
         courses = ""
         cac.each do |c|
-          courses = "#{courses} <br>* #{c.aux}"
+          name    = Course.find(c.attachable_id).name rescue "N.D."
+          courses = "#{courses} <br>* El curso <b>#{name}</b> por el curso externo <b>#{c.aux}</b>"
         end
         
         issue = "#{issue}\n\n <b>Estudiante: #{student.full_name}</b>\n\n"
-        authorized = "<b>Se autorizó la revalidación de los siguientes cursos:</b><br>#{courses}"
+        authorized = "<b>Autorizado:</b><br>#{courses}"
       elsif cat.id.eql? 19 ## Asignacion de director
         cap         = ca.committee_agreement_person.where(:attachable_type=>"Student").first
         student     = Student.find(cap.attachable_id)
