@@ -9,7 +9,7 @@
   %div{:id=>"cac_#{cac.id}"}
     - course = Course.find(cac.attachable_id)
     = hidden_field_tag "my_cac_id",cac.id
-    = course.name
+    = "* #{course.name.strip} -> "
     = cac.aux
     = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-course'
 
