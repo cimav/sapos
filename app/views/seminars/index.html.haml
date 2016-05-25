@@ -1,0 +1,13 @@
+- @include_js = 'seminars'
+- @page_title = 'Seminarios Departamentales'
+- @nav_icon = 'students'
+#items-panel.side-panel 
+  .panel-search{:style=>"height: 50px"}
+    .invisible-options
+    = select_tag "supervisor", options_from_collection_for_select(@supervisors,"id","full_name_upcase")
+    = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
+  #items-list.panel-items
+  .panel-add
+    = link_to  'Nuevo seminario', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
+    %a{'id' => 'to_excel'} XLS
+#content-panel.main-panel

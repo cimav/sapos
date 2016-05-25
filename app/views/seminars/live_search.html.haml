@@ -1,0 +1,11 @@
+%ul.panel-list
+  - c = 0
+  - @seminars.each do |seminar|
+    - c += 1
+    %li
+      = link_to seminar, :method=> :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "seminar_link_#{seminar.id}" do
+        .title= seminar.student_id
+        .comment= seminar.title
+
+#counter
+  .inner= "#{c} seminarios"

@@ -54,6 +54,8 @@
           %li.op#op-users= link_to "Reportes", "/reportes"
         - if can? :read, Graduate
           %li.op#op-users= link_to "Seguimiento de Egresados", graduates_path
+        - if current_user.access.eql? User::ADMINISTRATOR or current_user.access.eql? User::MANAGER or current_user.access.eql? User::OPERATOR
+          %li.op#op-users= link_to "Seminarios Departamentales","/seminarios"
         - if can? :read, Internship
           %li.op#op-internships= link_to "Servicios CIMAV", internships_path
         - if can? :read, InternshipType

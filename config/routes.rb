@@ -206,8 +206,11 @@ Sapos::Application.routes.draw do
   match 'planes_estudios/editar/:id' => 'studies_plans#update'
   
   match 'reportes' => 'reports#index'
+  
+  match 'seminarios' => 'seminars#index'
+  match 'seminarios/busqueda' => 'seminars#live_search'
 
-  match 'comite/busqueda' => 'committee_sessions#live_search'
+  match 'comite/busqueda' => 'seminars#live_search'
   
   match 'comite/sesion/minuta/:s_id' => 'committee_sessions#memorandum'
   match 'comite/acuerdos/imprimir/:a_id/:s_id' => 'committee_sessions#document_agreement'
@@ -248,6 +251,8 @@ Sapos::Application.routes.draw do
     resources :areas, :path => "areas"
     resources :committee_sessions, :path => "comite"
     resources :committee_agreement_objects, :path => "objetos"
+    resources :seminars, :path => "seminarios"
+    resources :advances, :path => "avances"
     #resources :studies_plans, :path => "planes_estudios"
   end
 
