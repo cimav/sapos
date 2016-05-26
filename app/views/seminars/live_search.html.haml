@@ -3,9 +3,11 @@
   - @seminars.each do |seminar|
     - c += 1
     %li
+      - @staff= Staff.find(seminar.student.supervisor)
       = link_to seminar, :method=> :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "seminar_link_#{seminar.id}" do
-        .title= seminar.student_id
-        .comment= seminar.title
+        .title= "#{seminar.id} #{seminar.student.full_name}"
+        .comment= @staff.full_name.mb_chars.capitalize
+        .comment= Area.find(@staff.area_id).name rescue "N.D."
 
 #counter
   .inner= "#{c} seminarios"

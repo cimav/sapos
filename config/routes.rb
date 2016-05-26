@@ -209,8 +209,11 @@ Sapos::Application.routes.draw do
   
   match 'seminarios' => 'seminars#index'
   match 'seminarios/busqueda' => 'seminars#live_search'
+  match 'seminarios/new' => 'seminars#new'
+  match 'avances/:id' => 'seminars#get_advance'
+  match 'seminarios/advance_data' => 'seminars#advance_data'
 
-  match 'comite/busqueda' => 'seminars#live_search'
+  match 'comite/busqueda' => 'committee_sessions#live_search'
   
   match 'comite/sesion/minuta/:s_id' => 'committee_sessions#memorandum'
   match 'comite/acuerdos/imprimir/:a_id/:s_id' => 'committee_sessions#document_agreement'

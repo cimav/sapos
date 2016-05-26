@@ -1,0 +1,8 @@
+
+.field#field_student_supervisor
+  = @student.staff_supervisor.full_name rescue "No tiene asignado supervisor"
+.field#field_student_thesis_title
+  - if @student.thesis.title.blank?
+    = "Sin tesis"
+  - else
+    = @student.thesis.title

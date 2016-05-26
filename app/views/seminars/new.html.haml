@@ -1,0 +1,12 @@
+%h2= "Nuevo Seminario"
+= form_for Advance.new, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
+  .field#field_student_id
+    = f.label :student_id, 'Alumno'
+    = f.select :student_id, options_from_collection_for_select(@students,"id","full_name_upcase"), :prompt=>"Selecciona un alumno"
+  #advance-data
+
+:javascript
+  $(document).ready(function(){
+    $('#advance_student_id').select2();
+  });
+

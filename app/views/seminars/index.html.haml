@@ -1,13 +1,22 @@
 - @include_js = 'seminars'
 - @page_title = 'Seminarios Departamentales'
 - @nav_icon = 'students'
+- @include2_js = 'select2'
+- @include3_js = 'select2_locale_es'
+- @include_css = 'select2/select2'
 #items-panel.side-panel 
   .panel-search{:style=>"height: 50px"}
     .invisible-options
-    = select_tag "supervisor", options_from_collection_for_select(@supervisors,"id","full_name_upcase")
-    = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
-  #items-list.panel-items
+    = form_tag students_path, :id => 'live-search', :method => 'get', :remote => true do
+      = select_tag "supervisor", options_from_collection_for_select(@supervisors,"id","full_name_upcase"), :prompt=>"Selecciona un supervisor"
+      = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
+  #items-list.panel-items{:style=>"top: 80px"}
   .panel-add
     = link_to  'Nuevo seminario', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
     %a{'id' => 'to_excel'} XLS
 #content-panel.main-panel
+
+:javascript
+  $(document).ready(function(){
+    $('#supervisor').select2();
+  });
