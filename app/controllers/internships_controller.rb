@@ -623,15 +623,15 @@ class InternshipsController < ApplicationController
     if opc.eql? 1
       @u_email   = i.email
       subject = "Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>10,:reply_to=>'#{user.email}',:uri=>'#{uri}'}"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>13,:reply_to=>'#{user.email}',:uri=>'#{uri}'}"
     elsif opc.eql? 2
       @u_email   = user.email
       subject = "Se ha realizado una Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>11,:reply_to=>'#{i.email}',:uri=>'#{uri}'}"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>14,:reply_to=>'#{i.email}',:uri=>'#{uri}'}"
     elsif opc.eql? 3
       @u_email   = i.email
       subject = "Se ha programado fecha para entrevista Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>12,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>15,:reply_to=>'#{user.email}',:text=>'#{text}'}"
     end
 
     email         = Email.new
