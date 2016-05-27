@@ -210,6 +210,7 @@ Sapos::Application.routes.draw do
   match 'seminarios' => 'seminars#index'
   match 'seminarios/busqueda' => 'seminars#live_search'
   match 'seminarios/new' => 'seminars#new'
+  match 'seminarios/crear' => 'seminars#create'
   match 'avances/:id' => 'seminars#get_advance'
   match 'seminarios/advance_data' => 'seminars#advance_data'
 

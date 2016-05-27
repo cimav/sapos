@@ -1,12 +1,23 @@
-%h2= "Nuevo Seminario"
-= form_for Advance.new, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
-  .field#field_student_id
-    = f.label :student_id, 'Alumno'
-    = f.select :student_id, options_from_collection_for_select(@students,"id","full_name_upcase"), :prompt=>"Selecciona un alumno"
-  #advance-data
+= form_tag "seminarios/crear", :remote => true, :id => 'item-new-form' do
+
+  .resource-header
+    .resource-title
+      %h2= "Nuevo Seminario Departamental"
+    .resource-save
+      = submit_tag 'Crear'
+
+  #resource-tabs
+    %ul
+      %li.first-tab= link_to "Seminario","#nuevo"
+ 
+    #nuevo
+      .field#field_student_id
+        = label_tag :student_id, 'Alumno'
+        = select_tag 'advance[student_id]', options_from_collection_for_select(@students,"id","full_name_upcase"), :prompt=>"Selecciona un alumno",:id=>"advance_student_id"
+        = hidden_field_tag 'advance[advance_type]', 3
+      #advance-data
 
 :javascript
   $(document).ready(function(){
     $('#advance_student_id').select2();
   });
-
