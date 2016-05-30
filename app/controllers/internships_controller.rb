@@ -479,8 +479,8 @@ class InternshipsController < ApplicationController
 
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud por internet'}"}).save
       @uri = generate_applicant_document(@internship)
-      #send_mail(@internship,@uri,1,nil)
-      #send_mail(@internship,@uri,2,nil)
+      send_mail(@internship,@uri,1,nil)
+      send_mail(@internship,@uri,2,nil)
 
       respond_with do |format|
         format.html do
