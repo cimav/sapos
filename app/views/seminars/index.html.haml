@@ -1,3 +1,4 @@
+= stylesheet_link_tag 'custom-theme/jquery-ui.css'
 - @include_js = 'seminars'
 - @page_title = 'Seminarios Departamentales'
 - @nav_icon = 'students'
@@ -15,6 +16,13 @@
     = link_to  'Nuevo seminario', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
     %a{'id' => 'to_excel'} XLS
 #content-panel.main-panel
+
+#alert-dialog{:title=>"Nota"}
+  %center
+    #alert-dialog-content
+    %br
+    #alert-dialog-button-div
+      = button_tag "Cerrar", :id=>"alert-dialog-button"
 
 :javascript
   $(document).ready(function(){
