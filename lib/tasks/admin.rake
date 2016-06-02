@@ -50,4 +50,14 @@ namespace :admin do
     a.tutor5 = 1
     a.save
   end # task insert
+
+  task :protocols => :environment do 
+    protocols = Protocol.all
+    puts "[#{protocols.size}]"
+    counter = 1
+    protocols.each do |p|
+      puts "#{counter},\"#{p.advance.student.full_name}\",\"#{p.staff.full_name}\",\"#{(p.grade.eql? 1) ? 'Aprobado' : 'No Aprobado'}\""
+      counter = counter + 1
+    end
+  end
 end ## namespace
