@@ -60,4 +60,24 @@ namespace :admin do
       counter = counter + 1
     end
   end
+
+  task :desist, [:id] => :environment do |t,args|
+    s = Student.find(args[:id])
+    puts s.full_name
+    puts s.program.name
+    puts "Advances: #{s.advance.size}"
+    puts "Theses: #{s.thesis}"
+    puts "Contacts: #{s.contact}"
+
+    term_students=""
+    s.term_students.each do |ts|
+      term_students += "#{ts.id},"
+    end
+    puts "Term Students [#{term_students.chop}]"
+
+    s.term_students.each do |ts|
+      puts "Term Course Students[#{ts.id}]: #{ts.term_course_student.size}"
+    end
+  end ## task desist
+
 end ## namespace
