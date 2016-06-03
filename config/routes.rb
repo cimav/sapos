@@ -37,6 +37,7 @@ Sapos::Application.routes.draw do
   match 'estudiantes/:id/expediente' => 'students#record'
   match 'estudiantes/upload_one_file' => 'students#upload_one_file'
   match 'estudiantes/protocolo/:id/:staff_id' => 'students#get_protocol'
+  match 'estudiantes/seminario/:id/:staff_id' => 'students#get_protocol'
 
   match 'estudiantes/destroy_file/:id' => 'student_files#destroy_file'
   match 'estudiantes/file/:id' => 'student_files#download'

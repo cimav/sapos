@@ -83,6 +83,67 @@ class SeminarsController < ApplicationController
     @advance  = Advance.new(params[:advance])
 
     if @advance.save
+      params = {}
+      if !@advance.tutor1.nil?
+        staff  = Staff.find(@advance.tutor1) rescue nil
+        email  = staff.email rescue ""
+        if !email.empty?
+          params[:advance_id] = @advance.id
+          params[:staff]   = staff
+          send_mail(email,params,1)
+        else
+          logger.info "Email Vacio Tutor1"
+        end
+      end
+ 
+      if !@advance.tutor2.nil?
+        staff  = Staff.find(@advance.tutor2) rescue nil
+        email  = staff.email rescue ""
+        if !email.empty?
+          params[:advance_id] = @advance.id
+          params[:staff]   = staff
+          send_mail(email,params,1)
+        else
+          logger.info "Email Vacio Tutor2"
+        end
+      end
+
+      if !@advance.tutor3.nil?
+        staff  = Staff.find(@advance.tutor3) rescue nil
+        email  = staff.email rescue ""
+        if !email.empty?
+          params[:advance_id] = @advance.id
+          params[:staff]   = staff
+          send_mail(email,params,1)
+        else
+          logger.info "Email Vacio Tutor3"
+        end
+      end
+
+      if !@advance.tutor4.nil?
+        staff  = Staff.find(@advance.tutor4) rescue nil
+        email  = staff.email rescue ""
+        if !email.empty?
+          params[:advance_id] = @advance.id
+          params[:staff]   = staff
+          send_mail(email,params,1)
+        else
+          logger.info "Email Vacio Tutor4"
+        end
+      end
+
+      if !@advance.tutor5.nil?
+        staff  = Staff.find(@advance.tutor5) rescue nil
+        email  = staff.email rescue ""
+        if !email.empty?
+          params[:advance_id] = @advance.id
+          params[:staff]   = staff
+          send_mail(email,params,1)
+        else
+          logger.info "Email Vacio Tutor5"
+        end
+      end
+
       render_message(@advance,"Seminario departamental creado con éxito",parameters)
     else
       if !@advance.errors[:advance_date].empty?
@@ -104,6 +165,25 @@ class SeminarsController < ApplicationController
       render_message @advance,@message,parameters
     else
       render_error @advance, "Error al actualizar estudiante",parameters
+    end
+  end
+
+  def send_mail(to,params,opc)
+    to     = "enrique.turcott@cimav.edu.mx"
+    if opc.eql? 1
+      staff  = params[:staff]
+      att_id    = staff.id 
+      att_class = staff.class
+      subject = "Usted ha sido elegido como tutor de un seminario"
+      content = "{:staff_id=>#{staff.id},:advance_id=>#{params[:advance_id]},:view=>16}"
+    end
+    
+    email = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
+    
+    if email.save
+      ActivityLog.new({:user_id=>0,:activity=>"{:attachable_id=>#{att_id},:attachable_type=>'#{att_class}', :activity=>'Se manda un correo a #{to}'}"}).save
+    else
+      ActivityLog.new({:user_id=>0,:activity=>"{:attachable_id=>#{att_id},:attachable_type=>'#{att_class}', :activity=>'Falla al mandar un correo al solicitante'}"}).save
     end
   end
 end
