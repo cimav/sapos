@@ -22,7 +22,6 @@ class SystemMailer < ActionMailer::Base
    @to         = object.to
    @reply_to  = hash[:reply_to] rescue nil
 
-   mail(:to=> @to,:subject=>object.subject)
    if @reply_to.nil?
      mail(:to=> @to,:subject=>object.subject)
    else

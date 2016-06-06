@@ -69,10 +69,10 @@ es:
       job: "Coordinador de Control Escolar"
       gender: "F"
     academic_coordinator_monterrey:
-      title: "Dra."
-      name: "Alejandra García García"
+      title: "Dr."
+      name: "Eduardo Martínez Guerra"
       job: "Coordinador Académico Unidad Monterrey"
-      gender: "F"
+      gender: "M"
   activerecord:
     errors:
       messages:
