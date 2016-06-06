@@ -369,7 +369,6 @@ class CommitteeSessionsController < ApplicationController
         notes = @c_a.committee_agreement_note[0].notes rescue ""
         l_date     = Date.parse(@c_a.notes[/\[(.*?)\]/m,1]) rescue ""
         student    = Student.find(s[0].attachable_id)
-        supervisor = Staff.find(student.supervisor)
 
         if @c_a.auth.to_i.eql? 1 ####### Si
           ############ PRORROGA ############
