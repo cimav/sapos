@@ -84,6 +84,9 @@ class SeminarsController < ApplicationController
 
     if @advance.save
       params = {}
+
+      params[:horario] = traslate_date(@advance.advance_date)
+
       if !@advance.tutor1.nil?
         staff  = Staff.find(@advance.tutor1) rescue nil
         email  = staff.email rescue ""
@@ -144,6 +147,11 @@ class SeminarsController < ApplicationController
         end
       end
 
+      params[:advance_id] = @advance.id
+      params[:student] = @advance.student
+      email = @advance.student.email_cimav rescue @advance.student.email
+      send_mail(email,params,2)  ## estudiante
+
       render_message(@advance,"Seminario departamental creado con éxito",parameters)
     else
       if !@advance.errors[:advance_date].empty?
@@ -155,6 +163,14 @@ class SeminarsController < ApplicationController
       logger.info @advance.errors
       render_error(@advance,"Error al guardar seminario departamental",parameters)
     end
+  end
+
+  def traslate_date(date)
+    d       = t(:date)
+    days    = d[:day_names]
+    months  = d[:month_names]
+
+    return "#{days[date.wday]}, #{date.day} de #{months[date.month]} de #{date.year} a las #{date.hour}:#{date.min}"
   end
 
   def update
@@ -169,13 +185,19 @@ class SeminarsController < ApplicationController
   end
 
   def send_mail(to,params,opc)
-    to     = "enrique.turcott@cimav.edu.mx"
+    #to     = "enrique.turcott@cimav.edu.mx" #el colado
     if opc.eql? 1
-      staff  = params[:staff]
+      staff     = params[:staff]
       att_id    = staff.id 
       att_class = staff.class
       subject = "Usted ha sido elegido como tutor de un seminario"
-      content = "{:staff_id=>#{staff.id},:advance_id=>#{params[:advance_id]},:view=>16}"
+      content = "{:staff_id=>#{staff.id},:advance_id=>#{params[:advance_id]},horario=>\"#{params[:horario]}\",:view=>16}"
+    elsif opc.eql? 2
+      student   = params[:student]
+      att_id    = student.id 
+      att_class = student.class
+      subject = "Su seminario de investigación ha sido programado"
+      content = "{:horario=>\"#{params[:horario]}\",:advance_id=>#{params[:advance_id]},:view=>21}"
     end
     
     email = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
