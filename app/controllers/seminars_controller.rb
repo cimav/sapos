@@ -191,7 +191,7 @@ class SeminarsController < ApplicationController
       att_id    = staff.id 
       att_class = staff.class
       subject = "Usted ha sido elegido como tutor de un seminario"
-      content = "{:staff_id=>#{staff.id},:advance_id=>#{params[:advance_id]},horario=>\"#{params[:horario]}\",:view=>16}"
+      content = "{:staff_id=>#{staff.id},:advance_id=>#{params[:advance_id]},:horario=>\"#{params[:horario]}\",:view=>16}"
     elsif opc.eql? 2
       student   = params[:student]
       att_id    = student.id 
