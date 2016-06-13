@@ -503,6 +503,7 @@ class InternshipsController < ApplicationController
             json = {}
             json[:flash] = flash
             json[:errors] = @internship.errors
+            logger.info "################## #{@internship.errors.full_messages}"
             render :json => json, :status => :unprocessable_entity
           else
             redirect_to @internship
@@ -539,7 +540,7 @@ class InternshipsController < ApplicationController
 
     ## mail al entrevistador
     @text = "Se ha programado la cita para entrevista de servicio social con #{@internship.full_name} [#{@internship.email}] para el día #{@adate[0]} de #{get_month_name(@adate[1].to_i)} de #{@adate[2]} a las #{@hour} horas."
-    @content= "{:full_name=>'',:email=>'#{@internship.email}',:view=>7,:reply_to=>'#{@user.email}',:text=>'#{@text}'}"
+    @content= "{:full_name=>'',:email=>'#{@internship.email}',:view=>15,:reply_to=>'#{@user.email}',:text=>'#{@text}'}"
     # @staff.email
     send_simple_mail(@staff.email,"Se ha programado un horario para entrevista de servicio social ",@content)
     ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'Se manda un correo con el horario a #{@staff.full_name} - #{@staff.email}'}"}).save
@@ -599,13 +600,15 @@ class InternshipsController < ApplicationController
   end
 
   def send_simple_mail(to,subject,content)
-    email = Email.new
+    email         = Email.new
     email.from    ="atencion.posgrado@cimav.edu.mx"
     email.to      = to
     email.subject = subject
     email.content = content
+    email.status  = 0
+    email.save
 
-    SystemMailer.notification_email(email).deliver
+    #SystemMailer.notification_email(email).deliver
   end
 
 
