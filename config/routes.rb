@@ -37,6 +37,7 @@ Sapos::Application.routes.draw do
   match 'estudiantes/:id/expediente' => 'students#record'
   match 'estudiantes/upload_one_file' => 'students#upload_one_file'
   match 'estudiantes/protocolo/:id/:staff_id' => 'students#get_protocol'
+  match 'estudiantes/seminario/:id/:staff_id' => 'students#get_protocol'
 
   match 'estudiantes/destroy_file/:id' => 'student_files#destroy_file'
   match 'estudiantes/file/:id' => 'student_files#download'
@@ -206,6 +207,14 @@ Sapos::Application.routes.draw do
   match 'planes_estudios/editar/:id' => 'studies_plans#update'
   
   match 'reportes' => 'reports#index'
+  
+  match 'seminarios' => 'seminars#index'
+  match 'seminarios/busqueda' => 'seminars#live_search'
+  match 'seminarios/new' => 'seminars#new'
+  match 'seminarios/crear' => 'seminars#create'
+  match 'seminarios/editar/:id' => 'seminars#update'
+  match 'avances/:id' => 'seminars#show'
+  match 'seminarios/advance_data' => 'seminars#advance_data'
 
   match 'comite/busqueda' => 'committee_sessions#live_search'
   
@@ -248,6 +257,8 @@ Sapos::Application.routes.draw do
     resources :areas, :path => "areas"
     resources :committee_sessions, :path => "comite"
     resources :committee_agreement_objects, :path => "objetos"
+    resources :seminars, :path => "seminarios"
+    resources :advances, :path => "avances"
     #resources :studies_plans, :path => "planes_estudios"
   end
 

@@ -6,4 +6,14 @@ class Protocol < ActiveRecord::Base
   belongs_to :advance
 
   has_many :answers
+ 
+  CREATED   = 1
+  SENT      = 2
+  CANCELLED = 3
+
+  STATUS = {
+    CREATED   => 'Creado',
+    SENT      => 'Enviado',
+    CANCELLED => 'Cancelado'
+  }
 end
