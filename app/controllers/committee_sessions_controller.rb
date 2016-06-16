@@ -1169,8 +1169,8 @@ class CommitteeSessionsController < ApplicationController
       issue = "<b><i>#{cat.description}</i></b>"
 
       if cat.id.eql? 1 ## Nuevo ingreso
-        name = Applicant.find(ca.committee_agreement_person[0].attachable_id).full_name
-        issue = "#{issue}\n\n<b>#{name}</b>"
+        app  = Applicant.find(ca.committee_agreement_person[0].attachable_id)
+        issue = "#{issue}\n\n<b>#{app.full_name}</b> al programa <b>#{app.program.name}</b>"
         if ca.auth.to_i.eql? 1
           authorized = "<b>Autorizado</b>"
         elsif ca.auth.to_i.eql? 2
