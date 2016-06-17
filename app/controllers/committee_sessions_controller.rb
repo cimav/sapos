@@ -59,7 +59,6 @@ class CommitteeSessionsController < ApplicationController
     end
   end
 
-
   def get_end_datetime(params)
     date    = params[:committee_session][:date]
     hour    = params[:end_session_hour]
@@ -983,9 +982,59 @@ class CommitteeSessionsController < ApplicationController
       ###############################  ###################################
       elsif @type.eql? 17
         @render_pdf = false
-      ###############################  ###################################
+      ############################### AUTORIZACION DE PROTOCOLO DE MAESTRIA ###################################
       elsif @type.eql? 18
-        @render_pdf = false
+        @render_pdf  = true
+        presentation =  ""
+        cap          = @c_a.committee_agreement_person.where(:attachable_type=>"Staff")
+        programs     = []
+
+        term         = Term.find(@c_a.auth).code
+        cap.each do |c|
+          staff = Staff.find(c.attachable_id) rescue ""
+          presentation = "#{presentation} #{staff.title} #{staff.full_name}<br>"
+          programs << c.aux
+        end
+        ## PRESENTACION
+        x = 0
+        y = 555
+        w = 300
+        h = 15
+      
+        pdf.move_down 100
+        pdf.text "<b>#{presentation}</b>", :align=>:left, :inline_format=>true
+        #pdf.move_down 5
+        pdf.text "<b>Presente.</b>", :align=>:left, :character_spacing=>4,:inline_format=>true
+        pdf.move_down 30
+
+        text = "Me permito informar a Ustedes que el Comité de Estudios de Posgrado en la sesión ordinaria del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}, los ha designado miembros del Comité de Admisión a los Programas de Posgrado ciclo escolar #{term}."
+        pdf.text text, :align=>:justify, :inline_format=>true
+        
+        pdf.move_down 15
+
+        text = "Por lo anterior solicitamos su amable apoyo para realizar las entrevistas a los aspirantes a los programas de: "
+        pdf.text text, :align=>:justify, :inline_format=>true
+
+        programs_aux = []
+        programs.each do |p|
+          if !(p.in? programs_aux)
+            #if p.eql? 5
+            # 
+            #elsif p.eql? 6
+            #pdf.text text, :align=>:justify, :inline_format=>true
+            programs_aux << p
+          end
+        end
+
+        #  FIRMA
+        x = x + 110
+        y = y - 200
+        w = 300
+        h = 80
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
       ############################### ASIGNACION DE DIRECTOR ###################################
       elsif @type.eql? 19
         @render_pdf = true

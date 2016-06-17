@@ -371,7 +371,20 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Protocolo de maestría: "
-      =#   CONTENIDO
+      - @groups   = {"--Elige grupo--"=>0,"DCM,DN"=>5,"DCTA"=>6,"MCM"=>7,"MCTA"=>8}
+      - @terms    = Term.where(:status=>[1,2]).group("code").order("id desc")
+      - @selected = ca.auth rescue 0
+      = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","code",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
+      %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
+        - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
+          .agreement-staff
+            = hidden_field_tag "my_sinodal_id",cap.id
+            = Staff.includes(:institution).find(cap.attachable_id).full_name_upcase
+            = @groups.key(cap.aux)
+            - if !readonly
+              = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-staff'
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
+      = select_tag "agreement_aux_#{my_id}",options_for_select(@groups,0),:class=>"agreement-aux",:disabled=>readonly
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}"}="eliminar"
       = button_tag "Imprimir respuesta", :type=>'button', :class=>'response-agreement', :my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}",:style=>"display:#{display_button}"
       %hr

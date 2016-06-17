@@ -433,15 +433,30 @@ $("#memorandum_button").live("click",function(e){
 $(".agreement_people").live("change",function(e){
   $("#img_load").show();
   var sesion_id = $("#c_session_id").val();
-  var p      = $(this).parent();
-  var people = $(this).attr("autt");
-  var a_id   = p.find("#my_id").val();
-  var aux    = $("#agreement_aux_"+a_id).val();
-  var valor  = $(this).val();
-  var nombre = $(this).find('option:selected').text();
-  var url    =  "/comite/acuerdos/"+a_id+"/agregar/"+people+"/"+valor;
-  var data= ""
+  var p         = $(this).parent();
+  var people    = $(this).attr("autt");
+  var a_id      = p.find("#my_id").val();
+  var aux       = $("#agreement_aux_"+a_id).val();
+  var valor     = $(this).val();
+  var nombre    = $(this).find('option:selected').text();
+  var url       =  "/comite/acuerdos/"+a_id+"/agregar/"+people+"/"+valor;
+  var data      = ""
+
+
   if (people=='sinodales'){
+    if(aux==""){
+      alert("Debe elegir un grupo");
+      $(this).select2("val","");
+      $("#img_load").hide();
+      return false;
+    }
+    else if(aux==0)
+    {
+      alert("Debe elegir un grupo");
+      $(this).select2("val","");
+      $("#img_load").hide();
+      return false;
+    }
     data = "aux="+aux
   }
   $.ajax({
@@ -466,6 +481,10 @@ $(".agreement_people").live("change",function(e){
             $("#agreement_aux_"+a_id).select2("val","Evaluador");
           }
           else if(aux==4){aux_text="evaluador";}
+          else if(aux==5){aux_text="- DCM,DN";}
+          else if(aux==6){aux_text="- DCTA";}
+          else if(aux==7){aux_text="- MCM";}
+          else if(aux==8){aux_text="- MCTA";}
           else{aux_text="";}
           html = "<div class='agreement-staff'><input id='my_sinodal_id' name='my_sinodal_id' value='"+data.person_id+"' type='hidden'><input id='my_sinodal_type_id' name='my_sinodal_type_id' value='"+aux+"' type='hidden'>"+nombre+" "+aux_text+"<img alt='Grey_action_delete' class='delete-agreement-staff' src='/images/grey_action_delete.png' style='cursor: pointer; opacity: 0.3;' valign='center'></div>";
           $("#agreement-staffs_"+a_id).append(html);
