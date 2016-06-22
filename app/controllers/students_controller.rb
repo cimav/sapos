@@ -1864,14 +1864,15 @@ class StudentsController < ApplicationController
 
 
   def diploma
-    @rectangles = true
     @r_root = Rails.root.to_s
     time    = Time.new
     t       = Thesis.find(params[:thesis_id])
     libro   = params[:libro]
     foja    = params[:foja]
+    @rectangles = false
 
     pdf = Prawn::Document.new(:page_layout=>:landscape)
+    #pdf.stroke_axis
 
     pdf.font_families.update("English" => {
       :bold        => "#{@r_root}/private/fonts/English_.ttf",
@@ -1881,20 +1882,9 @@ class StudentsController < ApplicationController
     })
 
     pdf.font "English"
+    pdf.fill_color "373435"
+    373435x_right_top = 700
 
-    x    = 40  
-    y    = 400
-    size = 28
-    w    = 100
-    h    = 27
-
-    pdf.stroke_axis
-
-    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-    pdf.text_box "Otorga a:", :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
-
-    #pdf.text t.student.full_name
-    
     if t.student.program.level.to_i.eql? 2
       program_title = /Doctorado/
       if t.student.gender.eql? "F"
@@ -1910,6 +1900,134 @@ class StudentsController < ApplicationController
          student_title = "Maestro"
        end
     end
+
+    size = 28
+    w    = 100
+    y    = 400
+    h    = size
+    x    = x_right_top - w
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box "Otorga a:", :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    size = 36
+    w = 500
+    y = 370
+    h = size - 1
+    x = x_right_top - w
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box t.student.full_name, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    size = 28
+    w = 150
+    y = 332
+    h = size - 1
+    x = x_right_top - w
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box "El grado de:", :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    size = 40
+    w = 500
+    y = 302
+    h = size - 1
+    x = x_right_top - w
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box t.student.program.name.gsub(program_title,student_title), :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    
+    size = 25
+    w = 470
+    y = 260
+    h = size * 6
+    x = x_right_top - w
+    text = "Por haber cumplido los estudios requeridos conforme a los Planes y Programas vigentes, según constancias\n que obran en los archivos de esta institución\n y por haber aprobado el examen de grado reglamentario el día 23 de Enero de 2012"
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+ 
+    text = "Por haber cumplido los estudios requeridos conforme a"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.45
+    
+    y = y - 26
+    text = "los Planes y Programas vigentes, según constancias"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.85
+    
+    y = y - 26
+    text = "que obran en los archivos de esta institución"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 2.56
+
+    y = y - 26
+    text = "y por haber aprobado el exámen de grado reglamentario"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.18
+
+    y = y - 26
+    diax  = t.defence_date.day.to_s
+    mesx  = get_month_name(t.defence_date.month).capitalize
+    aniox = t.defence_date.year.to_s
+
+    if mesx.size.eql? 4
+      char_space = 10.1
+      if diax.size.eql? 1
+        char_space = char_space + 0.75
+      end
+    elsif mesx.size.eql? 5
+      char_space = 9.5 #9.8
+      if diax.size.eql? 1
+        char_space = char_space + 0.8
+      end
+    elsif mesx.size.eql? 6
+      char_space = 8.8
+      if diax.size.eql? 1
+        char_space = char_space + 0.7
+      end
+    elsif mesx.size.eql? 7
+      char_space = 8.3
+      if diax.size.eql? 1
+        char_space = char_space + 0.7
+      end
+    elsif mesx.size.eql? 9 
+      char_space = 7.05
+      if diax.size.eql? 1
+        char_space = char_space + 0.6
+      end
+    elsif mesx.size.eql? 10
+      char_space = 6.5
+      if diax.size.eql? 1
+        char_space = char_space + 0.5
+      end
+    end
+
+    text = "el día #{diax} de #{mesx} de #{aniox}"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => char_space
+
+    ## FECHA
+    diay  = time.day.to_s
+    mesy  = get_month_name(time.month).capitalize
+    anioy = time.year.to_s
+
+    size = 22
+    x = 5
+    y = 40
+    h = size
+    w = 400
+    text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:left, :valign=>:top
+
+    ## FIRMA
+    size = 22
+    w = 280
+    h = size
+    y = 40
+    x = x_right_top - w
+    text = "Dr. Juan Méndez Nonell"
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
+    
+    size = 20
+    w    = 280
+    h    = size
+    y    = 17
+    x    = x_right_top - w
+    text = "Director General" 
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
 
 =begin
     pdf.text "El grado de:"
