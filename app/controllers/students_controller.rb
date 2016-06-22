@@ -1871,8 +1871,7 @@ class StudentsController < ApplicationController
     foja    = params[:foja]
     @rectangles = false
 
-    pdf = Prawn::Document.new(:page_layout=>:landscape)
-    #pdf.stroke_axis
+    pdf = Prawn::Document.new(:page_size=>"LETTER",:page_layout=>:landscape)
 
     pdf.font_families.update("English" => {
       :bold        => "#{@r_root}/private/fonts/English_.ttf",
@@ -1883,7 +1882,12 @@ class StudentsController < ApplicationController
 
     pdf.font "English"
     pdf.fill_color "373435"
-    373435x_right_top = 700
+
+    pdf.stroke_ellipse [90,280],70,100
+
+
+
+    x_right_top = 700
 
     if t.student.program.level.to_i.eql? 2
       program_title = /Doctorado/
@@ -1944,19 +1948,19 @@ class StudentsController < ApplicationController
     text = "Por haber cumplido los estudios requeridos conforme a"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.45
     
-    y = y - 26
+    y = y - 28
     text = "los Planes y Programas vigentes, según constancias"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.85
     
-    y = y - 26
+    y = y - 28
     text = "que obran en los archivos de esta institución"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 2.56
 
-    y = y - 26
+    y = y - 28
     text = "y por haber aprobado el exámen de grado reglamentario"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.18
 
-    y = y - 26
+    y = y - 28
     diax  = t.defence_date.day.to_s
     mesx  = get_month_name(t.defence_date.month).capitalize
     aniox = t.defence_date.year.to_s
@@ -2002,8 +2006,8 @@ class StudentsController < ApplicationController
     anioy = time.year.to_s
 
     size = 22
-    x = 5
-    y = 40
+    x = 8
+    y = 50
     h = size
     w = 400
     text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
@@ -2012,103 +2016,24 @@ class StudentsController < ApplicationController
 
     ## FIRMA
     size = 22
-    w = 280
+    w = 277
     h = size
-    y = 40
+    y = 50
     x = x_right_top - w
     text = "Dr. Juan Méndez Nonell"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
     
     size = 20
-    w    = 280
+    w    = 277
     h    = size
-    y    = 17
+    y    = 27
     x    = x_right_top - w
     text = "Director General" 
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
 
-=begin
-    pdf.text "El grado de:"
-    pdf.text t.student.program.name.gsub(program_title,student_title)
-
-    pdf.text "Por haber cumplido los estudios requeridos conforme a los Planes y Programas vigentes, según las constancias que obran en los archivos de esta institución y por haber aprobado el examen de grado reglamentario el día 23 de Enero de 2012"
-
-    diax = t.defence_date.day.to_s
-    mesx = get_month_name(t.defence_date.month).capitalize
-    aniox = t.defence_date.year.to_s
-
-    pdf.text "Chihuahua, Chih., a #{diax} de #{mesx} de #{aniox}"
-
-    pdf.text "Dr. Juan Méndez Nonell"
-    pdf.text "Director General"
-=end
- 
     send_data pdf.render, type: "application/pdf", disposition: "inline"
-=begin
-    time = Time.new
-    t = Thesis.find(params[:thesis_id])
-    libro = params[:libro]
-    foja  = params[:foja]
-
-    diploma          = "diploma-#{libro}-#{foja}.docx"
-    documento_xml    = "documento-#{libro}-#{foja}.docx"
-
-    ruta_template = Rails.root.join('private','docx','diploma-template.docx')
-    ruta_destino = Rails.root.join('tmp',diploma)
-
-    xml_template = Rails.root.join('private','docx','document-template.xml')
-    xml_destino = Rails.root.join('tmp',documento_xml)
-
-    $stdout.binmode
-
-    logger.debug ruta_template.to_s
-    logger.debug ruta_destino.to_s
-
-
-    FileUtils.cp ruta_template.to_s,ruta_destino.to_s
-    FileUtils.cp xml_template.to_s,xml_destino.to_s
-
-    if t.student.program.level.to_i.eql? 2
-      program_title = /Doctorado/
-      if t.student.gender.eql? "F"
-        student_title = "Doctora"
-      else
-        student_title = "Doctor"
-      end
-    else
-       program_title = /Maestr.a/
-       if t.student.gender.eql? "F"
-         student_title = "Maestra"
-       else
-         student_title = "Maestro"
-       end
-    end
-
-    filename = xml_destino.to_s
-    substring filename,/alumnox/,t.student.full_name
-    substring filename,/gradox/,t.student.program.name.gsub(program_title,student_title)
-    substring filename,/gradoy/,t.student.program.name
-    substring filename,/diax/,t.defence_date.day.to_s
-    substring filename,/mesx/,get_month_name(t.defence_date.month).capitalize
-    substring filename,/aniox/,t.defence_date.year.to_s
-    substring filename,/diay/,time.day.to_s
-    substring filename,/mesy/,get_month_name(time.month).capitalize
-    substring filename,/anyoy/,time.year.to_s
-    substring filename,/librox/,libro.to_s
-    substring filename,/fojax/,foja.to_s
-    bar_txt = open(filename)
-
-    Zip::Archive.open(ruta_destino.to_s) do |ar|
-      ar.replace_io("word/document.xml", bar_txt)
-    end
-
-    zip_data = File.read(ruta_destino.to_s)
-
-    send_data(zip_data, :filename => documento_xml.to_s , :type => "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    return
-=end
   end
 
   def substring(filename,regexp,replacestring)
