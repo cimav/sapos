@@ -1,4 +1,4 @@
-  # coding: utf-8
+# coding: utf-8
 require 'digest/md5'
 class StudentsController < ApplicationController
   REALM = "Students"
@@ -1864,8 +1864,72 @@ class StudentsController < ApplicationController
 
 
   def diploma
-    time = Time.new
+    @rectangles = true
+    @r_root = Rails.root.to_s
+    time    = Time.new
+    t       = Thesis.find(params[:thesis_id])
+    libro   = params[:libro]
+    foja    = params[:foja]
 
+    pdf = Prawn::Document.new(:page_layout=>:landscape)
+
+    pdf.font_families.update("English" => {
+      :bold        => "#{@r_root}/private/fonts/English_.ttf",
+      :italic      => "#{@r_root}/private/fonts/English_.ttf",
+      :bold_italic => "#{@r_root}/private/fonts/English_.ttf",
+      :normal      => "#{@r_root}/private/fonts/English_.ttf"
+    })
+
+    pdf.font "English"
+
+    x    = 40  
+    y    = 400
+    size = 28
+    w    = 100
+    h    = 27
+
+    pdf.stroke_axis
+
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box "Otorga a:", :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    #pdf.text t.student.full_name
+    
+    if t.student.program.level.to_i.eql? 2
+      program_title = /Doctorado/
+      if t.student.gender.eql? "F"
+        student_title = "Doctora"
+      else
+        student_title = "Doctor"
+      end
+    else
+       program_title = /Maestr.a/
+       if t.student.gender.eql? "F"
+         student_title = "Maestra"
+       else
+         student_title = "Maestro"
+       end
+    end
+
+=begin
+    pdf.text "El grado de:"
+    pdf.text t.student.program.name.gsub(program_title,student_title)
+
+    pdf.text "Por haber cumplido los estudios requeridos conforme a los Planes y Programas vigentes, según las constancias que obran en los archivos de esta institución y por haber aprobado el examen de grado reglamentario el día 23 de Enero de 2012"
+
+    diax = t.defence_date.day.to_s
+    mesx = get_month_name(t.defence_date.month).capitalize
+    aniox = t.defence_date.year.to_s
+
+    pdf.text "Chihuahua, Chih., a #{diax} de #{mesx} de #{aniox}"
+
+    pdf.text "Dr. Juan Méndez Nonell"
+    pdf.text "Director General"
+=end
+ 
+    send_data pdf.render, type: "application/pdf", disposition: "inline"
+=begin
+    time = Time.new
     t = Thesis.find(params[:thesis_id])
     libro = params[:libro]
     foja  = params[:foja]
@@ -1904,7 +1968,6 @@ class StudentsController < ApplicationController
        end
     end
 
-
     filename = xml_destino.to_s
     substring filename,/alumnox/,t.student.full_name
     substring filename,/gradox/,t.student.program.name.gsub(program_title,student_title)
@@ -1927,6 +1990,7 @@ class StudentsController < ApplicationController
 
     send_data(zip_data, :filename => documento_xml.to_s , :type => "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     return
+=end
   end
 
   def substring(filename,regexp,replacestring)
