@@ -1806,10 +1806,10 @@ class StudentsController < ApplicationController
     pdf.font "English"
     pdf.fill_color "373435"
 
-    pdf.stroke_ellipse [90,280],65,100
-    pdf.text_box "Fotografía del Alumno\n Tamaño Título", :at=>[48,295], :size=>11, :width=>90,:height=>40, :align=>:center, :valign=>:center
+    pdf.stroke_ellipse [72,305],69,103
+    pdf.text_box "Fotografía del Alumno\n Tamaño Título", :at=>[35,317], :size=>11, :width=>90,:height=>40, :align=>:center, :valign=>:center
 
-    x_right_top = 700
+    x_right_top = 709 #700
 
     if t.student.program.level.to_i.eql? 2
       program_title = /Doctorado/
@@ -1826,26 +1826,29 @@ class StudentsController < ApplicationController
          student_title = "Maestro"
        end
     end
-
+    
+    ## OTORGA
     size = 28
     w    = 100
-    y    = 400
+    y    = 407 #400
     h    = size
     x    = x_right_top - w
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box "Otorga a:", :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
 
+    ## NOMBRE DEL ALUMNO
     size = 36
     w = 500
-    y = 370
+    y = 377 #370
     h = size - 1
-    x = x_right_top - w
+    x = x_right_top - w + 8
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box t.student.full_name, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
 
+    ## EL GRADO DE
     size = 28
     w = 150
-    y = 332
+    y = 339 #332
     h = size - 1
     x = x_right_top - w
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
@@ -1854,13 +1857,13 @@ class StudentsController < ApplicationController
     ## TITLE
     size = 40
     w = 540
-    y = 302
+    y = 318 #302
     h = size - 1
     x = x_right_top - w
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     text = t.student.program.name.gsub(program_title,student_title)
     #text = "Maestro en Ciencias de la Comercialización de la Ciencia y la Tecnología"
-    #text = "Doctora en Ciencia y Tecnología Ambiental"
+    #text = "Maestro en Ciencia y Tecnología Ambiental"
     #text = text.size.to_s
     if text.size > 50
       size = 22
@@ -1870,27 +1873,26 @@ class StudentsController < ApplicationController
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:center
     
     size = 25
-    w = 470
-    y = 260
+    w = 480 #470
+    y = 274 #260
     h = size * 6
     x = x_right_top - w
-    text = "Por haber cumplido los estudios requeridos conforme a los Planes y Programas vigentes, según constancias\n que obran en los archivos de esta institución\n y por haber aprobado el examen de grado reglamentario el día 23 de Enero de 2012"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
  
     text = "Por haber cumplido los estudios requeridos conforme a"
-    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.45
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.65#0.45
     
     y = y - 28
     text = "los Planes y Programas vigentes, según constancias"
-    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.85
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 1.1 #0.85
     
     y = y - 28
     text = "que obran en los archivos de esta institución"
-    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 2.56
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 2.8 #2.56
 
     y = y - 28
     text = "y por haber aprobado el exámen de grado reglamentario"
-    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.18
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.45 #0.18
 
     y = y - 28
     diax  = t.defence_date.day.to_s
@@ -1898,38 +1900,38 @@ class StudentsController < ApplicationController
     aniox = t.defence_date.year.to_s
 
     if mesx.size.eql? 4
-      char_space = 10.1
+      char_space = 9.55
       if diax.size.eql? 1
         char_space = char_space + 0.75
       end
     elsif mesx.size.eql? 5
-      char_space = 9.5 #9.8
+      char_space = 9 #9.8
       if diax.size.eql? 1
         char_space = char_space + 0.8
       end
     elsif mesx.size.eql? 6
-      char_space = 8.8
+      char_space = 8.4
       if diax.size.eql? 1
         char_space = char_space + 0.7
       end
     elsif mesx.size.eql? 7
-      char_space = 8.3
+      char_space = 7.8
       if diax.size.eql? 1
         char_space = char_space + 0.7
       end
     elsif mesx.size.eql? 9 
-      char_space = 7.05
+      char_space = 6.7
       if diax.size.eql? 1
         char_space = char_space + 0.6
       end
     elsif mesx.size.eql? 10
-      char_space = 6.5
+      char_space = 6.2
       if diax.size.eql? 1
         char_space = char_space + 0.5
       end
     end
 
-    text = "el día #{diax} de #{mesx} de #{aniox}"
+    text = "el día #{diax} de #{mesx} de #{aniox}."
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => char_space
 
     ## FECHA
@@ -1939,28 +1941,29 @@ class StudentsController < ApplicationController
 
     size = 22
     x = 8
-    y = 50
+    y = 40 #50
     h = size
     w = 400
     text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:left, :valign=>:top
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:left, :valign=>:top, :character_spacing => - 0.4
 
     ## FIRMA
     size = 22
     w = 277
     h = size
-    y = 50
-    x = x_right_top - w
+    y = 38 #50
+    x = x_right_top - w - 37
     text = "Dr. Juan Méndez Nonell"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
     
-    size = 20
+    ## TITLE
+    #size = 20
     w    = 277
     h    = size
-    y    = 27
-    x    = x_right_top - w
+    y    = y - 27 #27
+    x    = x_right_top - w - 37
     text = "Director General" 
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
