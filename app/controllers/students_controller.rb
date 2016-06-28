@@ -1862,9 +1862,6 @@ class StudentsController < ApplicationController
     x = x_right_top - w
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     text = t.student.program.name.gsub(program_title,student_title)
-    #text = "Maestro en Ciencias de la Comercialización de la Ciencia y la Tecnología"
-    #text = "Maestro en Ciencia y Tecnología Ambiental"
-    #text = text.size.to_s
     if text.size > 50
       size = 22
     elsif text.size > 34
@@ -1900,12 +1897,12 @@ class StudentsController < ApplicationController
     aniox = t.defence_date.year.to_s
 
     if mesx.size.eql? 4
-      char_space = 9.55
+      char_space = 9.9
       if diax.size.eql? 1
-        char_space = char_space + 0.75
+        char_space = char_space + 0.85
       end
     elsif mesx.size.eql? 5
-      char_space = 9 #9.8
+      char_space = 9.3 #9.8
       if diax.size.eql? 1
         char_space = char_space + 0.8
       end
@@ -1953,7 +1950,7 @@ class StudentsController < ApplicationController
     w = 277
     h = size
     y = 38 #50
-    x = x_right_top - w - 37
+    x = x_right_top - w - 40
     text = "Dr. Juan Méndez Nonell"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
@@ -1963,13 +1960,76 @@ class StudentsController < ApplicationController
     w    = 277
     h    = size
     y    = y - 27 #27
-    x    = x_right_top - w - 37
+    x    = x_right_top - w - 38
     text = "Director General" 
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
 
+    pdf.start_new_page
+
+    x_right_top = 709
+
+    ## TEXTO
+    size = 16
+    w    = 400
+    h    = size * 2 + 5
+    y    = 500
+    x    = x_right_top - w
+    text = "El presente Grado\nFue expedido a favor de:"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    ## NOMBRE ALUMNO
+    size = 36
+    w    = 500
+    y    = 450
+    x    = x_right_top - w
+    text = t.student.full_name
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    ## TEXTO
+    size = 16
+    w    = 200
+    y    = 410
+    x    = x_right_top - w
+    text = "Quien cursó los estudios de:"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    ## TITLE
+    size = 22
+    w    = 550
+    y    = 380
+    x    = x_right_top - w
+    text = t.student.program.name.gsub(program_title,student_title)
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    
+    ## TEXTO
+    size = 16
+    w    = 200
+    y    = 350
+    x    = x_right_top - w
+    text = "Y aprobó mediante Tesis"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    
+    ## FECHA
+    size = 16
+    w    = 600
+    y    = 330
+    x    = x_right_top - w
+    text = "El día #{diax} de #{mesx} de #{aniox} quedó registrado en el libro No #{libro} Foja No. #{foja}"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+   
+    ## FIRMA
+    size = 16
+    w    = 400
+    y    = 200
+    x    = x_right_top - w
+    text = "Coordinación de Estudios de Posgrado\nM.H. Carmen Nicté Ortiz Villanueva"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+     
+
+
     send_data pdf.render, type: "application/pdf", disposition: "inline"
-  end
+  end ## def diploma
 
   def substring(filename,regexp,replacestring)
     text = File.read(filename)
