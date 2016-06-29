@@ -1423,7 +1423,7 @@ class StudentsController < ApplicationController
     end
 
     # RENDER
-    send_data pdf.render, type: "application/pdf", disposition: "inline"
+    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{folio}-#{foja}.pdf"
   end
 
   def total_studies_certificate
@@ -1967,13 +1967,13 @@ class StudentsController < ApplicationController
 
     pdf.start_new_page
 
-    x_right_top = 709
+    x_right_top = 715
 
     ## TEXTO
-    size = 16
+    size = 22
     w    = 400
     h    = size * 2 + 5
-    y    = 500
+    y    = 525
     x    = x_right_top - w
     text = "El presente Grado\nFue expedido a favor de:"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
@@ -1981,52 +1981,62 @@ class StudentsController < ApplicationController
     ## NOMBRE ALUMNO
     size = 36
     w    = 500
-    y    = 450
+    y    = 475
     x    = x_right_top - w
     text = t.student.full_name
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
 
     ## TEXTO
-    size = 16
+    size = 22
     w    = 200
-    y    = 410
+    y    = 437
     x    = x_right_top - w
     text = "Quien cursó los estudios de:"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
 
-    ## TITLE
-    size = 22
+    ## GRADE/TITLE
+    size = 28
     w    = 550
-    y    = 380
+    y    = 412
     x    = x_right_top - w
     text = t.student.program.name.gsub(program_title,student_title)
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
     
     ## TEXTO
-    size = 16
+    size = 22
     w    = 200
-    y    = 350
+    y    = 382
     x    = x_right_top - w
     text = "Y aprobó mediante Tesis"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
     
-    ## FECHA
-    size = 16
+    ## LIBRO Y FOJA
+    size = 22
     w    = 600
-    y    = 330
+    y    = 358
     x    = x_right_top - w
     text = "El día #{diax} de #{mesx} de #{aniox} quedó registrado en el libro No #{libro} Foja No. #{foja}"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    
+    ## FECHA
+    size = 22
+    y    = 334
+    h    = size
+    w    = 403
+    x    = x_right_top - w
+    text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
    
     ## FIRMA
-    size = 16
+    size = 22
     w    = 400
-    y    = 200
-    x    = x_right_top - w
+    y    = 212
+    h    = 45
+    x    = x_right_top - w - 2
     text = "Coordinación de Estudios de Posgrado\nM.H. Carmen Nicté Ortiz Villanueva"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
-
 
     send_data pdf.render, type: "application/pdf", disposition: "inline"
   end ## def diploma
