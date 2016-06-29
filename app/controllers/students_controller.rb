@@ -1,4 +1,4 @@
-  # coding: utf-8
+# coding: utf-8
 require 'digest/md5'
 class StudentsController < ApplicationController
   REALM = "Students"
@@ -1132,380 +1132,303 @@ class StudentsController < ApplicationController
     @examiner5 = Staff.find(@thesis.examiner5) rescue nil
 
     filename = "#{@r_root}/private/prawn_templates/acta_de_grado.pdf"
-    Prawn::Document.generate("full_template.pdf", :template => filename) do |pdf|
-      pdf.font_families.update("Arial" => {
-        :bold        => "#{@r_root}/private/fonts/arial/arialbd.ttf",
-        :italic      => "#{@r_root}/private/fonts/arial/ariali.ttf",
-        :bold_italic => "#{@r_root}/private/fonts/arial/arialbi.ttf",
-        :normal      => "#{@r_root}/private/fonts/arial/arial.ttf"
-      })
+    pdf = Prawn::Document.new(:page_size=>"LETTER",:page_layout=>:portrait,:margin=>[13,15,15,15])
+    pdf.font_families.update("Arial" => {
+      :bold        => "#{@r_root}/private/fonts/arial/arialbd.ttf",
+      :italic      => "#{@r_root}/private/fonts/arial/ariali.ttf",
+      :bold_italic => "#{@r_root}/private/fonts/arial/arialbi.ttf",
+      :normal      => "#{@r_root}/private/fonts/arial/arial.ttf"
+    })
 
-      pdf.font "Arial"
+    pdf.font "Arial"
+    pdf.fill_color "373435"
+    #pdf.stroke_bounds
+    # pdf.stroke_axi
+    x = 93
+    y = 467
+    w = 72
+    h = 104
+    pdf.stroke_ellipse [x,y],w,h
+    x2 = x - w/2
+    y2 = y + h/2
+    size = 8
+    pdf.text_box "Fotografía\n Tamaño Título", :at=>[x2,y2], :size=>size, :width=>75,:height=>90, :align=>:center, :valign=>:center
+    # TITLE
+    x = 0
+    y = 690
+    size = 14
+    pdf.text_box "Acta de Examen de Grado",:at=>[x,y],:style=>:bold, :align=>:center,:size=>size
+    # SET HOUR AND DAY
+    @hora = "%02d:%02d horas, del día %2d" % [@thesis.defence_date.hour,@thesis.defence_date.min,@thesis.defence_date.day]
+    x = 230   #388
+    y = 676  #629
+    w = 310   #150
+    h = 40    #11
+    size = 12 #10
 
-      # SET HOUR AND DAY
-      @hora = "%02d:%02d HORAS DEL DÍA %2d" % [@thesis.defence_date.hour,@thesis.defence_date.min,@thesis.defence_date.day]
-      x = 240   #388
-      y = 631   #629
-      w = 290   #150
-      h = 35    #11
-      size = 10 #10
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-
-      # SET MONTH AND YEAR
-      month = get_month_name(@thesis.defence_date.month)
-      year = @thesis.defence_date.year
-      space1 = ""
-      space2 = ""
-      space3 = ""
-      space4 = ""
-      space5 = ""
-      space6 = ""
-      space7 = ""
-      if month.size.eql? 9
-        space1=" "
-        space2=" "
-        space5=" "
-      elsif month.size.eql? 7
-        space1=" "
-        space2=" "
-        space3=" "
-        space4=" "
-        space5=" "
-      elsif month.size.eql? 6
-        space1=" "
-        space2=" "
-        space3=" "
-        space4=" "
-        space5=" "
-        space6=" "
-        space7=" "
-      elsif month.size<5
-        space1="  "
-        space2="  "
-        space3=" "
-        space4=" "
-        space5=" "
-        space6="  "
-        space7="  "
-      end
-
-      @m_y = "MES#{space1} DE#{space2} #{month.upcase}#{space3} DEL#{space4} #{year}.#{space5} SE#{space6} REUNIERON#{space7} LOS"
-      l = 0
-      pdf.bounding_box [x + 5,y - 2],:width => w + 10, :height=> h,:kerning=>true do
-        #pdf.stroke_bounds
-        pdf.text "EN CHIHUAHUA, CHIH., A LAS #{@hora}", :size=> size, :leading=>l,:character_spacing=>0.7
-        pdf.text @m_y, :size=> size, :leading=>l,:character_spacing=>0.8
-        pdf.text "MIEMBROS DEL JURADO INTEGRADO POR LOS SEÑORES:", :size=> size, :leading=>l, :character_spacing=>0.3
-      end
-
-      # SET  THESIS EXAMINERS
-      if (@level.to_i.eql? 1)||(@level.to_i.eql? 2)
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [246,586], 100, 11
-        pdf.fill_color "373435"
-        text = "#{@examiner1.title.to_s.mb_chars.upcase} #{@examiner1.full_name.mb_chars.upcase}"
-
-        pdf.draw_text text, :at=>[246,576], :size=>11
-
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [245,574], 100, 11
-        pdf.fill_color "373435"
-        text = "#{@examiner2.title.to_s.mb_chars.upcase} #{@examiner2.full_name.mb_chars.upcase}"
-
-        pdf.draw_text text, :at=>[246,564], :size=>11
-
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [245,562], 100, 11
-        pdf.fill_color "373435"
-        text = "#{@examiner3.title.to_s.mb_chars.upcase} #{@examiner3.full_name.mb_chars.upcase}"
-
-        pdf.draw_text text, :at=>[246,552], :size=>11
-      end
-
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [245,550], 100, 11
-        pdf.fill_color "373435"
-        text = ""
-        if @level.to_i.eql? 2
-          text = "#{@examiner4.title.to_s.mb_chars.upcase} #{@examiner4.full_name.mb_chars.upcase}"
-        end
-
-        pdf.draw_text text.upcase, :at=>[246,540], :size=>11
-
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [245,538], 100, 11
-        pdf.fill_color "373435"
-        if @level.to_i.eql? 2
-          text = "#{@examiner5.title.to_s.mb_chars.upcase} #{@examiner5.full_name.mb_chars.upcase}"
-        end
-
-        pdf.draw_text text.upcase, :at=>[246,528], :size=>11
-
-      ##  SET TEXT
-      x = 150
-      y = 520
-      w = 400
-      h = 30
-
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      l = 0
-      if @level.to_i.eql? 1
-        y = y + 10
-      elsif @level.to_i.eql? 2
-        y = y - 5
-      end
-      pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
-        #pdf.stroke_bounds
-        pdf.text "BAJO LA PRESIDENCIA DEL PRIMERO Y CON EL CARÁCTER DE SECRETARIO", :size=> size, :align=> :center, :leading=>l,:character_spacing=>0.4
-        pdf.text "EL ÚLTIMO, PARA PROCEDER A EFECTUAR LA EVALUACIÓN DE LA TESIS", :size=> size, :align=> :center, :leading=>l,:character_spacing=>0.4
-      end
-      ## SET THESIS TITLE
-      x = 155
-      y = 490
-      w = 400
-      h = 40
-      size  = 14
-      text = @thesis.title
-      text = "\"#{text}\""
-
-      if text.size >= 110 && text.size <= 165
-        size = 12
-      elsif text.size > 165 && text.size <= 220
-        size = 10
-      elsif text.size > 220
-        size = 9
-      end
-
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      if @level.to_i.eql? 1
-        y = y + 10
-      end
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=>:bold, :align=> :center, :valign=> :center
-
-      # SET STUDENT NAME
-      x = 150
-      y = 384
-      w = 390
-      h = 30
-      size = 18
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      text = @thesis.student.full_name.mb_chars.upcase
-
-      if text.size >= 40
-        size = 16
-      end
-
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=>:bold, :align=> :center, :valign=> :center
-
-
-      # SET GRADE
-      x = 150
-      y = 450
-      w = 400
-      h = 55
-      size = 12
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      grado = @thesis.student.program.name.mb_chars.upcase
-      pdf.bounding_box [x+5,y-5],:width => w + 10, :height=> h do
-        #pdf.stroke_bounds
-        first_word = ""
-        rest_of_words = ""
-        a = grado.split(/ /)
-        a.each_with_index do |g,i|
-          if grado.size>55
-            if i<=2
-              first_word = "#{first_word} #{g}"
-            else
-              rest_of_words = "#{rest_of_words} #{g}"
-            end
-          else
-            if i.eql? 0
-              first_word = g
-            else
-              rest_of_words = "#{rest_of_words} #{g}"
-            end
-          end
-        end
-
-
-        pdf.text "PARA OBTENER EL GRADO DE #{first_word}", :size=> size, :align=> :center
-        pdf.text "#{rest_of_words}", :size=> size, :align=> :center
-        pdf.text "HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS", :size=> size, :align=> :center
-        pdf.text "EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:", :size=> size, :align=> :center
-      end
-      #text = "PARA OBTENER EL GRADO DE #{grado} HABIÉNDOSE CUBIERTO LOS REQUISITOS ESTABLECIDOS EN EL PLAN DE ESTUDIOS VIGENTE, QUE SUSTENTA:"
-
-      #pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-
-      # SET PRESIDENT
-      x = 5
-      y = 225
-      w = 225
-      h = 15
-      size = 10
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      text = "#{@examiner1.title.to_s.mb_chars.upcase} #{@examiner1.full_name.mb_chars.upcase}"
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-
-      # SET SECRETARY
-      x = 307
-      y = 225
-      w = 225
-      h = 15
-      size = 10
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      pdf.fill_color "373435"
-      if  @level.to_i.eql? 1
-        text = "#{@examiner3.title.to_s.mb_chars.upcase} #{@examiner3.full_name.mb_chars.upcase}"
-      elsif @level.to_i.eql? 2
-        text = "#{@examiner5.title.to_s.mb_chars.upcase} #{@examiner5.full_name.mb_chars.upcase}"
-      end
-      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-
-      # SET  THIRD VOCAL
-      if @level.to_i.eql? 1
-        x = 153
-        y = 135
-        w = 225
-        h =  70
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-      elsif @level.to_i.eql? 2
-        x = 153
-        y = 115
-        w = 225
-        h = 15
-        size = 10
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-        pdf.fill_color "373435"
-        text = "#{@examiner4.title.to_s.mb_chars.upcase} #{@examiner4.full_name.mb_chars.upcase}"
-        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      end
-
-      # SET SECOND VOCAL
-      if @level.to_i.eql? 1
-        x = 307
-        y = 168
-        w = 225
-        h = 115
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-      elsif  @level.to_i.eql? 2
-        x = 307
-        y = 158
-        w = 225
-        h = 15
-        size = 10
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-        pdf.fill_color "373435"
-        text = "#{@examiner3.title.to_s.mb_chars.upcase} #{@examiner3.full_name.mb_chars.upcase}"
-        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      end
-
-      # SET FIRST VOCAL
-      if @level.to_i.eql? 1
-        x = 5
-        y = 170
-        w = 225
-        h = 70
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-        x = 155
-        y = 154
-        w = 225
-        h = 15
-        size = 10
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-        pdf.fill_color "373435"
-        # line
-        pdf.stroke_color= "000000"
-        pdf.line_width= 0.3
-        pdf.stroke_line [205,y + 6],[328,y + 6]
-        # text
-        text = "#{@examiner2.title.to_s.mb_chars.upcase} #{@examiner2.full_name.mb_chars.upcase}"
-        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
-        text = "1er VOCAL"
-        pdf.text_box text , :at=>[x,y - 13], :width => w, :height=> h, :size=>12, :align=> :center, :valign=> :top
-      elsif @level.to_i.eql? 2
-        x = 5
-        y = 158
-        w = 225
-        h = 15
-        size = 10
-        pdf.fill_color "ffffff"
-        pdf.fill_rectangle [x,y], w, h
-        pdf.fill_color "373435"
-        text = "#{@examiner2.title.to_s.mb_chars.upcase} #{@examiner2.full_name.mb_chars.upcase}"
-        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      end
-
-      # SET Vo. Bo.
-      size = 11
-      if @level.to_i.eql? 1
-        x = 226
-        y = 130
-        w = 80
-        h = 40
-      elsif @level.to_i.eql? 2
-        x = 226
-        y = 100
-        w = 80
-        h = 40
-      end
-      if params[:sign]
-        pdf.text_box "Vo. Bo." , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
-      end
-
-      # SET CIMAV DIRECTOR
-      x = 154
-      y = 40
-      w = 225
-      h = 30
-      pdf.fill_color "ffffff"
-      pdf.fill_rectangle [x,y], w, h
-      # delete previous line
-      x_l = 154
-      y_l = 46
-      w_l = 225
-      h_l = 2
-      pdf.fill_rectangle [x_l,y_l], w_l, h_l
-      pdf.fill_color "373435"
-      if params[:sign]
-        # set line
-        x2 = x + 20
-        pdf.stroke_color= "000000"
-        pdf.line_width= 0.3
-        pdf.stroke_line [x2,y + 6],[x2+183,y + 6]
-        # text
-        dir = t(:directory)
-        title = dir[:general_director][:title].mb_chars.upcase
-        name  = dir[:general_director][:name].mb_chars.upcase
-        job   = dir[:general_director][:job].mb_chars.upcase
-        text = "#{title} #{name}"
-        pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
-        text = "#{job}"
-        pdf.text_box text , :at=>[x,y - 13], :width => w, :height=> h, :size=>12, :align=> :center, :valign=> :top
-      end
-      # RENDER
-      send_data pdf.render, type: "application/pdf", disposition: "inline"
+    # SET MONTH AND YEAR
+    month = get_month_name(@thesis.defence_date.month)
+    year = @thesis.defence_date.year
+    if month.size.eql? 9
+      space5=" "
+    elsif month.size.eql? 7
+      space5=" "
+    elsif month.size.eql? 6
+      space7=" "
+    elsif month.size<5
+      space7="  "
     end
-  end
+
+    l = 0
+    pdf.bounding_box [x + 5,y - 2],:width => w + 10, :height=> h,:kerning=>true do
+      #pdf.stroke_bounds
+      pdf.text "En Chihuahua,Chih., a las #{@hora}", :size=> size, :leading=>l,:character_spacing=>0.1
+      @m_y = "del mes #{month} de #{year}. Se reunieron los"
+      pdf.text @m_y, :size=> size, :leading=>l,:character_spacing=>1.1
+      pdf.text "miembros del jurado integrado por los señores(as):", :size=> size, :leading=>l, :character_spacing=>0.0
+    end
+
+    # SET  THESIS EXAMINERS
+    x = 235
+    y = 618
+    size = 12
+    if (@level.to_i.eql? 1)||(@level.to_i.eql? 2)
+      text = "#{@examiner1.title.to_s.mb_chars} #{@examiner1.full_name.mb_chars}"
+      pdf.draw_text text, :at=>[x,y], :size=>size
+
+      y = y - 12
+      text = "#{@examiner2.title.to_s.mb_chars} #{@examiner2.full_name.mb_chars}"
+      pdf.draw_text text, :at=>[x,y], :size=>size
+
+      y = y - 12
+      text = "#{@examiner3.title.to_s.mb_chars} #{@examiner3.full_name.mb_chars}"
+      pdf.draw_text text, :at=>[x,y], :size=>size
+    end
+
+    text = ""
+    if @level.to_i.eql? 2
+      text = "#{@examiner4.title.to_s.mb_chars} #{@examiner4.full_name.mb_chars}"
+    end
+
+    y = y - 12
+    pdf.draw_text text, :at=>[x,y], :size=>size
+
+    if @level.to_i.eql? 2
+      text = "#{@examiner5.title.to_s.mb_chars} #{@examiner5.full_name.mb_chars}"
+    end
+
+    y = y - 12
+    pdf.draw_text text, :at=>[x,y], :size=>size
+
+    ##  SET TEXT
+    x = 235
+    y = y - 5
+    w = 380
+    h = 30
+
+    l = 0
+    if @level.to_i.eql? 1
+      y = y + 17
+    elsif @level.to_i.eql? 2
+      y = y - 5
+    end
+
+    pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
+      #pdf.stroke_bounds
+      text = "Bajo la presidencia del primero y con carácter de secretario\nel último, para proceder a efectuar la evaluación de la tesis:"
+      pdf.text text, :size=> size, :align=> :left, :leading=>l,:character_spacing=>0.0
+    end
+ 
+    ## SET THESIS TITLE
+    x = 180
+    y = y - 30
+    w = 400
+    h = 40
+    size  = 14
+    text = @thesis.title
+    text = "\"#{text}\""
+
+    if text.size >= 110 && text.size <= 165
+      size = 12
+    elsif text.size > 165 && text.size <= 220
+      size = 10
+    elsif text.size > 220
+      size = 9
+    end
+
+    if @level.to_i.eql? 1
+      y = y + 5
+    end
+    pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+
+    x = x + 20
+    y = y - 47
+    size = 12
+    grado = @thesis.student.program.name.mb_chars
+    first_word = ""
+    rest_of_words = ""
+    a = grado.split(/ /)
+    a.each_with_index do |g,i|
+      if grado.size>55
+        if i<=2
+          first_word = "#{first_word} #{g}"
+        else
+          rest_of_words = "#{rest_of_words} #{g}"
+        end
+      else
+        if i.eql? 0
+          first_word = g
+        else
+          rest_of_words = "#{rest_of_words} #{g}"
+        end
+      end
+    end
+    pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
+      pdf.text "Una vez cubiertos los requisitos establecidos en el plan \nde estudios vigente, para obtener el grado de\n #{first_word}#{rest_of_words}, que sustenta:", :size=> size, :align=> :center
+    end
+  
+    ## STUDENT NAME
+    student_name = @thesis.student.full_name.mb_chars
+    x = 200
+    y = y - 45
+    w = 395
+    h = 16
+    s_size = 17
+    if student_name.size >= 40
+      s_size = 16
+    end
+    @rectangles = false
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box student_name, :at=>[x,y], :width=>w, :height=>h, :size=>s_size, :align=> :center, :valign=> :center, :style=>:bold
+    
+    ## MORE TEXT
+    x = 200
+    y = y - 30
+    w = 400
+    h = 40
+    size = 12
+    pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
+      pdf.text "Los miembros del jurado examinaron al sustentante y\n después de deliberar reservada y libremente entre sí,\n resolvieron declararlo(a)", :size=> size, :align=> :center
+    end
+    
+    ## MORE MORE TEXT
+    x = 200
+    y = y - 50
+    w = 400
+    h = 40
+    size = 12
+    pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
+      pdf.text "\n El secretario informó al sustentante del resultado\ny el presidente procedió a tomar la protesta de ley.", :size=> size, :align=> :center
+    end
+
+    # SET PRESIDENT SIGN
+    x    = 5
+    y    = 255
+    w    = 225
+    h    = 30
+    size = 12
+    text = "#{@examiner1.title.to_s.mb_chars} #{@examiner1.full_name.mb_chars}\nPresidente"
+    pdf.line_width = 0.1
+    pdf.stroke_horizontal_line 45,190,:at=>257 
+    pdf.text_box text, :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+
+    #SET SECRETARY SIGN
+    x = 317
+    y = 255
+    w = 225
+    h = 30
+    if  @level.to_i.eql? 1
+      text = "#{@examiner3.title.to_s.mb_chars} #{@examiner3.full_name.mb_chars}\nSecretario"
+    elsif @level.to_i.eql? 2
+      text = "#{@examiner5.title.to_s.mb_chars} #{@examiner5.full_name.mb_chars}\nSecretario"
+    end
+    pdf.stroke_horizontal_line 357,502,:at=> 257
+    pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+
+    # SET  THIRD VOCAL
+    if @level.to_i.eql? 1 #Maestria
+      x = 153
+      y = 135
+      w = 225
+      h =  70
+    elsif @level.to_i.eql? 2 #Doctorado
+      x = 170
+      y = 140
+      w = 225
+      h = 30
+      text = "#{@examiner4.title.to_s.mb_chars} #{@examiner4.full_name.mb_chars}\n3er. Vocal"
+      pdf.stroke_horizontal_line 210,356,:at=> 141
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+    end
+    
+    # SET SECOND VOCAL
+    if @level.to_i.eql? 1 #Maestria
+      x = 307
+      y = 168
+      w = 225
+      h = 115
+    elsif  @level.to_i.eql? 2 #Doctorado
+      x = 307
+      y = 182
+      w = 250
+      h = 30
+      text = "#{@examiner3.title.to_s.mb_chars} #{@examiner3.full_name.mb_chars}\n2do. Vocal"
+      pdf.stroke_horizontal_line 357,502,:at=>183
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+    end
+    
+    # SET FIRST VOCAL
+    if @level.to_i.eql? 1 #Maestria
+      x    = 170 
+      y    = 180
+      w    = 225
+      h    = 70
+      text = "#{@examiner2.title.to_s.mb_chars} #{@examiner2.full_name.mb_chars}\n1er. Vocal"
+      pdf.stroke_horizontal_line 210,356,:at=> 183
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
+    elsif @level.to_i.eql? 2 #Doctorado
+      x    = 5
+      y    = 182
+      w    = 225
+      h    = 30
+      text = "#{@examiner2.title.to_s.mb_chars} #{@examiner2.full_name.mb_chars}\n1er. Vocal"
+      pdf.stroke_horizontal_line 45,190,:at=>183
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+    end
+
+    # SET Vo. Bo.
+    if @level.to_i.eql? 1 ## Master
+      x = 202
+      y = 140
+      w = 160
+      h = 40
+    elsif @level.to_i.eql? 2 ## Doctor
+      x = 200
+      y = 110
+      w = 160
+      h = 40
+    end
+ 
+    if params[:sign]
+      pdf.text_box "Vo. Bo." , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+    end
+
+    # SET CIMAV DIRECTOR
+    if params[:sign]
+      x     = 202
+      y     = 37
+      dir   = t(:directory)
+      title = dir[:general_director][:title].mb_chars
+      name  = dir[:general_director][:name].mb_chars
+      job   = dir[:general_director][:job].mb_chars
+      text  = "#{title} #{name}\n#{job}"
+      pdf.stroke_horizontal_line 210,356,:at=>40
+      pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
+    end
+
+    # RENDER
+    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "constancia-grado-#{@thesis.student.id}.pdf"
+  end ## def grade_certificates
 
   def total_studies_certificate
     @r_root    = Rails.root.to_s
@@ -1868,29 +1791,29 @@ class StudentsController < ApplicationController
 
 
   def diploma
-    time = Time.new
+    @r_root = Rails.root.to_s
+    time    = Time.new
+    t       = Thesis.find(params[:thesis_id])
+    libro   = params[:libro]
+    foja    = params[:foja]
+    @rectangles = false
 
-    t = Thesis.find(params[:thesis_id])
-    libro = params[:libro]
-    foja  = params[:foja]
+    pdf = Prawn::Document.new(:page_size=>"LETTER",:page_layout=>:landscape)
 
-    diploma          = "diploma-#{libro}-#{foja}.docx"
-    documento_xml    = "documento-#{libro}-#{foja}.docx"
+    pdf.font_families.update("English" => {
+      :bold        => "#{@r_root}/private/fonts/English_.ttf",
+      :italic      => "#{@r_root}/private/fonts/English_.ttf",
+      :bold_italic => "#{@r_root}/private/fonts/English_.ttf",
+      :normal      => "#{@r_root}/private/fonts/English_.ttf"
+    })
 
-    ruta_template = Rails.root.join('private','docx','diploma-template.docx')
-    ruta_destino = Rails.root.join('tmp',diploma)
+    pdf.font "English"
+    pdf.fill_color "373435"
 
-    xml_template = Rails.root.join('private','docx','document-template.xml')
-    xml_destino = Rails.root.join('tmp',documento_xml)
+    pdf.stroke_ellipse [72,305],69,103
+    pdf.text_box "Fotografía del Alumno\n Tamaño Título", :at=>[35,317], :size=>11, :width=>90,:height=>40, :align=>:center, :valign=>:center
 
-    $stdout.binmode
-
-    logger.debug ruta_template.to_s
-    logger.debug ruta_destino.to_s
-
-
-    FileUtils.cp ruta_template.to_s,ruta_destino.to_s
-    FileUtils.cp xml_template.to_s,xml_destino.to_s
+    x_right_top = 709 #700
 
     if t.student.program.level.to_i.eql? 2
       program_title = /Doctorado/
@@ -1907,31 +1830,220 @@ class StudentsController < ApplicationController
          student_title = "Maestro"
        end
     end
+    
+    ## OTORGA
+    size = 28
+    w    = 100
+    y    = 407 #400
+    h    = size
+    x    = x_right_top - w
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box "Otorga a:", :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
 
+    ## NOMBRE DEL ALUMNO
+    size = 36
+    w = 500
+    y = 377 #370
+    h = size - 1
+    x = x_right_top - w + 8
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box t.student.full_name, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
 
-    filename = xml_destino.to_s
-    substring filename,/alumnox/,t.student.full_name
-    substring filename,/gradox/,t.student.program.name.gsub(program_title,student_title)
-    substring filename,/gradoy/,t.student.program.name
-    substring filename,/diax/,t.defence_date.day.to_s
-    substring filename,/mesx/,get_month_name(t.defence_date.month).capitalize
-    substring filename,/aniox/,t.defence_date.year.to_s
-    substring filename,/diay/,time.day.to_s
-    substring filename,/mesy/,get_month_name(time.month).capitalize
-    substring filename,/anyoy/,time.year.to_s
-    substring filename,/librox/,libro.to_s
-    substring filename,/fojax/,foja.to_s
-    bar_txt = open(filename)
+    ## EL GRADO DE
+    size = 28
+    w = 150
+    y = 339 #332
+    h = size - 1
+    x = x_right_top - w
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box "El grado de:", :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
 
-    Zip::Archive.open(ruta_destino.to_s) do |ar|
-      ar.replace_io("word/document.xml", bar_txt)
+    ## TITLE
+    size = 40
+    w = 540
+    y = 318 #302
+    h = size - 1
+    x = x_right_top - w
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    text = t.student.program.name.gsub(program_title,student_title)
+    if text.size > 50
+      size = 22
+    elsif text.size > 34
+      size = 35
+    end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:center
+    
+    size = 25
+    w = 480 #470
+    y = 274 #260
+    h = size * 6
+    x = x_right_top - w
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+ 
+    text = "Por haber cumplido los estudios requeridos conforme a"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.65#0.45
+    
+    y = y - 28
+    text = "los Planes y Programas vigentes, según constancias"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 1.1 #0.85
+    
+    y = y - 28
+    text = "que obran en los archivos de esta institución"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 2.8 #2.56
+
+    y = y - 28
+    text = "y por haber aprobado el exámen de grado reglamentario"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.45 #0.18
+
+    y = y - 28
+    diax  = t.defence_date.day.to_s
+    mesx  = get_month_name(t.defence_date.month).capitalize
+    aniox = t.defence_date.year.to_s
+
+    if mesx.size.eql? 4
+      char_space = 9.9
+      if diax.size.eql? 1
+        char_space = char_space + 0.85
+      end
+    elsif mesx.size.eql? 5
+      char_space = 9.3 #9.8
+      if diax.size.eql? 1
+        char_space = char_space + 0.8
+      end
+    elsif mesx.size.eql? 6
+      char_space = 8.4
+      if diax.size.eql? 1
+        char_space = char_space + 0.7
+      end
+    elsif mesx.size.eql? 7
+      char_space = 7.8
+      if diax.size.eql? 1
+        char_space = char_space + 0.7
+      end
+    elsif mesx.size.eql? 9 
+      char_space = 6.7
+      if diax.size.eql? 1
+        char_space = char_space + 0.6
+      end
+    elsif mesx.size.eql? 10
+      char_space = 6.2
+      if diax.size.eql? 1
+        char_space = char_space + 0.5
+      end
     end
 
-    zip_data = File.read(ruta_destino.to_s)
+    text = "el día #{diax} de #{mesx} de #{aniox}."
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => char_space
 
-    send_data(zip_data, :filename => documento_xml.to_s , :type => "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    return
-  end
+    ## FECHA
+    diay  = time.day.to_s
+    mesy  = get_month_name(time.month).capitalize
+    anioy = time.year.to_s
+
+    size = 22
+    x = 8
+    y = 40 #50
+    h = size
+    w = 400
+    text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:left, :valign=>:top, :character_spacing => - 0.4
+
+    ## FIRMA
+    size = 22
+    w = 277
+    h = size
+    y = 38 #50
+    x = x_right_top - w - 40
+    text = "Dr. Juan Méndez Nonell"
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
+    
+    ## TITLE
+    #size = 20
+    w    = 277
+    h    = size
+    y    = y - 27 #27
+    x    = x_right_top - w - 38
+    text = "Director General" 
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
+
+    pdf.start_new_page
+
+    x_right_top = 715
+
+    ## TEXTO
+    size = 22
+    w    = 400
+    h    = size * 2 + 5
+    y    = 525
+    x    = x_right_top - w
+    text = "El presente Grado\nFue expedido a favor de:"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    ## NOMBRE ALUMNO
+    size = 36
+    w    = 500
+    y    = 475
+    x    = x_right_top - w
+    text = t.student.full_name
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    ## TEXTO
+    size = 22
+    w    = 200
+    y    = 437
+    x    = x_right_top - w
+    text = "Quien cursó los estudios de:"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+    ## GRADE/TITLE
+    size = 28
+    w    = 550
+    y    = 412
+    x    = x_right_top - w
+    text = t.student.program.name.gsub(program_title,student_title)
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    
+    ## TEXTO
+    size = 22
+    w    = 200
+    y    = 382
+    x    = x_right_top - w
+    text = "Y aprobó mediante Tesis"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    
+    ## LIBRO Y FOJA
+    size = 22
+    w    = 600
+    y    = 358
+    x    = x_right_top - w
+    text = "El día #{diax} de #{mesx} de #{aniox} quedó registrado en el libro No #{libro} Foja No. #{foja}"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    
+    ## FECHA
+    size = 22
+    y    = 334
+    h    = size
+    w    = 403
+    x    = x_right_top - w
+    text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
+    if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+   
+    ## FIRMA
+    size = 22
+    w    = 400
+    y    = 212
+    h    = 45
+    x    = x_right_top - w - 2
+    text = "Coordinación de Estudios de Posgrado\nM.H. Carmen Nicté Ortiz Villanueva"
+    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+     
+
+    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{folio}-#{foja}"
+  end ## def diploma
 
   def substring(filename,regexp,replacestring)
     text = File.read(filename)
