@@ -1128,7 +1128,7 @@ class StudentsController < ApplicationController
     @examiner5 = Staff.find(@thesis.examiner5) rescue nil
 
     filename = "#{@r_root}/private/prawn_templates/acta_de_grado.pdf"
-    pdf = Prawn::Document.new(:page_size=>"LETTER",:page_layout=>:portrait,:margin=>[15,15,15,15])
+    pdf = Prawn::Document.new(:page_size=>"LETTER",:page_layout=>:portrait,:margin=>[13,15,15,15])
     pdf.font_families.update("Arial" => {
       :bold        => "#{@r_root}/private/fonts/arial/arialbd.ttf",
       :italic      => "#{@r_root}/private/fonts/arial/ariali.ttf",
@@ -1137,12 +1137,13 @@ class StudentsController < ApplicationController
     })
 
     pdf.font "Arial"
+    pdf.fill_color "373435"
     #pdf.stroke_bounds
     # pdf.stroke_axi
-    x = 100
-    y = 460
-    w = 70
-    h = 100
+    x = 93
+    y = 467
+    w = 72
+    h = 104
     pdf.stroke_ellipse [x,y],w,h
     x2 = x - w/2
     y2 = y + h/2
@@ -1150,17 +1151,16 @@ class StudentsController < ApplicationController
     pdf.text_box "Fotografía\n Tamaño Título", :at=>[x2,y2], :size=>size, :width=>75,:height=>90, :align=>:center, :valign=>:center
     # TITLE
     x = 0
-    y = 678
+    y = 690
     size = 14
     pdf.text_box "Acta de Examen de Grado",:at=>[x,y],:style=>:bold, :align=>:center,:size=>size
     # SET HOUR AND DAY
     @hora = "%02d:%02d horas, del día %2d" % [@thesis.defence_date.hour,@thesis.defence_date.min,@thesis.defence_date.day]
     x = 230   #388
-    y = 662  #629
+    y = 676  #629
     w = 310   #150
     h = 40    #11
     size = 12 #10
-    pdf.fill_color "373435"
 
     # SET MONTH AND YEAR
     month = get_month_name(@thesis.defence_date.month)
@@ -1186,7 +1186,7 @@ class StudentsController < ApplicationController
 
     # SET  THESIS EXAMINERS
     x = 235
-    y = 604
+    y = 618
     size = 12
     if (@level.to_i.eql? 1)||(@level.to_i.eql? 2)
       text = "#{@examiner1.title.to_s.mb_chars} #{@examiner1.full_name.mb_chars}"
@@ -1258,7 +1258,7 @@ class StudentsController < ApplicationController
     pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
     x = x + 20
-    y = y - 45
+    y = y - 47
     size = 12
     grado = @thesis.student.program.name.mb_chars
     first_word = ""
@@ -1317,7 +1317,7 @@ class StudentsController < ApplicationController
       pdf.text "\n El secretario informó al sustentante del resultado\ny el presidente procedió a tomar la protesta de ley.", :size=> size, :align=> :center
     end
 
-    # SET PRESIDENT
+    # SET PRESIDENT SIGN
     x    = 5
     y    = 255
     w    = 225
@@ -1325,10 +1325,10 @@ class StudentsController < ApplicationController
     size = 12
     text = "#{@examiner1.title.to_s.mb_chars} #{@examiner1.full_name.mb_chars}\nPresidente"
     pdf.line_width = 0.1
-    pdf.stroke_horizontal_line x+40,x+w-40,:at=> y + 2
+    pdf.stroke_horizontal_line 45,190,:at=>257 
     pdf.text_box text, :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
-    #SET SECRETARY
+    #SET SECRETARY SIGN
     x = 317
     y = 255
     w = 225
@@ -1338,67 +1338,67 @@ class StudentsController < ApplicationController
     elsif @level.to_i.eql? 2
       text = "#{@examiner5.title.to_s.mb_chars} #{@examiner5.full_name.mb_chars}\nSecretario"
     end
-    pdf.stroke_horizontal_line x+40,x+w-40,:at=> y + 1
+    pdf.stroke_horizontal_line 357,502,:at=> 257
     pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
 
     # SET  THIRD VOCAL
-    if @level.to_i.eql? 1
+    if @level.to_i.eql? 1 #Maestria
       x = 153
       y = 135
       w = 225
       h =  70
-    elsif @level.to_i.eql? 2
-      x = 160
+    elsif @level.to_i.eql? 2 #Doctorado
+      x = 170
       y = 140
       w = 225
       h = 30
       text = "#{@examiner4.title.to_s.mb_chars} #{@examiner4.full_name.mb_chars}\n3er. Vocal"
-      pdf.stroke_horizontal_line x+40,x+w-40,:at=> y + 1
+      pdf.stroke_horizontal_line 210,356,:at=> 141
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
     end
     
     # SET SECOND VOCAL
-    if @level.to_i.eql? 1
+    if @level.to_i.eql? 1 #Maestria
       x = 307
       y = 168
       w = 225
       h = 115
-    elsif  @level.to_i.eql? 2
+    elsif  @level.to_i.eql? 2 #Doctorado
       x = 307
-      y = 190
+      y = 182
       w = 250
       h = 30
       text = "#{@examiner3.title.to_s.mb_chars} #{@examiner3.full_name.mb_chars}\n2do. Vocal"
-      pdf.stroke_horizontal_line x+40,x+w-40,:at=> y + 1
+      pdf.stroke_horizontal_line 357,502,:at=>183
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
     end
     
     # SET FIRST VOCAL
     if @level.to_i.eql? 1 #Maestria
-      x    = 180 
-      y    = 190
+      x    = 170 
+      y    = 180
       w    = 225
       h    = 70
       text = "#{@examiner2.title.to_s.mb_chars} #{@examiner2.full_name.mb_chars}\n1er. Vocal"
-      pdf.stroke_horizontal_line x+40,x+w-40,:at=> y + 1
+      pdf.stroke_horizontal_line 210,356,:at=> 183
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
     elsif @level.to_i.eql? 2 #Doctorado
       x    = 5
-      y    = 190
+      y    = 182
       w    = 225
       h    = 30
       text = "#{@examiner2.title.to_s.mb_chars} #{@examiner2.full_name.mb_chars}\n1er. Vocal"
-      pdf.stroke_horizontal_line x+40,x+w-40,:at=> y + 1
+      pdf.stroke_horizontal_line 45,190,:at=>183
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
     end
 
     # SET Vo. Bo.
-    if @level.to_i.eql? 1
-      x = 200
-      y = 100
+    if @level.to_i.eql? 1 ## Master
+      x = 202
+      y = 140
       w = 160
       h = 40
-    elsif @level.to_i.eql? 2
+    elsif @level.to_i.eql? 2 ## Doctor
       x = 200
       y = 110
       w = 160
@@ -1411,20 +1411,20 @@ class StudentsController < ApplicationController
 
     # SET CIMAV DIRECTOR
     if params[:sign]
-      x     = 200
-      y     = 60 
+      x     = 202
+      y     = 37
       dir   = t(:directory)
       title = dir[:general_director][:title].mb_chars
       name  = dir[:general_director][:name].mb_chars
       job   = dir[:general_director][:job].mb_chars
       text  = "#{title} #{name}\n#{job}"
-      pdf.stroke_horizontal_line x+40,x+w-40,:at=> y + 1
+      pdf.stroke_horizontal_line 210,356,:at=>40
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
     end
 
     # RENDER
-    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{folio}-#{foja}.pdf"
-  end
+    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "constancia-grado-#{@thesis.student.id}.pdf"
+  end ## def grade_certificates
 
   def total_studies_certificate
     @r_root    = Rails.root.to_s
@@ -2038,7 +2038,7 @@ class StudentsController < ApplicationController
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
 
-    send_data pdf.render, type: "application/pdf", disposition: "inline"
+    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{folio}-#{foja}"
   end ## def diploma
 
   def substring(filename,regexp,replacestring)
