@@ -5,8 +5,8 @@ class LogsController < ApplicationController
   def index
     if current_user.access == User::OPERATOR
       @logs =  ActivityLog.where(:user_id=>current_user.id).limit(10).order('updated_at desc')
-    elsif current_user.access == User::ADMINISTRATOR
-      @logs =  ActivityLog.limit(10).order('updated_at desc')
+    elsif current_user.access.in? [User::ADMINISTRATOR,User::MANAGER]
+      @logs =  ActivityLog.limit(30).order('updated_at desc')
     end
 
     render :layout => false
