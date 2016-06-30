@@ -13,14 +13,14 @@
         - mod = counter % 2
         - if mod==0 
           %tr.row-even
-            %td= counter
-            %td= l.user.email
-            %td= "#{l l.updated_at, :format => :long}"
+            %td= "#{counter} &nbsp;".html_safe
+            %td= l.user.email rescue "N.D."
+            %td= "&nbsp; #{l l.updated_at, :format => :long}  &nbsp;".html_safe
             %td= l.activity
         - else 
           %tr.row-odd
-            %td= counter
-            %td= l.user.email
-            %td= "#{l l.updated_at, :format => :long}"
+            %td= "#{counter} &nbsp;".html_safe
+            %td= l.user.email rescue "N.D."
+            %td= "&nbsp; #{l l.updated_at, :format => :long} &nbsp;".html_safe
             %td= l.activity
         - counter = counter + 1

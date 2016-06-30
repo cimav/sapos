@@ -616,10 +616,10 @@ class StudentsController < ApplicationController
   end
 
   def advances_list
-    if current_user.access == User::ADMINISTRATOR
-      @advances = Advance.where("advance_date>=CURDATE() AND advance_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY)")
+    if current_user.access.in? [User::ADMINISTRATOR,User::MANAGER]
+      @advances = Advance.where("advance_date>=CURDATE() AND advance_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY)").reorder("advance_date ASC")
     elsif  current_user.access == User::OPERATOR
-      @advances = Advance.joins(:student).where("advance_date>=CURDATE() AND advance_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY) AND campus_id=:campus_id",{:campus_id=>current_user.campus_id})
+      @advances = Advance.joins(:student).where("advance_date>=CURDATE() AND advance_date<=DATE_ADD(CURDATE(),INTERVAL 30 DAY) AND campus_id=:campus_id",{:campus_id=>current_user.campus_id}).reorder("advance_date ASC")
     end
     render :layout => false
   end
