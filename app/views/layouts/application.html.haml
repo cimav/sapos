@@ -19,7 +19,9 @@
     #top-bar
       = image_tag "logo.png", :id => "logo"
       #nav-select= @page_title || 'Posgrado'
-      #account= current_user.email
+      #account
+        = current_user.email
+        = link_to "[salir]", "/logout"
 
     #nav-menu
       %ul.nav
