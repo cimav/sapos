@@ -1945,7 +1945,8 @@ class StudentsController < ApplicationController
     y = 40 #50
     h = size
     w = 400
-    text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
+    #text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
+    text = "Chihuahua, Chih., a #{diax} de #{mesx} de #{aniox}"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:left, :valign=>:top, :character_spacing => - 0.4
 
@@ -2003,7 +2004,7 @@ class StudentsController < ApplicationController
     w    = 550
     y    = 412
     x    = x_right_top - w
-    text = t.student.program.name.gsub(program_title,student_title)
+    text = t.student.program.name
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
     
     ## TEXTO
@@ -2028,7 +2029,8 @@ class StudentsController < ApplicationController
     h    = size
     w    = 403
     x    = x_right_top - w
-    text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
+    #text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
+    text = "Chihuahua, Chih., a #{diax} de #{mesx} de #{aniox}"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
    
