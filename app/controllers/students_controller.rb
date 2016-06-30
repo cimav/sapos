@@ -1159,7 +1159,7 @@ class StudentsController < ApplicationController
     size = 14
     pdf.text_box "Acta de Examen de Grado",:at=>[x,y],:style=>:bold, :align=>:center,:size=>size
     # SET HOUR AND DAY
-    @hora = "%02d:%02d horas, del día %2d" % [@thesis.defence_date.hour,@thesis.defence_date.min,@thesis.defence_date.day]
+    @hora = "%02d:%02d horas, del día %02d" % [@thesis.defence_date.hour,@thesis.defence_date.min,@thesis.defence_date.day]
     x = 230   #388
     y = 676  #629
     w = 310   #150
@@ -1169,14 +1169,35 @@ class StudentsController < ApplicationController
     # SET MONTH AND YEAR
     month = get_month_name(@thesis.defence_date.month)
     year = @thesis.defence_date.year
-    if month.size.eql? 9
-      space5=" "
+    char_spacing = 1.1
+
+    if month.size.eql? 10 ## septiembre
+      char_spacing = 0.58
+    elsif month.size.eql? 9
+      char_spacing = 0.67
+      if month.eql? "diciembre"
+        char_spacing = char_spacing + 0.09
+      end
     elsif month.size.eql? 7
-      space5=" "
-    elsif month.size.eql? 6
-      space7=" "
-    elsif month.size<5
-      space7="  "
+      char_spacing = 1.15  ## febrero
+      if month.eql? "octubre"
+        char_spacing = 1.1
+      end
+    elsif month.size.eql? 6 ## agosto
+      char_spacing = 1.23
+    elsif month.size.eql? 5
+      char_spacing = 1.41 ## enero
+      if month.eql? "marzo"
+        char_spacing = 1.34
+      elsif month.eql? "abril"
+        char_spacing = 1.6
+      elsif month.eql? "junio"
+        char_spacing = 1.55
+      elsif month.eql? "julio"
+        char_spacing = 1.65
+      end
+    elsif month.size.eql? 4
+      char_spacing = 1.46
     end
 
     l = 0
@@ -1184,7 +1205,7 @@ class StudentsController < ApplicationController
       #pdf.stroke_bounds
       pdf.text "En Chihuahua,Chih., a las #{@hora}", :size=> size, :leading=>l,:character_spacing=>0.1
       @m_y = "del mes #{month} de #{year}. Se reunieron los"
-      pdf.text @m_y, :size=> size, :leading=>l,:character_spacing=>1.1
+      pdf.text @m_y, :size=> size, :leading=>l,:character_spacing=>char_spacing
       pdf.text "miembros del jurado integrado por los señores(as):", :size=> size, :leading=>l, :character_spacing=>0.0
     end
 
@@ -1318,7 +1339,7 @@ class StudentsController < ApplicationController
     h = 40
     size = 12
     pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
-      pdf.text "\n El secretario informó al sustentante del resultado\ny el presidente procedió a tomar la protesta de ley.", :size=> size, :align=> :center
+      pdf.text "\n El Secretario informó al sustentante del resultado\ny el Presidente procedió a tomar la protesta de ley.", :size=> size, :align=> :center
     end
 
     # SET PRESIDENT SIGN
