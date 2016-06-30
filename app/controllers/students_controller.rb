@@ -2042,7 +2042,7 @@ class StudentsController < ApplicationController
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
 
-    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{folio}-#{foja}"
+    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{libro}-#{foja}"
   end ## def diploma
 
   def substring(filename,regexp,replacestring)
