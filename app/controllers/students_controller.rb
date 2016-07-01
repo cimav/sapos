@@ -1913,7 +1913,7 @@ class StudentsController < ApplicationController
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 2.8 #2.56
 
     y = y - 28
-    text = "y por haber aprobado el exámen de grado reglamentario"
+    text = "y por haber aprobado el examen de grado reglamentario"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.45 #0.18
 
     y = y - 28
