@@ -6,6 +6,7 @@
   - @staffs_cimav = Staff.includes(:institution).where(:status=>0,:institution_id=>1)
   - @students_1   = Student.where(:status=>1)
   - @students_1_6 = Student.where(:status=>[1,6])
+  - @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
   
   - if @committee_session.status.eql? 3
     - readonly       = true
@@ -191,9 +192,9 @@
       = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name_prefix",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
       - @courses = []
       - if !ca.auth.nil?
-        - @courses = Course.joins(:program).select("courses.id,courses.name,programs.prefix").where(:status=>1)
+        - @courses = @courses_all
       - @selected = ca.notes[/\[(.*?)\]/m,1] rescue 0
-      = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@courses,"id","name",@selected),:prompt=>"--Elige curso--",:class=>"save-note-agreement",:disabled=>readonly
+      = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@courses,"id","full_name_extras",@selected),:prompt=>"--Elige curso--",:class=>"save-note-agreement",:disabled=>readonly
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
       %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width:60px;"}="Notas"
       = text_area_tag "my_notes_#{my_id}",text,:style=>"display: none"
@@ -212,9 +213,9 @@
       = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
       - @courses = []
       - if !ca.auth.nil?
-        - @courses = Course.joins(:program).select("courses.id,courses.name,programs.prefix").where(:status=>1)
+        - @courses = @courses_all
       - @selected = ca.notes[/\[(.*?)\]/m,1] rescue 0
-      = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@courses,"id","name",@selected),:prompt=>"--Elige curso--",:class=>"save-note-agreement",:disabled=>readonly
+      = select_tag "save_note_agreement_#{my_id}",options_from_collection_for_select(@courses,"id","full_name_extras",@selected),:prompt=>"--Elige curso--",:class=>"save-note-agreement",:disabled=>readonly
       %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
         - titular = false
         - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|

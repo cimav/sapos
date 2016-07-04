@@ -13,7 +13,11 @@ class Course < ActiveRecord::Base
   end
 
   def full_name_extras
-    "#{name} (#{program.prefix rescue "n.d"} #{studies_plan.code rescue "n.d"})"
+    #"#{name} (#{self.program.prefix rescue "n.d"} #{self.studies_plan.code rescue "n.d"})"
+    #program_name      = Program.find(self.program_id).prefix rescue "n.d."
+    #studies_plan_name = StudiesPlan.find(self.studies_plan_id).code rescue "n.d."
+    #"#{self.name} (#{program_name} #{studies_plan_name})"
+    "#{name} (#{prefix} #{code})"
   end
 
   def lecture_hours_int
