@@ -188,7 +188,7 @@
       = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
       - @terms    = Term.where(:status=>[1,2])
       - @selected = ca.auth rescue 0
-      = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
+      = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name_prefix",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
       - @courses = []
       - if !ca.auth.nil?
         - @courses = Course.joins(:program).select("courses.id,courses.name,programs.prefix").where(:status=>1)

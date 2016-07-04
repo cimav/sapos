@@ -25,6 +25,11 @@ class Term < ActiveRecord::Base
     STATUS[status]
   end
 
+  def name_prefix
+    name = "#{self.name} (#{self.program.prefix})"
+    return name
+  end
+
   def assign_courses(courses)
     index = 0
     courses_in_tc = []
