@@ -1,7 +1,7 @@
 - @page_title = "Inscripciones"
 - @nav_icon   = "Inscripciones"
-- @new_term   = "2016-1"
-- @old_term   = "2015-2"
+- @new_term   = "2016-2"
+- @old_term   = "2016-1"
 
 #content-panel
   :javascript
@@ -53,13 +53,15 @@
             %th="#"
             %th="Alumno"
             %th="Programa"
+          - counter = 0
           - @s = Student.joins(:term_students=>:term).where("students.status=? and terms.name like '%#{@new_term}%'",1)
           - @s.each_with_index do |s,index|
             %tr
               - if s.term_students.size>1 and !s.program.level.eql? 3
-                %td= index + 1
+                %td= counter + 1
                 %td= s.full_name
                 %td= s.program.name
+                - counter = counter + 1
 
 
       %b= "Notas: "
