@@ -40,19 +40,19 @@
       .field#field_student_advance_0_tutor2
         = label_tag 'advance[tutor2]', 'Comite Tutoral 2'
         = select_tag 'advance[tutor2]', options_from_collection_for_select(@staffs, :id, :full_name,@advance.tutor2), :prompt=> "Selecciona un tutor"
-        = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
+        = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
       .field#field_student_advance_0_tutor3
         = label_tag 'advance[tutor3]', 'Comite Tutoral 3'
         = select_tag 'advance[tutor3]', options_from_collection_for_select(@staffs, :id, :full_name,@advance.tutor3), :prompt=> "Selecciona un tutor"
-        = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
+        = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
       .field#field_student_advance_0_tutor4
         = label_tag 'advance[tutor4]', 'Comite Tutoral 4'
         = select_tag 'advance[tutor4]', options_from_collection_for_select(@staffs, :id, :full_name,@advance.tutor4), :prompt=> "Selecciona un tutor"
-        = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
+        = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor4}", :target=> "_blank"
       .field#field_student_advance_0_tutor5
         = label_tag 'advance[tutor5]', 'Comite Tutoral 5'
         = select_tag 'advance[tutor5]', options_from_collection_for_select(@staffs, :id, :full_name,@advance.tutor5), :prompt=> "Selecciona un tutor"
-        = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
+        = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor5}", :target=> "_blank"
       .field#field_student_advance_0_notes
         = label_tag 'advance[notes]', 'Notas'
         = text_area_tag 'advance[notes]',@advance.notes,:rows=>5,:cols=>60
