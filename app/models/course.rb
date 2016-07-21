@@ -13,6 +13,7 @@ class Course < ActiveRecord::Base
   end
 
   def full_name_extras
+    prefix = program.prefix rescue "N.D."
     "#{name} (#{prefix} #{code})"
   end
 
