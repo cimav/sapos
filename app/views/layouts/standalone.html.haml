@@ -10,6 +10,10 @@
       = javascript_include_tag @include_js
     - if !@include2_js.nil?
       = javascript_include_tag @include2_js
+    - if !@include3_js.nil?
+      = javascript_include_tag @include3_js
+    - if !@include4_js.nil?
+      = javascript_include_tag @include4_js
     = csrf_meta_tag
   %body
     #standalone-content

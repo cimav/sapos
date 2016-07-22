@@ -12,7 +12,6 @@ $(document).ready(function() {
         }
   });
 
-
   $(".delete-agreement-course").live({
     mouseover: function(){
       $(this).css({ opacity: 1.0 })
@@ -21,12 +20,11 @@ $(document).ready(function() {
       $(this).css({ opacity: 0.3 });
     },
     click: function(){
-      $("#img_load").show();
- /*     var p     = $(this).parent();
-      var a_id  = p.parent().parent().find("#my_id").val();
-      var valor = p.find("#my_sinodal_id").val();
-      var tipo  = p.find("#my_sinodal_type_id").val();
-      var url   = "/comite/acuerdos/persona/borrar/"+valor;
+      var p     = $(this).parent();
+      var o_id  = p.find('#my_cac_id').val();
+      $("#img_load_"+o_id).show();
+
+      var url   = "/objetos/borrar/"+o_id;
       var data= ""
       $.ajax({
         type:  'POST',
@@ -36,10 +34,6 @@ $(document).ready(function() {
         },
         success:  function(data){
           p.remove();
-          if(tipo==3){
-            $("#agreement_aux_"+a_id).append(new Option("Titular",3));
-            $("#agreement_aux_"+a_id).select2().val(3).trigger("change");
-          }
         },
         error: function(xhr, textStatus, error){
            var text = xhr.responseText;
@@ -51,9 +45,9 @@ $(document).ready(function() {
            }
         },
         complete: function(){
-          $("#img_load").hide();
+          $("#img_load_"+o_id).hide();
         },
-      });*/
+      });
     }
   });// live
 });//document ready

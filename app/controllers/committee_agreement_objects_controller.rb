@@ -21,4 +21,16 @@ class CommitteeAgreementObjectsController < ApplicationController
       render_error(@ca_object,"Error al dar de alta la sesión",parameters)
     end
   end
+
+  def delete
+    parameters = {}
+
+    @ca_object = CommitteeAgreementObject.find(params[:id])
+ 
+    if @ca_object.delete
+      render_message(@ca_object,"Borrado de objeto exitoso",parameters)
+    else 
+      render_error(@ca_object,"Error al borrar objeto",parameters)
+    end
+  end
 end

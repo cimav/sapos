@@ -12,6 +12,7 @@
     = "* #{course.name.strip} -> "
     = cac.aux
     = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-course'
+    = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{cac.id}", :style=>"display: none;", :class=>"img_load",:width=>"20"
 
 = form_for CommitteeAgreementObject.new, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
   = hidden_field_tag :attachable_type,"Course"

@@ -234,6 +234,8 @@ Sapos::Application.routes.draw do
   match 'comite/revalidacion/cursos/:id' => 'committee_sessions#get_revalidation_courses'
   match 'comite/desbloquear/:id' => 'committee_sessions#unlock'
 
+  match 'objetos/borrar/:id' => 'committee_agreement_objects#delete'
+
   resources :documentation_files
 
   match 'logs/show' => 'logs#index'
