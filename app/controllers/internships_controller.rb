@@ -539,16 +539,57 @@ class InternshipsController < ApplicationController
     send_mail(@internship,"",3,@text)
 
     ## mail al entrevistador
+
+    ## generando token para aprobar servicio
+    token                   = Token.new
+    token.attachable_id     = @internship.id
+    token.attachable_type   = @internship.class.to_s
+    token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
+    token.status            = 1
+    token.expires           = Date.today + 40
+    token.save
+    
     @text = "Se ha programado la cita para entrevista de servicio social con #{@internship.full_name} [#{@internship.email}] para el día #{@adate[0]} de #{get_month_name(@adate[1].to_i)} de #{@adate[2]} a las #{@hour} horas."
-    @content= "{:full_name=>'',:email=>'#{@internship.email}',:view=>15,:reply_to=>'#{@user.email}',:text=>'#{@text}'}"
+
+
+    @content= "{:email=>'#{@internship.email}',:view=>22,:reply_to=>'#{@user.email}',:text=>'#{@text}',:token=>'#{token.token}'}"
     # @staff.email
     send_simple_mail(@staff.email,"Se ha programado un horario para entrevista de servicio social ",@content)
     ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'Se manda un correo con el horario a #{@staff.full_name} - #{@staff.email}'}"}).save
+
+    @internship.applicant_status = 4 ## estatus de entrevista
+    @internship.save
 
     json = {}
     json[:status]= 1
     render :json=> json
   end#applicant_interview
+  
+  def applicant_interview_qualify
+    @save  = false
+    @token = params[:token]
+    @t = Token.where(:token=>@token,:status=>1,:attachable_type=>'Internship').where("expires>=?",Date.today).limit(1)
+
+    if @t.size>0
+      @internship = Internship.find(@t[0].attachable_id)
+      if params[:auth]
+        @save  = true
+        @t[0].status =2  # Token class
+        if params[:auth].to_i.eql? 1
+          @internship.applicant_status = 3
+        elsif params[:auth].to_i.eql? 2
+          @internship.applicant_status = 2
+        end
+        @internship.save
+        @t[0].save
+      end
+    else
+      render file: "#{Rails.root}/public/404.html", layout: false, status: 404
+      return
+    end
+
+    render :layout => false
+  end
 
   def generate_applicant_document(i) #i for internship
     @genero = ""

@@ -100,6 +100,7 @@ Sapos::Application.routes.draw do
   match 'internados/aspirante/crear' => 'internships#applicant_create'
   match 'internados/aspirante/:id/formato/:token' => 'internships#applicant_file'
   match 'internados/aspirantes/cita/:id/:staff_id' => 'internships#applicant_interview'
+  match 'internados/aspirantes/calificar/:token' => 'internships#applicant_interview_qualify'
 
   resources :internship_files
 

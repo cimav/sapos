@@ -40,12 +40,16 @@ class Internship < ActiveRecord::Base
             APPLICANT => 'Aspirante'}
 
 
-  ACCEPTED = 1
-  REJECTED = 2
+  ACCEPTED   = 1
+  REJECTED   = 2
+  AUTHORIZED = 3
+  INTERVIEW  = 4
 
   APPLICANT_STATUS = { ACTIVE    => 'Activo',
                        REJECTED  => 'Rechazado',
-                       ACCEPTED  => 'Aceptado'
+                       ACCEPTED  => 'Aceptado',
+                       AUTHORIZED => 'Autorizado',
+                       INTERVIEW  => 'Entrevista'
                       }
 
   def full_name
