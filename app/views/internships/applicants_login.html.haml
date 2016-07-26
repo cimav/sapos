@@ -1,0 +1,30 @@
+= stylesheet_link_tag "applicant.login"
+- @t = t(:applicants)
+#login-logo
+  = image_tag image_path("login-logo.png"),:width=>"200px"
+
+= form_tag @url do 
+  #login-box
+    .field#title{:style=>"text-align:center"}
+      = "Carga de Documentos"
+      = "Servicios CIMAV"
+    .field#user 
+      = label_tag @t[:user]
+      %br
+      = text_field_tag "user",@user
+    .field#password
+      = label_tag "Password"
+      %br
+      = password_field_tag "password"
+    .field#submit
+      = submit_tag "Enviar"
+    .field#message
+      = @message
+
+-#language
+  - if I18n.locale.eql? :es
+    =" Change language to " 
+    = link_to "English","?locale=en"
+  - elsif I18n.locale.eql? :en
+    ="Cambiar idioma a " 
+    = link_to "Español","?locale=es"

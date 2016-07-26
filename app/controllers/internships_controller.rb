@@ -5,8 +5,8 @@ require 'digest/md5'
 class InternshipsController < ApplicationController
   load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file,:data,:update_register,:files_register,:upload_file_register,:download_app_file]
-  before_filter :auth_indigest, :only=>[:data,:update_register,:files_register,:upload_file_register,:download_app_file]
+  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register]
+  before_filter :auth_indigest, :only=>[:files_register,:upload_file_register]
 
   def index
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
@@ -242,6 +242,18 @@ class InternshipsController < ApplicationController
     @internship_file = InternshipFile.new
     render :layout => 'standalone'
   end
+
+  def files_register
+    @req_docs   = ApplicantFile::REQUESTED_DOCUMENTS.clone
+    @include_js = "applicants.register.files.js"
+    @register   = true
+
+    @req_docs.delete(1)
+
+    @internship       = Internship.find(session[:internship_user])
+    @internship_files = InternshipFile.where(:internship_id=>session[:internship_user])
+    render :layout=> "standalone"
+  end#def files_register
 
   def upload_file
     flash = {}
@@ -761,5 +773,45 @@ class InternshipsController < ApplicationController
     months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
     name = months[number - 1]
     return name
+  end
+
+private
+  def auth_indigest
+    user = params[:user]
+    password = params[:password]
+
+    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+
+    if user && password
+      if Internship.where(:status=>3,:applicant_status=>3,:id=>user,:password=>password).size.eql? 1
+        session[:internship_user] = user
+      else
+        @user    = user
+        @message = "Usuario o password incorrectos"
+      end
+    end
+
+    if session_authenticated?
+=begin
+      if !params[:action].eql? "download_app_file" # exception to download the file itself
+        if InternshipFile.where(:internship_id=>session[:internship_user],:file_type=>12).size>0
+          @name = Internship.find(session[:internship_user]).full_name rescue ""
+          @include_js   = "applicants.register.js"
+          @t = t(:applicants)
+          render :template => "internships/applicants_access",:layout=>'standalone'
+        end
+      end
+=end
+      return true
+    else
+      @url = "/internados/aspirantes/documentos"
+      render :template => "internships/applicants_login",:layout=>false
+    end
+  end ## auth_indigest
+
+  def session_authenticated?
+    session[:internship_user] rescue nil
   end
 end
