@@ -1,8 +1,12 @@
 # coding: utf-8
+
+require 'digest/md5'
+
 class InternshipsController < ApplicationController
   load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file]
+  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file,:data,:update_register,:files_register,:upload_file_register,:download_app_file]
+  before_filter :auth_indigest, :only=>[:data,:update_register,:files_register,:upload_file_register,:download_app_file]
 
   def index
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
@@ -242,10 +246,12 @@ class InternshipsController < ApplicationController
   def upload_file
     flash = {}
     params[:internship_file]['file'].each do |f|
-      @internship_file = InternshipFile.new
+      @internship_file               = InternshipFile.new
       @internship_file.internship_id = params[:internship_file]['internship_id']
-      @internship_file.file = f
-      @internship_file.description = f.original_filename
+      @internship_file.file_type     = params[:internship_file]['file_type']
+      @internship_file.file          = f
+      @internship_file.description   = f.original_filename
+
       if @internship_file.save
         flash[:notice] = "Archivo subido exitosamente."
       else
@@ -254,6 +260,25 @@ class InternshipsController < ApplicationController
     end
 
     redirect_to :action => 'files', :id => params[:id]
+  end
+
+  def upload_applicant_file
+    json = {}
+    f = params[:internship_file]['file']
+
+    @internship_file = InternshipFile.new
+    @internship_file.internship_id = params[:internship_id]
+    @internship_file.file_type = params[:file_type]
+    @internship_file.file = f
+    @internship_file.description = f.original_filename
+
+    if @internship_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@internship_file.id}</id>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@internship_file.errors.full_messages}</errors>"
+    end 
+  rescue  
+    render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
   end
 
   def file
@@ -265,6 +290,17 @@ class InternshipsController < ApplicationController
   def delete_file
   end
 
+  def applicant_files
+    @req_docs = InternshipFile::REQUESTED_DOCUMENTS.clone
+    @req_docs.delete(1)
+ 
+    @internship = Internship.find(params[:id])
+    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5])
+    render :layout=> "standalone"
+  rescue ActiveRecord::RecordNotFound
+    @error = 1
+    render :template=>"internships/errors",:layout=> "standalone"
+  end
 
   def id_card
     @internship = Internship.find(params[:id])

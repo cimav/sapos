@@ -101,6 +101,11 @@ Sapos::Application.routes.draw do
   match 'internados/aspirante/:id/formato/:token' => 'internships#applicant_file'
   match 'internados/aspirantes/cita/:id/:staff_id' => 'internships#applicant_interview'
   match 'internados/aspirantes/calificar/:token' => 'internships#applicant_interview_qualify'
+  match 'internados/aspirantes/:id/archivos' => 'internships#applicant_files'
+  match 'internados/aspirantes/:id/upload_applicant_file' => 'internships#upload_applicant_file'
+  match 'internados/aspirantes/file/:id' => 'internship_files#download'
+  match 'internados/aspirantes/destroy_file/:id' => 'internship_files#applicant_destroy'
+  match 'internados/aspirantes/registro/datos' => 'internships#data'
 
   resources :internship_files
 

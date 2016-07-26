@@ -49,11 +49,12 @@
   = f.hidden_field :internship_id, {:value => @internship.id }
   #upload-box
     = f.file_field :file, {"multiple" => "multiple"}
+    = f.hidden_field :file_type, {:value => 1 }
     .upload Subir archivos
     .upload-msg Puedes seleccionar varios archivos a la vez para subir.
 #files-area
   %table{'class' => 'files-table'}
-    - @internship.internship_file.each do |internship_file|
+    - @internship.internship_file.where(:file_type=>1).each do |internship_file|
       %tr{'id' => "file-#{internship_file.id}"}
       - if File.exist?(internship_file.file.to_s)
         - if File.extname(internship_file.file.to_s) == ''
