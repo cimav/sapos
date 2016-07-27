@@ -244,8 +244,11 @@ class InternshipsController < ApplicationController
   end
 
   def files_register
-    @req_docs   = ApplicantFile::REQUESTED_DOCUMENTS.clone
-    @include_js = "applicants.register.files.js"
+    @t    = t(:internships)
+    @user = Internship.find(session[:internship_user])
+
+    @req_docs   = InternshipFile::REQUESTED_DOCUMENTS.clone
+    @include_js = "internships.register.files.js"
     @register   = true
 
     @req_docs.delete(1)
@@ -254,6 +257,25 @@ class InternshipsController < ApplicationController
     @internship_files = InternshipFile.where(:internship_id=>session[:internship_user])
     render :layout=> "standalone"
   end#def files_register
+  
+  def upload_applicant_file
+    json = {}
+    f = params[:internship_file]['file']
+
+    @internship_file = InternshipFile.new
+    @internship_file.internship_id = params[:internship_id]
+    @internship_file.file_type = params[:file_type]
+    @internship_file.file = f
+    @internship_file.description = f.original_filename
+
+    if @internship_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@internship_file.id}</id>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@internship_file.errors.full_messages}</errors>"
+    end 
+  rescue  
+    render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
+  end
 
   def upload_file
     flash = {}
@@ -272,25 +294,6 @@ class InternshipsController < ApplicationController
     end
 
     redirect_to :action => 'files', :id => params[:id]
-  end
-
-  def upload_applicant_file
-    json = {}
-    f = params[:internship_file]['file']
-
-    @internship_file = InternshipFile.new
-    @internship_file.internship_id = params[:internship_id]
-    @internship_file.file_type = params[:file_type]
-    @internship_file.file = f
-    @internship_file.description = f.original_filename
-
-    if @internship_file.save
-      render :inline => "<status>1</status><reference>upload</reference><id>#{@internship_file.id}</id>"
-    else
-      render :inline => "<status>0</status><reference>upload</reference><errors>#{@internship_file.errors.full_messages}</errors>"
-    end 
-  rescue  
-    render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
   end
 
   def file
@@ -571,6 +574,25 @@ class InternshipsController < ApplicationController
     filename = "#{@r_root}/private/files/internships/#{@internship.id}/registro.pdf"
     send_file filename, :x_sendfile=>true
   end#applicant_file
+  
+  def upload_file_register
+    json = {}
+    f = params[:internship_file]['file']
+
+    @internship_file = InternshipFile.new
+    @internship_file.internship_id = session[:internship_user].to_i
+    @internship_file.file_type = params[:file_type]
+    @internship_file.file = f
+    @internship_file.description = f.original_filename
+
+    if @internship_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@internship_file.id}</id>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@internship_file.errors.full_messages}</errors>"
+    end 
+ # rescue  
+ #   render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
+  end
 
   def applicant_interview
     @internship = Internship.find(params[:id])
@@ -774,6 +796,14 @@ class InternshipsController < ApplicationController
     name = months[number - 1]
     return name
   end
+  
+  def applicant_logout
+    session[:internship_user] = nil
+    session[:locale] = nil
+    @message = "Out of session"
+    @url = "/internados/aspirantes/documentos"
+    render :template => "internships/applicants_login",:layout=>false
+  end
 
 private
   def auth_indigest
@@ -794,16 +824,6 @@ private
     end
 
     if session_authenticated?
-=begin
-      if !params[:action].eql? "download_app_file" # exception to download the file itself
-        if InternshipFile.where(:internship_id=>session[:internship_user],:file_type=>12).size>0
-          @name = Internship.find(session[:internship_user]).full_name rescue ""
-          @include_js   = "applicants.register.js"
-          @t = t(:applicants)
-          render :template => "internships/applicants_access",:layout=>'standalone'
-        end
-      end
-=end
       return true
     else
       @url = "/internados/aspirantes/documentos"
@@ -814,4 +834,5 @@ private
   def session_authenticated?
     session[:internship_user] rescue nil
   end
+  
 end

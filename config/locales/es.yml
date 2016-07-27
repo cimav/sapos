@@ -44,6 +44,49 @@ es:
     delete_file: "Eliminar"
     only_pdf_message: "Solamente formato pdf"
     cancel_return: "Cancelar (Volver)"
+  internships:
+    title: "Registro de solicitud de ingreso"
+    accept: "Aceptar"
+    message2: "Los documentos soporte de su solicitud se encuentran listados en la parte inferior. A excepción de la fotografía el resto de los documentos se deberán subir en formato pdf y no mayores a 6 MB. Se recomienda subir un archivo a la vez. Cuando se hayan cargado los archivos el sistema le indicará como continuar.<br>"
+    terms: "<h4>Declaración</h4><br><h4>La información que se recibe y se genera con motivo de la presente solicitud está sujeta a los dispuesto por la Ley Federal de Transparencia y Acceso a la Información pública gubernamental según sea el caso.</h4>
+    <br>
+    <h4>Informo que conozco el procedimiento de servicios para estudiantes externos de CIMAV y la normatividad aplicable al mismo por lo que me comprometo a cumplir las normas establecidas.</h4>
+    <br>
+    <h4>Ratifico que los documentos que anexo a la solicitud son verídicos, que contienen la información necesaria para el trámite que deseo realizar y se apegan a la normatividad aplicable. Así como que las fechas en que estoy solicitando realizar mi servicio son las autorizadas por mi institución de procedencia como lo indican los documentos anexos. Informo que he cursado y aprobado el Curso de seguridad e higiene en laboratorios, y que cuento con servicio médico vigente o seguro contra accidentes durante el tiempo que durará mi servicio.</h4>
+    <br>
+    <h4>Al aceptar las condiciones se descargará automáticamente la solicitud de ingreso la cual deberá imprimir.</h4>
+    <br>
+    <h4>La falsedad o uso de documentos no válidos será causa de rescisión automática del servicio sin responsabilidad para el CIMAV.</h4>
+    <br>"
+    user: "Usuario"
+    name: "Nombre"
+    primary_last_name: "Apellido Paterno"
+    second_last_name: "Apellido Materno"
+    program: "Programa"
+    program_choose: "Selecciona el programa"
+    campus: "Campus"
+    campus_choose: "Selecciona el campus"
+    place: "Sede"
+    place_choose: "Selecciona la sede"
+    place_message: "Sede es el lugar donde vas a aplicar el exámen de admisión"
+    logout: "Salir"
+    instructions0: "Instrucciones: Ingresa los datos que se solicitan. Para registrar los datos en la solicitud selecciona la opción  \"Continuar\""
+    address: "Dirección"
+    address_message: "Debe incluir ciudad, estado y país"
+    phone: "Teléfono"
+    mobile: "Celular"
+    birthdate: "Fecha de Nacimiento"
+    school: "Institución"
+    degree: "Carrera"
+    average: "Promedio"
+    marital_status: "Estado Civil"
+    thesis_director: "Asesor propuesto"
+    continue: "Continuar"
+    download_file: "Descargar Archivo"
+    upload_file: "Subir Archivo"
+    delete_file: "Eliminar"
+    only_pdf_message: "Solamente formato pdf"
+    cancel_return: "Cancelar (Volver)"
   certificates:
     total_studies: "asignaturas. la escala de calificacion"
   directory:
