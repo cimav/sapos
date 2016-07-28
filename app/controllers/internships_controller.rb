@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'digest/md5'
+require 'open-uri'
 
 class InternshipsController < ApplicationController
   load_and_authorize_resource
@@ -255,6 +256,7 @@ class InternshipsController < ApplicationController
 
     @internship       = Internship.find(session[:internship_user])
     @internship_files = InternshipFile.where(:internship_id=>session[:internship_user])
+    security_course(@internship.email)
     render :layout=> "standalone"
   end#def files_register
   
@@ -834,5 +836,117 @@ private
   def session_authenticated?
     session[:internship_user] rescue nil
   end
+
+  def analize(line)
+    if @counter>0
+      if line.include? @email
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "Quiz title"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "Points awarded"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "Total score"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "Passing score"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "User fails"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "User passes"
+        @row << line
+        @counter = @counter + 1 
+      else
+        @counter = 0 
+        @row.pop
+      end
+    end
   
+    if @counter.eql? 7
+      @counter_hash = @counter_hash + 1
+  
+      @hash["#{@counter_hash}"] = @row.clone
+  
+      @counter = 0
+      @row.clear
+    end
+  
+    if line.include? "User name"
+      @row << line
+      @counter = 1
+    end
+  end
+
+ 
+  def security_course(email)
+    @email = email
+    @hash    = Hash.new
+    @row     = Array.new
+    @counter = 0 
+    @exam1   = false
+    @exam2   = false
+    @exam3   = false
+    @counter_hash = 0 
+
+    open("http://csh.cimav.edu.mx/resultados/resultados1.txt") {|f|
+      f.each_line {|line|
+        analize(line)
+      }
+    }
+    
+    if !(@hash.size.eql? 0)
+      if @hash["#{@counter_hash}"][6].include? "User passes"
+        @exam1 = true
+      end
+    end
+    
+    @hash.clear
+    @counter_hash = 0
+    
+    open("http://csh.cimav.edu.mx/resultados/resultados2.txt") {|f|
+      f.each_line {|line|
+        analize(line)
+      }
+    }
+    if !(@hash.size.eql? 0)
+      if @hash["#{@counter_hash}"][6].include? "User passes"
+        @exam2 = true
+      end
+    end
+    
+    @hash.clear
+    @counter_hash = 0
+    
+    open("http://csh.cimav.edu.mx/resultados/resultados3.txt") {|f|
+      f.each_line {|line|
+        analize(line)
+      }
+    }
+    
+    if !(@hash.size.eql? 0)
+      if @hash["#{@counter_hash}"][6].include? "User passes"
+        @exam3 = true
+      end
+    end
+    
+    @hash.clear
+    @counter_hash = 0
+    
+    logger.info @exam1
+    logger.info @exam2
+    logger.info @exam3
+    
+    if @exam1 && @exam2 && @exam3
+      @i_file = InternshipFile.new
+      @i_file.internship_id = session[:internship_user].to_i
+      @i_file.description   = "Curso"
+      @i_file.file          = "Curso"
+      @i_file.file_type     = 6
+      @i_file.save
+    end
+  end 
 end
