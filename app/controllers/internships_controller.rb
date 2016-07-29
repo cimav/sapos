@@ -6,8 +6,8 @@ require 'open-uri'
 class InternshipsController < ApplicationController
   load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register]
-  before_filter :auth_indigest, :only=>[:files_register,:upload_file_register]
+  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register,:finalize,:applicant_logout]
+  before_filter :auth_indigest, :only=>[:files_register,:upload_file_register,:finalize]
 
   def index
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
@@ -596,6 +596,26 @@ class InternshipsController < ApplicationController
  #   render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
   end
 
+  def finalize
+    @t    = t(:internships)
+    @access = true
+    if session[:internship_user].to_i.eql? params[:id].to_i
+      if @internship.applicant_status.eql? 3
+        @internship = Internship.find(params[:id])
+        @internship.status=0
+        @internship.applicant_status=0
+        @internship.save
+        send_mail(@internship,"",6,"")
+      else
+        @access = false
+      end
+    else
+      @access = false
+    end
+
+    render :layout => 'standalone'
+  end
+
   def applicant_interview
     @internship = Internship.find(params[:id])
     @staff      = Staff.find(params[:staff_id])
@@ -647,13 +667,18 @@ class InternshipsController < ApplicationController
       if params[:auth]
         @save  = true
         @t[0].status =2  # Token class
-        if params[:auth].to_i.eql? 1
-          @internship.applicant_status = 3
-        elsif params[:auth].to_i.eql? 2
-          @internship.applicant_status = 2
-        end
-        @internship.save
         @t[0].save
+
+        if params[:auth].to_i.eql? 1  ## APROBADO
+          @internship.applicant_status = 3
+          @internship.password = SecureRandom.base64(12)
+          @internship.save
+          send_mail(@internship,"",5,"")
+        elsif params[:auth].to_i.eql? 2 ## RECHAZADO
+          @internship.applicant_status = 2
+          @internship.save
+          send_mail(@internship,"",4,"")
+        end
       end
     else
       render file: "#{Rails.root}/public/404.html", layout: false, status: 404
@@ -734,6 +759,10 @@ class InternshipsController < ApplicationController
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo al asistente'}"}).save
     elsif opc.eql? 3
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de fecha de entrevista'}"}).save
+    elsif opc.eql? 4
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social no autorizado'}"}).save
+    elsif opc.eql? 5
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social autorizado'}"}).save
     end
 
     if opc.eql? 1
@@ -748,6 +777,19 @@ class InternshipsController < ApplicationController
       @u_email   = i.email
       subject = "Se ha programado fecha para entrevista Solicitud Servicio Social CIMAV"
       content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>15,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+    elsif opc.eql? 4
+      @u_email   = i.email
+      subject = "No se ha autorizado Solicitud de Servicio CIMAV"
+      text    = "Se le informa que no se ha autorizado su solicitud de servicio CIMAV."
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>23,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+    elsif opc.eql? 5
+      @u_email = i.email
+      subject  = "Se ha autorizado Solicitud de Servicio CIMAV"
+      content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:i_id=>'#{i.id}',:pass=>'#{i.password}',:view=>24,:reply_to=>'#{user.email}'}"
+    elsif opc.eql? 6
+      @u_email = Settings.interships_cards_email
+      subject  = "Se ha registrado un alumno como Servicio CIMAV #{i.id}"
+      content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'25',:reply_to=>'#{user.email}'}"
     end
 
     email         = Email.new
@@ -764,6 +806,10 @@ class InternshipsController < ApplicationController
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al asistente'}"}).save
     elsif opc.eql? 3
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El usuario programa fecha de entrevista'}"}).save
+    elsif opc.eql? 4 
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El entrevistador rechaza solicitud'}"}).save
+    elsif opc.eql? 5
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El entrevistador autoriza solicitud'}"}).save
     end
   end#send_mail
 

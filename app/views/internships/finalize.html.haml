@@ -1,0 +1,17 @@
+- if @access
+  %h3= "Ha finalizado el proceso correctamente, por favor pasar al departamento de posgrado por su credencial."
+  %br
+  %h3
+    = button_tag @t[:logout], :type=>"button", :id=>"logout_button_3",:class=>"logout-button"
+- else
+  %h3= "Usted no tiene acceso"
+  %br
+  %h3
+    = button_tag @t[:logout], :type=>"button", :id=>"logout_button_3",:class=>"logout-button"
+
+:javascript
+  $(document).ready(function() {
+    $(".logout-button").live("click", function(){
+      window.location="/internados/aspirantes/applicant_logout";
+    });
+  });

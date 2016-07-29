@@ -106,6 +106,7 @@ Sapos::Application.routes.draw do
   match 'internados/aspirantes/documentos'                => 'internships#files_register'
   match 'internados/aspirantes/upload_file_register'      => 'internships#upload_file_register'
   match 'internados/aspirantes/applicant_logout'          => 'internships#applicant_logout'
+  match 'internados/aspirantes/finalizar/:id'                 => 'internships#finalize'
 
   match 'internados/aspirantes/file/:id'         => 'internship_files#download'
   match 'internados/aspirantes/destroy_file/:id' => 'internship_files#applicant_destroy'

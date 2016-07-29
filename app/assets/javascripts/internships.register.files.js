@@ -2,8 +2,8 @@ var model_name = 'applicant';
 $(document).ready(function() {
   $("#application_button").live("click",function(){
     $('#cancel_button').hide();
-    var app_id = $("#applicant_id").val();
-    window.location="/internados/aspirantes/descargar/solicitud/"+app_id;
+    var app_id = $("#internship_id").val();
+    window.location="/internados/aspirantes/finalizar/"+app_id;
   });
   
   $("#cancel_button").live("click",function(){
