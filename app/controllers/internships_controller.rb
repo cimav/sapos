@@ -256,7 +256,13 @@ class InternshipsController < ApplicationController
 
     @internship       = Internship.find(session[:internship_user])
     @internship_files = InternshipFile.where(:internship_id=>session[:internship_user])
+
+    @i_file = InternshipFile.where(:internship_id=>session[:internship_user].to_i,:file_type=>6)
+ 
+   if @i_file.size.eql? 0
     security_course(@internship.email)
+   end
+
     render :layout=> "standalone"
   end#def files_register
   
