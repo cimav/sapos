@@ -28,9 +28,9 @@
                   #card_start_date= "Fecha de Ingreso: #{l @student.start_date, :format => :long}"
               %tr
                 %td
-                  - if @student.program.program_type.eql? 4
+                  - if @student.program.program_type.eql? 4 ## propedeuticos
                     #card_valid= "Vigencia: Julio 8, 2016"
-                  - else
+                  - else                                    ## resto de programas
                     #card_valid= "Vigencia: Enero 15, 2017"
         %tr
           %td{:colspan => 2}
