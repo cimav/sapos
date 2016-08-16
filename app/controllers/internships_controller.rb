@@ -1,8 +1,13 @@
 # coding: utf-8
+
+require 'digest/md5'
+require 'open-uri'
+
 class InternshipsController < ApplicationController
   load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file]
+  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register,:finalize,:applicant_logout]
+  before_filter :auth_indigest, :only=>[:files_register,:upload_file_register,:finalize]
 
   def index
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
@@ -239,13 +244,56 @@ class InternshipsController < ApplicationController
     render :layout => 'standalone'
   end
 
+  def files_register
+    @t    = t(:internships)
+    @user = Internship.find(session[:internship_user])
+
+    @req_docs   = InternshipFile::REQUESTED_DOCUMENTS.clone
+    @include_js = "internships.register.files.js"
+    @register   = true
+
+    @req_docs.delete(1)
+
+    @internship       = Internship.find(session[:internship_user])
+    @internship_files = InternshipFile.where(:internship_id=>session[:internship_user])
+
+    @i_file = InternshipFile.where(:internship_id=>session[:internship_user].to_i,:file_type=>6)
+ 
+   if @i_file.size.eql? 0
+    security_course(@internship.email)
+   end
+
+    render :layout=> "standalone"
+  end#def files_register
+  
+  def upload_applicant_file
+    json = {}
+    f = params[:internship_file]['file']
+
+    @internship_file = InternshipFile.new
+    @internship_file.internship_id = params[:internship_id]
+    @internship_file.file_type = params[:file_type]
+    @internship_file.file = f
+    @internship_file.description = f.original_filename
+
+    if @internship_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@internship_file.id}</id>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@internship_file.errors.full_messages}</errors>"
+    end 
+  rescue  
+    render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
+  end
+
   def upload_file
     flash = {}
     params[:internship_file]['file'].each do |f|
-      @internship_file = InternshipFile.new
+      @internship_file               = InternshipFile.new
       @internship_file.internship_id = params[:internship_file]['internship_id']
-      @internship_file.file = f
-      @internship_file.description = f.original_filename
+      @internship_file.file_type     = params[:internship_file]['file_type']
+      @internship_file.file          = f
+      @internship_file.description   = f.original_filename
+
       if @internship_file.save
         flash[:notice] = "Archivo subido exitosamente."
       else
@@ -265,6 +313,17 @@ class InternshipsController < ApplicationController
   def delete_file
   end
 
+  def applicant_files
+    @req_docs = InternshipFile::REQUESTED_DOCUMENTS.clone
+    @req_docs.delete(1)
+ 
+    @internship = Internship.find(params[:id])
+    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5])
+    render :layout=> "standalone"
+  rescue ActiveRecord::RecordNotFound
+    @error = 1
+    render :template=>"internships/errors",:layout=> "standalone"
+  end
 
   def id_card
     @internship = Internship.find(params[:id])
@@ -523,6 +582,45 @@ class InternshipsController < ApplicationController
     filename = "#{@r_root}/private/files/internships/#{@internship.id}/registro.pdf"
     send_file filename, :x_sendfile=>true
   end#applicant_file
+  
+  def upload_file_register
+    json = {}
+    f = params[:internship_file]['file']
+
+    @internship_file = InternshipFile.new
+    @internship_file.internship_id = session[:internship_user].to_i
+    @internship_file.file_type = params[:file_type]
+    @internship_file.file = f
+    @internship_file.description = f.original_filename
+
+    if @internship_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@internship_file.id}</id>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@internship_file.errors.full_messages}</errors>"
+    end 
+ # rescue  
+ #   render :inline => "<status>0</status><reference>upload</reference><errors>Error general</errors>"
+  end
+
+  def finalize
+    @t    = t(:internships)
+    @access = true
+    if session[:internship_user].to_i.eql? params[:id].to_i
+      if @internship.applicant_status.eql? 3
+        @internship = Internship.find(params[:id])
+        @internship.status=0
+        @internship.applicant_status=0
+        @internship.save
+        send_mail(@internship,"",6,"")
+      else
+        @access = false
+      end
+    else
+      @access = false
+    end
+
+    render :layout => 'standalone'
+  end
 
   def applicant_interview
     @internship = Internship.find(params[:id])
@@ -539,16 +637,62 @@ class InternshipsController < ApplicationController
     send_mail(@internship,"",3,@text)
 
     ## mail al entrevistador
+
+    ## generando token para aprobar servicio
+    token                   = Token.new
+    token.attachable_id     = @internship.id
+    token.attachable_type   = @internship.class.to_s
+    token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
+    token.status            = 1
+    token.expires           = Date.today + 40
+    token.save
+    
     @text = "Se ha programado la cita para entrevista de servicio social con #{@internship.full_name} [#{@internship.email}] para el día #{@adate[0]} de #{get_month_name(@adate[1].to_i)} de #{@adate[2]} a las #{@hour} horas."
-    @content= "{:full_name=>'',:email=>'#{@internship.email}',:view=>15,:reply_to=>'#{@user.email}',:text=>'#{@text}'}"
+
+
+    @content= "{:email=>'#{@internship.email}',:view=>22,:reply_to=>'#{@user.email}',:text=>'#{@text}',:token=>'#{token.token}'}"
     # @staff.email
     send_simple_mail(@staff.email,"Se ha programado un horario para entrevista de servicio social ",@content)
     ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'Se manda un correo con el horario a #{@staff.full_name} - #{@staff.email}'}"}).save
+
+    @internship.applicant_status = 4 ## estatus de entrevista
+    @internship.save
 
     json = {}
     json[:status]= 1
     render :json=> json
   end#applicant_interview
+  
+  def applicant_interview_qualify
+    @save  = false
+    @token = params[:token]
+    @t = Token.where(:token=>@token,:status=>1,:attachable_type=>'Internship').where("expires>=?",Date.today).limit(1)
+
+    if @t.size>0
+      @internship = Internship.find(@t[0].attachable_id)
+      if params[:auth]
+        @save  = true
+        @t[0].status =2  # Token class
+        @t[0].save
+
+        if params[:auth].to_i.eql? 1  ## APROBADO
+          @internship.applicant_status = 3
+          @internship.password = SecureRandom.base64(12)
+          @internship.save
+          send_mail(@internship,"",5,"")
+        elsif params[:auth].to_i.eql? 2 ## RECHAZADO
+          @internship.applicant_status = 2
+          @internship.save
+          send_mail(@internship,"",4,"")
+        end
+      end
+    else
+      render file: "#{Rails.root}/public/404.html", layout: false, status: 404
+      return
+    end
+
+    render :layout => false
+  end
 
   def generate_applicant_document(i) #i for internship
     @genero = ""
@@ -621,6 +765,10 @@ class InternshipsController < ApplicationController
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo al asistente'}"}).save
     elsif opc.eql? 3
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de fecha de entrevista'}"}).save
+    elsif opc.eql? 4
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social no autorizado'}"}).save
+    elsif opc.eql? 5
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social autorizado'}"}).save
     end
 
     if opc.eql? 1
@@ -635,6 +783,19 @@ class InternshipsController < ApplicationController
       @u_email   = i.email
       subject = "Se ha programado fecha para entrevista Solicitud Servicio Social CIMAV"
       content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>15,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+    elsif opc.eql? 4
+      @u_email   = i.email
+      subject = "No se ha autorizado Solicitud de Servicio CIMAV"
+      text    = "Se le informa que no se ha autorizado su solicitud de servicio CIMAV."
+      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>23,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+    elsif opc.eql? 5
+      @u_email = i.email
+      subject  = "Se ha autorizado Solicitud de Servicio CIMAV"
+      content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:i_id=>'#{i.id}',:pass=>'#{i.password}',:view=>24,:reply_to=>'#{user.email}'}"
+    elsif opc.eql? 6
+      @u_email = Settings.interships_cards_email
+      subject  = "Se ha registrado un alumno como Servicio CIMAV #{i.id}"
+      content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'25',:reply_to=>'#{user.email}'}"
     end
 
     email         = Email.new
@@ -651,6 +812,10 @@ class InternshipsController < ApplicationController
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al asistente'}"}).save
     elsif opc.eql? 3
       ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El usuario programa fecha de entrevista'}"}).save
+    elsif opc.eql? 4 
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El entrevistador rechaza solicitud'}"}).save
+    elsif opc.eql? 5
+      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El entrevistador autoriza solicitud'}"}).save
     end
   end#send_mail
 
@@ -685,4 +850,155 @@ class InternshipsController < ApplicationController
     name = months[number - 1]
     return name
   end
+  
+  def applicant_logout
+    session[:internship_user] = nil
+    session[:locale] = nil
+    @message = "Out of session"
+    @url = "/internados/aspirantes/documentos"
+    render :template => "internships/applicants_login",:layout=>false
+  end
+
+private
+  def auth_indigest
+    user = params[:user]
+    password = params[:password]
+
+    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+
+    if user && password
+      if Internship.where(:status=>3,:applicant_status=>3,:id=>user,:password=>password).size.eql? 1
+        session[:internship_user] = user
+      else
+        @user    = user
+        @message = "Usuario o password incorrectos"
+      end
+    end
+
+    if session_authenticated?
+      return true
+    else
+      @url = "/internados/aspirantes/documentos"
+      render :template => "internships/applicants_login",:layout=>false
+    end
+  end ## auth_indigest
+
+  def session_authenticated?
+    session[:internship_user] rescue nil
+  end
+
+  def analize(line)
+    if @counter>0
+      if line.include? @email
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "Quiz title"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "Points awarded"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "Total score"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "Passing score"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "User fails"
+        @row << line
+        @counter = @counter + 1 
+      elsif line.include? "User passes"
+        @row << line
+        @counter = @counter + 1 
+      else
+        @counter = 0 
+        @row.pop
+      end
+    end
+  
+    if @counter.eql? 7
+      @counter_hash = @counter_hash + 1
+  
+      @hash["#{@counter_hash}"] = @row.clone
+  
+      @counter = 0
+      @row.clear
+    end
+  
+    if line.include? "User name"
+      @row << line
+      @counter = 1
+    end
+  end
+
+ 
+  def security_course(email)
+    @email = email
+    @hash    = Hash.new
+    @row     = Array.new
+    @counter = 0 
+    @exam1   = false
+    @exam2   = false
+    @exam3   = false
+    @counter_hash = 0 
+
+    open("http://csh.cimav.edu.mx/resultados/resultados1.txt") {|f|
+      f.each_line {|line|
+        analize(line)
+      }
+    }
+    
+    if !(@hash.size.eql? 0)
+      if @hash["#{@counter_hash}"][6].include? "User passes"
+        @exam1 = true
+      end
+    end
+    
+    @hash.clear
+    @counter_hash = 0
+    
+    open("http://csh.cimav.edu.mx/resultados/resultados2.txt") {|f|
+      f.each_line {|line|
+        analize(line)
+      }
+    }
+    if !(@hash.size.eql? 0)
+      if @hash["#{@counter_hash}"][6].include? "User passes"
+        @exam2 = true
+      end
+    end
+    
+    @hash.clear
+    @counter_hash = 0
+    
+    open("http://csh.cimav.edu.mx/resultados/resultados3.txt") {|f|
+      f.each_line {|line|
+        analize(line)
+      }
+    }
+    
+    if !(@hash.size.eql? 0)
+      if @hash["#{@counter_hash}"][6].include? "User passes"
+        @exam3 = true
+      end
+    end
+    
+    @hash.clear
+    @counter_hash = 0
+    
+    logger.info @exam1
+    logger.info @exam2
+    logger.info @exam3
+    
+    if @exam1 && @exam2 && @exam3
+      @i_file = InternshipFile.new
+      @i_file.internship_id = session[:internship_user].to_i
+      @i_file.description   = "Curso"
+      @i_file.file          = "Curso"
+      @i_file.file_type     = 6
+      @i_file.save
+    end
+  end 
 end

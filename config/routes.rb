@@ -86,20 +86,30 @@ Sapos::Application.routes.draw do
 
   resources :staff_files
 
-  match 'internados/busqueda' => 'internships#live_search'
-  match 'internados/:id/cambiar_foto' => 'internships#change_image'
-  match 'internados/upload_image' => 'internships#upload_image'
-  match 'internados/:id/archivos' => 'internships#files'
-  match 'internados/:id/archivo/:file_id' => 'internships#file'
-  match 'internados/upload_file' => 'internships#upload_file'
-  match 'internados/delete_file' => 'internships#delete_file'
-  match 'internados/:id/credencial' => 'internships#id_card'
-  match 'internados/constancias/:type/:id' => 'internships#certificates'
-  match 'internados/aspirante' => 'internships#applicant_form'
+  match 'internados/busqueda'               => 'internships#live_search'
+  match 'internados/:id/cambiar_foto'       => 'internships#change_image'
+  match 'internados/upload_image'           => 'internships#upload_image'
+  match 'internados/:id/archivos'           => 'internships#files'
+  match 'internados/:id/archivo/:file_id'   => 'internships#file'
+  match 'internados/upload_file'            => 'internships#upload_file'
+  match 'internados/delete_file'            => 'internships#delete_file'
+  match 'internados/:id/credencial'         => 'internships#id_card'
+  match 'internados/constancias/:type/:id'  => 'internships#certificates'
+  match 'internados/aspirante'              => 'internships#applicant_form'
   match 'internados/aspirante/area/:option' => 'internships#applicant_form'
-  match 'internados/aspirante/crear' => 'internships#applicant_create'
-  match 'internados/aspirante/:id/formato/:token' => 'internships#applicant_file'
-  match 'internados/aspirantes/cita/:id/:staff_id' => 'internships#applicant_interview'
+  match 'internados/aspirante/crear'        => 'internships#applicant_create'
+  match 'internados/aspirante/:id/formato/:token'         => 'internships#applicant_file'
+  match 'internados/aspirantes/cita/:id/:staff_id'        => 'internships#applicant_interview'
+  match 'internados/aspirantes/calificar/:token'          => 'internships#applicant_interview_qualify'
+  match 'internados/aspirantes/:id/archivos'              => 'internships#applicant_files'
+  match 'internados/aspirantes/:id/upload_applicant_file' => 'internships#upload_applicant_file'
+  match 'internados/aspirantes/documentos'                => 'internships#files_register'
+  match 'internados/aspirantes/upload_file_register'      => 'internships#upload_file_register'
+  match 'internados/aspirantes/applicant_logout'          => 'internships#applicant_logout'
+  match 'internados/aspirantes/finalizar/:id'                 => 'internships#finalize'
+
+  match 'internados/aspirantes/file/:id'         => 'internship_files#download'
+  match 'internados/aspirantes/destroy_file/:id' => 'internship_files#applicant_destroy'
 
   resources :internship_files
 

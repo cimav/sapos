@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160503180607) do
+ActiveRecord::Schema.define(:version => 20160726205251) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -362,6 +362,7 @@ ActiveRecord::Schema.define(:version => 20160503180607) do
     t.string   "file"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "file_type"
   end
 
   add_index "internship_files", ["internship_id"], :name => "index_internship_files_on_internship_id"
@@ -408,6 +409,7 @@ ActiveRecord::Schema.define(:version => 20160503180607) do
     t.string   "health_insurance",        :limit => 150
     t.string   "health_insurance_number", :limit => 50
     t.string   "accident_contact"
+    t.string   "password"
   end
 
   add_index "internships", ["contact_id"], :name => "index_internships_on_contact_id"
@@ -468,10 +470,11 @@ ActiveRecord::Schema.define(:version => 20160503180607) do
     t.integer  "advance_id"
     t.integer  "staff_id"
     t.integer  "group"
-    t.integer  "grade"
+    t.integer  "grade_status"
     t.integer  "status"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
+    t.decimal  "grade",        :precision => 8, :scale => 2
   end
 
   create_table "questions", :force => true do |t|

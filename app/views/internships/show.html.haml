@@ -17,6 +17,8 @@
           window.location.href="internados/constancias/"+c_type+"/"+iid;
         });
 
+        $('#iapplicant_staff').select2();
+
       });
     });
 
@@ -41,6 +43,7 @@
       %li.first-tab= link_to "Detalles", "#detalles"
       %li= link_to "Contacto", "#contacto"
       %li= link_to "Archivos", "#archivos"
+      %li= link_to "Documentos", "#documentos"
       %li= link_to "Notas", "#notas"
       %li= link_to "Constancias", "#constancias"
       %li= link_to "Seguimiento de ingreso", "#seguimiento"
@@ -149,6 +152,11 @@
         = f.label :status, 'Estado'
         = f.select :status,  Internship::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
 
+      - if @internship.status.to_i.eql? 3
+        .field#field_internship_applicant_status
+          = f.label :applicant_status, 'Estado de Aspirante'
+          = f.select :applicant_status,  Internship::APPLICANT_STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+
       .field#field_internship_health_insurance
         = f.label :health_insurance, 'Servicio médico'
         = f.text_field :health_insurance
@@ -170,6 +178,10 @@
     #archivos
       %h2 Archivos
       %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/internados/#{@internship.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
+    
+    #documentos
+      %h2 Documentos
+      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "750", "src" => "/internados/aspirantes/#{@internship.id}/archivos", "scrolling" => "no", :frameborder=>"0"}
 
     #constancias
       %h2 Constancias

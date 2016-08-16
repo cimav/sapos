@@ -1,0 +1,15 @@
+- if @save
+  = "La respuesta ha sido enviada correctamente."
+- else
+  = form_tag "/internados/aspirantes/calificar/#{@t[0].token}",:remote =>true, :id=>"advance-grades-form", :name=>"advance-grades-form"
+  .question
+  = "Solicitud de servicio CIMAV #{@internship.full_name}"
+  .answer
+    %br
+      = radio_button_tag "auth",1,false
+      = "Autorizado"
+    %br
+      = radio_button_tag "auth",2,false
+      = "No Autorizado"
+    %br
+      = button_tag "Enviar",:id=>"recom-send",:class=>"button",:type=>:submit

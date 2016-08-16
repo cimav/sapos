@@ -1,6 +1,6 @@
 # coding: utf-8
 class InternshipFilesController < ApplicationController
-  before_filter :auth_required
+  before_filter :auth_required, :except=>[:download,:applicant_destroy]
   respond_to :html, :xml, :json
 
   def destroy
@@ -74,6 +74,20 @@ class InternshipFilesController < ApplicationController
           end
         end
       end
+    end
+  end
+  
+  def download
+    af = InternshipFile.find(params[:id]).file
+    send_file af.to_s, :x_sendfile=>true
+  end
+  
+  def applicant_destroy
+    @internship_files = InternshipFile.find(params[:id])
+    if @internship_files.destroy
+      render :inline => "<status>1</status><reference>destroy</reference>"
+    else
+      render :inline => "<status>0</status><reference>destroy</reference><errors>#{@internship_file.errors.full_messages}</errors>"
     end
   end
 
