@@ -1,7 +1,12 @@
-- if @save
+= stylesheet_link_tag 'custom-theme/jquery-ui.css'
+= javascript_include_tag "jquery.ui.datepicker.js"
+= javascript_include_tag "jquery.ui.datepicker-es.js"
+= javascript_include_tag "applicants.interview.js"
+
+-  if @save
   = "La respuesta ha sido enviada correctamente."
 - else
-  = form_tag "/internados/aspirantes/calificar/#{@t[0].token}",:remote =>true, :id=>"advance-grades-form", :name=>"advance-grades-form"
+  = form_tag "/internados/aspirantes/calificar/#{@t[0].token}",:remote =>false, :id=>"advance-grades-form", :name=>"advance-grades-form"
   .question
   = "Solicitud de servicio CIMAV #{@internship.full_name}"
   .answer
@@ -11,5 +16,16 @@
     %br
       = radio_button_tag "auth",2,false
       = "No Autorizado"
+    #data{:style=>"display:none;"}
+      %br 
+        = label_tag "Fecha Inicio: "
+        = text_field_tag "start_date"
+      %br 
+        = label_tag "Fecha Fin: "
+        = text_field_tag "end_date"
+      %br 
+        = label_tag "Actividades a desempeñar: "
+        = text_area_tag "activity_area",nil, :rows=>10, :cols=>40
+
     %br
-      = button_tag "Enviar",:id=>"recom-send",:class=>"button",:type=>:submit
+      = button_tag "Enviar",:id=>"recom-send",:class=>"button",:type=>:button

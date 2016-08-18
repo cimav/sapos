@@ -664,6 +664,7 @@ class InternshipsController < ApplicationController
   end#applicant_interview
   
   def applicant_interview_qualify
+
     @save  = false
     @token = params[:token]
     @t = Token.where(:token=>@token,:status=>1,:attachable_type=>'Internship').where("expires>=?",Date.today).limit(1)
@@ -677,6 +678,11 @@ class InternshipsController < ApplicationController
 
         if params[:auth].to_i.eql? 1  ## APROBADO
           @internship.applicant_status = 3
+
+          @internship.start_date = params[:start_date]
+          @internship.end_date   = params[:end_date]
+          @internship.activities = params[:activity_area]
+        
           @internship.password = SecureRandom.base64(12)
           @internship.save
           send_mail(@internship,"",5,"")
@@ -691,7 +697,13 @@ class InternshipsController < ApplicationController
       return
     end
 
-    render :layout => false
+    if @save.eql? false
+      response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+      response.headers["Pragma"] = "no-cache"
+      response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+    end
+
+    render :layout => 'standalone'
   end
 
   def generate_applicant_document(i) #i for internship
