@@ -116,6 +116,11 @@ es:
       name: "Eduardo Martínez Guerra"
       job: "Coordinador Académico Unidad Monterrey"
       gender: "M"
+    academic_coordinator_durango:
+      title: "Dra."
+      name: "Norma Alejandra Rodriguez Muñoz"
+      job: "Coordinador Académico Unidad Durango"
+      gender: "F"
   activerecord:
     errors:
       messages:
