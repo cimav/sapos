@@ -14,7 +14,6 @@ $(document).ready(function() {
   $('#start_date').datepicker(config);
   $('#end_date').datepicker(config);
 
-
   $('#auth_1').click(function(){
     $('#data').show();
   });
@@ -48,9 +47,6 @@ $(document).ready(function() {
       return false;
     }
   });
-
-  $('#advance-grades-form').submit();
-
 });
 
 
