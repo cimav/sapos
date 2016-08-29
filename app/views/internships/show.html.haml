@@ -14,7 +14,11 @@
         $('.reqdoc_button').click(function(){
           var c_type = $(this).attr("c_type");
           var iid    = $(this).attr("internship_id");
-          window.location.href="internados/constancias/"+c_type+"/"+iid;
+          var siid  = $("input[name='firma']:checked").val();
+
+          if(siid==undefined){alert("Debe elegir un firmante"); return false;}
+
+          window.location.href="internados/constancias/"+c_type+"/"+iid+"/"+siid;
         });
 
         $('#iapplicant_staff').select2();
@@ -194,6 +198,47 @@
       .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
         = label_tag 'Carta de uso de información'
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"uso",:internship_id=>@internship.id
+      .radioDiv
+        - dir     = t(:directory)
+        - checked = false
+        %br
+        %b= "Firmantes:" 
+        %br
+        %br
+          = radio_button_tag "firma", 1, false, class: "radio-button-sign"
+          = "#{dir[:academic_director][:title]} #{dir[:academic_director][:name]}"
+          = "(#{dir[:academic_director][:job]})"
+        %br
+          - if current_user.campus_id.to_i.eql? 0
+            - checked = true
+          = radio_button_tag "firma", 2, checked, class: "radio-button-sign"
+          - checked = false
+          = "#{dir[:posgrado_chief][:title]} #{dir[:posgrado_chief][:name]}"
+          = "(#{dir[:posgrado_chief][:job]})"
+        - if (current_user.campus_id == 1 || current_user.campus_id==0)
+          %br
+            - if current_user.campus_id.to_i.eql? 1
+              - checked = true
+            = radio_button_tag "firma", 3, checked, class: "radio-button-sign"
+            - checked = false
+            = "#{dir[:scholar_control][:title]} #{dir[:scholar_control][:name]}"
+            = "(#{dir[:scholar_control][:job]})"
+        - if (current_user.campus_id == 2 || current_user.campus_id==0)
+          %br
+            - if current_user.campus_id.to_i.eql? 2
+              - checked = true
+            = radio_button_tag "firma", 4, checked, class: "radio-button-sign"
+            - checked = false
+            = "#{dir[:academic_coordinator_monterrey][:title]} #{dir[:academic_coordinator_monterrey][:name]}"
+            = "(#{dir[:academic_coordinator_monterrey][:job]})"
+        - if (current_user.campus_id == 4 || current_user.campus_id==0)
+          %br
+            - if current_user.campus_id.to_i.eql? 4
+              - checked = true
+            = radio_button_tag "firma", 5, checked, class: "radio-button-sign"
+            - checked = false
+            = "#{dir[:academic_coordinator_durango][:title]} #{dir[:academic_coordinator_durango][:name]}"
+            = "(#{dir[:academic_coordinator_durango][:job]})"
 
 
     #notas
