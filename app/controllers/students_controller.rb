@@ -709,6 +709,13 @@ class StudentsController < ApplicationController
       @sgender = dir[:academic_coordinator_monterrey][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
+    elsif @sign.eql? "5"
+      title    = dir[:academic_coordinator_durango][:title]
+      name     = dir[:academic_coordinator_durango][:name]
+      job      = dir[:academic_coordinator_durango][:job]
+      @sgender = dir[:academic_coordinator_durango][:gender]
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
     end
 
     ##### GENERO GRAMATICAL #####
