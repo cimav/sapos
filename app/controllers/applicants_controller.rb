@@ -28,11 +28,13 @@ class ApplicantsController < ApplicationController
       @program_type = { Program::PROGRAM_TYPE[current_user.program_type] => current_user.program_type }
     end
 
+    @config = User.where(:email=>'SYSTEM').first.config rescue nil
     @campus = Campus.order('name')
   end
 
   def live_search
-    @applicants = Applicant.order("first_name")
+    @applicants            = Applicant.order("first_name")
+ 
     if !params[:status_borrados].to_i.eql? 1
       @applicants = @applicants.where("status<>?",Applicant::DELETED)
     end
@@ -140,6 +142,8 @@ class ApplicantsController < ApplicationController
     @t = t(:applicants)
     @programs     = Program.where(:program_type=>2).order('name')
     @places       = Applicant::PLACES.invert.sort {|a,b| a[1] <=> b[1] }
+    @config       = User.where(:email=>'SYSTEM').first.config rescue nil
+    @active       = @config[:applicants][:form_status] rescue nil
     render :layout => 'standalone'
   end
   

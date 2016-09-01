@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   def live_search
     @users = User.order('email')
     if !params[:q].blank?
-      @users = @users.where("(email LIKE :n)", {:n => "%#{params[:q]}%"})
+      @users = @users.where("(email LIKE :n) AND status<>:r", {:n => "%#{params[:q]}%",:r => User::STATUS_SYSTEM})
     end
     render :layout => false
   end
@@ -118,5 +118,25 @@ class UsersController < ApplicationController
     @type = params[:type]
     @programs = Program.where(:program_type=>@type)
     render :layout => false
+  end
+
+  def configuration
+    parameters = {}
+    config     = {}
+
+    if params[:u_id].to_i.eql? 0
+      @user = User.where(:email=>'SYSTEM').first
+    else
+      @user = User.find(params[:u_id])
+    end
+
+    if params[:option].to_i.eql? 1
+      config[:applicants] = {:form_status => params[:value]}
+
+      @user.config = config
+      @user.save 
+    end
+
+    render_message @user,"Configuracion guardada correctamente",parameters
   end
 end

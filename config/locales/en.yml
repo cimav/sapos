@@ -4,11 +4,11 @@
 en:
   applicants:
     title: "Application form"
-    #message0: "Instructions: Fill in the information. Then click on the \"Accept\" option. The system will send you an email with your pasword and id to access the application form."
-    message0: "Registration dates have been closed."
+    message0: "Instructions: Fill in the information. Then click on the \"Accept\" option. The system will send you an email with your pasword and id to access the application form."
     accept: "Accept"
     message1: "The password and id has been send to your e mail. The process could take more than 30 minutes. In case that you wont recibe the information or something goes  wrong, please contact atencion.posgrado@cimav.edu.mx"
     message2: "The documents to complete the application process must be uploaded in this section. Each document has to be uploaded individually, in pdf format, no more than 6 megabytes. Once the uploaded has been finished, you could print tha application form.<br><br>The documents  will be checked by the Posgraduate Coordination. In case of any problem, an e mail will  be send to inform you. "
+    message3: "Registration dates have been closed."
     terms: "<h4>Statement</h4>
         <br><h4>The information contained in this application will be treated in accordance with the Mexican Laws.</h4>
         <br><h4>I am aware of the application process and the normativity that applies. I will respect the regulations involved and the result of the process.</h4><br><h4>Note: When the conditions are accepted, tha application will be downloaded. Once tha aapplication has been print, the information contained can not be changed.</h4>" 

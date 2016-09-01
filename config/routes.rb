@@ -141,6 +141,7 @@ Sapos::Application.routes.draw do
 
   match 'usuarios/busqueda' => 'users#live_search'
   match 'usuarios/:id/permisos/:type' => 'users#permissions'
+  match 'usuarios/:u_id/config/:option' => 'users#configuration'
 
   match 'programas/busqueda' => 'programs#live_search'
   match 'programas/:id/:studies_plan_id/nuevo_curso' => 'programs#new_course'

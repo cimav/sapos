@@ -56,7 +56,64 @@ $(document).ready(function() {
       }
   });
 
+  $('#status_formato_ingreso').live("change",function(){
+    var checked = $(this).attr("checked");
+
+    if(checked){
+      if(confirm("¿Esta seguro que desea activar el formato de ingreso?"))
+      {
+        activate(1);
+        alert("Formato Activado");
+      }
+      else
+      {
+        $(this).attr("checked",false);
+      }
+    }
+    else
+    {
+      if(confirm("¿Esta seguro que desea desactivar el formato de ingreso?"))
+      {
+        activate(0);
+        alert("Desactivado");
+      }
+      else
+      {
+        $(this).attr("checked",true);
+      }
+    }
+  });
+
 });
+
+function activate(opt) {
+  var uri   = '/usuarios/0/config/1';
+  var data  = 'value='+opt ;
+  $.ajax({
+    type: 'POST',
+    url:   uri,
+    data:  data,
+    success:  function(data){
+      var jq   = jQuery.parseJSON(data);
+      try{
+      }
+      catch(e)
+      {
+       // let it pass
+      }
+    },
+    error: function(xhr, textStatus, error){
+       var text = xhr.responseText;
+       try{
+         var jq   = jQuery.parseJSON(xhr.responseText);
+         alert(jq.flash.error);
+       }
+       catch(e){
+         alert("Error desconocido: "+e.message)
+       }
+    },
+  });
+}
 
 function initializeSearchForm() {
   $("#program option[value=0]").attr("selected", true);

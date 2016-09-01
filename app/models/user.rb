@@ -1,6 +1,8 @@
 # coding: utf-8
 class User < ActiveRecord::Base
-  attr_accessible :id,:email,:access,:status,:created_at,:updated_at,:program_id,:campus_id,:program_type,:areas,:permission_user_attributes
+  attr_accessible :id,:email,:access,:status,:created_at,:updated_at,:program_id,:campus_id,:program_type,:areas,:config,:permission_user_attributes
+
+  serialize :config, Hash
 
   belongs_to :campus
   has_many :permission_user
@@ -14,6 +16,7 @@ class User < ActiveRecord::Base
   STUDENT       = 4
   MANAGER       = 5
 
+  STATUS_SYSTEM   = 0
   STATUS_ACTIVE   = 1
   STATUS_INACTIVE = 2
 
@@ -24,7 +27,8 @@ class User < ActiveRecord::Base
                  MANAGER       => 'Jefe de Posgrado'}
 
 
-  STATUS = {STATUS_INACTIVE => 'Inactivo',
+  STATUS = {STATUS_SYSTEM   => 'Sistema',
+            STATUS_INACTIVE => 'Inactivo',
             STATUS_ACTIVE   => 'Activo'}
 
   validates :email, :presence => true, :uniqueness => true
