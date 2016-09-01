@@ -89,10 +89,11 @@ class InternshipsController < ApplicationController
                    'Fin' => s.end_date,
                    'Asesor' => (s.staff.full_name rescue ''),
                    'Tesis' => s.thesis_title,
-                   'Actividades' => s.activities
+                   'Actividades' => s.activities,
+                   'Fecha registro' => (s.created_at.to_date.strftime("%d.%m.%Y") rescue '')
                    }
         end
-        column_order = ["Nombre", "Apellidos", "Sexo","Email", "Fecha de Nacimiento", "Tipo", "Institucion", "Inicio", "Fin", "Asesor", "Tesis", "Actividades"]
+        column_order = ["Nombre", "Apellidos", "Sexo","Email", "Fecha de Nacimiento", "Tipo", "Institucion", "Inicio", "Fin", "Asesor", "Tesis", "Actividades","Fecha registro"]
         to_excel(rows, column_order, "ServiciosCIMAV", "ServiciosCIMAV")
       end
     end
