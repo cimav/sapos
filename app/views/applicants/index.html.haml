@@ -33,7 +33,7 @@
           = label_tag 'status_borrados', 'Mostrar Borrados'
         %span 
           - checked = false
-          - if @config[:applicants][:form_status].to_i.eql? 1
+          - if (@config[:applicants][:form_status].to_i.eql? 1 rescue false)
             - checked = true
           = check_box_tag 'status_formato_ingreso', '2', checked, :class => 'status-cbs-sts'
           = label_tag 'status_formato_ingreso', 'Activar formato ingreso'
