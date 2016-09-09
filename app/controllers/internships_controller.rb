@@ -319,7 +319,7 @@ class InternshipsController < ApplicationController
     @req_docs.delete(1)
  
     @internship = Internship.find(params[:id])
-    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5])
+    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5,6])
     render :layout=> "standalone"
   rescue ActiveRecord::RecordNotFound
     @error = 1
