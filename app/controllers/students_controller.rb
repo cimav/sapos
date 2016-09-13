@@ -767,7 +767,7 @@ class StudentsController < ApplicationController
       @nombre     = @student.full_name
       @programa   = @student.program.name
       @matricula  = @student.card
-      @asesor     = Staff.find(@student.supervisor).full_name
+      @asesor     = Staff.find(@student.supervisor).full_name rescue ""
       @rails_root = "#{Rails.root}"
       @year_s     = year[2,4]
       @year       = year
@@ -794,7 +794,7 @@ class StudentsController < ApplicationController
       @month       = get_month_name(time.month)
       @nombre      = @student.full_name
       @matricula   = @student.card
-      @asesor      = Staff.find(@student.supervisor).full_name
+      @asesor      = Staff.find(@student.supervisor).full_name rescue ""
       @programa    = @student.program.name
       @student_image_uri = @student.image_url.to_s
 
@@ -819,7 +819,7 @@ class StudentsController < ApplicationController
       @month       = get_month_name(time.month)
       @nombre      = @student.full_name
       @matricula   = @student.card
-      @asesor      = Staff.find(@student.supervisor).full_name
+      @asesor      = Staff.find(@student.supervisor).full_name rescue ""
       @programa    = @student.program.name
       @semestre    = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.code
 
@@ -1101,7 +1101,7 @@ class StudentsController < ApplicationController
     @nombre      = @student.full_name
     @matricula   = @student.card
     @programa    = @student.program.name
-    @asesor      = Staff.find(params[:staff_id]).full_name
+    @asesor      = Staff.find(params[:staff_id]).full_name rescue ""
     @institution = Staff.find(params[:staff_id]).institution.name
     @thesis_title= @student.thesis.title
 
