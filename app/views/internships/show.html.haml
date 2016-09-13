@@ -205,16 +205,19 @@
         %b= "Firmantes:" 
         %br
         %br
+          - if current_user.campus_id.to_i.eql? 0
+            - checked = true
           = radio_button_tag "firma", 1, false, class: "radio-button-sign"
           = "#{dir[:academic_director][:title]} #{dir[:academic_director][:name]}"
           = "(#{dir[:academic_director][:job]})"
         %br
           - if current_user.campus_id.to_i.eql? 0
             - checked = true
-          = radio_button_tag "firma", 2, checked, class: "radio-button-sign"
-          - checked = false
-          = "#{dir[:posgrado_chief][:title]} #{dir[:posgrado_chief][:name]}"
-          = "(#{dir[:posgrado_chief][:job]})"
+          - if !(dir[:posgrado_chief].nil?)
+            = radio_button_tag "firma", 2, checked, class: "radio-button-sign"
+            - checked = false
+            = "#{dir[:posgrado_chief][:title]} #{dir[:posgrado_chief][:name]}"
+            = "(#{dir[:posgrado_chief][:job]})"
         - if (current_user.campus_id == 1 || current_user.campus_id==0)
           %br
             - if current_user.campus_id.to_i.eql? 1
