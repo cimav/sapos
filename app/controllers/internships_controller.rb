@@ -360,10 +360,14 @@ class InternshipsController < ApplicationController
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "2"
-      title    = dir[:posgrado_chief][:title]
-      name     = dir[:posgrado_chief][:name]
-      job      = dir[:posgrado_chief][:job]
-      @sgender = dir[:posgrado_chief][:gender]
+      #title    = dir[:posgrado_chief][:title]
+      #name     = dir[:posgrado_chief][:name]
+      #job      = dir[:posgrado_chief][:job]
+      #@sgender = dir[:posgrado_chief][:gender]
+      title    = dir[:academic_director][:title]
+      name     = dir[:academic_director][:name]
+      job      = dir[:academic_director][:job]
+      @sgender = dir[:academic_director][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "3"

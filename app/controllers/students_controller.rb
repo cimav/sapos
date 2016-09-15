@@ -689,10 +689,14 @@ class StudentsController < ApplicationController
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "2"
-      title    = dir[:posgrado_chief][:title]
-      name     = dir[:posgrado_chief][:name]
-      job      = dir[:posgrado_chief][:job]
-      @sgender = dir[:posgrado_chief][:gender]
+      #title    = dir[:posgrado_chief][:title]
+      #name     = dir[:posgrado_chief][:name]
+      #job      = dir[:posgrado_chief][:job]
+      #@sgender = dir[:posgrado_chief][:gender]
+      title    = dir[:academic_director][:title]
+      name     = dir[:academic_director][:name]
+      job      = dir[:academic_director][:job]
+      @sgender = dir[:academic_director][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "3"
@@ -2069,7 +2073,7 @@ class StudentsController < ApplicationController
     y    = 212
     h    = 45
     x    = x_right_top - w - 2
-    text = "Coordinación de Estudios de Posgrado\nM.H. Carmen Nicté Ortiz Villanueva"
+    text = "Dirección Académica\nDr. Erasmo Orrantia Borunda"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
 
