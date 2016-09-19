@@ -689,14 +689,10 @@ class StudentsController < ApplicationController
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "2"
-      #title    = dir[:posgrado_chief][:title]
-      #name     = dir[:posgrado_chief][:name]
-      #job      = dir[:posgrado_chief][:job]
-      #@sgender = dir[:posgrado_chief][:gender]
-      title    = dir[:academic_director][:title]
-      name     = dir[:academic_director][:name]
-      job      = dir[:academic_director][:job]
-      @sgender = dir[:academic_director][:gender]
+      title    = dir[:posgrado_chief][:title]
+      name     = dir[:posgrado_chief][:name]
+      job      = dir[:posgrado_chief][:job]
+      @sgender = dir[:posgrado_chief][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
     elsif @sign.eql? "3"
@@ -1449,13 +1445,13 @@ class StudentsController < ApplicationController
     # SET CIMAV DIRECTOR
     if params[:sign]
       x     = 202
-      y     = 37
+      y     = 57
       dir   = t(:directory)
       title = dir[:general_director][:title].mb_chars
       name  = dir[:general_director][:name].mb_chars
       job   = dir[:general_director][:job].mb_chars
       text  = "#{title} #{name}\n#{job}"
-      pdf.stroke_horizontal_line 210,356,:at=>40
+      pdf.stroke_horizontal_line 210,356,:at=>y + 3
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :top
     end
 
@@ -2073,7 +2069,7 @@ class StudentsController < ApplicationController
     y    = 212
     h    = 45
     x    = x_right_top - w - 2
-    text = "Dirección Académica\nDr. Erasmo Orrantia Borunda"
+    text = "Coordinación de Estudios de Posgrado\nDr. Roberto Martínez Sánchez"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
 

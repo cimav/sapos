@@ -313,8 +313,8 @@ class CommitteeSessionsController < ApplicationController
       @y_sign = 20
       @w_sign = 55
     elsif @s_id.to_i.eql? 2
-      @signer = "Dr. Erasmo Orrantia Borunda\n"
-      @sign   = "#{Rails.root.to_s}/private/images/firmas/firma3.png"
+      @signer = "Dr. Roberto Martínez Sánchez\n"
+      @sign   = "#{Rails.root.to_s}/private/images/firmas/firma2.png"
       @x_sign = 110
       @y_sign = 0
       @w_sign = 100

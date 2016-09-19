@@ -336,7 +336,7 @@ class CertificatesController < ApplicationController
       pdf.stroke_line [x + 10, y - 10],[x + 176,y - 8.5]
 
       set_general_director_sign(pdf,16,71)
-      #set_posgrado_chief_sign(pdf,250,71)
+      set_posgrado_chief_sign(pdf,250,71)
       send_data pdf.render, type: "application/pdf", disposition: "inline"
       return
     end

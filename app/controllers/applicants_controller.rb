@@ -570,12 +570,9 @@ class ApplicantsController < ApplicationController
     year = time.year.to_s
     dir  = t(:directory)   
 
-    #title = dir[:posgrado_chief][:title]
-    #name  = dir[:posgrado_chief][:name]
-    #job   = dir[:posgrado_chief][:job]
-    title    = dir[:academic_director][:title]
-    name     = dir[:academic_director][:name]
-    job      = dir[:academic_director][:job]
+    title = dir[:posgrado_chief][:title]
+    name  = dir[:posgrado_chief][:name]
+    job   = dir[:posgrado_chief][:job]
     @firma  = "#{title} #{name}"
     @puesto = "#{job}"
    

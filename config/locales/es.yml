@@ -101,11 +101,11 @@ es:
       name: "Erasmo Orrantia Borunda"
       job: "Director Académico"
       gender: "M"
-    #posgrado_chief:
-      #title: "M.H."
-      #name: "Carmen Nicté Ortiz Villanueva"
-      #job: "Coordinadora de Estudios de Posgrado"
-      #gender: "F"
+    posgrado_chief:
+      title: "M.H."
+      name: "Roberto Martínez Sánchez"
+      job: "Coordinador de Estudios de Posgrado"
+      gender: "M"
     scholar_control:
       title: "Lic."
       name: "Sandra Beltrán Lagunas"
