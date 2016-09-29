@@ -33,7 +33,7 @@ class ApplicantsController < ApplicationController
   end
 
   def live_search
-    @applicants            = Applicant.order("first_name")
+    @applicants            = Applicant.order("created_at")
  
     if !params[:status_borrados].to_i.eql? 1
       @applicants = @applicants.where("status<>?",Applicant::DELETED)
@@ -79,9 +79,10 @@ class ApplicantsController < ApplicationController
                    "Direccion" => s.address,
                    "Email" => s.email,
                    'Asesor' => (Staff.find(s.staff_id).full_name rescue ''),
+                   'Fecha_Registro' => s.created_at.to_date,
                   }
         end 
-        column_order = ["Folio","Nombre","Primer_Apellido","Segundo_Apellido","Fecha_Nac","Estado_Civil","Programa","Campus","Sede","Institucion_Anterior","Promedio","Telefono","Celular","Direccion","Email","Asesor"]
+        column_order = ["Folio","Nombre","Primer_Apellido","Segundo_Apellido","Fecha_Nac","Estado_Civil","Programa","Campus","Sede","Institucion_Anterior","Promedio","Telefono","Celular","Direccion","Email","Asesor","Fecha_Registro"]
         to_excel(rows,column_order,"Aspirantes","Aspirantes")
       end 
     end 
