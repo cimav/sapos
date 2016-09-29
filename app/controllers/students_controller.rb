@@ -1817,14 +1817,15 @@ class StudentsController < ApplicationController
     end
   end
 
-
-
   def diploma
     @r_root = Rails.root.to_s
     time    = Time.new
     t       = Thesis.find(params[:thesis_id])
     libro   = params[:libro]
     foja    = params[:foja]
+    day     = params[:day]
+    month   = params[:month]
+    year    = params[:year]
     @rectangles = false
 
     pdf = Prawn::Document.new(:page_size=>"LETTER",:page_layout=>:landscape)
@@ -1965,17 +1966,16 @@ class StudentsController < ApplicationController
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => char_space
 
     ## FECHA
-    diay  = time.day.to_s
-    mesy  = get_month_name(time.month).capitalize
-    anioy = time.year.to_s
+    diay  = day
+    mesy  = get_month_name(month.to_i)
+    anioy = year
 
     size = 22
     x = 8
     y = 40 #50
     h = size
     w = 400
-    #text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
-    text = "Chihuahua, Chih., a #{diax} de #{mesx} de #{aniox}"
+    text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:left, :valign=>:top, :character_spacing => - 0.4
 
@@ -2058,8 +2058,7 @@ class StudentsController < ApplicationController
     h    = size
     w    = 403
     x    = x_right_top - w
-    #text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
-    text = "Chihuahua, Chih., a #{diax} de #{mesx} de #{aniox}"
+    text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
    

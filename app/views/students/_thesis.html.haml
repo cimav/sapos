@@ -77,3 +77,16 @@
   = link_to ' Generar Acta de Grado (sin firma)', {:action => 'grade_certificates', :thesis_id => student.thesis.id }, :method => 'put', :target=>"_blank"
   %a{'id' => 'diploma-link', 'thesis_id'=> student.thesis.id,'href'=>''} Generar Diploma
   %a{'id' => 'total-studies-link', 'thesis_id'=> student.thesis.id,'href'=>''} Certificado Estudios Totales
+
+%div{:id => "book-page", :style => "display:none;"}
+  %div{:id => "field_book", :class => 'field'}
+    =label_tag "Libro"
+    =text_field_tag "book"
+  %div{:id => "field_page", :class => 'field'}
+    =label_tag "Foja"
+    =text_field_tag "page"
+  %div{:id => "field_print_date", :class => 'field'}
+    =label_tag "Fecha de impresión"
+    =date_select "print","date", :start_year => 1994
+  %div{:id => "field_button", :class => 'field'}
+    = button_tag "Generar", :id=>"button_mine", :name=>"button_mine", :class=>"my_class", :type=>"button"
