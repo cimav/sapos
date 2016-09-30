@@ -24,7 +24,8 @@ class InternshipsController < ApplicationController
   def live_search
     @aareas           = get_areas(current_user)
     if current_user.access == User::OPERATOR
-      @internships = Internship.order("first_name").where(:campus_id => current_user.campus_id,:area_id=>@aareas)
+      campuses = current_user.campus_id
+      @internships = Internship.order("first_name").where(:campus_id => campuses,:area_id=>@aareas)
     else
       @internships = Internship.order("first_name")
     end
@@ -387,6 +388,10 @@ class InternshipsController < ApplicationController
       @sgender = dir[:academic_coordinator_durango][:gender]
       @firma   = "#{title} #{name}"
       @puesto  = "#{job}"
+    elsif @sign.eql? "6"
+      @area = Area.find(@internship.area_id)
+      @firma   = "#{@area.leader}"
+      @puesto  = "#{@area.name}"
     end
 
     if params[:type] == "aceptacion"
@@ -428,6 +433,7 @@ class InternshipsController < ApplicationController
         @genero2 = "x"
       end
 
+      #html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_aceptacion')
       html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_aceptacion')
       kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "carta-aceptacion-#{@internship.id}.pdf"
