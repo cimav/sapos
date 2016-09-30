@@ -307,7 +307,7 @@ class CommitteeSessionsController < ApplicationController
     @type = @c_a.committee_agreement_type.id
 
     if @s_id.to_i.eql? 1
-      @signer = "Lic. Sandra Luz Beltrán Lagunas\nUnidad de Servicios Escolares"
+      @signer = "Lic. Emilio Pascual Domínguez Lechuga\nCoordinador de Control Escolar"
       @sign   = "#{Rails.root.to_s}/private/images/firmas/firma1.png"
       @x_sign = 130
       @y_sign = 20
