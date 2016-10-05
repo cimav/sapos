@@ -7,7 +7,7 @@ class Graduate < ActiveRecord::Base
 
   validates_uniqueness_of :student_id
   validates :student_id, :presence => true
-  validates :workplace, :presence => true
+  #validates :workplace, :presence => true
   
   NONE    = 0
   
