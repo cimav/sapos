@@ -30,7 +30,7 @@
       %td.centered= g.code
       %td= g.name
       %td.centered
-        - if g.grade<0
+        - if g.grade.nil?
           = "NP"
         - else
           = grade

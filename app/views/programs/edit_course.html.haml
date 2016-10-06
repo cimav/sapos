@@ -7,7 +7,10 @@
 
     %div{:id => "field_program_courses_0_term", :class => 'field'}
       = fields.label :term, @program.term_type
-      = fields.select :term,  (1..@program.terms_qty).to_a << ['Optativa',99]
+      - terms =  (1..@program.terms_qty).to_a << ['Optativa',99]
+      - terms << ['Especialización',100]
+      - terms << ['Complementarias',101]
+      = fields.select :term,terms
 
     %div{:id => "field_program_courses_0_code", :class => 'field'}
       = fields.label :code, 'Clave'

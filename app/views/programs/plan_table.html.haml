@@ -7,6 +7,12 @@
       - if current_term == 99
         %tr.optional
           %th{:colspan=>5} Optativas
+      - elsif current_term == 100
+        %tr.optional
+          %th{:colspan=>5}= "Materias de Especialización"
+      - elsif current_term == 101
+        %tr.optional
+          %th{:colspan=>5}= "Actividades Complementarias"
       - else
         %tr.term
           %th{:colspan=>5}= "#{@program.term_type} #{course.term}"
