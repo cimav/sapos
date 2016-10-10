@@ -1,3 +1,6 @@
 assets_path: "/public/assets/"
-admin_email: "enrique.turcott@cimav.edu.mx"
-interships_cards_email: "enrique.turcott@cimav.edu.mx"
+admin_email: "" #developer
+interships_cards_email: "" #biblioteca
+school_services1: "" #Ariane
+school_services2: "" #Vivi
+

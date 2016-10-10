@@ -221,7 +221,8 @@ class ApplicantsController < ApplicationController
       content = "{:applicant_id=>\"#{@applicant.id}\",:view=>1}"
       send_email(@applicant.email,"Solicitud nuevo ingreso CIMAV",content,@applicant)
       content = "{:applicant_id=>\"#{@applicant.id}\",:view=>2}"
-      send_email(Sapos::Application.config.admin_email,"Un aspirante ha solicitado password",content,@applicant)
+      send_email(Settings.school_services1,"Un aspirante ha solicitado password",content,@applicant)
+      send_email(Settings.school_services2,"Un aspirante ha solicitado password",content,@applicant)
     else
       flash[:error] = "Error al crear aspirante."
       respond_with do |format|
@@ -387,7 +388,8 @@ class ApplicantsController < ApplicationController
         a.status = 8
         a.save
         content = "{:applicant_id=>\"#{a.id}\",:view=>3}"
-        send_email(Sapos::Application.config.admin_email,"Un aspirante ha generado su solicitud",content,a)
+        send_email(Settings.school_services1,"Un aspirante ha generado su solicitud",content,a)
+        send_email(Settings.school_services2,"Un aspirante ha generado su solicitud",content,a)
       else
         logger.info "############## #{@applicant_file.errors}"
       end
