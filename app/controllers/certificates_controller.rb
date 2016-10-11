@@ -329,8 +329,11 @@ class CertificatesController < ApplicationController
       y = y - 4
       w = 250
       h = 9
-      size = 9
-      text = "#{time.day.to_s} de #{get_month_name(time.month)} de #{time.year.to_s}"
+      size  = 9
+      day   = params[:day]
+      month = params[:month]
+      year  = params[:year] 
+      text = "#{day} de #{get_month_name(month.to_i)} de #{year}"
       pdf.text_box text , :at=>[x+45,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
       pdf.line_width   = 0.5
       pdf.stroke_line [x + 10, y - 10],[x + 176,y - 8.5]

@@ -47,13 +47,11 @@ $('#diploma-link').live('click', function() {
  
     if(isNaN(validate_book)){
       alert("Todos los parametros deben ser numericos");
-      return false;
-    }
+      return false;}
 
     if(isNaN(validate_foja)){
       alert("Todos los parametros deben ser numericos");
-      return false;
-    }
+      return false;}
 
     var href  = location.pathname + "/diploma/" + $('#diploma-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja + "&day=" +day+ "&month=" + month + "&year=" + year;
     window.open(href,'newWindow');
@@ -63,15 +61,38 @@ $('#diploma-link').live('click', function() {
   return false;
 });
 
-$('#total-studies-link').live('click', function() {
- var libro = prompt("Por favor capture el libro");
- var foja  = prompt("Por favor capture la foja");
- var href  = location.pathname + "/constancia_total/" + $('#total-studies-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja;
- $('#total-studies-link').attr("target","_blank");
- $('#total-studies-link').attr("href",href);
- return true;
-});
 
+$('#total-studies-link').live('click', function() {
+  var html = $("#book-page").html();
+  $("#new-advance-dialog").remove();
+  $('#content-panel').append('<div title="Datos del certificado de estudios" id="new-advance-dialog">'+html+'</div>');
+  $("#new-advance-dialog").dialog({ autoOpen: false, width: 450, height: 215, modal:true });
+  $("#new-advance-dialog").dialog('open');
+
+  $("#button_mine").live("click", function(){
+    var libro = $("#new-advance-dialog #book").val();
+    var foja  = $("#new-advance-dialog #page").val();
+    var day   = $("#new-advance-dialog #print_date_3i").val();
+    var month = $("#new-advance-dialog #print_date_2i").val();
+    var year  = $("#new-advance-dialog #print_date_1i").val();
+    var validate_book = parseInt(libro,10);
+    var validate_foja = parseInt(foja,10);
+ 
+    if(isNaN(validate_book)){
+      alert("Todos los parametros deben ser numericos");
+      return false;}
+
+    if(isNaN(validate_foja)){
+      alert("Todos los parametros deben ser numericos");
+      return false;}
+
+    var href  = location.pathname + "/constancia_total/" + $('#diploma-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja + "&day=" +day+ "&month=" + month + "&year=" + year;
+    window.open(href,'newWindow');
+    $("#new-advance-dialog").dialog('close');
+  });
+ 
+  return false;
+});
 
 
 function initializeSearchForm() {
