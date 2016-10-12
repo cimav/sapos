@@ -25,9 +25,17 @@ class InternshipsController < ApplicationController
     @aareas           = get_areas(current_user)
     if current_user.access == User::OPERATOR
       campuses = current_user.campus_id
-      @internships = Internship.order("first_name").where(:campus_id => campuses,:area_id=>@aareas)
+      if !params[:status_order].blank?
+        @internships = Internship.order("created_at desc").where(:campus_id => campuses,:area_id=>@aareas)
+      else 
+        @internships = Internship.order("first_name").where(:campus_id => campuses,:area_id=>@aareas)
+      end
     else
-      @internships = Internship.order("first_name")
+      if !params[:status_order].blank?
+        @internships = Internship.order("created_at desc")
+      else
+        @internships = Internship.order("first_name")
+      end
     end
 
     if params[:institution] != '0' then
@@ -78,6 +86,9 @@ class InternshipsController < ApplicationController
       end
       format.xls do
         rows = Array.new
+
+        @internships.order("created_at")
+
         @internships.collect do |s|
           rows << {'Nombre' => s.first_name,
                    'Apellidos' => s.last_name,
@@ -91,7 +102,7 @@ class InternshipsController < ApplicationController
                    'Asesor' => (s.staff.full_name rescue ''),
                    'Tesis' => s.thesis_title,
                    'Actividades' => s.activities,
-                   'Fecha registro' => (s.created_at.to_date.strftime("%d.%m.%Y") rescue '')
+                   'Fecha registro' => (s.created_at.to_date.strftime("%Y.%m.%d") rescue '')
                    }
         end
         column_order = ["Nombre", "Apellidos", "Sexo","Email", "Fecha de Nacimiento", "Tipo", "Institucion", "Inicio", "Fin", "Asesor", "Tesis", "Actividades","Fecha registro"]
