@@ -92,6 +92,7 @@ class GraduatesController < ApplicationController
           rows << {'Matricula' => s.card,
                    'Nombre' => s.first_name, 
                    'Apellidos' => s.last_name, 
+                   'Email' => s.email,
                    'Estado' => s.status_type,
 	           "Fecha_Nac" => s.date_of_birth,
 	           "Ciudad_Nac" => s.city,
@@ -111,7 +112,7 @@ class GraduatesController < ApplicationController
                    'Al' => (s.graduate.period_to rescue ''),
                    }
         end
-        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Campus", "Programa", "Asesor", "Lugar_de_trabajo","Ingresos","Giro","Premios","SNI","Estatus_SNI","Estudios_Subsecuentes","Del","Al"]
+        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Email", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Campus", "Programa", "Asesor", "Lugar_de_trabajo","Ingresos","Giro","Premios","SNI","Estatus_SNI","Estudios_Subsecuentes","Del","Al"]
         to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
