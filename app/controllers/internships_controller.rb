@@ -11,13 +11,23 @@ class InternshipsController < ApplicationController
 
   def index
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
-    @staffs = Staff.order('first_name').where("id IN (SELECT DISTINCT staff_id FROM internships)")
+    @staffs       = Staff.order('first_name').where("id IN (SELECT DISTINCT staff_id FROM internships)")
+    campuses      = current_user.campus_id
     @internship_types = InternshipType.order('name')
 
+
     if current_user.access == User::OPERATOR
-      @campus = Campus.order('name').where(:id=> current_user.campus_id)
+      if campuses.eql? 0
+        @campus = Campus.order('name')
+      else
+        @campus = Campus.order('name').where(:id=> current_user.campus_id)
+      end
+
+      @aareas       = get_areas(current_user)
+      @areas  = Area.where(:id=>@aareas)
     else
       @campus = Campus.order('name')
+      @areas  = Area.all 
     end
   end
 
@@ -25,9 +35,6 @@ class InternshipsController < ApplicationController
     @aareas           = get_areas(current_user)
     if current_user.access == User::OPERATOR
       campuses = current_user.campus_id
-      if campuses.eql? 0 
-        
-      end
 
       if !params[:status_order].blank?
         if campuses.eql? 0
@@ -48,6 +55,10 @@ class InternshipsController < ApplicationController
       else
         @internships = Internship.order("first_name")
       end
+    end
+    
+    if params[:area_s] != '0' then
+      @internships = @internships.where(:area_id => params[:area_s])
     end
 
     if params[:institution] != '0' then

@@ -4,10 +4,13 @@
 - @include2_js = 'select2'
 - @include3_js = 'select2_locale_es'
 - @include_css = 'select2/select2'
-#items-panel.side-panel.internships-side-panel
-  .panel-search{:style=>'height: 200px;'}
-
+#items-panel.side-panel
+  .panel-search{:style=>'height: 180px;'}
     = form_tag internships_path, :id => 'live-search', :method => 'get', :remote => true do
+      - area_options = "<option value=\"0\">Todas las areas</option>"
+      - @areas.each do |area|
+        - area_options += "<option value=\"#{area.id}\">#{area.name}</option>"
+      = select_tag "area_s", area_options.html_safe
 
       - internship_type_options = "<option value=\"0\">Todas los tipos</option>"
       - @internship_types.each do |internship_type|
@@ -31,7 +34,7 @@
 
       = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda'
 
-      .cbs
+      .cbs{:style=>"padding-top: 7px;"}
         %span
           = check_box_tag 'status_activos', '0', true, :class => 'status-cbs'
           = label_tag 'status_activos', 'Activos'
@@ -49,7 +52,7 @@
           = check_box_tag 'status_order', '4', false, :class => 'status-cbs'
           = label_tag 'status_order', 'Ordenar por fecha de registro'
 
-  #items-list.panel-items{:style=>'top:290px'}
+  #items-list.panel-items{:style=>'top:202px'}
 
   .panel-add
     -# if can? :create, Internship

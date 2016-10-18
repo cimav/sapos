@@ -4,6 +4,7 @@ class Internship < ActiveRecord::Base
   belongs_to :institution
   belongs_to :staff
   belongs_to :internship_type
+  belongs_to :area
 
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact

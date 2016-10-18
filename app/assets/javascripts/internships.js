@@ -1,5 +1,10 @@
 var model_name = 'internship';
 
+// ** On change Area
+$('#area_s').live("change", function() {
+  liveSearch();
+});
+
 // ** On change Institution
 $('#institution').live("change", function() {
   liveSearch();
