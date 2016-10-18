@@ -25,10 +25,22 @@ class InternshipsController < ApplicationController
     @aareas           = get_areas(current_user)
     if current_user.access == User::OPERATOR
       campuses = current_user.campus_id
+      if campuses.eql? 0 
+        
+      end
+
       if !params[:status_order].blank?
-        @internships = Internship.order("created_at desc").where(:campus_id => campuses,:area_id=>@aareas)
+        if campuses.eql? 0
+          @internships = Internship.order("created_at desc").where(:area_id=>@aareas)
+        else
+          @internships = Internship.order("created_at desc").where(:campus_id => campuses,:area_id=>@aareas)
+        end
       else 
-        @internships = Internship.order("first_name").where(:campus_id => campuses,:area_id=>@aareas)
+        if campuses.eql? 0
+          @internships = Internship.order("first_name").where(:area_id=>@aareas)
+        else
+          @internships = Internship.order("first_name").where(:campus_id => campuses,:area_id=>@aareas)
+        end
       end
     else
       if !params[:status_order].blank?
