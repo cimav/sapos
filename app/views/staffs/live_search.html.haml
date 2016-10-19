@@ -7,5 +7,8 @@
         = image_tag staff.image_url(:small).to_s, :id => "img-small-#{staff.id}"
         .title= staff.first_name + " " + staff.last_name
         .comment= staff.institution.short_name rescue ''
+        - if staff.institution_id.eql? 1
+          .comment
+            = staff.area.name rescue 'N.D'
 #counter
   .inner= "#{c} docentes"
