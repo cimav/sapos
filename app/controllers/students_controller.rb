@@ -144,8 +144,11 @@ class StudentsController < ApplicationController
 	    end_date = ''
 	  end
 
-          age = 0
-          #age = now.year - s.date_of_birth.year - (s.date_of_birth.to_time.change(:year => now.year) > now ? 1 : 0)
+          if s.date_of_birth.nil?
+            age = 0
+          else
+            age = now.year - s.date_of_birth.year - (s.date_of_birth.to_time.change(:year => now.year) > now ? 1 : 0)
+          end
           last_advance = s.advance.where(:status=>["P","C"],).order(:advance_date).first
 
 	  rows << {'Matricula' => s.card,
