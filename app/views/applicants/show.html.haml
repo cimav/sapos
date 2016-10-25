@@ -139,6 +139,10 @@
       .field#field_applicant_notes
         = f.label :notes, 'Notas'
         = f.text_area :notes
+      
+      .field#field_applicant_notes
+        = f.label :password, 'Password'
+        = @applicant.password
 
     #documentos
       %h2 Documentos
