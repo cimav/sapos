@@ -313,7 +313,7 @@ class ApplicantsController < ApplicationController
       data << ["<b>Dirección:</b>",a.address]
       data << ["<b>Estado Civil:</b>",Applicant::CIVIL_STATUS[a.civil_status]]
       data << ["<b>Grado Anterior:</b>",a.previous_degree_type]
-      data << ["<b>Institucion de origen:</b>",Institution.find(a.previous_institution).name]
+      data << ["<b>Institucion de origen:</b>",(Institution.find(a.previous_institution).name rescue "N.D.")]
       data << ["<b>Promedio:</b>",a.average]
       tabla = pdf.make_table(data,:width=>530,:cell_style=>{:size=>12,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths=>[130,400])
       tabla.draw
