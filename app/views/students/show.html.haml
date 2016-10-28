@@ -54,7 +54,7 @@
       .comment= "Matrícula: #{@student.card} (#{@student.program.name})"
       .comment
         = "Tiempo estudiante: #{@year} #{@text_year} #{@month} #{@text_month}, Ciclos: "
-        - tcs_size = @student.term_students.size
+        - tcs_size = @student.term_students.where(:status=>1).size
         - if tcs_size > @student.program.terms_qty
           %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_qty})
         - else  
