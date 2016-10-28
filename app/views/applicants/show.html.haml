@@ -143,6 +143,7 @@
       .field#field_applicant_notes
         = f.label :password, 'Password'
         = @applicant.password
+        = "(#{@applicant.id})"
 
     #documentos
       %h2 Documentos
