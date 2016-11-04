@@ -1,0 +1,3 @@
+%h2 Tesis
+= fields_for "student[thesis_attributes]", @student.thesis do |thesis_fields|
+  = render :partial => 'thesis', :locals => {:student => @student, :fields => thesis_fields, :staffs => @staffs}

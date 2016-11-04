@@ -28,21 +28,22 @@ class StudentsController < ApplicationController
     end
 
     @supervisors = Staff.find_by_sql "SELECT id, first_name, last_name FROM staffs WHERE id IN (SELECT supervisor FROM students UNION SELECT co_supervisor FROM students) ORDER BY first_name, last_name"
+    @programs_json = @programs.select("id,name").all
   end
 
   def live_search
     if current_user.program_type==Program::ALL
-      @students = Student.order("first_name").includes(:program)
+      @students = Student.select("id,first_name,last_name,program_id").order("first_name").includes(:program)
     else
-      @students = Student.joins(:program => :permission_user).where(:permission_users=>{:user_id=>current_user.id}).order("first_name").includes(:program)
+      @students = Student.select("id,first_name,last_name,program_id").joins(:program => :permission_user).where(:permission_users=>{:user_id=>current_user.id}).order("first_name").includes(:program)
     end
 
     if params[:program_type] != '0' then
-      @students = @students.joins(:program).where(:programs=>{:program_type=>params[:program_type]})
+      @students = @students.select("id,first_name,last_name,program_id").joins(:program).where(:programs=>{:program_type=>params[:program_type]})
     end
 
     if params[:program] != '0' then
-      @students = @students.where(:program_id => params[:program])
+      @students = @students.select("id,first_name,last_name,program_id").where(:program_id => params[:program])
     end
 
     if current_user.campus_id != 0
@@ -50,51 +51,51 @@ class StudentsController < ApplicationController
     end
 
     if params[:campus] != '0' then
-      @students = @students.where(:campus_id => params[:campus])
+      @students = @students.select("id,first_name,last_name,program_id").where(:campus_id => params[:campus])
     end
 
     if params[:supervisor] != '0' then
-      @students = @students.where("(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]})
+      @students = @students.select("id,first_name,last_name,program_id").where("(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]})
     end
 
     if params[:status] == 'todos_activos' then
-      @students = @students.where("status = #{Student::ACTIVE}")
+      @students = @students.select("id,first_name,last_name,program_id").where("status = #{Student::ACTIVE}")
     end
 
     if params[:status] == 'activos_inscritos' then
-      @students = @students.where("status = #{Student::ACTIVE} AND students.id IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
+      @students = @students.select("id,first_name,last_name,program_id").where("status = #{Student::ACTIVE} AND students.id IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
     end
 
     if params[:status] == 'activos_no_inscritos' then
-      @students = @students.where("status = #{Student::ACTIVE} AND students.id NOT IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
+      @students = @students.select("id,first_name,last_name,program_id").where("status = #{Student::ACTIVE} AND students.id NOT IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
     end
 
 
     if params[:status] == 'todos_egresados' then
-      @students = @students.where("status IN (#{Student::GRADUATED}, #{Student::FINISH})")
+      @students = @students.select("id,first_name,last_name,program_id").where("status IN (#{Student::GRADUATED}, #{Student::FINISH})")
     end
 
     if params[:status] == 'egresados_graduados' then
-      @students = @students.where("status = #{Student::GRADUATED}")
+      @students = @students.select("id,first_name,last_name,program_id").where("status = #{Student::GRADUATED}")
     end
 
     if params[:status] == 'egresados_no_graduados' then
-      @students = @students.where("status = #{Student::FINISH}")
+      @students = @students.select("id,first_name,last_name,program_id").where("status = #{Student::FINISH}")
     end
 
     if params[:status] == 'baja_temporal' then
-      @students = @students.where("status = #{Student::INACTIVE}")
+      @students = @students.select("id,first_name,last_name,program_id").where("status = #{Student::INACTIVE}")
     end
 
     if params[:status] == 'baja_definitiva' then
-      @students = @students.where("status = #{Student::UNREGISTERED}")
+      @students = @students.select("id,first_name,last_name,program_id").where("status = #{Student::UNREGISTERED}")
     end
 
     if params[:status] == 'preinscritos' then
-      @students = @students.where("status = #{Student::PENROLLMENT}")
+      @students = @students.select("id,first_name,last_name,program_id").where("status = #{Student::PENROLLMENT}")
     end
 
-
+=begin
     if !params[:q].blank?
       if params[:q].to_i != 0
         @students = @students.where("id = ?",params[:q].to_i)
@@ -102,6 +103,7 @@ class StudentsController < ApplicationController
         @students = @students.where("(CONCAT(first_name,' ',last_name) LIKE :n OR card LIKE :n)", {:n => "%#{params[:q]}%"})
       end
     end
+=end
 
     s = []
 
@@ -118,7 +120,7 @@ class StudentsController < ApplicationController
     end
 
     if !s.empty?
-      @students = @students.where("status IN (#{s.join(',')})")
+      @students = @students.select("id,first_name,last_name,program_id").where("status IN (#{s.join(',')})")
     end
 
     # Descartamos los que tienen status de borrado
@@ -126,12 +128,13 @@ class StudentsController < ApplicationController
 
     respond_with do |format|
       format.html do
-	render :layout => false
+         render json: @students.select("id,first_name,last_name,program_id,image")
+	      #render :layout => false
       end
       format.xls do
-	rows = Array.new
+	      rows = Array.new
         now = Time.now.utc
-	@students.collect do |s|
+	      @students.collect do |s|
 	  if s.status == Student::GRADUATED || s.status == Student::FINISH
 	    end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
 
@@ -189,7 +192,8 @@ class StudentsController < ApplicationController
   end
 
   def show
-    @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    #@student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    @student = Student.includes(:program, :contact).find(params[:id])
     @applicant_id = 0
 
     program_id  = @student.program_id
@@ -197,12 +201,6 @@ class StudentsController < ApplicationController
       program_id = 1
     elsif program_id.to_i.eql? 7
       program_id = 3
-    end
-
-    @applicants   = Applicant.where(:student_id=>@student.id,:campus_id=>@student.campus_id,:program_id=>program_id)
-
-    if @applicants.size>0
-      @applicant_id = @applicants[0].id
     end
 
     @staffs = Staff.order('first_name').includes(:institution)
@@ -240,12 +238,71 @@ class StudentsController < ApplicationController
       @text_month = "meses"
     end
 
-
     if current_user.access == User::OPERATOR
       @campus = Campus.order('name').where(:id=> current_user.campus_id)
     else
       @campus = Campus.order('name')
     end
+    render :layout => false
+  end
+
+  def contact
+    #@student   = Student.includes(:program, :contact).find(params[:id])
+    @student   = Student.find(params[:id]) 
+    @countries = Country.order('name')
+    @states    = State.order('code')
+    render :layout => false
+  end
+
+  def advance
+    @student   = Student.find(params[:id]) 
+    @staffs    = Staff.where(:status=>0)
+    render :layout => false
+  end
+
+  def thesis
+    @student   = Student.find(params[:id]) 
+    @staffs    = Staff.where(:status=>0)
+    render :layout => false
+  end
+
+  def files_show
+    @student   = Student.find(params[:id]) 
+    render :layout => false
+  end
+
+  def payments_show
+    @student   = Student.find(params[:id]) 
+    render :layout => false
+  end
+  
+  def certificates_show
+    @student   = Student.find(params[:id]) 
+    render :layout => false
+  end
+
+  def documents
+    @student      = Student.find(params[:id]) 
+    @applicants   = Applicant.where(:student_id=>@student.id,:campus_id=>@student.campus_id,:program_id=>@student.program_id)
+
+    if @applicants.size>0
+      @applicant_id = @applicants[0].id
+    end
+    render :layout => false
+  end
+
+  def schedule
+    @student      = Student.find(params[:id]) 
+    render :layout => false
+  end
+
+  def grades
+    @student      = Student.find(params[:id]) 
+    render :layout => false
+  end
+
+  def kardex_show
+    @student      = Student.find(params[:id]) 
     render :layout => false
   end
 

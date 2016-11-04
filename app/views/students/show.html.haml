@@ -31,8 +31,25 @@
   = hidden_field :student, :id
 
   :javascript
+    var ftabs = ["#detalles","#notas"];
     $(function() {
-      $('#resource-tabs').tabs();
+      $('#resource-tabs').tabs({
+        select: function(event,ui){ 
+          var href = $(ui.tab).attr('href');
+          var uri  = $(ui.tab).attr('data-remote');
+
+          if(ftabs.indexOf(href)==-1){
+            $(ui.panel).html("<img src=\"\/images\/ajax-load2.gif\">");
+            $.get(uri, function(data) {
+              $(ui.panel).html(data);
+              ftabs.push(href);
+            })
+            .fail(function(){
+              $(ui.panel).html("No se pudo cargar el panel "+href);
+            });
+          }
+        }
+      });
       $("#change-img-dialog").remove();
       $('#content-panel').append('<div title="Cambiar fotografía" id="change-img-dialog"><iframe width="430" height="450" src="/estudiantes/#{@student.id}/cambiar_foto" scrolling="no"></iframe></div>');
       $("#change-img-dialog").dialog({ autoOpen: false, width: 470, height: 550, modal:true });   
@@ -70,17 +87,17 @@
   #resource-tabs
     %ul
       %li.first-tab= link_to "Detalles", "#detalles"
-      %li= link_to "Contacto", "#contacto"
-      %li= link_to "Avances", "#avances"
-      %li= link_to "Tesis", "#tesis"
-      %li= link_to "Archivos", "#archivos"
-      %li= link_to "Documentos", "#documentos"
-      %li= link_to "Horarios", "#horario"
-      %li= link_to "Calificaciones", "#calificaciones"
+      %li= link_to "Contacto", "#contacto", :data=> {:remote=>"/estudiantes/contacto/#{@student.id}"}
+      %li= link_to "Avances", "#avances", :data=> {:remote=>"/estudiantes/avance/#{@student.id}"}
+      %li= link_to "Tesis", "#tesis", :data=> {:remote=>"/estudiantes/tesis/#{@student.id}"}
+      %li= link_to "Archivos", "#archivos", :data=> {:remote=>"/estudiantes/archivos/#{@student.id}"}
+      %li= link_to "Documentos", "#documentos", :data=> {:remote=>"/estudiantes/documentos/#{@student.id}"}
+      %li= link_to "Horarios", "#horario", :data=> {:remote=>"/estudiantes/horario/#{@student.id}"}
+      %li= link_to "Calificaciones", "#calificaciones", :data=> {:remote=>"/estudiantes/calificaciones/#{@student.id}"}
       %li= link_to "Notas", "#notas"
-      %li= link_to "Kardex", "#kardex"
-      %li= link_to "Pagos", "#pagos"
-      %li= link_to "Constancias", "#constancias"
+      %li= link_to "Kardex", "#kardex", :data=> {:remote=>"/estudiantes/kardex/#{@student.id}"}
+      %li= link_to "Pagos", "#pagos", :data=> {:remote=>"/estudiantes/pagos/#{@student.id}"}
+      %li= link_to "Constancias", "#constancias", :data=> {:remote=>"/estudiantes/constancias/#{@student.id}"}
 
     #detalles
       %h2 Detalles
@@ -204,49 +221,64 @@
       .field#field_student_domain_password
         = f.label :domain_password, 'Domain Pass'
         = f.text_field :domain_password
+
     #contacto
-      %h2 Contacto
-      = f.fields_for :contact do |contact_fields|
-        = render :partial => 'shared/contact', :locals => {:table => 'student', :fields => contact_fields, :countries => @countries, :states => @states}
- 
-    #avances 
-      = render :partial => 'advances', :locals => {:student => @student, :staffs => @staffs.where(:status=>0), :f => f}
-
-    #tesis 
-      %h2 Tesis
-      = f.fields_for :thesis do |thesis_fields|
-        = render :partial => 'thesis', :locals => {:student => @student, :fields => thesis_fields, :staffs => @staffs}
-
-    #horario 
-      = render :partial => 'schedule', :locals => {:student => @student}
-
-    #calificaciones 
-      = render :partial => 'term_grades_index', :locals => {:student => @student}
-
+    #avances
+    #tesis
+    #horario
+    #calificaciones
     #archivos
-      %h2 Archivos
-      %iframe{"name" => "submit_iframe", "id" => "files_iframe_1", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/expediente", "scrolling" => "yes"}
-      %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
-      %h2 Archivos avances
-      %iframe{"name" => "submit_iframe_2", "id" => "files_iframe_2", "width" => "900px", "height" => "300px", "src" => "/estudiantes/archivos/avances/#{@student.id}", "scrolling" => "yes"}
-    
-    #documentos    
-      %h2="Expediente de ingreso"
-      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "750", "src" => "/aspirantes/#{@applicant_id}/archivos", "scrolling" => "no", :frameborder=>"0"}
-
+    #documentos
     #notas
       %h2 Notas
       = f.text_area :notes
 
     #kardex
-      %h2 Kardex
-      = render :partial => 'kardex', :locals => {:student => @student}
-    
     #pagos
-      %h2 Pagos
-      = render :partial => 'payments', :locals => {:student => @student}
-
     #constancias
-      %h2 Constancias
-      = render :partial => 'certificates', :locals => {:student => @student}
-
+-#    #contacto
+-#      %h2 Contacto
+-#      = f.fields_for :contact do |contact_fields|
+-#        = render :partial => 'shared/contact', :locals => {:table => 'student', :fields => contact_fields, :countries => @countries, :states => @states}
+-# 
+-#    #avances 
+-#      = render :partial => 'advances', :locals => {:student => @student, :staffs => @staffs.where(:status=>0), :f => f}
+-#
+-#    #tesis 
+-#      %h2 Tesis
+-#      = f.fields_for :thesis do |thesis_fields|
+-#        = render :partial => 'thesis', :locals => {:student => @student, :fields => thesis_fields, :staffs => @staffs}
+-#
+-#    #horario 
+-#      = render :partial => 'schedule', :locals => {:student => @student}
+-#
+-#    #calificaciones 
+-#      = render :partial => 'term_grades_index', :locals => {:student => @student}
+-#
+-#    #archivos
+-#      %h2 Archivos
+-#      %iframe{"name" => "submit_iframe", "id" => "files_iframe_1", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/expediente", "scrolling" => "yes"}
+-#      %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
+-#      %h2 Archivos avances
+-#      %iframe{"name" => "submit_iframe_2", "id" => "files_iframe_2", "width" => "900px", "height" => "300px", "src" => "/estudiantes/archivos/avances/#{@student.id}", "scrolling" => "yes"}
+-#    
+-#    #documentos    
+-#      %h2="Expediente de ingreso"
+-#      %iframe{"name" => "files_iframe", "id" => "files_iframe", "width" => "100%", "height" => "750", "src" => "/aspirantes/#{@applicant_id}/archivos", "scrolling" => "no", :frameborder=>"0"}
+-#
+-#    #notas
+-#      %h2 Notas
+-#      = f.text_area :notes
+-#
+-#    #kardex
+-#      %h2 Kardex
+-#      = render :partial => 'kardex', :locals => {:student => @student}
+-#    
+-#    #pagos
+-#      %h2 Pagos
+-#      = render :partial => 'payments', :locals => {:student => @student}
+-#
+-#    #constancias
+-#      %h2 Constancias
+-#      = render :partial => 'certificates', :locals => {:student => @student}
+-#

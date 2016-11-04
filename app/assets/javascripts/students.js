@@ -4,23 +4,23 @@ var schprev = 0;
 
 $('#program_type').live("change", function() {
   modifyProgram();
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('#program').live("change", function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('#campus').live("change", function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('#supervisor').live("change", function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('#status').live("change", function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 // ** Xls
@@ -60,7 +60,6 @@ $('#diploma-link').live('click', function() {
  
   return false;
 });
-
 
 $('#total-studies-link').live('click', function() {
   var html = $("#book-page").html();
@@ -117,7 +116,7 @@ $('#scholarship-select').live("change", function() {
 });
 
 $(document).ready(function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('.assign-number')
@@ -195,3 +194,4 @@ function modifyProgram()
     }
   });
 }
+

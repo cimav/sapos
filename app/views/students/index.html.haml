@@ -1,8 +1,11 @@
-- @include_js = 'students'
+- @include_js  = 'students'
 - @page_title = 'Estudiantes'
 - @nav_icon = 'students'
+:javascript
+  var programs = #{@programs_json.to_json}
 #items-panel.side-panel 
-  .panel-search
+
+  .panel-search{:style=>"height: 160px"}
     .invisible-options
       - program_options = Array.new
       - program_options.push(["Todos los programas","0"])
@@ -11,7 +14,7 @@
         - program_options.push(mi_array)
       = options_for_select(program_options)
            
-
+      
     = form_tag students_path, :id => 'live-search', :method => 'get', :remote => true do
       = select_tag "program_type", options_for_select(@program_type)
 
@@ -41,8 +44,10 @@
       - status_options += "<option value=\"preinscritos\">Todos los preinscritos</option>"
       = select_tag "status", status_options.html_safe
 
-  
-      = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
+      =# text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
+
+  .panel-mark
+    = text_field_tag "searchy", "", :placeholder=>"Busqueda ...", "data-toggle"=>"hideseek", "data-list"=>".panel-list", :size=>29, :disabled=>true
      
   #items-list.panel-items
   

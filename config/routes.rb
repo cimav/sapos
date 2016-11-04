@@ -10,6 +10,17 @@ Sapos::Application.routes.draw do
   match 'egresados/nuevo/:id/:dialog' => 'graduates#new'
   match 'egresados/listo' => 'graduates#ready'
 
+  match 'estudiantes/contacto/:id'         => 'students#contact'
+  match 'estudiantes/avance/:id'           => 'students#advance'
+  match 'estudiantes/tesis/:id'            => 'students#thesis'
+  match 'estudiantes/archivos/:id'         => 'students#files_show'
+  match 'estudiantes/documentos/:id'       => 'students#documents'
+  match 'estudiantes/horario/:id'          => 'students#schedule'
+  match 'estudiantes/calificaciones/:id'   => 'students#grades'
+  match 'estudiantes/kardex/:id'           => 'students#kardex_show'
+  match 'estudiantes/pagos/:id'            => 'students#payments_show'
+  match 'estudiantes/constancias/:id'      => 'students#certificates_show'
+
   match 'estudiantes/busqueda' => 'students#live_search'
   match 'estudiantes/:id/cambiar_foto' => 'students#change_image'
   match 'estudiantes/upload_image' => 'students#upload_image'
