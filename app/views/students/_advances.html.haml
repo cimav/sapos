@@ -28,6 +28,8 @@
   - advclass = ''
   - if index != 0
     - advclass = 'adv-hidden'
+
+  - advclass = advclass+' adv-div'
   = fields_for "student[advance_attributes][#{index}]", adv do |fields|
     %div{:id => "advance-#{index}", :class => advclass}
       %h3 Avance #{Date::MONTHNAMES[adv.advance_date.month]} #{adv.advance_date.year}

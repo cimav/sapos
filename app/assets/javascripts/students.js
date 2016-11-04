@@ -104,9 +104,9 @@ function initializeSearchForm() {
 }
 
 $('#advance-select').live("change", function() {
-  $('#advance-' + advprev).hide();
-  $('#advance-' + $('#advance-select').val()).show();
-  advprev = $('#advance-select').val();
+  $(".adv-div").hide();
+  var mval = $(this).val();
+  $("#advance-"+mval).show();
 });
 
 $('#scholarship-select').live("change", function() {
