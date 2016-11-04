@@ -287,7 +287,10 @@ class StudentsController < ApplicationController
 
     if @applicants.size>0
       @applicant_id = @applicants[0].id
+    else
+      @applicant_id = 0
     end
+
     render :layout => false
   end
 
