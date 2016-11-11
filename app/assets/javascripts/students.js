@@ -25,7 +25,16 @@ $('#status').live("change", function() {
 
 // ** Xls
 $('#to_excel').live('click', function() {
-  window.location = location.pathname + "/busqueda.xls?" + $("#live-search").serialize();
+  url = location.pathname + "/set/xls";
+  data = "items="+items_found
+  $.post(url,data)
+    .done(function(data){
+      url = location.pathname + "/get/xls/"+data;
+      $("#downloads_iframe").attr("src",url);
+    })
+    .fail(function(data){
+      alert("Hubo un error en la generacion del xls");
+    });
 });
 
 $('#diploma-link').live('click', function() {

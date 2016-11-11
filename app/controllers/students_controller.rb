@@ -129,12 +129,11 @@ class StudentsController < ApplicationController
     respond_with do |format|
       format.html do
          render json: @students.select("id,first_name,last_name,program_id,image")
-	      #render :layout => false
       end
       format.xls do
-	      rows = Array.new
+        rows = Array.new
         now = Time.now.utc
-	      @students.collect do |s|
+        @students.collect do |s|
 	  if s.status == Student::GRADUATED || s.status == Student::FINISH
 	    end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
 
@@ -189,6 +188,75 @@ class StudentsController < ApplicationController
 	to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
+  end
+
+  def set_xls
+    rows = Array.new
+    now = Time.now.utc
+    items = params[:items].split(",")
+
+    Student.where(:id=>items).collect do |s|
+      if s.status == Student::GRADUATED || s.status == Student::FINISH
+        end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
+
+        if end_date.blank?
+          months = ''
+        else
+          months = months_between(s.start_date,end_date)
+        end
+      else
+        end_date = ''
+      end
+
+      if s.date_of_birth.nil?
+        age = 0
+      else 
+        age = now.year - s.date_of_birth.year - (s.date_of_birth.to_time.change(:year => now.year) > now ? 1 : 0) 
+      end  
+      last_advance = s.advance.where(:status=>["P","C"],).order(:advance_date).first
+
+      rows << {'Matricula' => s.card,
+        'Nombre' => s.first_name,
+        'Apellidos' => s.last_name,
+        'Correo'  => s.email,
+        'Sexo' => s.gender,
+        'Estado' => s.status_type,
+        "Fecha_Nac" => s.date_of_birth,
+        "Edad(#{now.year})" => age, 
+        "Ciudad_Nac" => s.city,
+        "Estado_Nac" => (s.state.name rescue ''),
+        "Pais_Nac" => (s.country.name rescue ''),
+        "Institucion_Anterior" => (Institution.find(s.previous_institution).full_name rescue ''),
+        "Campus" => (s.campus.name rescue ''),
+        'Programa' => s.program.name,
+        'Inicio' => s.start_date,
+        'Fin' => end_date,
+        'Meses' => months,
+        'Asesor' => (Staff.find(s.supervisor).full_name rescue ''),
+        'Coasesor' => (Staff.find(s.co_supervisor).full_name rescue ''),
+        'Tesis' => s.thesis.title,
+        'Sinodal1' => (Staff.find(s.thesis.examiner1).full_name rescue ''),
+        'Sinodal2' => (Staff.find(s.thesis.examiner2).full_name rescue ''),
+        'Sinodal3' => (Staff.find(s.thesis.examiner3).full_name rescue ''),
+        'Sinodal4' => (Staff.find(s.thesis.examiner4).full_name rescue ''),
+        'Sinodal5' => (Staff.find(s.thesis.examiner5).full_name rescue ''),
+        'Fecha_Avance' => (last_advance.advance_date rescue ''),
+        'Tutor1' => (Staff.find(last_advance.tutor1).full_name rescue ''),
+        'Tutor2' => (Staff.find(last_advance.tutor2).full_name rescue ''),
+        'Tutor3' => (Staff.find(last_advance.tutor3).full_name rescue ''),
+        'Tutor4' => (Staff.find(last_advance.tutor4).full_name rescue ''),
+        'Tutor5' => (Staff.find(last_advance.tutor5).full_name rescue ''),
+      }
+    end#Students
+
+    column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+    @filename = to_excel(rows, column_order, "Estudiantes", "Estudiantes",1)
+    render :layout => false
+  end
+
+  def get_xls
+    uri = "tmp/#{params[:file]}.xls"
+    send_file uri, :x_sendfile=>true
   end
 
   def show

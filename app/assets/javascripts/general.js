@@ -1,5 +1,7 @@
 var studies_plans_flag = 0;
 var objects;
+var items = [];
+var items_found = [];
 
 delay = (function(){
   var timer = 0;
@@ -48,9 +50,11 @@ function liveSearch(options) {
     $.get(url, formData, function(html) {
         if(options.json){
             objects = jQuery.parseJSON(html);
-            var items = []
+            items       = []
+            items_found = []
             $.each(objects, function(key,val){
               items.push(getLi(val));
+              items_found.push(val.id);
             });
 
             setItems(items);           
@@ -77,21 +81,29 @@ $("#searchy").live("keyup", function(e){
   var keys = [9,16,17,18,19,20,27,33,34,35,36,37,38,39,40,41,42,43,44,45,91,92,93,112,113,114,115,116,117,118,119,120,121,122,123,144,145];
   if(keys.indexOf(e.which)!=-1){return false;}
 
-  if(e.which==13){
-    $("#content-panel").html("<img src=\"\/images\/ajax-load2.gif\">");
-    $("#items-list li:first").addClass("selected");
-    $("#items-list li:first a").click();
-    return;
+  if(e.which==13){ // ENTER press
+    if(items.length==0)
+    {
+      $("#content-panel").html("<p>&nbsp;<p>&nbsp;<p>&nbsp;<center><h2>Sin resultados</h2></center>");
+      return;
+    }
+    else{
+      $("#content-panel").html("<img src=\"\/images\/ajax-load2.gif\">");
+      $("#items-list li:first").addClass("selected");
+      $("#items-list li:first a").click();
+      return;
+    }
   }
   
   var regex   = new RegExp(searchField, "i");
-  var counter = 0
-  var items   = []
-
+  var counter = 0;
+  items       = [];
+  items_found = [];
   $.each(objects,function(key,val){
     var full_name = val.first_name+" "+val.last_name
     if(full_name.search(regex) != -1){
       items.push(getLi(val));
+      items_found.push(val.id);
     }
   });
 
