@@ -21,7 +21,8 @@ class Ability
       if user.access == User::OPERATOR
         #can :manage, Student
         #cannot :destroy, Student
-        can :manage, Internship
+        #can :manage, Internship
+        can [:read,:update], Internship
       end
 
       if user.access == User::STUDENT

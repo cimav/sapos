@@ -1,5 +1,4 @@
 = form_for @internship, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
-
   .resource-header
     .resource-picture
       = image_tag @internship.image_url(:medium).to_s
@@ -39,7 +38,6 @@
       .field#field_internship_country_id
         = f.label :country_id, 'País de nacimiento'
         = f.collection_select :country_id, @countries, :id, :name, options = {:prompt => "Selecciona un país"}
-
 
       .field#field_internship_state_id
         = f.label :state_id, 'Estado de Nacimiento'

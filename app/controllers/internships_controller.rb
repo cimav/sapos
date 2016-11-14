@@ -187,6 +187,7 @@ class InternshipsController < ApplicationController
   def create
     flash = {}
     @internship = Internship.new(params[:internship])
+    @internship.origin = 1
 
     if @internship.save
       flash[:notice] = "Servicio creado."
@@ -717,7 +718,6 @@ class InternshipsController < ApplicationController
     token.save
     
     @text = "Se ha programado la cita para entrevista de servicio social con #{@internship.full_name} [#{@internship.email}] para el día #{@adate[0]} de #{get_month_name(@adate[1].to_i)} de #{@adate[2]} a las #{@hour} horas."
-
 
     @content= "{:email=>'#{@internship.email}',:view=>22,:reply_to=>'#{@user.email}',:text=>'#{@text}',:token=>'#{token.token}'}"
     # @staff.email

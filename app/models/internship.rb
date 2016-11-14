@@ -1,6 +1,6 @@
 class Internship < ActiveRecord::Base
   attr_accessible :id,:internship_type_id,:first_name,:last_name,:gender,:date_of_birth,:start_date,:end_date,:location,:email,:institution_id,:contact_id,:staff_id,:thesis_title,:activities,:status,:image,:notes,:created_at,:updated_at,:blood_type,:campus_id,:contact_attributes,:career,:office,:total_hours,:schedule, :control_number, :grade, :applicant_status, :area_id, :country_id, :state_id, :phone, :health_insurance, :health_insurance_number,:accident_contact
-
+ 
   belongs_to :institution
   belongs_to :staff
   belongs_to :internship_type
@@ -14,17 +14,17 @@ class Internship < ActiveRecord::Base
 
   validates :first_name, :presence => true, :uniqueness=>{:scope=>[:last_name,:institution_id,:internship_type_id,:gender,:status]}
   validates :last_name, :presence => true, :uniqueness=>{:scope=>[:first_name,:institution_id,:internship_type_id,:gender,:status]}
-  validates :institution_id, :presence => true
+  validates :institution_id,:presence => true,:if=>"self.origin.eql? 0"
   validates :internship_type_id, :presence => true
   validates :gender, :presence => true
   validates :date_of_birth, :presence => true
   #validates :country_id, :presence => true
   #validates :state_id, :presence => true
   validates :area_id, :presence => true
-  validates :phone, :presence => true
-  validates :health_insurance, :presence => true
-  validates :health_insurance_number, :presence => true
-  validates :accident_contact, :presence => true
+  validates :phone, :presence => true,:if=>"self.origin.eql? 0"
+  validates :health_insurance, :presence => true,:if=>"self.origin.eql? 0"
+  validates :health_insurance_number, :presence => true,:if=>"self.origin.eql? 0"
+  validates :accident_contact, :presence => true,:if=>"self.origin.eql? 0"
 
   after_create :add_extra
 
@@ -61,5 +61,16 @@ class Internship < ActiveRecord::Base
     self.build_contact()
     self.save(:validate => false)
   end
+
+  def origin=(data)
+    @origin=data
+  end
+
+  def origin
+    @origin || 0
+  end
+
+
+
 
 end
