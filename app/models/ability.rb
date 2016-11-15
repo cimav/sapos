@@ -22,7 +22,8 @@ class Ability
         #can :manage, Student
         #cannot :destroy, Student
         #can :manage, Internship
-        can [:read,:update], Internship
+        can [:read,:update,:certificates,:applicant_interview,:applicant_files,:upload_applicant_file,:applicant_file,:live_search,:change_image,:upload_image,:files,:file,:upload_file,:delete_file,:id_card], Internship
+        can :manage, InternshipFile
       end
 
       if user.access == User::STUDENT
