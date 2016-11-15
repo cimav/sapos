@@ -95,11 +95,11 @@
 
       .field#field_internship_start_date
         = f.label :start_date, 'Fecha de inicio'
-        = f.date_select :start_date
+        = f.date_select :start_date, :start_year => DateTime.now.year - 30
 
       .field#field_internship_end_date
         = f.label :end_date, 'Fecha de termino'
-        = f.date_select :end_date
+        = f.date_select :end_date, :start_year => DateTime.now.year - 30
 
       .field#field_internship_staff_id
         = f.label :staff_id, 'Docente responsable'
