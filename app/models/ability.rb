@@ -19,11 +19,8 @@ class Ability
     else
       can :live_search, :all  ## for default read all live_search
       if user.access == User::OPERATOR
-        #can :manage, Student
-        #cannot :destroy, Student
-        #can :manage, Internship
-        can [:read,:update,:certificates,:applicant_interview,:applicant_files,:upload_applicant_file,:applicant_file,:live_search,:change_image,:upload_image,:files,:file,:upload_file,:delete_file,:id_card], Internship
-        can :manage, InternshipFile
+        can :manage, Internship
+        cannot [:create], Internship
       end
 
       if user.access == User::STUDENT
