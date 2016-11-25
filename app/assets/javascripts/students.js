@@ -126,6 +126,16 @@ $('#scholarship-select').live("change", function() {
 
 $(document).ready(function() {
   liveSearch({json: true});
+
+  if(!isNaN(parseInt(remote_id,10))){
+    $("#searchy").val(remote_id);
+    setTimeout(function(){
+      var e = jQuery.Event("keyup");
+      search(e);
+      $("#items-list li:first").addClass("selected");
+      $("#items-list li:first a").click();
+    }, 1000);
+  }
 });
 
 $('.assign-number')

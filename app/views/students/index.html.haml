@@ -2,7 +2,8 @@
 - @page_title = 'Estudiantes'
 - @nav_icon = 'students'
 :javascript
-  var programs = #{@programs_json.to_json}
+  var programs = #{@programs_json.to_json};
+  var remote_id = #{@remote_id};
 #items-panel.side-panel 
 
   .panel-search{:style=>"height: 160px"}
@@ -44,10 +45,10 @@
       - status_options += "<option value=\"preinscritos\">Todos los preinscritos</option>"
       = select_tag "status", status_options.html_safe
 
-      =# text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
+      =# text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id, :style=>"display: none;"
 
   .panel-mark
-    = text_field_tag "searchy", "", :placeholder=>"Busqueda ...", "data-toggle"=>"hideseek", "data-list"=>".panel-list", :size=>29, :disabled=>true
+    = text_field_tag "searchy","", :placeholder=>"Busqueda ...", "data-toggle"=>"hideseek", "data-list"=>".panel-list", :size=>29, :disabled=>true
      
   #items-list.panel-items
   

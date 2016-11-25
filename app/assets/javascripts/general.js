@@ -2,6 +2,7 @@ var studies_plans_flag = 0;
 var objects;
 var items = [];
 var items_found = [];
+var please = "<center><br>&nbsp;<br>&nbsp;<br>&nbsp;<br>&nbsp;<h2>Presionar Enter para seleccionar el primer resultado o seleccionar con el Mouse</h2></center>";
 
 delay = (function(){
   var timer = 0;
@@ -64,22 +65,33 @@ function liveSearch(options) {
           $("#search-box").removeClass("loading");
           $("#items-list").html(html);
         }
+
         $("#items-list li:first a").click();
+        /*$("#searchy").focus();
+        $("#content-panel").html(please);*/
     });
 }
 
 $("#searchy").live("keyup", function(e){
-  //alert(e.which);
-  
+  search(e);
+});
+
+function search(e){
   var searchField = $('#searchy').val();
+  
+  var command = "";
+  command = searchCommand(searchField);
 
-
-  if(searchField.length==1){
-    return false;
+  if(!command){
+    if(searchField.length==1){
+      return false;
+    }
   }
 
   var keys = [9,16,17,18,19,20,27,33,34,35,36,37,38,39,40,41,42,43,44,45,91,92,93,112,113,114,115,116,117,118,119,120,121,122,123,144,145];
   if(keys.indexOf(e.which)!=-1){return false;}
+  $("#content-panel").html(please);
+
 
   if(e.which==13){ // ENTER press
     if(items.length==0)
@@ -94,29 +106,73 @@ $("#searchy").live("keyup", function(e){
       return;
     }
   }
-  
-  var regex   = new RegExp(searchField, "i");
-  var counter = 0;
-  items       = [];
-  items_found = [];
-  $.each(objects,function(key,val){
-    var full_name = val.first_name+" "+val.last_name
-    if(full_name.search(regex) != -1){
-      items.push(getLi(val));
-      items_found.push(val.id);
-    }
-  });
 
-  $("#content-panel").html("<p>&nbsp;<p>&nbsp;<p>&nbsp;<center><h2>Presione enter para aceptar la busqueda ...</h2></center>");
-
+  searchByCommand(command,searchField);
   setItems(items);
 
   if(searchField.length==0){
     $("#content-panel").html("<img src=\"\/images\/ajax-load2.gif\">");
     $("#items-list li:first").addClass("selected");
     $("#items-list li:first a").click();
+    /*$("#searchy").focus();
+    $("#content-panel").html(please);*/
   }
-});
+}
+
+function searchCommand(searchField){
+  var command = {"command": null, "data": null};
+
+  var regex   = new RegExp("^\\d+$");
+  if(searchField.search(regex) != -1){
+    command.command = "id";
+    command.data = searchField
+    return command;
+  }
+
+  var regex   = new RegExp("^[A-Z][A-Z]+\\d*$");
+  if(searchField.search(regex) != -1){
+    command.command = "card";
+    command.data = searchField
+    return command;
+  }
+
+  return false;
+}
+
+function searchByCommand(command,searchField){
+  var regex   = new RegExp(searchField, "i");
+  var counter = 0;
+  items       = [];
+  items_found = [];
+
+  switch(command.command){
+    case "id":
+      $.each(objects,function(key,val){
+        if(val.id==command.data){
+          items.push(getLi(val));
+          items_found.push(val.id);
+        }
+      });
+      break;
+    case "card":
+      $.each(objects,function(key,val){
+        var regex = new RegExp(command.data,"i")
+        if(val.card.search(regex) != -1){
+          items.push(getLi(val));
+          items_found.push(val.id);
+        }
+      });
+      break;
+    default:
+      $.each(objects,function(key,val){
+        var my_search_text = val.first_name+" "+val.last_name
+        if(my_search_text.search(regex) != -1){
+          items.push(getLi(val));
+          items_found.push(val.id);
+        }
+      });
+  }
+}
 
 function getLi(val){
   var full_name = val.first_name+" "+val.last_name
@@ -141,6 +197,7 @@ function setItems(items){
   var counter = "<div id=\"counter\"><div class=\"inner\">"+items.length+"<\/div><\/div>"
   $("#items-list").append(counter); 
 }
+
 
 function showFormErrors(xhr, status, error) {
     var res,
@@ -286,14 +343,27 @@ $('#item-new-form')
         var $form = $(this);
         var res = $.parseJSON(xhr.responseText);
         showFlash(res['flash']['notice'], 'success');
-        $("#search-box").val(res['uniq']);
-        try{
-          initializeSearchForm();
-          liveSearch();
-        }
-        catch(e)
-        {
-         // let it pass
+
+        if(res['version']==1){
+          liveSearch({json: true});
+          $("#searchy").val(res['uniq']);
+          setTimeout(function(){
+            var e = jQuery.Event("keyup");
+            search(e);
+            $("#items-list li:first").addClass("selected");
+            $("#items-list li:first a").click();
+          }, 1000);
+        } 
+        else{
+          $("#search-box").val(res['uniq']);
+          try{
+            initializeSearchForm();
+            liveSearch();
+          }
+          catch(e)
+          {
+           // let it pass
+          }
         }
     })
 
