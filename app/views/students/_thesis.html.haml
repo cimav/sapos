@@ -11,6 +11,8 @@
     #thesis-number
       = student.thesis.number
 
+  = fields.hidden_field :id
+
 %div{:id => "field_student_thesis_title", :class => 'field'}
   = fields.label :title, 'Titulo'
   = fields.text_field :title

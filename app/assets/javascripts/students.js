@@ -4,28 +4,37 @@ var schprev = 0;
 
 $('#program_type').live("change", function() {
   modifyProgram();
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('#program').live("change", function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('#campus').live("change", function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('#supervisor').live("change", function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 $('#status').live("change", function() {
-  liveSearch();
+  liveSearch({json: true});
 });
 
 // ** Xls
 $('#to_excel').live('click', function() {
-  window.location = location.pathname + "/busqueda.xls?" + $("#live-search").serialize();
+  url = location.pathname + "/set/xls";
+  data = "items="+items_found
+  $.post(url,data)
+    .done(function(data){
+      url = location.pathname + "/get/xls/"+data;
+      $("#downloads_iframe").attr("src",url);
+    })
+    .fail(function(data){
+      alert("Hubo un error en la generacion del xls");
+    });
 });
 
 $('#diploma-link').live('click', function() {
@@ -60,7 +69,6 @@ $('#diploma-link').live('click', function() {
  
   return false;
 });
-
 
 $('#total-studies-link').live('click', function() {
   var html = $("#book-page").html();
@@ -105,9 +113,9 @@ function initializeSearchForm() {
 }
 
 $('#advance-select').live("change", function() {
-  $('#advance-' + advprev).hide();
-  $('#advance-' + $('#advance-select').val()).show();
-  advprev = $('#advance-select').val();
+  $(".adv-div").hide();
+  var mval = $(this).val();
+  $("#advance-"+mval).show();
 });
 
 $('#scholarship-select').live("change", function() {
@@ -117,7 +125,17 @@ $('#scholarship-select').live("change", function() {
 });
 
 $(document).ready(function() {
-  liveSearch();
+  liveSearch({json: true});
+
+  if(!isNaN(parseInt(remote_id,10))){
+    $("#searchy").val(remote_id);
+    setTimeout(function(){
+      var e = jQuery.Event("keyup");
+      search(e);
+      $("#items-list li:first").addClass("selected");
+      $("#items-list li:first a").click();
+    }, 1000);
+  }
 });
 
 $('.assign-number')
@@ -195,3 +213,4 @@ function modifyProgram()
     }
   });
 }
+

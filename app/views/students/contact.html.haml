@@ -1,0 +1,3 @@
+%h2 Contacto
+= fields_for "student[contact_attributes]",@student.contact do |contact_fields|
+  = render :partial => 'shared/contact', :locals => {:table => 'student', :fields => contact_fields, :countries => @countries, :states => @states}

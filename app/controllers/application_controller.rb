@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
     redirect_to '/auth/admin' unless authenticated?
   end
 
-  def to_excel(rows, column_order, sheetname, filename)
+  def to_excel(rows, column_order, sheetname, filename, option)
     book = Spreadsheet::Workbook.new
     sheet1 = book.create_worksheet :name => sheetname
     header_format = Spreadsheet::Format.new :color => :black, :weight => :bold
@@ -64,9 +64,14 @@ class ApplicationController < ActionController::Base
     end
     t = Time.now
     filename = "#{filename}_#{t.strftime("%Y%m%d%H%M%S")}"
-    book.write "tmp/#{filename}.xls"
-    # send_file("tmp/#{filename}.xls", :type=>"application/ms-excel", :x_sendfile=>true)
-    send_file "tmp/#{filename}.xls", :x_sendfile=>true
+    if option.eql? 1 ## only create
+      book.write "tmp/#{filename}.xls"
+      return filename
+    else
+      book.write "tmp/#{filename}.xls"
+      # send_file("tmp/#{filename}.xls", :type=>"application/ms-excel", :x_sendfile=>true)
+      send_file "tmp/#{filename}.xls", :x_sendfile=>true
+    end
   end
 
   helper_method :current_user

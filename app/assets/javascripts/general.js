@@ -1,4 +1,8 @@
 var studies_plans_flag = 0;
+var objects;
+var items = [];
+var items_found = [];
+var please = "<center><br>&nbsp;<br>&nbsp;<br>&nbsp;<br>&nbsp;<h2>Presionar Enter para seleccionar el primer resultado o seleccionar con el Mouse</h2></center>";
 
 delay = (function(){
   var timer = 0;
@@ -30,17 +34,170 @@ function changeResourceImage(id, small, medium) {
   }
 }
 
-function liveSearch() {
+function liveSearch(options) {
+    options = (typeof options === 'undefined') ? 'default' : options;
+
     $("#search-box").addClass("loading");
+    
+    if(options.json){
+      $("#searchy").val("");
+      $("#searchy").attr("disabled","disabled");
+      $("#items-list").html("<img src=\"\/images\/ajax-load2.gif\">");
+    }
+
     var form = $("#live-search");
     var url = location.pathname + "/busqueda";
     var formData = form.serialize();
     $.get(url, formData, function(html) {
-        $("#search-box").removeClass("loading");
-        $("#items-list").html(html);
+        if(options.json){
+            objects = jQuery.parseJSON(html);
+            items       = []
+            items_found = []
+            $.each(objects, function(key,val){
+              items.push(getLi(val));
+              items_found.push(val.id);
+            });
+
+            setItems(items);           
+            $("#searchy").removeAttr("disabled");
+            $("#content-panel").html("<img src=\"\/images\/ajax-load2.gif\">");
+        }else{
+          $("#search-box").removeClass("loading");
+          $("#items-list").html(html);
+        }
+
         $("#items-list li:first a").click();
+        /*$("#searchy").focus();
+        $("#content-panel").html(please);*/
     });
 }
+
+$("#searchy").live("keyup", function(e){
+  search(e);
+});
+
+function search(e){
+  var searchField = $('#searchy').val();
+  
+  var command = "";
+  command = searchCommand(searchField);
+
+  if(!command){
+    if(searchField.length==1){
+      return false;
+    }
+  }
+
+  var keys = [9,16,17,18,19,20,27,33,34,35,36,37,38,39,40,41,42,43,44,45,91,92,93,112,113,114,115,116,117,118,119,120,121,122,123,144,145];
+  if(keys.indexOf(e.which)!=-1){return false;}
+  $("#content-panel").html(please);
+
+
+  if(e.which==13){ // ENTER press
+    if(items.length==0)
+    {
+      $("#content-panel").html("<p>&nbsp;<p>&nbsp;<p>&nbsp;<center><h2>Sin resultados</h2></center>");
+      return;
+    }
+    else{
+      $("#content-panel").html("<img src=\"\/images\/ajax-load2.gif\">");
+      $("#items-list li:first").addClass("selected");
+      $("#items-list li:first a").click();
+      return;
+    }
+  }
+
+  searchByCommand(command,searchField);
+  setItems(items);
+
+  if(searchField.length==0){
+    $("#content-panel").html("<img src=\"\/images\/ajax-load2.gif\">");
+    $("#items-list li:first").addClass("selected");
+    $("#items-list li:first a").click();
+    /*$("#searchy").focus();
+    $("#content-panel").html(please);*/
+  }
+}
+
+function searchCommand(searchField){
+  var command = {"command": null, "data": null};
+
+  var regex   = new RegExp("^\\d+$");
+  if(searchField.search(regex) != -1){
+    command.command = "id";
+    command.data = searchField
+    return command;
+  }
+
+  var regex   = new RegExp("^[A-Z][A-Z]+\\d*$");
+  if(searchField.search(regex) != -1){
+    command.command = "card";
+    command.data = searchField
+    return command;
+  }
+
+  return false;
+}
+
+function searchByCommand(command,searchField){
+  var regex   = new RegExp(searchField, "i");
+  var counter = 0;
+  items       = [];
+  items_found = [];
+
+  switch(command.command){
+    case "id":
+      $.each(objects,function(key,val){
+        if(val.id==command.data){
+          items.push(getLi(val));
+          items_found.push(val.id);
+        }
+      });
+      break;
+    case "card":
+      $.each(objects,function(key,val){
+        var regex = new RegExp(command.data,"i")
+        if(val.card.search(regex) != -1){
+          items.push(getLi(val));
+          items_found.push(val.id);
+        }
+      });
+      break;
+    default:
+      $.each(objects,function(key,val){
+        var my_search_text = val.first_name+" "+val.last_name
+        if(my_search_text.search(regex) != -1){
+          items.push(getLi(val));
+          items_found.push(val.id);
+        }
+      });
+  }
+}
+
+function getLi(val){
+  var full_name = val.first_name+" "+val.last_name
+  var program   = "N.D"
+
+  $.each(programs, function(k, v) {
+    if(v.id==val.program_id){
+      program = v.name;
+      return;
+    }
+  });
+  
+  var img  = "<img id=\"img-small-"+val.id+"\" src=\""+val.image.small.url+"\" alt=\"Small_Default\">"
+  var divs = "<div class=\"title\">"+full_name+"<\/div><div class=\"comment\">"+program+"<\/div>"
+  var li  = "<li><a id=\"student_link_"+val.id+"\" class=\"get-item\" href=\"\/estudiantes\/"+val.id+"\" data-type=\"html\" data-remote=\"true\" data-method=\"get\">"+img+divs+"<\/a></li>"
+  return li;
+}
+
+function setItems(items){
+  var ul = $("<ul class=\"panel-list\"></ul>").html(items.join("")); 
+  $("#items-list").html(ul); 
+  var counter = "<div id=\"counter\"><div class=\"inner\">"+items.length+"<\/div><\/div>"
+  $("#items-list").append(counter); 
+}
+
 
 function showFormErrors(xhr, status, error) {
     var res,
@@ -115,6 +272,7 @@ $("#search-box")
     }
   });
 
+
 // ** Get Item **
 $('.get-item')
   .live('ajax:success', function(data, status, xhr) {
@@ -122,9 +280,7 @@ $('.get-item')
     $('.panel-add').removeClass("selected");
     $(this).closest('li').addClass("selected");
     $('#content-panel').html(status);
-    $(function() {
-      $('#resource-tabs').tabs();
-    });
+    $(function() {  $('#resource-tabs').tabs(); });
 
     /** Disable/enable submit button **/
     $('#content-panel form').find (':submit').attr('disabled', 'disabled').addClass('disabled');
@@ -187,14 +343,27 @@ $('#item-new-form')
         var $form = $(this);
         var res = $.parseJSON(xhr.responseText);
         showFlash(res['flash']['notice'], 'success');
-        $("#search-box").val(res['uniq']);
-        try{
-          initializeSearchForm();
-          liveSearch();
-        }
-        catch(e)
-        {
-         // let it pass
+
+        if(res['version']==1){
+          liveSearch({json: true});
+          $("#searchy").val(res['uniq']);
+          setTimeout(function(){
+            var e = jQuery.Event("keyup");
+            search(e);
+            $("#items-list li:first").addClass("selected");
+            $("#items-list li:first a").click();
+          }, 1000);
+        } 
+        else{
+          $("#search-box").val(res['uniq']);
+          try{
+            initializeSearchForm();
+            liveSearch();
+          }
+          catch(e)
+          {
+           // let it pass
+          }
         }
     })
 

@@ -1,7 +1,7 @@
 - if @dialog == "dialog"
   = stylesheet_link_tag    "application"
   = javascript_include_tag "application"
-  = javascript_include_tag "graduate"
+  = javascript_include_tag "graduates"
 
 = form_for @graduate, :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
   .resource-header.student-header

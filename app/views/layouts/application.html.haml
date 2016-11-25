@@ -9,13 +9,13 @@
     = javascript_include_tag "jquery.ui.datepicker.js"
     = javascript_include_tag "jquery.ui.datepicker-es.js"
     - if !@include_js.nil?
-      = javascript_include_tag @include_js
+      = javascript_include_tag @include_js, :charset=>"UTF-8"
     - if !@include2_js.nil?
-      = javascript_include_tag @include2_js
+      = javascript_include_tag @include2_js, :charset=>"UTF-8"
     - if !@include3_js.nil?
-      = javascript_include_tag @include3_js
+      = javascript_include_tag @include3_js, :charset=>"UTF-8"
     - if !@include4_js.nil?
-      = javascript_include_tag @include4_js
+      = javascript_include_tag @include4_js, :charset=>"UTF-8"
     = csrf_meta_tag
   %body
     #top-bar
