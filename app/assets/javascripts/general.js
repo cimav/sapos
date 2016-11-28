@@ -88,7 +88,7 @@ function search(e){
     }
   }
 
-  var keys = [9,16,17,18,19,20,27,33,34,35,36,37,38,39,40,41,42,43,44,45,91,92,93,112,113,114,115,116,117,118,119,120,121,122,123,144,145];
+  var keys = [9,16,17,18,19,20,27,33,34,35,36,37,38,39,40,41,42,43,44,45,91,92,93,112,113,114,115,116,117,118,119,120,121,122,123,144,145,192];
   if(keys.indexOf(e.which)!=-1){return false;}
   $("#content-panel").html(please);
 
@@ -140,6 +140,7 @@ function searchCommand(searchField){
 }
 
 function searchByCommand(command,searchField){
+  searchField = accent_finder(searchField);
   var regex   = new RegExp(searchField, "i");
   var counter = 0;
   items       = [];
@@ -165,13 +166,31 @@ function searchByCommand(command,searchField){
       break;
     default:
       $.each(objects,function(key,val){
-        var my_search_text = val.first_name+" "+val.last_name
+        //var my_search_text = val.first_name+" "+val.last_name
+        var my_search_text = accent_finder(val.first_name+" "+val.last_name);
         if(my_search_text.search(regex) != -1){
           items.push(getLi(val));
           items_found.push(val.id);
         }
       });
   }
+}
+
+function accent_finder(s)
+{
+  var accentMap = {
+    'á':'a','é':'e','í':'i','ó':'o','ú':'u', 'à':'a','è':'e','ì':'i','ò':'o','ù':'u','ä':'a','ë':'e','ï':'i','ö':'o','ü':'u'
+  };
+
+  for (var i=0;i<s.length;i++)
+  {
+    var c = accentMap[s.charAt(i)];
+    if(c){ 
+      s = s.replace(s[i],c);
+    }
+  }
+
+  return s;
 }
 
 function getLi(val){
