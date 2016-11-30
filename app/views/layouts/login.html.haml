@@ -1,6 +1,9 @@
 !!!
 %html
   %head
+    :javascript
+      document.cookie="accents=;max-age=0"
+      document.cookie="the_first=;max-age=0"
     %title= @page_title
     = stylesheet_link_tag    "application"
     = csrf_meta_tags

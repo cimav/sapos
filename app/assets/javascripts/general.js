@@ -4,6 +4,7 @@ var items = [];
 var items_found = [];
 var please = "<center><br>&nbsp;<br>&nbsp;<br>&nbsp;<br>&nbsp;<h2>Presionar Enter para seleccionar el primer resultado o seleccionar con el Mouse</h2></center>";
 
+
 delay = (function(){
   var timer = 0;
   return function(callback, ms){
@@ -506,4 +507,20 @@ function autoResizeIFRAME(id){
   }
   document.getElementById(id).height = (newheight) + "px";
   document.getElementById(id).width = (newwidth) + "px";
+}
+
+function getCookie(cookie){
+  var cookies = document.cookie;
+  var cookies_s = cookies.split(";");
+  var to_return = false
+  $.each(cookies_s,function(i,v){
+     var regex   = new RegExp(cookie);
+     if(v.search(regex) != -1){
+       var result = v.split("=");
+       to_return = result[1];
+       return false
+     }
+  });
+
+  return to_return;
 }

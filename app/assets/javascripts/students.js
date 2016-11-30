@@ -3,6 +3,14 @@ var advprev      = 0;
 var schprev      = 0;
 var config_click = false;
 
+if(!getCookie("accents")){
+  document.cookie="accents=0";
+}
+
+if(!getCookie("the_first")){
+  document.cookie="the_first=0";
+}
+
 $('#program_type').live("change", function() {
   modifyProgram();
   liveSearch({json: true});
@@ -160,6 +168,38 @@ $(document).ready(function() {
       $("#items-list li:first").addClass("selected");
       $("#items-list li:first a").click();
     }, 1000);
+  }
+
+  $("#accent_check").live("click",function(){
+    if(getCookie("accents")==1){
+      document.cookie="accents=0";
+    }
+    else if(getCookie("accents")==0){
+      document.cookie="accents=1";
+    }
+  });
+
+  $("#first_check").live("click",function(){
+    if(getCookie("the_first")==1){
+      document.cookie="the_first=0";
+    }
+    else if(getCookie("the_first")==0){
+      document.cookie="the_first=1";
+    }
+  });
+
+  if(getCookie("accents")==1){
+    $("#accent_check").prop("checked",true);
+  }
+  else if(getCookie("accents")==0){
+    $("#accent_check").prop("checked",false);
+  }
+
+  if(getCookie("the_first")==1){
+    $("#first_check").prop("checked",true);
+  }
+  else if(getCookie("the_first")==0){
+    $("#first_check").prop("checked",false);
   }
 });
 
