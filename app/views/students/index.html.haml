@@ -49,7 +49,15 @@
 
   .panel-mark
     = text_field_tag "searchy","", :placeholder=>"Busqueda ...", "data-toggle"=>"hideseek", "data-list"=>".panel-list", :size=>29, :disabled=>true
-     
+    .div-config
+      = image_tag "/images/config2.png" , :id => "search-config", :width=>'25px', :style=>"visibility:hidden;"
+  .config-menu
+    = "Busqueda sensible a acentos y diéresis"
+    = check_box_tag "accent_check",false
+    %p="&nbsp;".html_safe
+    = "Cargar automático primer resultado"
+    = check_box_tag "first_check",false
+  
   #items-list.panel-items
   
   .panel-add
@@ -58,3 +66,5 @@
     %a{'id' => 'to_excel'} XLS
 
 #content-panel.main-panel
+
+

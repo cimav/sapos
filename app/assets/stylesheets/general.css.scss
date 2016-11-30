@@ -315,3 +315,25 @@ tr.row-odd {
   left: 10px;
   position: absolute;
 }
+
+.div-config{
+  top: 1px;
+  left: 261px;
+  position: absolute;
+  width: 25px;
+  //cursor: pointer;
+}
+
+.config-menu{
+  top: 135px;
+  left: 296px;
+  width: 250px;
+  height: 100px;
+  position: absolute;
+  background-color: #f4f4f4;
+  z-index: 3000;
+  border-radius: 2px;
+  border: 1px solid #9e9b9b;
+  padding: 10px 10px 10px 10px;
+  display: none;
+}

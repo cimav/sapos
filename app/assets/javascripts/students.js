@@ -1,6 +1,7 @@
-var model_name = 'student';
-var advprev = 0;
-var schprev = 0;
+var model_name   = 'student';
+var advprev      = 0;
+var schprev      = 0;
+var config_click = false;
 
 $('#program_type').live("change", function() {
   modifyProgram();
@@ -22,6 +23,30 @@ $('#supervisor').live("change", function() {
 $('#status').live("change", function() {
   liveSearch({json: true});
 });
+
+$('.div-config').live({
+    mouseenter: function(){
+      $("#search-config").css("visibility","visible");
+    },
+    mouseleave: function(){
+      if(!config_click){
+        $("#search-config").css("visibility","hidden");
+      }
+    }
+  });
+
+$("#search-config").live("click",function(){
+  if(!config_click){
+    config_click = true;
+    $("#search-config").css("visibility","visible");
+    $(".config-menu").show("fast");
+  }
+  else{
+    config_click = false;
+    $(".config-menu").hide("fast");
+  }
+});
+
 
 // ** Xls
 $('#to_excel').live('click', function() {
