@@ -28,7 +28,7 @@ class StudentsController < ApplicationController
     end
 
     @supervisors = Staff.find_by_sql "SELECT id, first_name, last_name FROM staffs WHERE id IN (SELECT supervisor FROM students UNION SELECT co_supervisor FROM students) ORDER BY first_name, last_name"
-    @programs_json = @programs.select("id,name").all
+    @programs_json = @programs.select("programs.id, programs.name").all
   end
 
   def live_search
