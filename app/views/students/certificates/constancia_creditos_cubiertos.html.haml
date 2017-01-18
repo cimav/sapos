@@ -4,14 +4,14 @@
 %br
 %br
 %font{:face=>"Verdana, sans-serif"}
-  %p.western{:align=>"left"}
+  %p.western{:align=>"left", :style=>"font-size: 27pt; font-weight: 100;"}
     %b="A quien corresponda"
     %br
-    %b="Presente.-"
+    Presente:
   %br
   %br
   %div{:style=>"text-align: justify;"}
-    %p.western
+    %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       = "La suscrita"
       %b="#{@firma}"
       = ", #{@puesto}, del Centro de Investigación en Materiales Avanzados, S.C., hace constar que #{@genero2} alumn#{@genero}"
@@ -21,18 +21,15 @@
       = " está inscrit#{@genero} como alumn#{@genero} regular en nuestro programa "
       %b="#{@programa},"
       = "en este centro de investigación. "
-    %p.western
+    %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       = "Los créditos #{@nivel} son #{@creditos_totales}, con un total de #{@creditos} créditos cubiertos; obteniendo un promedio global de #{@promedio}."
     %br
-    %br
-    %br
-    %p.western
+    %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       = "Se extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
-  %p.western
     %br
     %br
     %br
-  %div{:style=>"border:none;  width: 100%; text-align: center; font-family: Arial, sans-serif; font-size: 18pt; so-language: es-ES;"}
+  %div{:style=>"border:none;  width: 100%; text-align: center; font-family: Arial, sans-serif; font-size: 27pt; so-language: es-ES;"}
     %b="A t e n t a m e n t e"
     %br
     %br
