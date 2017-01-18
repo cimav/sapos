@@ -1,7 +1,7 @@
 html,body{margin:0;padding:0;background:#154c97}
 hr{height:2px;background-color:#ffffff;width:110%;}
 hr.black{height:2px;background-color:#000000;border-color:#000000;width:100%;}
-h1{color:#fffafa;font-size:50px;text-align:center;padding-left:101px;}
+h1{color:#fffafa;font-size:50px;text-align:center;}
 #id_card{padding-top:20px;padding-bottom:30px;width:100%;}
 #id_card table#cont{width:100%,border:2px solid white;padding-left:50px;}
 #id_card table#cont tr td.photo img{border:20px solid #000000;border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:10px;width:280px;}

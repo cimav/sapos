@@ -7,11 +7,11 @@ namespace :grades do
     filep     = "#{Rails.root}/log/inscripciones.log"
     @f        = File.open(filep,'a')
     @env      = Rails.env
-    SEND_MAIL         = 0 
-    STATUS_CHANGE     = false
-    ADMIN_MAIL        = ""
-    CICLO             = ""
-    NCICLO            = ""
+    SEND_MAIL         = 1
+    STATUS_CHANGE     = true
+    ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx"
+    CICLO             = "2016-1"
+    NCICLO            = "2016-2"
   task :check => :environment do
     ################################################################################################################################
     ###########################################        NOTAS        ################################################################
@@ -117,14 +117,16 @@ namespace :grades do
             end
             #set_line("Activando inscripción para #{ts.student.full_name}")
             ## Enviamos correo a su asesor
-            staff   = Staff.find(ts.student.supervisor)
-            if staff.email.empty?
-              set_line("No se pudo enviar correo a #{staff.full_name}")
+            #staff   = Staff.find(ts.student.supervisor)
+            if ts.student.email_cimav.empty?
+              set_line("No se pudo enviar correo a #{ts.student.full_name}")
             else
               prom = get_promedio(ts)
               #puts "#{ts.student.full_name}|#{prom[:avg]}|#{prom[:adv_avg]}
-              content = "{:full_name=>\"#{ts.student.full_name}\",:email=>\"#{ts.student.email}\",:view=>1,:avg=>\"#{prom[:avg]}\",:adv_avg=>\"#{prom[:adv_avg]}\"}"
-              send_mail(staff.email,"Alumno preparado para la inscripcion",content)
+              #content = "{:full_name=>\"#{ts.student.full_name}\",:email=>\"#{ts.student.email}\",:view=>1,:avg=>\"#{prom[:avg]}\",:adv_avg=>\"#{prom[:adv_avg]}\"}"
+              #send_mail(staff.email,"Alumno preparado para la inscripcion",content)
+              content = "{:ciclo=>\"#{NCICLO}\",:view=>8}"
+              send_mail(ts.student.email_cimav,"Inscripción al ciclo #{NCICLO}",content)
             end ## staff.empty
           else
             set_line("No se activa la inscripción para #{ts.student.full_name}")
@@ -146,7 +148,14 @@ namespace :grades do
   task :alarm => :environment do
     set_line("Iniciando script en alarm")
     ## advances.status = 'P' (PRogramado), term.status=3 (Calificando) y progams.levels 1 y 2 (maestria y doctorado) 
-    advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date",['P'],[3],[1,2]).select("advances.*,terms.id as terms_id")
+   advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.title !=''",['P'],[3],[1,2],[1]).select("advances.*,terms.id as terms_id")
+
+## advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.student_id in (?)",['P'],[3],[1,2],[1],[1168,1739,1667,1616,1617,1647,1615,1614,1613,1619,1618,1646,1645]).select("advances.*,terms.id as terms_id")
+
+##     advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.student_id in (?)",['P'],[3],[1,2],[1],[1734]).select("advances.*,terms.id as terms_id")
+    
+   ## advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date and students.id=1714",['P'],[1,2,3],[1,2]).select("advances.*,terms.id as terms_id")
+    ## advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date and students.id=?",['P'],[3],[1,2],1486).select("advances.*,terms.id as terms_id")
 
 =begin
     advances.each do |a|
@@ -154,6 +163,9 @@ namespace :grades do
     end
 =end
 
+=begin
+  HELPER
+=end
     counter = 1
     if advances.size.eql? 0
       set_line("No hay fechas de avances abiertas")
@@ -168,29 +180,45 @@ namespace :grades do
         # avisarle a los asesores que deben calificar y a los externos la clave y el link de acceso
   
         t_array = [t1,t2,t3,t4,t5]
-  
+
+=begin
+        t_array.each do |t|
+          if !t.nil?
+            if t.institution_id.eql? 1
+              puts "CIMAV: #{t.id} #{t.full_name}"
+            else
+              puts "EXTER: #{t.id} #{t.full_name}"
+            end
+          end
+=end
+
+=begin
+  HELPER
+=end
         t_array.each do |t|
           if !t.nil?
             ## puts t.full_name rescue "N.D"
             ## DEV
-            if t.institution_id.eql? 1
-              content = "{:advance=>\"#{a.id}\",:view=>3,:staff=>\"#{t.id}\"}"
-            else
-              token = Token.new
-              token.attachable_id     = t.id
-              token.attachable_type   = t.class.to_s
-              token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
-              token.status            = 1
-              token.expires           = Term.find(a.terms_id).grade_end_date
-              token.save
-              content = "{:advance=>\"#{a.id}\",:staff=>\"#{t.id}\",:token=>\"#{token.token}\",:view=>4}"
-            end
-            ## PROD
-            send_mail(t.email,"Alerta Calificaciones",content)
-             ##send_mail("enrique.turcott@cimav.edu.mx","Alerta Calificaciones",content)
-          end
-        end
-  
+            #if t.id.eql? 511
+              if t.institution_id.eql? 1
+                content = "{:advance=>\"#{a.id}\",:view=>3,:staff=>\"#{t.id}\"}"
+              else
+                token = Token.new
+                token.attachable_id     = t.id
+                token.attachable_type   = t.class.to_s
+                token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
+                token.status            = 1
+                token.expires           = Term.find(a.terms_id).grade_end_date
+                token.save
+                content = "{:advance=>\"#{a.id}\",:staff=>\"#{t.id}\",:token=>\"#{token.token}\",:view=>4}"
+              end  ## end id-else
+              ## PROD
+              send_mail(t.email,"Alerta Calificaciones",content)
+              ##send_mail("enrique.turcott@cimav.edu.mx","Alerta Calificaciones",content)
+            #end  ## if t.id.eql
+          end ## end nil?
+########################################### aqui va el =end
+        end ## end t_array.each
         counter = counter + 1
       end #end each
     end #end if-else
@@ -213,6 +241,7 @@ end ## namespace
 
     ts.term_course_student.each do |tcs|
       #puts "#{tcs.term_course.course.name} #{tcs.grade} #{tcs.grade.nil?}"
+      puts "#{tcs.term_student.student.full_name}"
       if tcs.term_course.course.notes.eql? "[AI]"
         ai = ai + 1
       end
@@ -337,7 +366,7 @@ end ## namespace
   
   ## revisa si ya se califico el avance de investigación de doctorada asociado a un ciclo, recibe t = term, s= student
   def check_advance_term(t,s)
-    advances = s.advance.where("advances.advance_date between ? and ?",t.start_date,t.end_date)
+    advances = s.advance.where("advances.advance_date between ? and ? and advances.status in (?)",t.start_date,t.end_date,['P','C'])
     if advances.size.eql? 0
       set_line("No hay avances de investigacion registrados para #{s.full_name} para el ciclo #{t.name}")
       return false
@@ -534,7 +563,8 @@ end ## namespace
       ## Enviar correo asesor y a Sandra y al mismo alumno
       content = "{:full_name=>\"#{s.full_name}\",:email=>\"#{s.email}\",:view=>2}"
       send_mail(staff.email,"Baja de alumno",content)
-      send_mail("sandra.beltran@cimav.edu.mx","Baja de alumno",content)
+      #send_mail("sandra.beltran@cimav.edu.mx","Baja de alumno",content)
+      send_mail("atencion.posgrado@cimav.edu.mx","Baja de alumno",content)
       send_mail(s.email,"Baja de alumno",content)
       send_mail(s.email_cimav,"Baja de alumno",content)
       return false

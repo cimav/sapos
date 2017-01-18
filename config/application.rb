@@ -57,5 +57,17 @@ module Sapos
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+       :address   => "smtp.gmail.com",
+       :port      => 587,
+       :domain    => "cimav.edu.mx",
+       :authentication => :plain,
+       :user_name      => "atencion.posgrado@cimav.edu.mx",
+       :password       => "mifuerza",
+       :enable_starttls_auto => true
+     }
   end
 end

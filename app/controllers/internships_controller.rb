@@ -442,7 +442,7 @@ class InternshipsController < ApplicationController
       @numero      = @internship.control_number
       @internado   = @internship.internship_type.name
       @departamento= @internship.office
-      @asesor      = @internship.staff.full_name
+      @asesor      = @internship.staff.full_name rescue '[IMPORTANTE] ASESOR AUN NO HA SIDO ASIGNADO'
       @horas       = @internship.total_hours.to_s
       @start_day   = @internship.start_date.day.to_s
       @start_month = get_month_name(@internship.start_date.month)

@@ -11,7 +11,7 @@ namespace :payments do
     @env         = Rails.env
     CONCENTRA    = "134375"
     CUENTA       = "127370266"
-    CICLO        = "2015-1"
+    CICLO        = "2016-2"
     @corrupted   = 0
     @payers      = 0
     @epayers     = 0    #enrollment_payers
@@ -54,10 +54,10 @@ namespace :payments do
         counter = counter + 1
       end ##File.open
     end ##date_array.sort
-    f_epayers_by_date()
-    i_epayers()
-    #print_epayers(@aepayers)
-    print_epayers_log(@aepayers)
+    f_epayers_by_date() ## filtra por fecha   
+    ## i_epayers() ## inserta pagadores en db  ## comentar si solo quieres reporte
+    print_epayers(@aepayers) ## imprime pagadores en pantalla ## descomentar si solo quieres reporte
+    ## print_epayers_log(@aepayers) ## manda salida al log  ## comentar si solo quieres reporte
     set_line "#Archivos: #{counter} #A.Corrompidos: #{@corrupted} #Pagantes: #{@payers} #Pagantes.Insc: #{@epayers} Sin identificar: #{@aepayers.size}"
   end ## task :check
 end #namespace payments
@@ -68,7 +68,7 @@ end #namespace payments
   def f_epayers_by_date()
     array     = []
     today     = Date.today
-    yesterday = today - 30 
+    yesterday = today - 365  ## colocar rango de dias
     @aepayers.each do |aep|
       if aep[5] > yesterday
         array << aep
@@ -170,11 +170,11 @@ end #namespace payments
         elsif l.eql? CONCENTRA
           #print "#{d[0]} #{d[2]} #{d[3]} #{d[4]} #{d[5]} #{d[1]} "
           #name_lines(name)
-          if d[3].eql? "0000000000330000"
+          #if d[3].eql? "0000000000330000"
             date = Date.new(d[6][0..3].to_i,d[6][4..5].to_i,d[6][6..7].to_i)
             @aepayers << [d[0],d[1],d[3],d[4],d[5],date,d[2],get_name(name)]
             @epayers = @epayers + 1
-          end
+          #end
           d    = []
           name = []
         else

@@ -34,9 +34,9 @@ namespace :departments do
         @areas.each do |a|
           if a[0].eql? l[5]
             s = Staff.where(:employee_number=>l[0])
-            @employees << "#{l[0]} #{l[1]} #{l[2]} #{s.size>0 ? '[YES]':'-NO-'}"
+            @employees << "#{l[0]} #{l[1]} #{l[2]} #{l[5]} #{s.size>0 ? '[YES]':'-NO-'}"
             if s.size>0
-              s[0].area_id = 5
+              s[0].area_id = a[1]
               if s[0].save
                puts "Todo ok"
                @counter_yes = @counter_yes + 1

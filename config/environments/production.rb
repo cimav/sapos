@@ -31,7 +31,7 @@ Sapos::Application.configure do
   # config.force_ssl = true
 
   # See everything in the log (default is :info)
-  # config.log_level = :debug
+  config.log_level = :debug
 
   # Prepend all log lines with the following tags
   # config.log_tags = [ :subdomain, :uuid ]
@@ -47,8 +47,8 @@ Sapos::Application.configure do
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
-  config.assets.precompile = ['*.js', 'application.css', 'pdf.css', 'card.css']
-  config.assets.precompile += %w[*.png *.jpg *.jpeg *.gif, custom-theme/*.css] 
+  config.assets.precompile = ['*.js', 'application.css', 'pdf.css', 'card.css', 'custom-theme/jquery-ui.css', 'applicant.login.css']
+  config.assets.precompile += %w[*.png *.jpg *.jpeg *.gif, custom-theme/*.css, select2/*.css] 
 
 
   # Disable delivery errors, bad email addresses will be ignored

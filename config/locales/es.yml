@@ -98,12 +98,12 @@ es:
       gender: "M"
     academic_director:
       title:  "Dr."
-      name: "Erasmo Orrantia Borunda"
+      name: "José Alberto Duarte Moller"
       job: "Director Académico"
       gender: "M"
     posgrado_chief:
-      title: "Dr."
-      name: "Roberto Martínez Sánchez"
+      title: "Lic."
+      name: "Emilio Domínguez Lechuga"
       job: "Coordinador de Estudios de Posgrado"
       gender: "M"
     scholar_control:
