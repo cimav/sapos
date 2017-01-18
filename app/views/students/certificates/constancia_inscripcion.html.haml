@@ -3,7 +3,7 @@
 %br
 %br
 %br
-%font{:face=>"Verdaba, sans-serif"}
+%font{:face=>"Verdana, sans-serif"}
   %p.western{:align=>"left"}
     %b="A quien corresponda"
     %br
@@ -19,7 +19,7 @@
       = " de matrícula "
       %b=@matricula
       = " está inscrit#{@genero} como alumn#{@genero} activ#{@genero} en el periodo"
-      %b="#{@start_month} - #{@end_month} #{@end_year}" 
+      %b="#{@start_month} - #{@end_month} #{@end_year}"
       =", en nuestro programa "
       %b="#{@programa},"
       - if @op_asesor.eql? 1
@@ -31,8 +31,8 @@
     %br
     %br
     %br
-    %p.western 
-      = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} de #{@month} de #{@year}, para los fines legales a que haya lugar."
+    %p.western
+      = "Se extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
   %p.western
     %br
     %br

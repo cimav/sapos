@@ -4,10 +4,10 @@
 %br
 %br
 %font{:face=>"Arial"}
-  %p.western{:align=>"left"}
+  %p.western{:align=>"left",:style=>"font-size: 27pt; font-weight: 100;"}
     %b="C. #{@nombre}"
     %br
-    %b="Presente.-"
+    Presente:
   %br
   %br
   %div{:style=>"text-align: justify;"}
@@ -15,13 +15,11 @@
       ="Por medio del presente me permito informar a usted que el Comité de Estudios de Posgrado en su reunión del pasado #{@fecha_revision} ha decidido el ingreso de aspirantes a los programas académicos de este Centro. Después de ser analizada su solicitud se ha determinado no aceptarlo."
       - if @level==2
         = "El Comité de Ingreso le recomienda, de ser de su interés, realizar de nueva cuenta la solicitud en la próxima convocatoria y atender a las siguientes recomendaciones en su anteproyecto de investigación:"
-    - if @level==2    
+    - if @level==2
       %p.western{:style=>"font-size: 27pt; font-weight: 100;font-style: italic"}
         = "\"#{@recomendacion}\""
     %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
       = "A sus órdenes para cualquier duda o comentario al respecto."
-    %p.western{:style=>"font-size: 27pt; font-weight: 100;"}
-      = "Chihuahua, Chihuahua #{@days} de #{@month} de #{@year}"
   %p.western
     %br
     %br

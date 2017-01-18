@@ -21,7 +21,7 @@
       }
       LI {font-size: 18pt;}
   %body{:lang=>'es-ES',:text=>'#000000', :dir=>"LTR"}
-    .principal{:style=>"background-image:url(#{@rails_root}/app/views/students/certificates/membretada.jpg);background-repeat:no-repeat;background-position: top center; height: 2150px; width: 1697px;"} 
+    .principal{:style=>"background-image:url(#{@rails_root}/app/views/students/certificates/membretado_2.jpg);background-repeat:no-repeat;background-position: top center; height: 2150px; width: 1697px;"}
       .content
         %p.western
           %br
@@ -33,9 +33,11 @@
           %br
         %p.western
           %br
-        %p.western{:align=>'right'}
-          %font{:face=>'Verdana, sans-serif',:color=>'#000080'}
-            %b="Departamento de Posgrado."
+        %p.western{:align=>'right', :style=>"font-size: 27pt; font-weight: 100;"}
+          %font{:face=>'Verdana, sans-serif',:color=>'#000000'}
+            %b="Coordinación de estudios de Posgrado"
             %br
-            %b="Oficio No. PO - #{@consecutivo}/#{@year_s}"
+            No° de Oficio  PO - #{@consecutivo}/#{@year_s}
+            %br
+            Chihuahua, Chih. a #{@days} de #{@month} de #{@year}.
         = yield
