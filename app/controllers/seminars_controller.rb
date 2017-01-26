@@ -17,7 +17,7 @@ class SeminarsController < ApplicationController
   def live_search
     @user = User.find(current_user.id)
 
-    if @user.access.in? [1,5] ## Administrator or Manager
+    if @user.access.in? [1,5,2] ## Administrator or Manager
       @seminars = Advance.where(:advance_type=>3, :status=>['P','C'])
     elsif @user.access.in? [2]  ## Operator
       @seminars = Advance.joins(:student=>:staff_supervisor).where(:advance_type=>3,:status=>['P','C']).where("staffs.area_id=?",(eval @user.areas))
