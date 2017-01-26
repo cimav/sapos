@@ -51,7 +51,7 @@ class SeminarsController < ApplicationController
    
   def new
     @user = User.find(current_user.id)
-    if @user.access.in? [1,5] ## Administrator or Manager
+    if @user.access.in? [1,5,2] ## Administrator or Manager
       @students= Student.where(:status=>1)
     elsif @user.access.in? [2]  ## Operator
       @students= Student.joins(:staff_supervisor).where(:status=>1).where("staffs.area_id=?",(eval @user.areas))
