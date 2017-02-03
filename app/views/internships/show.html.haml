@@ -141,7 +141,7 @@
         = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona un estado"}
 
       .field#field_internship_thesis_title
-        = f.label :thesis_title, 'Tesis'
+        = f.label :thesis_title, 'Tesis (proyecto)'
         = f.text_field :thesis_title
 
       .field#field_internship_grade
@@ -231,14 +231,7 @@
               - checked = false
               = "#{dir[:posgrado_chief][:title]} #{dir[:posgrado_chief][:name]}"
               = "(#{dir[:posgrado_chief][:job]})"
-          - if (current_user.campus_id == 1 || current_user.campus_id==0)
-            %br
-              - if current_user.campus_id.to_i.eql? 1
-                - checked = true
-              = radio_button_tag "firma", 3, checked, class: "radio-button-sign"
-              - checked = false
-              = "#{dir[:scholar_control][:title]} #{dir[:scholar_control][:name]}"
-              = "(#{dir[:scholar_control][:job]})"
+
           - if (current_user.campus_id == 2 || current_user.campus_id==0)
             %br
               - if current_user.campus_id.to_i.eql? 2
