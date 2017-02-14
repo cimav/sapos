@@ -950,7 +950,9 @@ private
     response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
 
     if user && password
-      if Internship.where(:status=>3,:applicant_status=>3,:id=>user,:password=>password).size.eql? 1
+      #Se comenta la restricción de acceso según el status del aplicante
+      #if Internship.where(:status=>3,:applicant_status=>3,:id=>user,:password=>password).size.eql? 1
+      if Internship.where(:id=>user,:password=>password).size.eql? 1
         session[:internship_user] = user
       else
         @user    = user
