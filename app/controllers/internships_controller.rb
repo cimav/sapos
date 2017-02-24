@@ -989,7 +989,7 @@ private
       elsif line.include? "Passing score"
         @row << line
         @counter = @counter + 1 
-      elsif line.include? "User faihttp://articulo.mercadolibre.com.mx/MLM-563594477-backpack-mochila-para-laptop-de-156-pulgadas-bpeb-115bk-_JMls"
+      elsif line.include? "User fails"
         @row << line
         @counter = @counter + 1 
       elsif line.include? "User passes"

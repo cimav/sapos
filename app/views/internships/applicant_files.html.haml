@@ -118,6 +118,7 @@
     - if  @internship_files.where(:file_type=>key).size > 0
       - @internship_files.where(:file_type=>key).each do |af|
         .field_requested_document
+
           - my_id = key
           = form_for(InternshipFile.new, :url => {:action => "upload_applicant_file"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
             = hidden_field_tag :internship_id, @internship.id
@@ -126,6 +127,7 @@
             = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center', :style=>'display: none;'
             = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
             = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center',:class=>"img-ok"
+
             - if !(my_id.eql? 6)
               = f.file_field :file,:id=>"internship_file_file_#{my_id}", :style=>"display: none;"
               = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}", :style=>"display:none;"
@@ -143,11 +145,11 @@
           = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
           = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
           = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none',:class=>"img-ok"
-          - #if !my_id.eql? 6
-          = f.file_field :file,:id=>"internship_file_file_#{my_id}";
-          = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
-          - if !@register
-            = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
-          = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'display:none;', :my_file_id=> 0
+          - if !my_id.eql? 6
+            = f.file_field :file,:id=>"internship_file_file_#{my_id}";
+            = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
+            - if !@register
+              = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
+            = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'display:none;', :my_file_id=> 0
   %iframe{"name" => "files_iframe2", "id" => "files_iframe2" ,:style=> "display: none;"}
 
