@@ -355,7 +355,7 @@ class InternshipsController < ApplicationController
     @req_docs.delete(1)
  
     @internship = Internship.find(params[:id])
-    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5,6])
+    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5])
     render :layout=> "standalone"
   rescue ActiveRecord::RecordNotFound
     @error = 1
@@ -989,7 +989,7 @@ private
       elsif line.include? "Passing score"
         @row << line
         @counter = @counter + 1 
-      elsif line.include? "User fails"
+      elsif line.include? "User faihttp://articulo.mercadolibre.com.mx/MLM-563594477-backpack-mochila-para-laptop-de-156-pulgadas-bpeb-115bk-_JMls"
         @row << line
         @counter = @counter + 1 
       elsif line.include? "User passes"

@@ -143,9 +143,9 @@
           = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
           = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
           = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none',:class=>"img-ok"
-          - #if !my_id.eql? 6
-          = f.file_field :file,:id=>"internship_file_file_#{my_id}";
-          = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
+          - if !my_id.eql? 6
+            = f.file_field :file,:id=>"internship_file_file_#{my_id}";
+            = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
           - if !@register
             = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
           = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'display:none;', :my_file_id=> 0
