@@ -310,11 +310,12 @@ $('.get-item')
     $(function() {  $('#resource-tabs').tabs(); });
 
     /** Disable/enable submit button **/
-    $('#content-panel form').find (':submit').attr('disabled', 'disabled').addClass('disabled');
+    //$('#content-panel form').find (':submit').attr('disabled', 'disabled').addClass('disabled');
+    $('#content-panel form').find('input[type="submit"]').attr('disabled', 'disabled').addClass('disabled');
 
     var form = $('#content-panel form');
     $(':input', form.get(0)).live ('change', function (e) {
-        form.find (':submit').removeAttr('disabled').removeClass('disabled');
+       form.find (':submit').removeAttr('disabled').removeClass('disabled');
     })
   })
 

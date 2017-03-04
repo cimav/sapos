@@ -19,7 +19,7 @@
           = image_tag "/images/unlock.png", :id=> "img_unblock",:style=>'display: inline-block;',:width=>10
     -if !readonly
       .resource-save
-        = f.submit 'Finalizar', :id => 'finalizar-boton'
+        %button{'type' => 'submit'}= 'Finalizar'
   
   #resource-tabs
     %ul
@@ -98,5 +98,4 @@
     $('#end_session_hour').select2();
     $('#end_session_minutes').select2();
     $('#agreement_combo').select2();
-    $('#finalizar-boton').removeAttr('disabled').removeClass('disabled');
   });
