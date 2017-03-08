@@ -1058,12 +1058,10 @@ class CommitteeSessionsController < ApplicationController
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} lo ha nombrado docente responsable del curso  correspondiente al ciclo escolar  que se llevará a cabo del ."
-        text = "#{text} \n\nEn caso de ser un curso coordinado, le pido nos haga llegar la distribución de docentes por fechas con el fin de que sean cargados en el sistema administrativo de posgrado."
+        text = "#{text} tratará el siguiente asunto:."
         if !notes.blank?
           text = "#{text} \n\n#{notes}"
         end
-        text = "#{text}\n\n Agradecemos de antemano su apoyo en la formación de recursos humanos y quedamos a sus ordenes para cualquier duda al respecto."
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
