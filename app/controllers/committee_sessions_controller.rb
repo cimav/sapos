@@ -1041,7 +1041,7 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 20
         @render_pdf = true
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
-        staff       = Staff.find(cap.attachable_id)
+        staff_name  = Staff.find(cap.attachable_id).full_name rescue "A quién corresponda."
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
         x = 0
@@ -1051,7 +1051,8 @@ class CommitteeSessionsController < ApplicationController
 
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box staff.full_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box staff_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
@@ -1060,7 +1061,7 @@ class CommitteeSessionsController < ApplicationController
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} resolvió lo siguiente:"
+        text = "#{text} se resolvió lo siguiente:"
         if !notes.blank?
           text = "#{text} \n\n#{notes}"
         end
