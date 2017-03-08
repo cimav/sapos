@@ -1037,60 +1037,43 @@ class CommitteeSessionsController < ApplicationController
         pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
 
-      ############################### ASUNTOS GENERALES ###################################
+      ############################### ASIGNACION DE DIRECTOR ###################################
       elsif @type.eql? 20
-        @render_pdf  = true
-        s            = @c_a.committee_agreement_person.where(:attachable_type=>"Student")
-        tutors       = @c_a.committee_agreement_person.where(:attachable_type=>"Staff",:aux=>1)
-        student      = Student.find(s[0].attachable_id)
-        supervisor   = Staff.find(student.supervisor)
-        comma_tutors = ""
-        tutors.each do |t|
-          tutor = Staff.find(t.attachable_id)
-          comma_tutors = "#{comma_tutors}#{tutor.title} #{tutor.full_name_cap}, "
-        end
-        # PRESENTE
+        @render_pdf = true
+
+        notes       = @c_a.committee_agreement_note[0].notes rescue nil
+        ## PRESENTACION
         x = 0
         y = 555
-        w = 480
+        w = 300
         h = 15
-        if comma_tutors.chop.chop.size > 85
-          h = 30
-        end
-        if comma_tutors.chop.chop.size > 170
-          h = 45
-        end
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "</b>#{comma_tutors.chop.chop}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        y = y - h
-        w = 200
-        h = 15
+
+        y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
         w = 510
-        h = 100
+        h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} lo ha nombrado sinodal de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
+        text = "#{text} lo ha nombrado docente responsable del curso  correspondiente al ciclo escolar  que se llevará a cabo del ."
+        text = "#{text} \n\nEn caso de ser un curso coordinado, le pido nos haga llegar la distribución de docentes por fechas con el fin de que sean cargados en el sistema administrativo de posgrado."
+        if !notes.blank?
+          text = "#{text} \n\n#{notes}"
+        end
+        text = "#{text}\n\n Agradecemos de antemano su apoyo en la formación de recursos humanos y quedamos a sus ordenes para cualquier duda al respecto."
+        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
-        y = y - 180
+        y = y - 240
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
         pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
-        # CCP
-        x = 0
-        y = y - 150
-        w = 350
-        h = 25
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-        pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
 
       ############################### NO IDENTIFICADO ###################################
       else
