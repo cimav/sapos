@@ -307,7 +307,7 @@ class CommitteeSessionsController < ApplicationController
     @type = @c_a.committee_agreement_type.id
 
     if @s_id.to_i.eql? 1
-      @signer = "Lic. Emilio Pascual Domínguez Lechuga\nCoordinador de Control Escolar"
+      @signer = "Lic. Emilio Pascual Domínguez Lechuga\nCoordinador de Estudios de Posgrado"
       @sign   = "#{Rails.root.to_s}/private/images/firmas/firma1.png"
       @x_sign = 130
       @y_sign = 20
@@ -1052,6 +1052,7 @@ class CommitteeSessionsController < ApplicationController
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box staff_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
