@@ -1058,7 +1058,7 @@ class CommitteeSessionsController < ApplicationController
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} tratará el siguiente asunto:."
+        text = "#{text} revisó el siguiente asunto:"
         if !notes.blank?
           text = "#{text} \n\n#{notes}"
         end
