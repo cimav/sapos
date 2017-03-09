@@ -1043,7 +1043,7 @@ class CommitteeSessionsController < ApplicationController
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
         staff_name  = Staff.find(cap.attachable_id).full_name +" " rescue "A quién corresponda."
         staff_title = Staff.find(cap.attachable_id).title rescue "C. "
-        if staff_title == "" || nil
+        if staff_title == ""
           staff_title = "C. "
         end
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
