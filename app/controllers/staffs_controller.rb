@@ -62,6 +62,7 @@ class StaffsController < ApplicationController
         rows = Array.new
         @staffs.collect do |s|
           rows << {'Numero_Empleado' => s.employee_number,
+                   'Título' => s.title,
                    'Nombre' => s.first_name,
                    'Apellidos' => s.last_name,
                    'Correo_Elec' => s.email,
@@ -72,7 +73,7 @@ class StaffsController < ApplicationController
                    'Estado' => s.status,
                  }
         end
-        column_order = ["Numero_Empleado","Nombre","Apellidos","Correo_Elec","Sexo","Fecha_Nac","CVU","SNI","Estado"]
+        column_order = ["Numero_Empleado","Título","Nombre","Apellidos","Correo_Elec","Sexo","Fecha_Nac","CVU","SNI","Estado"]
         to_excel(rows,column_order,"Docentes","Docentes")
       end
     end
