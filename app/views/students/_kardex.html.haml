@@ -33,6 +33,10 @@
             - if !(tcs.grade<70)
               - counter_grade += 1
               - sum = sum + tcs.grade
+            - else
+              -counter_grade +=1
+              - sum = sum + tcs.grade
+
           - if tcs.grade.nil?
             %td.centered= "N.D."
           - else
