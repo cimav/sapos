@@ -1052,7 +1052,11 @@ class CommitteeSessionsController < ApplicationController
 
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        if staff_name == "A quién corresponda."
+          pdf.text_box staff_title+" "+staff_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        else
         pdf.text_box staff_title+" "+staff_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        end
         y = y - 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
