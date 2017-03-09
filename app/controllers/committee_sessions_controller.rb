@@ -1041,11 +1041,8 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 20
         @render_pdf = true
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
-        staff_name  = Staff.find(cap.attachable_id).full_name +" " rescue "A quién corresponda."
-        staff_title = Staff.find(cap.attachable_id).title rescue "C. "
-        if staff_title == ""
-          staff_title = "C. "
-        end
+        staff_name  = Staff.find(cap.attachable_id).full_name rescue "A quién corresponda."
+        staff_title = Staff.find(cap.attachable_id).title rescue "C."
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
         x = 0
@@ -1055,7 +1052,7 @@ class CommitteeSessionsController < ApplicationController
 
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box staff_title +" "+ staff_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box staff_title+" "+staff_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         y = y - 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
