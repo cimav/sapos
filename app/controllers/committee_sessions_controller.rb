@@ -1045,9 +1045,6 @@ class CommitteeSessionsController < ApplicationController
         staff_title = Staff.find(cap.attachable_id).title rescue "C. "
         if staff_title == "" || nil
           staff_title = "C. "
-        if staff_name == "A quién corresponda."
-          staff_title = " "
-        end
         end
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
