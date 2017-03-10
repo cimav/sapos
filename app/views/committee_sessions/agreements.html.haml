@@ -7,6 +7,7 @@
   - @students_1   = Student.where(:status=>1)
   - @students_1_6 = Student.where(:status=>[1,6])
   - @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
+  - @staffs_students = @staffs_all + @students_1_6
   
   - if @committee_session.status.eql? 3
     - readonly       = true
@@ -406,7 +407,7 @@
       %b= my_id
       %b= "Asuntos generales: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_students,"id","full_name_upcase",@selected),:prompt=>"--Destinatario--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
 
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
       %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 150px;"}="Agregar Resolución"

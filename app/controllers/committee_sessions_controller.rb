@@ -1041,7 +1041,7 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 20
         @render_pdf = true
         cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
-        staff_name  = Staff.find(cap.attachable_id).full_name rescue "A quién corresponda."
+        staff_name  = Staff.find(cap.attachable_id).full_name || Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
         staff_title = Staff.find(cap.attachable_id).title rescue "C."
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
