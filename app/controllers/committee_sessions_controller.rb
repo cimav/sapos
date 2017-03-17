@@ -1040,9 +1040,15 @@ class CommitteeSessionsController < ApplicationController
       ############################### ASUNTOS GENERALES ###################################
       elsif @type.eql? 20
         @render_pdf = true
-        cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
-        staff_name  = Staff.find(cap.attachable_id).full_name || Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
-        staff_title = Staff.find(cap.attachable_id).title rescue "C."
+        cap         = @c_a.committee_agreement_person.first
+        if cap.attachable_type == "staff"
+          destiny_name  = Staff.find(cap.attachable_id).full_name  rescue "A quién corresponda."
+          destiny_title = Staff.find(cap.attachable_id).title rescue "C."
+        elsif cap.attachable_type == "estudiante"
+          destiny_name  = Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
+          destiny_title = "C."
+          end
+
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
         x = 0
@@ -1052,10 +1058,10 @@ class CommitteeSessionsController < ApplicationController
 
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        if staff_name == "A quién corresponda."
-          pdf.text_box staff_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        if destiny_name == "A quién corresponda."
+          pdf.text_box destiny_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         else
-        pdf.text_box staff_title+" "+staff_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box destiny_title+" "+destiny_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         end
         y = y - 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
