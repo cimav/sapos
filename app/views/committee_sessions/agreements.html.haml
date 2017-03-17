@@ -7,7 +7,7 @@
   - @students_1   = Student.where(:status=>1)
   - @students_1_6 = Student.where(:status=>[1,6])
   - @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
-  - @staffs_students = @staffs_all + @students_1_6
+  - @students_all = Student.where(:status=>[1,6])
   
   - if @committee_session.status.eql? 3
     - readonly       = true
@@ -406,9 +406,16 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Asuntos generales: "
+      / Poblar el select
+      - option = " <optgroup label=\"Docentes\">"
+      - @staffs_all.each do |staff|
+        -option += " <option value=\""+staff.id.to_s+"\" selected=\"selected\">"+"D - "+staff.full_name + "</option>"
+      -option += "</optgroup><optgroup label=\"Estudiantes\">"
+      - @students_all.each do |student|
+        -option += " <option value=\""+student.id.to_s+"\">"+"E - "+student.full_name + "</option>"
+      -option += "</optgroup>"
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
-      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_students,"id","full_name_upcase",@selected),:prompt=>"--Destinatario--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
-
+      = select_tag "agreement_student_staff", option.html_safe, :prompt=>"--Destinatario--", :class=>"agreement_student_staff"
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
       %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 150px;"}="Agregar Resolución"
       = text_area_tag "my_notes_#{my_id}",text,:style=>"display: none"
@@ -432,4 +439,4 @@
   $(document).ready(function(){
     start_datepicker();
     $('#agreement_combo').select2();
-  });
+   });

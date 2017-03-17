@@ -7,7 +7,7 @@ class CommitteeSessionsController < ApplicationController
   end
 
   def live_search
-    @c_sessions = CommitteeSession.where(:status=>[1,2,3]).order(:date)
+    @c_sessions = CommitteeSession.where(:status=>[1,2,3]).order('date DESC')
     if !params[:q].blank?
       if params[:q].to_i != 0
         @c_sessions = @c_sessions.where("id = ?",params[:q].to_i)
@@ -206,7 +206,7 @@ class CommitteeSessionsController < ApplicationController
       @x = ""  ## esta linea solo esta para evitar el fallo cuando el if esta vacio x no se vuelve a usar
     else
       if @action.eql? "new"
-        @cap = CommitteeAgreementPerson.new
+        @cap =  CommitteeAgreementPerson.new
         @cap.committee_agreement_id = @a_id
         @cap.aux = @aux
       end
@@ -1037,10 +1037,10 @@ class CommitteeSessionsController < ApplicationController
         pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
 
-      ############################### ASIGNACION DE DIRECTOR ###################################
+      ############################### ASUNTOS GENERALES ###################################
       elsif @type.eql? 20
         @render_pdf = true
-        cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Student").first
+        cap         = @c_a.committee_agreement_person.where(:attachable_type=>"Staff").first
         staff_name  = Staff.find(cap.attachable_id).full_name || Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
         staff_title = Staff.find(cap.attachable_id).title rescue "C."
         notes       = @c_a.committee_agreement_note[0].notes rescue nil

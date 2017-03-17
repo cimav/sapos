@@ -352,6 +352,7 @@ function get_committee_agreements()
       $("select.save-note-agreement").select2();
       $("select.agreement_auth").select2();
       $("select.agreement_people").select2();
+      $("select.agreement_student_staff").select2();
       $("select.agreement-aux").select2();
       $("#img_load").hide();
     },
@@ -428,6 +429,68 @@ $("#memorandum_button").live("click",function(e){
   var my_id = $("#c_session_id").val();
   var url   =  "/comite/sesion/minuta/"+my_id;
   window.open(url, '_blank');
+});
+
+//Combo docentes-estudiantes
+$(".agreement_student_staff").live("change",function(e){
+    $("#img_load").show();
+    var sesion_id = $("#c_session_id").val();
+    var p      = $(this).parent();
+    var people = "docente";
+    var texto = $("#agreement_student_staff :selected").text();
+    if (texto.charAt(0) == 'E'){
+        people = "estudiante";
+    }
+    var a_id   = p.find("#my_id").val();
+    var aux    = $("#agreement_aux_"+a_id).val();
+    var valor  = $(this).val();
+    var nombre = $(this).find('option:selected').text();
+    var url    =  "/comite/acuerdos/"+a_id+"/agregar/"+people+"/"+valor;
+    var data= ""
+    if (people=='sinodales'){
+        data = "aux="+aux
+    }
+    $.ajax({
+        type:  'POST',
+        url:   url,
+        data:  data,
+        beforeSend: function( xhr ) {
+        },
+        success:  function(data){
+            if(data.estatus==4){
+                alert("Solo pueden ser 5 sinodales");
+            }
+            else if(data.estatus==2){
+                alert("El docente ya existe");
+            }
+            else{
+                if(people=="sinodales"){
+                    if(aux==2){aux_text="suplente";}
+                    else if(aux==3){
+                        aux_text="titular";
+                        $("#agreement_aux_"+a_id+" option[value='3']").remove();
+                        $("#agreement_aux_"+a_id).select2("val","Evaluador");
+                    }
+                    else if(aux==4){aux_text="evaluador";}
+                    else{aux_text="";}
+                    html = "<div class='agreement-staff'><input id='my_sinodal_id' name='my_sinodal_id' value='"+data.person_id+"' type='hidden'><input id='my_sinodal_type_id' name='my_sinodal_type_id' value='"+aux+"' type='hidden'>"+nombre+" "+aux_text+"<img alt='Grey_action_delete' class='delete-agreement-staff' src='/images/grey_action_delete.png' style='cursor: pointer; opacity: 0.3;' valign='center'></div>";
+                    $("#agreement-staffs_"+a_id).append(html);
+                }
+            }
+        },
+        error: function(xhr, textStatus, error){
+            var text = xhr.responseText;
+            try{
+                var jq   = jQuery.parseJSON(xhr.responseText);
+            }
+            catch(e){
+                alert("Error desconocido: "+e.message)
+            }
+        },
+        complete: function(){
+            $("#img_load").hide();
+        },
+    });
 });
 
 $(".agreement_people").live("change",function(e){
