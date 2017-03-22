@@ -1041,13 +1041,13 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 20
         @render_pdf = true
         cap         = @c_a.committee_agreement_person.first
-        if cap.attachable_type == "staff"
+        if cap.attachable_type == "Staff"
           destiny_name  = Staff.find(cap.attachable_id).full_name  rescue "A quién corresponda."
           destiny_title = Staff.find(cap.attachable_id).title rescue "C."
-        elsif cap.attachable_type == "estudiante"
+        elsif cap.attachable_type == "Student"
           destiny_name  = Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
           destiny_title = "C."
-          end
+        end
 
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
