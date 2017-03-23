@@ -437,7 +437,8 @@ $(".agreement_student_staff").live("change",function(e){
     var sesion_id = $("#c_session_id").val();
     var p      = $(this).parent();
     var people = "docente";
-    var texto = $("#student_staff :selected").text();
+    var texto = $(this).find('option:selected').text();
+
     if (texto.charAt(0) == 'E'){
         people = "estudiante";
     }
