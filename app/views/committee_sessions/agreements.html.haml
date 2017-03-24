@@ -426,7 +426,7 @@
         -else
           -option += " <option value=\""+student.id.to_s+"\">"+"E - "+student.full_name + "</option>"
       -option += "</optgroup>"
-      = select_tag "student_staff", option.html_safe, :prompt=>"--Destinatario--", :class=>"agreement_student_staff", id:"student_staff"
+      = select_tag "student_staff", option.html_safe, :prompt=>"--Destinatario--", :class=>"agreement_student_staff", id:"student_staff",:disabled=>readonly
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
       %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 150px;"}="Agregar Resolución"
       = text_area_tag "my_notes_#{my_id}",text,:style=>"display: none"
@@ -450,4 +450,5 @@
   $(document).ready(function(){
     start_datepicker();
     $('#agreement_combo').select2();
+    $('#student_staff').select2();
    });

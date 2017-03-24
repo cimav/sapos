@@ -410,6 +410,7 @@ $("#agreement_button").live("click",function(e){
       $("select#agreement_cambio_prog_prog_"+max).select2();
       $("select#agreement_student_dir_tesis_"+max).select2();
       $("select#agreement_dir_tesis_dir_tesis_"+max).select2();
+      $("select.agreement_student_staff").select2();
       $("#img_load").hide();
     },
   });
