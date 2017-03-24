@@ -143,13 +143,19 @@ class CommitteeSessionsController < ApplicationController
     @a_id        = params[:a_id]
     @p_id        = params[:id]
     @person_type = params[:person]
+    @agreement = CommitteeAgreement.find(@a_id)
     @aux         = nil
+
 
     json       = {}
     @action    = "new"
     @estatus   = 1
     json[:estatus]   = 1
     json[:person_id] = 0
+
+    if @agreement.committee_agreement_type_id == 20
+      CommitteeAgreementPerson.where(:committee_agreement_id=>@a_id).destroy_all
+    end
 
     if @person_type.eql? "aspirante"
       @cap = CommitteeAgreementPerson.where(:committee_agreement_id=>@a_id,:attachable_type=>"Applicant")
@@ -201,6 +207,7 @@ class CommitteeSessionsController < ApplicationController
         end
       end
     end
+
 
     if @action.eql? "no"
       @x = ""  ## esta linea solo esta para evitar el fallo cuando el if esta vacio x no se vuelve a usar
