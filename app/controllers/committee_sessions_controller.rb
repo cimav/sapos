@@ -153,6 +153,7 @@ class CommitteeSessionsController < ApplicationController
     json[:estatus]   = 1
     json[:person_id] = 0
 
+    #No se permiten multiples destinatarios en ASUNTOS GENERALES
     if @agreement.committee_agreement_type_id == 20
       CommitteeAgreementPerson.where(:committee_agreement_id=>@a_id).destroy_all
     end
@@ -1048,14 +1049,19 @@ class CommitteeSessionsController < ApplicationController
       elsif @type.eql? 20
         @render_pdf = true
         cap         = @c_a.committee_agreement_person.first
-        if cap.attachable_type == "Staff"
-          destiny_name  = Staff.find(cap.attachable_id).full_name  rescue "A quién corresponda."
-          destiny_title = Staff.find(cap.attachable_id).title rescue "C."
-        elsif cap.attachable_type == "Student"
-          destiny_name  = Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
-          destiny_title = "C."
-        end
+        #El destinatario es nulo?
+        if cap.nil?
+          destiny_name  =  "A quién corresponda."
 
+        else
+          if cap.attachable_type == "Staff"
+            destiny_name  = Staff.find(cap.attachable_id).full_name  rescue "A quién corresponda."
+            destiny_title = Staff.find(cap.attachable_id).title rescue "C."
+          elsif cap.attachable_type == "Student"
+            destiny_name  = Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
+            destiny_title = "C."
+          end
+        end
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
         x = 0
