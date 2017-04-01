@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  date: 2017-03-31 11:47:03
+  status: 1
+  type: 1
+
+two:
+  date: 2017-03-31 11:47:03
+  status: 1
+  type: 1

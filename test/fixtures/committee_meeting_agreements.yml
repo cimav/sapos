@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  committee_meeting: 
+  status: 1
+  type: 1
+  description: MyString
+
+two:
+  committee_meeting: 
+  status: 1
+  type: 1
+  description: MyString

@@ -24,3 +24,6 @@ config/environment.rb
 config/settings.local.yml
 config/settings/*.local.yml
 config/environments/*.local.yml
+.idea
+idea/
+config/initializers/abstract_mysql2_adapter.rb

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160830200532) do
+ActiveRecord::Schema.define(:version => 20170331232252) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -204,6 +204,63 @@ ActiveRecord::Schema.define(:version => 20160830200532) do
     t.string   "auth"
   end
 
+  create_table "committee_files", :force => true do |t|
+    t.integer  "committee_meeting_agreement_id"
+    t.string   "file"
+    t.string   "name"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  add_index "committee_files", ["committee_meeting_agreement_id"], :name => "index_committee_files_on_committee_meeting_agreement_id"
+
+  create_table "committee_meeting_agreement_files", :force => true do |t|
+    t.integer  "committee_meeting_agreement_id"
+    t.string   "file"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  create_table "committee_meeting_agreements", :force => true do |t|
+    t.integer  "committee_meeting_id"
+    t.integer  "status"
+    t.integer  "type"
+    t.string   "description"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
+
+  add_index "committee_meeting_agreements", ["committee_meeting_id"], :name => "index_committee_meeting_agreements_on_committee_meeting_id"
+
+  create_table "committee_meetings", :force => true do |t|
+    t.datetime "date"
+    t.integer  "status"
+    t.integer  "type"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "committee_members", :force => true do |t|
+    t.integer  "staff_id"
+    t.integer  "status"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "committee_members", ["staff_id"], :name => "index_committee_members_on_staff_id"
+
+  create_table "committee_responses", :force => true do |t|
+    t.integer  "committee_meeting_agreement_id"
+    t.integer  "committee_member_id"
+    t.string   "note"
+    t.integer  "answer"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  add_index "committee_responses", ["committee_meeting_agreement_id"], :name => "index_committee_responses_on_committee_meeting_agreement_id"
+  add_index "committee_responses", ["committee_member_id"], :name => "index_committee_responses_on_committee_member_id"
+
   create_table "committee_session_attendees", :force => true do |t|
     t.integer  "committee_session_id"
     t.integer  "staff_id"
@@ -300,6 +357,17 @@ ActiveRecord::Schema.define(:version => 20160830200532) do
     t.integer  "status",     :default => 0
     t.datetime "created_at",                :null => false
     t.datetime "updated_at",                :null => false
+  end
+
+  create_table "error_monterreu_quimica_materiales", :id => false, :force => true do |t|
+    t.integer  "id",         :default => 0, :null => false
+    t.integer  "term_id"
+    t.integer  "course_id"
+    t.integer  "status",     :default => 1
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "staff_id"
+    t.string   "group"
   end
 
   create_table "external_courses", :force => true do |t|
@@ -780,6 +848,32 @@ ActiveRecord::Schema.define(:version => 20160830200532) do
     t.integer  "student_id"
     t.string   "number",       :limit => 20
     t.integer  "consecutive"
+    t.text     "title",        :limit => 16777215
+    t.text     "abstract",     :limit => 16777215
+    t.datetime "defence_date"
+    t.integer  "examiner1"
+    t.integer  "examiner2"
+    t.integer  "examiner3"
+    t.integer  "examiner4"
+    t.integer  "examiner5"
+    t.string   "status",       :limit => 1
+    t.text     "notes",        :limit => 16777215
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "theses", ["examiner1"], :name => "index_theses_on_examiner1"
+  add_index "theses", ["examiner2"], :name => "index_theses_on_examiner2"
+  add_index "theses", ["examiner3"], :name => "index_theses_on_examiner3"
+  add_index "theses", ["examiner4"], :name => "index_theses_on_examiner4"
+  add_index "theses", ["examiner5"], :name => "index_theses_on_examiner5"
+  add_index "theses", ["student_id"], :name => "index_theses_on_student_id"
+
+  create_table "theses_bak", :id => false, :force => true do |t|
+    t.integer  "id",                         :default => 0, :null => false
+    t.integer  "student_id"
+    t.string   "number",       :limit => 20
+    t.integer  "consecutive"
     t.text     "title"
     t.text     "abstract"
     t.datetime "defence_date"
@@ -793,13 +887,6 @@ ActiveRecord::Schema.define(:version => 20160830200532) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  add_index "theses", ["examiner1"], :name => "index_theses_on_examiner1"
-  add_index "theses", ["examiner2"], :name => "index_theses_on_examiner2"
-  add_index "theses", ["examiner3"], :name => "index_theses_on_examiner3"
-  add_index "theses", ["examiner4"], :name => "index_theses_on_examiner4"
-  add_index "theses", ["examiner5"], :name => "index_theses_on_examiner5"
-  add_index "theses", ["student_id"], :name => "index_theses_on_student_id"
 
   create_table "tokens", :force => true do |t|
     t.integer  "attachable_id"
@@ -822,6 +909,23 @@ ActiveRecord::Schema.define(:version => 20160830200532) do
     t.integer  "program_type"
     t.string   "areas",        :limit => 150
     t.text     "config"
+  end
+
+  create_table "xprotocols", :id => false, :force => true do |t|
+    t.integer  "id",                                         :default => 0, :null => false
+    t.integer  "advance_id"
+    t.integer  "staff_id"
+    t.integer  "group"
+    t.integer  "grade_status"
+    t.integer  "status"
+    t.datetime "created_at",                                                :null => false
+    t.datetime "updated_at",                                                :null => false
+    t.decimal  "grade",        :precision => 8, :scale => 2
+  end
+
+  create_table "xxx", :id => false, :force => true do |t|
+    t.integer "term_course_id"
+    t.float   "total"
   end
 
 end

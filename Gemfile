@@ -1,7 +1,8 @@
 #ruby=ruby-2.0.0-p643
+
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.14'
+gem 'rails', '~> 3.2.14'
 #gem 'mysql2'
 gem 'mysql2', '~> 0.3.10'
 gem 'json'

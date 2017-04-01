@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  committee_meeting_agreement: 
+  committee_member: 
+  note: MyString
+  answer: 1
+
+two:
+  committee_meeting_agreement: 
+  committee_member: 
+  note: MyString
+  answer: 1
