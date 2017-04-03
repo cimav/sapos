@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170331232252) do
+ActiveRecord::Schema.define(:version => 20170403172559) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -210,6 +210,7 @@ ActiveRecord::Schema.define(:version => 20170331232252) do
     t.string   "name"
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
+    t.integer  "type"
   end
 
   add_index "committee_files", ["committee_meeting_agreement_id"], :name => "index_committee_files_on_committee_meeting_agreement_id"
