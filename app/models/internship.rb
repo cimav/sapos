@@ -29,6 +29,7 @@ class Internship < ActiveRecord::Base
   after_create :add_extra
 
   mount_uploader :image, InternshipImageUploader
+  validates      :image, file_content_type: { allow: /^image\/.*/ }
 
   ACTIVE    = 0
   FINISHED  = 1
