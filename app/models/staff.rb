@@ -35,6 +35,7 @@ class Staff < ActiveRecord::Base
   after_create :add_extra
 
   mount_uploader :image, StaffImageUploader
+  validates      :image, file_content_type: { allow: /^image\/.*/ }
 
   ACTIVE    = 0
   INACTIVE  = 1

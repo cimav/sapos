@@ -58,6 +58,7 @@ class Student < ActiveRecord::Base
   after_create :set_card, :add_extra
 
   mount_uploader :image, StudentImageUploader
+  validates      :image, file_content_type: { allow: /^image\/.*/ }
 
   DELETED      = 0
   ACTIVE       = 1

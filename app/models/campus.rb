@@ -14,6 +14,7 @@ class Campus < ActiveRecord::Base
   after_create :add_extra
 
   mount_uploader :image, CampusImageUploader
+  validates      :image, file_content_type: { allow: /^image\/.*/ }
 
   def full_name
     "#{name} (#{short_name})" rescue ''
