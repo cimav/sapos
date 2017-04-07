@@ -34,3 +34,4 @@ gem 'zipruby'
 gem 'fileutils'
 
 gem 'config', '1.0.0'
+gem 'file_validators'
