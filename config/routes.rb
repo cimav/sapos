@@ -1,4 +1,7 @@
 Sapos::Application.routes.draw do
+
+
+
   get "scholarship_categories/index"
 
   root :to => 'welcome#index'
@@ -259,6 +262,7 @@ Sapos::Application.routes.draw do
   match 'comite/desbloquear/:id' => 'committee_sessions#unlock'
 
   match 'objetos/borrar/:id' => 'committee_agreement_objects#delete'
+  match 'acuerdos/busqueda' => 'committee_meeting_agreements#live_search'
 
   resources :documentation_files
 
@@ -280,6 +284,8 @@ Sapos::Application.routes.draw do
     resources :graduates, :path => "egresados"
     resources :scholarship, :path => "becas"
     resources :applicants, :path => "aspirantes"
+    resources :committee_meetings, :path => "cep"
+    resources :committee_meeting_agreements, :path =>"acuerdos"
     resources :areas, :path => "areas"
     resources :committee_sessions, :path => "comite"
     resources :committee_agreement_objects, :path => "objetos"

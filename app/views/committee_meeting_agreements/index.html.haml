@@ -1,0 +1,28 @@
+= stylesheet_link_tag 'custom-theme/jquery-ui.css'
+- @include_js = 'committee_meeting_agreements'
+- @page_title = 'CEP'
+- @nav_icon = 'committee_sessions'
+- @include2_js = 'select2'
+- @include3_js = 'select2_locale_es'
+- @include_css = 'select2/select2'
+#items-panel.side-panel
+  .panel-search{:style=>"height: 50px"}
+    .invisible-options
+
+    = form_tag committee_sessions_path, :id => 'live-search', :method => 'get', :remote => true do
+      =select_tag 'sesion', options_from_collection_for_select(@meetings, "id", "date")
+      = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
+  #items-list.panel-items{:style=>"top: 100px;"}
+  .panel-add
+    - if can? :create, CommitteeSession
+      = link_to  'Nueva sesión', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
+    %a{'id' => 'to_excel'} XLS
+#content-panel.main-panel
+#new-term-dialog{:title=>"Nota"}
+  %center
+    = text_area_tag "commitee_agreement_notes", nil,:rows=>18, :cols=>63
+    = button_tag "Guardar y cerrar", :type=>'button', :class=>'notes-agreement', :id=>'notes-agreement'
+#new-term-dialog-courses{:title=>"Courses"}
+  %center
+    %iframe{"name" => "the_iframe", "id" => "the_iframe", "width" => "670px", "height" => "370px", "scrolling" => "no", :frameborder=>"0"}
+:javascript

@@ -1,6 +1,7 @@
 class CommitteeMeeting < ActiveRecord::Base
-  attr_accessible :date, :status, :type
+  attr_accessible :date, :status, :meeting_type
   has_many :committee_meeting_agreement, :dependent => :destroy
+  accepts_nested_attributes_for :committee_meeting_agreement
 
   OPEN = 1
   CLOSE = 2
@@ -21,4 +22,5 @@ class CommitteeMeeting < ActiveRecord::Base
   def get_status
     STATUS[status]
   end
+
 end

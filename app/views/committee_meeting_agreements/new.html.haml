@@ -1,0 +1,12 @@
+%h1
+  NUEVO ACUERDO
+=form_for @meeting_agreement do |f|
+  %label Tipo:
+  =f.select :agreement_type, [['De un tipo', CommitteeMeeting::ORDINARY],['De otro tipo', CommitteeMeeting::EXTRAORDINARY]]
+  %br
+  %br
+  %label Descripción:
+  =f.text_area :description
+  %br
+  %br
+  =f.submit "Guardar"

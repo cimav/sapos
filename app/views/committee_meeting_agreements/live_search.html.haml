@@ -1,0 +1,10 @@
+%ul.panel-list
+  - c = 0
+  - @meeting_agreements.each do |ma|
+    - c += 1
+    %li
+      = link_to ma, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "c_session_link_#{ma.id}" do
+        = "#{ma.id}"
+        .comment{:id=>"comment_session_#{ma.id}"}= CommitteeSession::STATUS[ma.status]
+#counter
+  .inner= "#{c} sesiones"

@@ -1,0 +1,29 @@
+- @include_js = 'committee_meetings'
+%br
+%br
+%h1
+  Nueva Sesión
+
+=form_for @committee_meeting, id:"#item-new-form" do |f|
+  %label Tipo:
+  =f.select :type, [['Ordinaria', CommitteeMeeting::ORDINARY],['Extraordinaria', CommitteeMeeting::EXTRAORDINARY]]
+  %br
+  %br
+  %label Estatus:
+  =f.select :status, [['Abierta', CommitteeMeeting::OPEN],['Cerrada', CommitteeMeeting::CLOSE]]
+  %br
+  %br
+  %label Fecha y hora:
+  = f.text_field :date, :readonly=>true
+  =time_select 'meeting', 'time',{minute_step: 15}
+
+
+:javascript
+  $(document).ready(function(){
+
+    start_datepicker();
+    $('#committe_meeting_type').select2();
+
+    $('#committe_meeting_status').select2();
+  });
+
