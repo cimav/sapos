@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170403172559) do
+ActiveRecord::Schema.define(:version => 20170406174245) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -210,7 +210,7 @@ ActiveRecord::Schema.define(:version => 20170403172559) do
     t.string   "name"
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
-    t.integer  "type"
+    t.integer  "file_type"
   end
 
   add_index "committee_files", ["committee_meeting_agreement_id"], :name => "index_committee_files_on_committee_meeting_agreement_id"
@@ -225,7 +225,7 @@ ActiveRecord::Schema.define(:version => 20170403172559) do
   create_table "committee_meeting_agreements", :force => true do |t|
     t.integer  "committee_meeting_id"
     t.integer  "status"
-    t.integer  "type"
+    t.integer  "agreement_type"
     t.string   "description"
     t.datetime "created_at",           :null => false
     t.datetime "updated_at",           :null => false
@@ -236,9 +236,9 @@ ActiveRecord::Schema.define(:version => 20170403172559) do
   create_table "committee_meetings", :force => true do |t|
     t.datetime "date"
     t.integer  "status"
-    t.integer  "type"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "meeting_type"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "committee_members", :force => true do |t|

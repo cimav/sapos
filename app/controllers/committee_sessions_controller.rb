@@ -343,7 +343,7 @@ class CommitteeSessionsController < ApplicationController
     @rectangles = false
     @nbsp = Prawn::Text::NBSP
 
-    filename = "#{Rails.root.to_s}/private/prawn_templates/membretado_2.png"
+    filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     Prawn::Document.new(:background => filename, :background_scale=>0.33, :margin=>60 ) do |pdf|
       ############# CABECERA
       x = 250
@@ -1125,7 +1125,7 @@ class CommitteeSessionsController < ApplicationController
     last_change      = @c_s.end_session
     today            = Date.today
 
-    filename = "#{Rails.root.to_s}/private/prawn_templates/membretado_2.png"
+    filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     Prawn::Document.new(:background => filename, :background_scale=>0.33, :margin=>[130,60,60,60] ) do |pdf|
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
       texto = "<b>Comité de Estudios de Posgrado</b>"
@@ -1141,7 +1141,7 @@ class CommitteeSessionsController < ApplicationController
       @committee_session_attendees = CommitteeSessionAttendee.where(:committee_session_id=>@c_s.id)
       @committee_session_attendees.each do |csa|
         if csa.checked?
-          data << Array(Staff.find(csa.staff_id).full_name_cap)
+          data << Array(Staff.find(csa.staff_id).full_name_cap )
         end
       end
 

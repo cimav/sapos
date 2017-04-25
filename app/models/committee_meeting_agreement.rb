@@ -1,8 +1,8 @@
 class CommitteeMeetingAgreement < ActiveRecord::Base
   belongs_to :committee_meeting
-  has_many :committee_file, :dependent => :destroy
-  has_many :committee_response, :dependent => :destroy
-  attr_accessible :description, :status, :type
+  has_many :committee_file#, :dependent => :destroy
+  has_many :committee_response#, :dependent => :destroy
+  attr_accessible :description, :status, :committee_meeting_id
 
   AWAITING_RESPONSE = 0
   APPROVED = 1
