@@ -874,6 +874,8 @@ class StudentsController < ApplicationController
       @sgenero2 = "x"
     end
 
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+
     ################################ CONSTANCIA DE ESTUDIOS ##################################
     if params[:type] == "estudios"
       @consecutivo = get_consecutive(@student, time, Certificate::STUDIES)
@@ -886,12 +888,50 @@ class StudentsController < ApplicationController
       @matricula   = @student.card
       @programa    = @student.program.name
 
+      @rectangles  = false
+    
+      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+        pdf.font_size 13
+        x = 232
+        y = 670 #657
+        w = 255
+        h = 50
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
 
-      html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_estudios')
-      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "constancia-estudios-#{@student.id}.pdf"
-      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return # to avoid double render call
+        y = y - 110
+        x = 10
+        h = 50
+
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+
+        y = y - 60
+        h = 200
+        w = 480
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+
+        if @op_asesor.eql? 1
+          @extra = " en este centro de investigación, bajo la supervisión académica de"
+          s = Staff.find(@student.supervisor).full_name rescue ""
+          @point = "#{@extra} #{s}."
+        else
+          @point = "."
+        end
+
+        @extension   = "\n\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
+
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} regular en nuestro programa #{@programa}#{@point} #{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+
+        y = y - 202
+        h = 155
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+
+        send_data pdf.render, type: "application/pdf", disposition: "inline"
+      end
     end
 
     ################################ CONSTANCIA DE INSCRIPCION  ##################################
