@@ -893,7 +893,7 @@ class StudentsController < ApplicationController
       Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
         pdf.font_size 13
         x = 232
-        y = 670 #657
+        y = 664 #657
         w = 255
         h = 50
         
@@ -956,7 +956,7 @@ class StudentsController < ApplicationController
       Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
         pdf.font_size 13
         x = 232
-        y = 670 #657
+        y = 664 #657
         w = 255
         h = 50
         
@@ -1012,16 +1012,61 @@ class StudentsController < ApplicationController
       @asesor      = Staff.find(@student.supervisor).full_name rescue ""
       @programa    = @student.program.name
       @student_image_uri = @student.image_url.to_s
+ 
+      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+        pdf.font_size 13
+        x = 232
+        y = 664 #657
+        w = 255
+        h = 50
+        
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
+        
+        y = y - 110
+        x = 10
+        h = 50
 
-      scholarship = @student.scholarship.where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE()")
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        
+        y = y - 60
+        h = 200
+        w = 480
+         
+        @final = ""
+        if @op_asesor.eql? 1
+          s = Staff.find(@student.supervisor).full_name rescue ""
+          @final = "en este centro de investigación, bajo la supervisión académica de #{s}."
+        else
+          @final = "en este centro de investigación. "
+        end
+        
+        @extension   = "\n\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
 
-      @scholarship = @student.scholarship.joins(:scholarship_type=>[:scholarship_category]).where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE() AND scholarship_categories.id=1")
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., Centro Público de Investigación con clave de Institución 080068 y con programas registrados ante la Dirección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero} #{@final} #{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
 
-      html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_visa')
-      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "constancia-visa-#{@student.id}.pdf"
-      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return # to avoid double render call
+        x = x + 150
+        y = y - 202
+        w = w - 150
+        h = 155
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+ 
+        x = x -150
+        w = 150
+        h = 155
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.bounding_box [x,y],:width=>w,:height=>h do 
+          pdf.image "#{@rails_root}/public#{@student_image_uri}", :position=>:left,:width=>w,:height=>h
+        end
+
+        filename = "constancia-visa-#{@student.id}.pdf"
+        send_data pdf.render, filename: filename ,type: "application/pdf", disposition: "attachment"
+        #send_data pdf.render, filename: filename ,type: "application/pdf", disposition: "inline"
+      end
     end
 
     ################################ CONSTANCIA DE PROMEDIO GENERAL  ##################################
