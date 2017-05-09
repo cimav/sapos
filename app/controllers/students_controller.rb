@@ -932,7 +932,8 @@ class StudentsController < ApplicationController
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
 
-        send_data pdf.render, type: "application/pdf", disposition: "attachment"
+        filename = "constancia-estudios-#{@student.id}.pdf"
+        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
       end
     end
 
@@ -980,11 +981,20 @@ class StudentsController < ApplicationController
         else
           @final = "en este centro de investigación. "
         end
+        
+        @extension   = "\n\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
 
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} activ#{@genero} en el periodo <b>#{@start_month} - #{@end_month} #{@end_year}</b>, en nuestro programa #{@programa} #{@final}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} activ#{@genero} en el periodo <b>#{@start_month} - #{@end_month} #{@end_year}</b>, en nuestro programa #{@programa} #{@final} #{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         
-        send_data pdf.render, type: "application/pdf", disposition: "attachment"
+        y = y - 202
+        h = 155
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        
+        filename = "constancia-inscripcion-#{@student.id}.pdf"
+        send_data pdf.render, filename: filename ,type: "application/pdf", disposition: "attachment"
       end
 
     end
