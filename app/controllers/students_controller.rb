@@ -896,6 +896,7 @@ class StudentsController < ApplicationController
         y = 670 #657
         w = 255
         h = 50
+        
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
 
@@ -909,6 +910,7 @@ class StudentsController < ApplicationController
         y = y - 60
         h = 200
         w = 480
+
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
 
         if @op_asesor.eql? 1
@@ -930,7 +932,7 @@ class StudentsController < ApplicationController
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
 
-        send_data pdf.render, type: "application/pdf", disposition: "inline"
+        send_data pdf.render, type: "application/pdf", disposition: "attachment"
       end
     end
 
@@ -950,11 +952,41 @@ class StudentsController < ApplicationController
       @end_month  = get_month_name(@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.month).capitalize
       @end_year   = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.year.to_s
 
-      html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_inscripcion')
-      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "constancia-inscripcion-#{@student.id}.pdf"
-      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return
+      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+        pdf.font_size 13
+        x = 232
+        y = 670 #657
+        w = 255
+        h = 50
+        
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
+        
+        y = y - 110
+        x = 10
+        h = 50
+
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        
+        y = y - 60
+        h = 200
+        w = 480
+         
+        @final = ""
+        if @op_asesor.eql? 1
+          s = Staff.find(@student.supervisor).full_name rescue ""
+          @final = "en este centro de investigación, bajo la supervisión académica de #{s}."
+        else
+          @final = "en este centro de investigación. "
+        end
+
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} activ#{@genero} en el periodo <b>#{@start_month} - #{@end_month} #{@end_year}</b>, en nuestro programa #{@programa} #{@final}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        
+        send_data pdf.render, type: "application/pdf", disposition: "attachment"
+      end
+
     end
 
     ################################ CONSTANCIA PARA VISA  ##################################
@@ -2300,11 +2332,11 @@ class StudentsController < ApplicationController
     render :layout => 'standalone'
   end
 
-  private
-    def auth_digest
-      authenticate_or_request_with_http_digest(REALM) do |username|
-        USERS[username]
-      end
+private
+  def auth_digest
+    authenticate_or_request_with_http_digest(REALM) do |username|
+      USERS[username]
     end
+  end
 
 end
