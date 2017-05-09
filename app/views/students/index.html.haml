@@ -2,8 +2,8 @@
 - @page_title = 'Estudiantes'
 - @nav_icon = 'students'
 :javascript
-  var programs = #{@programs_json.to_json};
-  var remote_id = #{@remote_id};
+  var programs = #{@programs_json.to_json.html_safe};
+  var remote_id = #{@remote_id.html_safe};
 #items-panel.side-panel 
 
   .panel-search{:style=>"height: 160px"}
