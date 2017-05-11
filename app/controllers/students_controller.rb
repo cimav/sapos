@@ -801,18 +801,11 @@ class StudentsController < ApplicationController
 
   def certificates
     @student     = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    @nombre      = @student.full_name
+    @matricula   = @student.card
+    @programa    = @student.program.name
     @sign        = params[:sign_id]
-    ## OPTIONS
-    @options     = params[:options]
-    if @options.eql? "1"
-      @op_asesor = 1
-    else
-      @op_asesor = 0
-    end
-
-    time = Time.new
-    year = time.year.to_s
-    dir  = t(:directory)
+    dir          = t(:directory)
 
     if @sign.eql? "1"
       title    = dir[:academic_director][:title]
@@ -874,199 +867,41 @@ class StudentsController < ApplicationController
       @sgenero2 = "x"
     end
 
-    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
-
     ################################ CONSTANCIA DE ESTUDIOS ##################################
     if params[:type] == "estudios"
-      @consecutivo = get_consecutive(@student, time, Certificate::STUDIES)
-      @rails_root  = "#{Rails.root}"
-      @year_s      = year[2,4]
-      @year        = year
-      @days        = time.day.to_s
-      @month       = get_month_name(time.month)
-      @nombre      = @student.full_name
-      @matricula   = @student.card
-      @programa    = @student.program.name
+      options = {}
+      options[:cert_type] = Certificate::STUDIES
 
-      @rectangles  = false
-    
-      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
-        pdf.font_size 13
-        x = 232
-        y = 664 #657
-        w = 255
-        h = 50
-        
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
+      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} regular en nuestro programa #{@programa}"
 
-        y = y - 110
-        x = 10
-        h = 50
-
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-
-        y = y - 60
-        h = 200
-        w = 480
-
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-
-        if @op_asesor.eql? 1
-          @extra = " en este centro de investigación, bajo la supervisión académica de"
-          s = Staff.find(@student.supervisor).full_name rescue ""
-          @point = "#{@extra} #{s}."
-        else
-          @point = "."
-        end
-
-        @extension   = "\n\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
-
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} regular en nuestro programa #{@programa}#{@point} #{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-
-        y = y - 202
-        h = 155
-        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-
-        filename = "constancia-estudios-#{@student.id}.pdf"
-        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
-      end
+      options[:filename] =  "constancia-estudios-#{@student.id}.pdf"
     end
 
     ################################ CONSTANCIA DE INSCRIPCION  ##################################
     if params[:type] == "inscripcion"
-      @consecutivo = get_consecutive(@student, time, Certificate::ENROLLMENT)
-      @nombre     = @student.full_name
-      @programa   = @student.program.name
-      @matricula  = @student.card
-      @asesor     = Staff.find(@student.supervisor).full_name rescue ""
-      @rails_root = "#{Rails.root}"
-      @year_s     = year[2,4]
-      @year       = year
-      @days       = time.day.to_s
+      options = {}
+      options[:cert_type] = Certificate::ENROLLMENT
+
+      time        = Time.new
       @month      = get_month_name(time.month)
       @start_month= get_month_name(@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.start_date.month).capitalize
       @end_month  = get_month_name(@student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.month).capitalize
       @end_year   = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.year.to_s
-
-      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
-        pdf.font_size 13
-        x = 232
-        y = 664 #657
-        w = 255
-        h = 50
-        
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
-        
-        y = y - 110
-        x = 10
-        h = 50
-
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        
-        y = y - 60
-        h = 200
-        w = 480
-         
-        @final = ""
-        if @op_asesor.eql? 1
-          s = Staff.find(@student.supervisor).full_name rescue ""
-          @final = "en este centro de investigación, bajo la supervisión académica de #{s}."
-        else
-          @final = "en este centro de investigación. "
-        end
-        
-        @extension   = "\n\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
-
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} activ#{@genero} en el periodo <b>#{@start_month} - #{@end_month} #{@end_year}</b>, en nuestro programa #{@programa} #{@final} #{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        
-        y = y - 202
-        h = 155
-        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        
-        filename = "constancia-inscripcion-#{@student.id}.pdf"
-        send_data pdf.render, filename: filename ,type: "application/pdf", disposition: "attachment"
-      end
-
+      
+      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} activ#{@genero} en el periodo <b>#{@start_month} - #{@end_month} #{@end_year}</b>, en nuestro programa #{@programa}"
+      options[:filename] =  "constancia-inscripcion-#{@student.id}.pdf"
     end
 
     ################################ CONSTANCIA PARA VISA  ##################################
     if params[:type] == "visa"
-      @consecutivo = get_consecutive(@student, time, Certificate::VISA)
-      @rails_root  = "#{Rails.root}"
-      @year_s      = year[2,4]
-      @year        = year
-      @days        = time.day.to_s
-      @month       = get_month_name(time.month)
-      @nombre      = @student.full_name
-      @matricula   = @student.card
-      @asesor      = Staff.find(@student.supervisor).full_name rescue ""
-      @programa    = @student.program.name
-      @student_image_uri = @student.image_url.to_s
- 
-      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
-        pdf.font_size 13
-        x = 232
-        y = 664 #657
-        w = 255
-        h = 50
-        
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
-        
-        y = y - 110
-        x = 10
-        h = 50
+      options = {}
+      options[:cert_type] = Certificate::VISA
+      
 
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        
-        y = y - 60
-        h = 200
-        w = 480
-         
-        @final = ""
-        if @op_asesor.eql? 1
-          s = Staff.find(@student.supervisor).full_name rescue ""
-          @final = "en este centro de investigación, bajo la supervisión académica de #{s}."
-        else
-          @final = "en este centro de investigación. "
-        end
-        
-        @extension   = "\n\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
+      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., Centro Público de Investigación con clave de Institución 080068 y con programas registrados ante la Dirección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero} #{@final} #{@extension}"
 
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., Centro Público de Investigación con clave de Institución 080068 y con programas registrados ante la Dirección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero} #{@final} #{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
 
-        x = x + 150
-        y = y - 202
-        w = w - 150
-        h = 155
-        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
- 
-        x = x -150
-        w = 150
-        h = 155
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.bounding_box [x,y],:width=>w,:height=>h do 
-          pdf.image "#{@rails_root}/public#{@student_image_uri}", :position=>:left,:width=>w,:height=>h
-        end
-
-        filename = "constancia-visa-#{@student.id}.pdf"
-        send_data pdf.render, filename: filename ,type: "application/pdf", disposition: "attachment"
-        #send_data pdf.render, filename: filename ,type: "application/pdf", disposition: "inline"
-      end
+      options[:filename] = "constancia-visa-#{@student.id}.pdf"
     end
 
     ################################ CONSTANCIA DE PROMEDIO GENERAL  ##################################
@@ -1208,6 +1043,8 @@ class StudentsController < ApplicationController
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return # to avoid double render call
     end
+   
+    generate_certificate(options)
   end
 
 
@@ -2391,6 +2228,95 @@ private
   def auth_digest
     authenticate_or_request_with_http_digest(REALM) do |username|
       USERS[username]
+    end
+  end
+
+  def generate_certificate(options)
+    @rectangles = false
+    ## OPTIONS
+    @options     = params[:options]
+    if @options.eql? "1"
+      @op_asesor = 1
+    else
+      @op_asesor = 0
+    end
+
+    time = Time.new
+    year = time.year.to_s
+
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+    @consecutivo = get_consecutive(@student, time, options[:cert_type])
+    @rails_root  = "#{Rails.root}"
+    @year_s      = year[2,4]
+    @year        = year
+    @days        = time.day.to_s
+    @month       = get_month_name(time.month)
+
+    Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+      pdf.font_size 13
+      x = 232
+      y = 664 #657
+      w = 255
+      h = 50
+        
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+      pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
+
+      y = y - 110
+      x = 10
+      h = 50
+
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+      pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+
+      y = y - 60
+      h = 200
+      w = 480
+
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+
+      if @op_asesor.eql? 1
+        @extra = " en este centro de investigación, bajo la supervisión académica de"
+        s = Staff.find(@student.supervisor).full_name rescue ""
+        @point = "#{@extra} #{s}."
+      else
+        @point = "."
+      end
+
+      @extension   = "\n\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
+
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+      pdf.text_box "#{options[:text]}#{@point}#{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+
+      if options[:cert_type] == 3 ## VISA 
+        @student_image_uri = @student.image_url.to_s
+        
+        x = x + 150
+        y = y - 202
+        w = w - 150
+        h = 155
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+ 
+        x = x -150
+        w = 150
+        h = 155
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.bounding_box [x,y],:width=>w,:height=>h do 
+          pdf.image "#{@rails_root}/public#{@student_image_uri}", :position=>:left,:width=>w,:height=>h
+        end
+      else
+        y = y - 202
+        h = 155
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+      end
+
+      filename = options[:filename]
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
   end
 
