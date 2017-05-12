@@ -872,7 +872,7 @@ class StudentsController < ApplicationController
       options = {}
       options[:cert_type] = Certificate::STUDIES
 
-      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} #{@firma}, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} regular en nuestro programa #{@programa}"
+      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} regular en nuestro programa #{@programa}"
 
       options[:filename] =  "constancia-estudios-#{@student.id}.pdf"
     end
@@ -896,25 +896,18 @@ class StudentsController < ApplicationController
     if params[:type] == "visa"
       options = {}
       options[:cert_type] = Certificate::VISA
-      
 
-      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., Centro Público de Investigación con clave de Institución 080068 y con programas registrados ante la Dirección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero} #{@final} #{@extension}"
-
+      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., Centro Público de Investigación con clave de Institución 080068 y con programas registrados ante la Dirección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero} <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> se encuentra inscrit#{@genero} como alumno regular en nuestro programa #{@programa}"
 
       options[:filename] = "constancia-visa-#{@student.id}.pdf"
     end
 
     ################################ CONSTANCIA DE PROMEDIO GENERAL  ##################################
     if params[:type] == "promedio"
-      @consecutivo = get_consecutive(@student, time, Certificate::AVERAGE)
-      @rails_root  = "#{Rails.root}"
-      @year_s      = year[2,4]
-      @year        = year
-      @days        = time.day.to_s
-      @month       = get_month_name(time.month)
+      options = {}
+      options[:cert_type] = Certificate::AVERAGE
       @nombre      = @student.full_name
       @matricula   = @student.card
-      @asesor      = Staff.find(@student.supervisor).full_name rescue ""
       @programa    = @student.program.name
       @semestre    = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.code
 
@@ -939,25 +932,16 @@ class StudentsController < ApplicationController
       end
       @promedio = avg.to_s
 
-      html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_promedio_general')
-      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "constancia-promedio-general-#{@student.id}.pdf"
-      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return # to avoid double render call
+      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., Centro Público de Investigación, hace constar que <b>#{@nombre}</b> de matricula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} regular del semestre #{@semestre} en nuestro programa de #{@programa}"
+      options[:average] = @promedio
+
+      options[:filename] = "constancia-promedio-general-#{@student.id}.pdf"
     end
 
     ################################ CONSTANCIA DE PROMEDIO SEMESTRAL  ##################################
     if params[:type] == "semestral"
-      @consecutivo = get_consecutive(@student, time, Certificate::SEMESTER_AVERAGE)
-      @rails_root  = "#{Rails.root}"
-      @year_s      = year[2,4]
-      @year        = year
-      @days        = time.day.to_s
-      @month       = get_month_name(time.month)
-      @nombre      = @student.full_name
-      @matricula   = @student.card
-      @asesor      = Staff.find(@student.supervisor).full_name
-      @programa    = @student.program.name
+      options = {}
+      options[:cert_type] = Certificate::SEMESTER_AVERAGE
 
       ts = @student.term_students.joins(:term).order("terms.start_date")
       term = ts.last.term
@@ -971,12 +955,12 @@ class StudentsController < ApplicationController
 
       @promedio         = avg.to_s
       @semestre_cursado = term.code
+   
+      options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto}, del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} regular en nuestro programa de #{@programa}"
+      options[:average]        = @promedio
+      options[:last_semester]  = @semestre_cursado
 
-      html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_promedio_semestral')
-      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "constancia-promedio-semestral-#{@student.id}.pdf"
-      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return # to avoid double render call
+      options[:filename] = "constancia-promedio-semestral-#{@student.id}.pdf"
     end
 
     ################################ CONSTANCIA DE TRAMITE DE SEGURO  ##################################
@@ -2232,7 +2216,7 @@ private
   end
 
   def generate_certificate(options)
-    @rectangles = false
+    @rectangles = true
     ## OPTIONS
     @options     = params[:options]
     if @options.eql? "1"
@@ -2255,7 +2239,7 @@ private
     Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
       pdf.font_size 13
       x = 232
-      y = 664 #657
+      y = 664 #664
       w = 255
       h = 50
         
@@ -2270,29 +2254,39 @@ private
       pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
 
       y = y - 60
-      h = 200
+      h = 220
       w = 480
 
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
 
       if @op_asesor.eql? 1
-        @extra = " en este centro de investigación, bajo la supervisión académica de"
+        @extra = "#{@extra}, bajo la supervisión académica de"
         s = Staff.find(@student.supervisor).full_name rescue ""
-        @point = "#{@extra} #{s}."
+        @point = "#{@extra} <b>#{s}</b>."
       else
         @point = "."
       end
 
-      @extension   = "\n\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
+      if options[:cert_type].eql? Certificate::AVERAGE
+        @point = @point[0..(@point.size-2)]
+        @point = "#{@point} y tiene un promedio general de #{options[:average]}."
+      end
+      
+      if options[:cert_type].eql? Certificate::SEMESTER_AVERAGE
+        @point = @point[0..(@point.size-3)]
+        @point = "#{@point} y con un promedio semestral de #{options[:average]} en el último semestre cursado <b>#{options[:last_semester]}</b>."
+      end
+
+      @extension   = "\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
 
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
       pdf.text_box "#{options[:text]}#{@point}#{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
 
-      if options[:cert_type] == 3 ## VISA 
+      if options[:cert_type] == Certificate::VISA 
         @student_image_uri = @student.image_url.to_s
         
         x = x + 150
-        y = y - 202
+        y = y - 222
         w = w - 150
         h = 155
         @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
@@ -2307,7 +2301,7 @@ private
           pdf.image "#{@rails_root}/public#{@student_image_uri}", :position=>:left,:width=>w,:height=>h
         end
       else
-        y = y - 202
+        y = y - 222 #202
         h = 155
         @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
@@ -2315,8 +2309,8 @@ private
       end
 
       filename = options[:filename]
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
-      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
   end
 
