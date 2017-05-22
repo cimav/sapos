@@ -355,7 +355,7 @@ class StudentsController < ApplicationController
 
   def documents
     @student      = Student.find(params[:id])
-    if @student.program_type.eql? 4
+    if @student.program.program_type.eql? 4
       @applicants   = Applicant.where(:student_id=>@student.id,:campus_id=>@student.campus_id)
     else
       @applicants   = Applicant.where(:student_id=>@student.id,:campus_id=>@student.campus_id,:program_id=>@student.program_id)
