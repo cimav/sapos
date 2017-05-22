@@ -347,7 +347,7 @@ class CommitteeSessionsController < ApplicationController
     Prawn::Document.new(:background => filename, :background_scale=>0.33, :margin=>60 ) do |pdf|
       ############# CABECERA
       x = 250
-      y = 657
+      y = 660 #657
       w = 260
       h = 43
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
@@ -356,8 +356,11 @@ class CommitteeSessionsController < ApplicationController
       today            = Date.today
       @session_type    = CommitteeSession::TYPES[@c_s.session_type].downcase
 
-      pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{today.day} de #{get_month_name(today.month)} de #{today.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h
+      #pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{today.day} de #{get_month_name(today.month)} de #{today.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h
+      pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h
 
+#{s_date.day} de #{get_mo     nth_name(s_date.month)} de #{s_date.year}
+  
       ## corpo segun tipo
       ############################### NUEVO INGRESO ###################################
       if @type.eql? 1
@@ -389,7 +392,7 @@ class CommitteeSessionsController < ApplicationController
           y = y - 60
           w = 510
           h = 180
-          texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del pasado #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} del Comité de Estudios de Posgrado se ha autorizado una prórroga para presentar sus requisitos de titulación ante este comité a mas tardar el #{l_date.day} de #{get_month_name(l_date.month)} de #{l_date.year}."
+          texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado le ha autorizado una prórroga para presentar sus requisitos de titulación ante este comité a mas tardar el #{l_date.day} de #{get_month_name(l_date.month)} de #{l_date.year}."
 
           if notes.blank?
             texto = "#{texto}\n\n"
@@ -419,7 +422,7 @@ class CommitteeSessionsController < ApplicationController
           y = y - 60
           w = 510
           h = 80
-          texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del pasado #{s_date.day} de #{get_month_name(s_date.month)} del Comité de Estudios de Posgrado, se ha determinado su baja definitiva por incumplimiento del Programa de #{student.program.name}, con base en el artículo 30 del Reglamento de Estudios de Posgrado vigente que establece que el estudiante podrá ser dado de baja por:\n\n"
+          texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado ha determinado su baja definitiva por incumplimiento del Programa de #{student.program.name}, con base en el artículo 30 del Reglamento de Estudios de Posgrado vigente que establece que el estudiante podrá ser dado de baja por:\n\n"
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           #  OPCIONES
@@ -457,7 +460,7 @@ class CommitteeSessionsController < ApplicationController
           y = y - 60
           w = 510
           h = 180
-          texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del pasado #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} del Comité de Estudios de Posgrado se ha determinado su baja definitiva al programa de posgrado al que se encuentra adscrito por renuncia explícita."
+          texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado ha determinado su baja definitiva al programa de posgrado al que se encuentra adscrito por renuncia explícita."
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           #  FIRMA
@@ -499,7 +502,7 @@ class CommitteeSessionsController < ApplicationController
         y = y - 60
         w = 510
         h = 80
-        texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del pasado #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.month} del Comité de Estudios de Posgrado, se ha autorizado el cambio de programa de #{student.program.name} al de #{program.name},\n\n Por lo anterior, deberá cumplir con la carga académica de acuerdo al plan de estudios aplicable en el Programa de posgrado que fue autorizado.\n\n Me encuentro a sus ordenes cualquier duda al respecto\n\n"
+        texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado le ha autorizado el cambio de programa de #{student.program.name} al de #{program.name},\n\n Por lo anterior, deberá cumplir con la carga académica de acuerdo al plan de estudios aplicable en el Programa de posgrado que fue autorizado.\n\n Me encuentro a sus ordenes cualquier duda al respecto\n\n"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         # FIRMA
@@ -533,7 +536,7 @@ class CommitteeSessionsController < ApplicationController
         y = y - 60
         w = 510
         h = 100
-        texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que en la reunión #{@session_type} del Comité de Estudios de Posgrado del pasado #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} se le ha nombrado como director de tesis de #{student.full_name} del Programa de #{student.program.name}.\n\n A continuación le informo los avances que deberá tener el estudiante durante su trayectoria académica: \n\n"
+        texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado como director de tesis de #{student.full_name} del Programa de #{student.program.name}.\n\n A continuación le informo los avances que deberá tener el estudiante durante su trayectoria académica: \n\n"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.move_down 300
@@ -600,7 +603,7 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} lo ha nombrado sinodal de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado sinodal de <b>#{student.full_name}</b> adscrito al programa de <b>#{student.program.name}</b>.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
@@ -655,7 +658,7 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} lo ha nombrado integrante del Comité Tutoral de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité Tutoral de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
@@ -704,7 +707,7 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} lo ha nombrado #{mtype rescue "N.D"} del alumno #{student.full_name rescue "N.D"} adscrito al programa de #{student.program.name rescue "N.D"}.\n\n Lo anterior con base en la normatividad aplicable, articulo 11 del Reglamento de Estudios de Posgrado.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado #{mtype rescue "N.D"} del alumno #{student.full_name rescue "N.D"} adscrito al programa de #{student.program.name rescue "N.D"}.\n\n Lo anterior con base en la normatividad aplicable, articulo 11 del Reglamento de Estudios de Posgrado.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
@@ -739,7 +742,7 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
         text = "#{text} lo ha nombrado docente responsable del curso #{course.name} correspondiente al ciclo escolar #{term.code} que se llevará a cabo del #{term.start_date.day} de #{get_month_name(term.start_date.month)} de #{term.start_date.year} al #{term.end_date.day} de #{get_month_name(term.end_date.month)} de #{term.end_date.year}."
         text = "#{text} \n\nEn caso de ser un curso coordinado, le pido nos haga llegar la distribución de docentes por fechas con el fin de que sean cargados en el sistema administrativo de posgrado."
         if !notes.blank?
@@ -845,7 +848,7 @@ class CommitteeSessionsController < ApplicationController
           w = 510
           h = 170
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
+          text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
           text = "#{text} autorizó su solicitud de ausencia #{notes}."
           text = "#{text} \n\n Me encuentro a sus ordenes para cualquier duda al respecto."
           pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
@@ -880,8 +883,8 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "En seguimiento al acuerdo tomado por el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} para la distribución de becas de posgrado me permito informar a usted que el monto total asignado a su departamento es por la cantidad de $#{amount}."
+        text = "En seguimiento al acuerdo tomado por el Comité de Estudios de Posgrado"
+        text = "#{text} para la distribución de becas de posgrado me permito informar a Usted que el monto total asignado a su departamento es por la cantidad de $#{amount}."
 
         if !notes.empty?
           text = "#{text}\n\n #{notes}"
@@ -923,8 +926,8 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} se le ha autorizado realizar estancia posdoctoral en este Centro en el area de #{area.name}, bajo la asesoria de #{internship.staff.full_name} durante el periodo #{notes}."
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
+        text = "#{text} le ha autorizado realizar estancia posdoctoral en este Centro en el area de #{area.name}, bajo la asesoria de #{internship.staff.full_name} durante el periodo #{notes}."
         text = "#{text} \n\n Anexo formato y requisitos para el registro correspondiente y quedo a sus ordenes para cualquier duda al respecto."
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
@@ -963,7 +966,7 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year} autorizó la revalidación de los siguientes cursos:"
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado autorizó la revalidación de los siguientes cursos:"
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         
         pdf.move_down 220
@@ -1026,7 +1029,7 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
         if auth.to_i.eql? 1
           auth = "lo ha nombrado"
         elsif auth.to_i.eql? 2
@@ -1085,8 +1088,8 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado en su sesión del día #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}"
-        text = "#{text} se resolvió lo siguiente:"
+        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
+        text = "#{text} ha resuelto lo siguiente:"
         if !notes.blank?
           text = "#{text} \n\n#{notes}"
         end

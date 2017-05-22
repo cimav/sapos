@@ -26,9 +26,17 @@ gem 'rmagick'
 gem 'spreadsheet'
 gem 'pdfkit'
 gem 'cancan'
-gem 'prawn'
-gem 'prawn-table'
-gem 'prawn-icon'
+
+
+#gem 'prawn'
+#gem 'prawn-table'
+#gem 'prawn-icon'
+
+gem 'ttfunk'
+gem 'nokogiri', '1.6.7.2'
+gem 'prawn', '2.1.0'
+gem 'prawn-table', '0.2.2'
+gem 'prawn-icon', '1.3.0'
 
 gem 'zipruby'
 gem 'fileutils'
