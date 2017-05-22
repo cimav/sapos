@@ -329,8 +329,8 @@ tr.row-odd {
   left: 296px;
   width: 250px;
   height: 100px;
-  position: absolute;
-  z-index: 99999;
+  position: fixed;
+  z-index: 99998;
   display: none;
   border-radius: 2px;
   box-shadow: 1px 1px 8px #dadada;
