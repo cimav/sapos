@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170406174245) do
+ActiveRecord::Schema.define(:version => 20170606181326) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -135,7 +135,7 @@ ActiveRecord::Schema.define(:version => 20170406174245) do
     t.integer  "year"
     t.integer  "attachable_id"
     t.string   "attachable_type"
-    t.integer  "type"
+    t.integer  "type_id"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
   end
@@ -214,13 +214,6 @@ ActiveRecord::Schema.define(:version => 20170406174245) do
   end
 
   add_index "committee_files", ["committee_meeting_agreement_id"], :name => "index_committee_files_on_committee_meeting_agreement_id"
-
-  create_table "committee_meeting_agreement_files", :force => true do |t|
-    t.integer  "committee_meeting_agreement_id"
-    t.string   "file"
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
-  end
 
   create_table "committee_meeting_agreements", :force => true do |t|
     t.integer  "committee_meeting_id"

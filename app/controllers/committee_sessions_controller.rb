@@ -1274,7 +1274,7 @@ class CommitteeSessionsController < ApplicationController
       elsif cat.id.eql? 5 ## Designación de sinodales
         student  = Student.find(ca.committee_agreement_person.where(:attachable_type=>"Student")[0].attachable_id)
         name     = student.full_name
-        director = Staff.find(student.supervisor).full_name_cap
+        director = Staff.find(student.supervisor).full_name_cap rescue "N.D."
         issue = "#{issue}\n\n <b>#{name}</b>\n\n Director de tesis: #{director} \n\n"
         sinodales = ""
         ca.committee_agreement_person.where(:attachable_type=>"Staff").each do |cap|

@@ -1,5 +1,5 @@
 class Certificate < ActiveRecord::Base
-  attr_accessible :id, :consecutive, :year, :attachable_id, :attachable_type, :type
+  attr_accessible :id, :consecutive, :year, :attachable_id, :attachable_type, :type_id
 
   belongs_to :attachable, :polymorphic => true
   
