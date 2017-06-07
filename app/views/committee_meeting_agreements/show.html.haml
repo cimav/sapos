@@ -1,2 +1,3 @@
-%h1
-  =@meeting_agreement.committee_meeting.date
+%h1.centered
+  = 'Sesión ' + @meeting_agreement.committee_meeting.date.to_s
+=render :partial => 'form'
