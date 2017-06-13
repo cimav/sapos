@@ -919,7 +919,7 @@ class InternshipsController < ApplicationController
     certificate.year            = time.year
     certificate.attachable_id   = object.id
     certificate.attachable_type = object.class.to_s
-    certificate.type            = type
+    certificate.type_id         = type
     certificate.save
 
     return "%03d" % maximum
