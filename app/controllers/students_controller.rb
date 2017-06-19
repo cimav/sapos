@@ -1,12 +1,13 @@
 # coding: utf-8
 require 'digest/md5'
+
 class StudentsController < ApplicationController
   REALM = "Students"
   PASS  = Digest::MD5.hexdigest(["dap",REALM,"53cr3t"].join(":"))
   USERS = {"u1"=>PASS}
-  before_filter :auth_required, :except=>:student_exists
+  before_filter :auth_required, :except=>[:student_exists, :public]
   before_filter :auth_digest, :only=>:student_exists
-  respond_to :html, :xml, :json
+  respond_to :html, :xml, :json, :csv
 
   def index
     @remote_id = params[:student_id] || "'x'"
@@ -69,7 +70,6 @@ class StudentsController < ApplicationController
     if params[:status] == 'activos_no_inscritos' then
       @students = @students.select("id,first_name,last_name,program_id,card").where("status = #{Student::ACTIVE} AND students.id NOT IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
     end
-
 
     if params[:status] == 'todos_egresados' then
       @students = @students.select("id,first_name,last_name,program_id,card").where("status IN (#{Student::GRADUATED}, #{Student::FINISH})")
@@ -2190,6 +2190,23 @@ class StudentsController < ApplicationController
     end
 
     render :json => json
+  end
+
+  def students_data
+    @students = Student.where(:id=>params[:id])
+    render :layout => false
+  end
+
+  def public
+    std = Student.select("card,programs.prefix,programs.name,status,start_date,end_date").joins(:program).where(:status=>[1..6],:programs=>{:level=>[1,2]})
+
+    csv_string = CSV.generate do |csv|
+      std.each do |s|
+        csv << [s.card,s.prefix,s.name,Student::STATUS[s.status],s.start_date,s.end_date]
+      end
+    end
+
+    render :text => csv_string
   end
 
 

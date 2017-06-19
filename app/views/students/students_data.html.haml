@@ -1,0 +1,125 @@
+-# http://divtable.com/generator/
+
+= javascript_include_tag "jquery"
+= javascript_include_tag "students_data"
+
+:css
+  #div.table{
+    width: 100%;
+    display: table;
+  }
+
+  #div.header{
+    display: table-header-group;
+    background-color: #EEE;
+  }
+
+  #div.row{
+    display: table-row;
+  }
+
+  #div.cell{
+    display: table-cell;
+  }
+
+  #div.cell, #div.header {
+    border: 1px solid #999999;
+    display: table-cell;
+    padding: 3px 10px;
+  }
+
+  #div.body {
+    display: table-row-group;
+  }
+
+  button{
+    background-color: #e7e7e7; 
+    color: black;
+    border: none;
+    padding: 5px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+%button.first="todo"
+%button="proceso"
+%button="alta"
+%button="calificacion"
+%button="constancia"
+%button="avance"
+%button="tesis"
+%button="cep"
+
+#div.table
+  #div.row
+    #div.header{:class=>"order"}="Fecha"
+    #div.header="Evento"
+  #div.body
+    - @students.each do |s|
+      -#div.row{:class=>"alta"}
+        #div.cell{:class=>"fecha"}= s.created_at.strftime("%Y-%m-%d %H:%I")
+        #div.cell= "Se crea el registro"
+    
+      #div.row{:class=>"proceso"}
+        #div.cell{:class=>"fecha"}= s.start_date.strftime("%Y-%m-%d %H:%I")
+        #div.cell= "El estudiante comienza su proceso"
+    
+      - s.term_students.each do |ts| 
+        #div.row{:class=>"alta"}
+          #div.cell{:class=>"fecha"}= ts.created_at.strftime("%Y-%m-%d %H:%I")
+          #div.cell= "El estudiante se da de alta en el ciclo escolar #{ts.term.name}"
+    
+        - ts.term_course_student.each do |tcs|
+          #div.row{:class=>"alta"}
+            #div.cell{:class=>"fecha"}= tcs.created_at.strftime("%Y-%m-%d %H:%I")
+            #div.cell= "El estudiante se da de alta en la materia #{tcs.term_course.course.name rescue "N.D [#{tcs.term_course_id}]"}"
+          
+          #div.row{:class=>"calificacion"}
+            #div.cell{:class=>"fecha"}= tcs.updated_at.strftime("%Y-%m-%d %H:%I")
+            #div.cell= "El estudiante recibe la calificación de #{tcs.grade rescue 'N.D.'} en #{tcs.term_course.course.name rescue "N.D [#{tcs.term_course_id}]"}"
+      - s.certificates.group("HOUR(created_at), MINUTE(created_at)").each do |crt|
+        #div.row{:class=>"constancia"}
+          #div.cell{:class=>"fecha"}= crt.created_at.strftime("%Y-%m-%d %H:%I")
+          #div.cell= "El estudiante solicita una constancia de #{Certificate::TYPE[crt.type_id]}"
+  
+      - s.advance.each do |adv|
+        #div.row{:class=>"avance"}
+          #div.cell{:class=>"fecha"}= adv.advance_date.strftime("%Y-%m-%d %H:%I") 
+          #div.cell= "El estudiante presenta #{Advance::TYPE[adv.advance_type]} con el título \"#{adv.title}\" [#{adv.id}]"
+  
+        - if !adv.tutor1.blank?
+          #div.row{:class=>"avance"}
+            #div.cell{:class=>"fecha"}= adv.advance_date.strftime("%Y-%m-%d %H:%I") 
+            #div.cell= "#{adv.grade1.blank? ? "N.D." : adv.grade1} del tutor 1 #{Staff.find(adv.tutor1).full_name rescue "N.D (#{adv.tutor1})"} para el Avance #{adv.id}"
+  
+        - if !adv.tutor2.blank?
+          #div.row{:class=>"avance"}
+            #div.cell{:class=>"fecha"}= adv.advance_date.strftime("%Y-%m-%d %H:%I") 
+            #div.cell= "#{adv.grade2.blank? ? "N.D." : adv.grade2} del tutor 2 #{Staff.find(adv.tutor2).full_name rescue "N.D (#{adv.tutor2})"} para el Avance #{adv.id}"
+  
+        - if !adv.tutor3.blank?
+          #div.row{:class=>"avance"}
+            #div.cell{:class=>"fecha"}= adv.advance_date.strftime("%Y-%m-%d %H:%I") 
+            #div.cell= "#{adv.grade3.blank? ? "N.D." : adv.grade3} del tutor 3 #{Staff.find(adv.tutor3).full_name rescue "N.D (#{adv.tutor3})"} para el Avance #{adv.id}"
+  
+        - if !adv.tutor4.blank?
+          #div.row{:class=>"avance"}
+            #div.cell{:class=>"fecha"}= adv.advance_date.strftime("%Y-%m-%d %H:%I") 
+            #div.cell= "#{adv.grade4.blank? ? "N.D." : adv.grade4} del tutor 4 #{Staff.find(adv.tutor4).full_name rescue "N.D (#{adv.tutor4})"} para el Avance #{adv.id}"
+  
+        - if !adv.tutor5.blank?
+          #div.row{:class=>"avance"}
+            #div.cell{:class=>"fecha"}= adv.advance_date.strftime("%Y-%m-%d %H:%I") 
+            #div.cell= "#{adv.grade5.blank? ? "N.D." : adv.grade5} del tutor 5 #{Staff.find(adv.tutor5).full_name rescue "N.D (#{adv.tutor5})"} para el Avance #{adv.id}"
+
+      - if s.thesis.status.eql? "C"
+        #div.row{:class=>"tesis"}
+          #div.cell{:class=>"fecha"}= s.thesis.defence_date.strftime("%Y-%m-%d %H:%I") 
+          #div.cell= "El estudiante presenta su tesis #{s.thesis.title}"
+    
+      - s.committee_agreement_people.each do |cap|
+        #div.row{:class=>"cep"}
+          #div.cell{:class=>"fecha"}= cap.created_at.strftime("%Y-%m-%d %H:%I") 
+          #div.cell= "El estudiante hace una solicitud al comité #{cap.committee_agreement.committee_agreement_type.description}"
