@@ -1,5 +1,7 @@
 # coding: utf-8
 require 'digest/md5'
+require 'csv'
+require 'tempfile'
 
 class StudentsController < ApplicationController
   REALM = "Students"
@@ -2197,9 +2199,21 @@ class StudentsController < ApplicationController
     render :layout => false
   end
 
-  def public
+  def public_csv
     std = Student.select("card,programs.prefix,programs.name,status,start_date,end_date").joins(:program).where(:status=>[1..6],:programs=>{:level=>[1,2]})
 
+    temp_file = Tempfile.new('estudiantes.csv')
+    CSV.open(temp_file,"w") do |csv|
+      std.each do |s|
+        csv << [s.card,s.prefix,s.name,Student::STATUS[s.status],s.start_date,s.end_date]
+      end
+    end
+
+    send_file temp_file, filename: 'estudiantes.csv'
+  end
+
+  def public
+    std = Student.select("card,programs.prefix,programs.name,status,start_date,end_date").joins(:program).where(:status=>[1..6],:programs=>{:level=>[1,2]})
     csv_string = CSV.generate do |csv|
       std.each do |s|
         csv << [s.card,s.prefix,s.name,Student::STATUS[s.status],s.start_date,s.end_date]

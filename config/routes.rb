@@ -53,8 +53,8 @@ Sapos::Application.routes.draw do
   match 'estudiantes/seminario/:id/:staff_id' => 'students#get_protocol'
   match 'estudiantes/datos/:id' => 'students#students_data'
   match 'estudiantes/publico/' => 'students#public'
+  match 'estudiantes/publico/csv' => 'students#public_csv'
   
-
   match 'estudiantes/destroy_file/:id' => 'student_files#destroy_file'
   match 'estudiantes/file/:id' => 'student_files#download'
 
