@@ -329,14 +329,14 @@ class StudentsController < ApplicationController
   end
 
   def advance
-    @student   = Student.find(params[:id]) 
-    @staffs    = Staff.where(:status=>0)
+    @student   = Student.find(params[:id])
+    @staffs    = Staff.where(:status=>0).order('first_name')
     render :layout => false
   end
 
   def thesis
     @student   = Student.find(params[:id]) 
-    @staffs    = Staff.where(:status=>0)
+    @staffs    = Staff.where(:status=>0).order('first_name')
     render :layout => false
   end
 
