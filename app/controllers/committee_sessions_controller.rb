@@ -557,13 +557,13 @@ class CommitteeSessionsController < ApplicationController
         pdf.text texto, :align=>:justify, :valign=>:top, :inline_format=>true, size: size
         #  FIRMA
         x = x + 100
-        y = y - h - 50
+        y = y - h - 0
         w = 300
         h = 80
         pdf.move_down 50
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "Atentamente,\n\n\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y-180], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
+        pdf.text_box texto, :at=>[x,y-230], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
 
         # CCP
         x = 0
@@ -587,7 +587,7 @@ class CommitteeSessionsController < ApplicationController
         end
         # PRESENTE
         x = 0
-        y = 555
+        y = 505
         w = 480
         h = 15
         if comma_tutors.chop.chop.size > 85
@@ -641,7 +641,7 @@ class CommitteeSessionsController < ApplicationController
         end
         # PRESENTE
         x = 0
-        y = 555
+        y = 505
         w = 480
         h = 15
         if comma_tutors.chop.chop.size > 85
@@ -735,7 +735,7 @@ class CommitteeSessionsController < ApplicationController
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
         x = 0
-        y = 555
+        y = 505
         w = 300
         h = 15
         pdf.text_box "</b>C. #{staff.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
@@ -959,7 +959,7 @@ class CommitteeSessionsController < ApplicationController
         materias    = @c_a.committee_agreement_object.where(:attachable_type=>"Course")
         ## PRESENTACION
         x = 0
-        y = 555
+        y = 505
         w = 300
         h = 15
         pdf.text_box "</b>#{student.full_name}\n\n</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
@@ -975,7 +975,7 @@ class CommitteeSessionsController < ApplicationController
         text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado autorizó la revalidación de los siguientes cursos:"
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         
-        pdf.move_down 220
+        pdf.move_down 280
         data = []
         data << ["<b>Curso Externo</b>","<b>Equivalente en CIMAV</b>","<b>Créditos</b>"]
         
@@ -1022,10 +1022,10 @@ class CommitteeSessionsController < ApplicationController
         end
         ## PRESENTACION
         x = 0
-        y = 555
+        y = 505
         w = 300
         h = 15
-        pdf.text_box "<b>#{staff.title} #{staff.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "#{staff.title} #{staff.full_name}", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         y = y - 15
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
@@ -1074,7 +1074,7 @@ class CommitteeSessionsController < ApplicationController
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
         ## PRESENTACION
         x = 0
-        y = 555
+        y = 505
         w = 300
         h = 15
 

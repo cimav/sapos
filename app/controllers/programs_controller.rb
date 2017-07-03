@@ -11,15 +11,15 @@ class ProgramsController < ApplicationController
     if current_user.program_type == Program::ALL
       @programs = Program.order('name')
     else
-      @programs = Program.joins(:permission_user).where(:permission_users=>{:user_id=>current_user.id})
+      @programs = Program.joins(:permission_user).where(:permission_users => {:user_id => current_user.id})
     end
 
     if !params[:q].blank?
-      @programs = @programs.where("name LIKE :n OR prefix LIKE :n", {:n => "%#{params[:q]}%"}) 
+      @programs = @programs.where("name LIKE :n OR prefix LIKE :n", {:n => "%#{params[:q]}%"})
     end
-    
+
     if params[:program_type] != '0' then
-      @programs = @programs.where(:program_type=>params[:program_type])
+      @programs = @programs.where(:program_type => params[:program_type])
     end
 
     render :layout => false
@@ -41,7 +41,7 @@ class ProgramsController < ApplicationController
 
     if @program.save
       flash[:notice] = "Programa creada."
-      ActivityLog.new({:user_id=>current_user.id,:activity=>"Create Program: #{@program.id},#{@program.name}"}).save
+      ActivityLog.new({:user_id => current_user.id, :activity => "Create Program: #{@program.id},#{@program.name}"}).save
 
       respond_with do |format|
         format.html do
@@ -50,7 +50,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             json[:uniq] = @program.prefix
             render :json => json
-          else 
+          else
             redirect_to @program
           end
         end
@@ -72,19 +72,19 @@ class ProgramsController < ApplicationController
     end
   end
 
-  def update 
+  def update
     flash = {}
     @program = Program.find(params[:id])
     if @program.update_attributes(params[:program])
       flash[:notice] = "Programa actualizada."
-      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Program: #{@program.id},#{@program.name}"}).save
+      ActivityLog.new({:user_id => current_user.id, :activity => "Update Program: #{@program.id},#{@program.name}"}).save
       respond_with do |format|
         format.html do
           if request.xhr?
             json = {}
             json[:flash] = flash
             render :json => json
-          else 
+          else
             redirect_to @program
           end
         end
@@ -99,7 +99,7 @@ class ProgramsController < ApplicationController
             json[:errors] = @program.errors
             json[:errors_full] = @program.errors.full_messages
             render :json => json, :status => :unprocessable_entity
-          else 
+          else
             redirect_to @program
           end
         end
@@ -121,7 +121,7 @@ class ProgramsController < ApplicationController
 
   def create_course
     flash = {}
-    @program      = Program.find(params[:program_id])
+    @program = Program.find(params[:program_id])
     @studies_plan = StudiesPlan.find(params[:studies_plan_id])
     if @program.update_attributes(params[:program])
       flash[:notice] = "Nuevo curso creado."
@@ -174,7 +174,7 @@ class ProgramsController < ApplicationController
     render :layout => false
   end
 
- 
+
   def enrollment_table
     @term = Term.find(params[:term_id])
     render :layout => false
@@ -215,7 +215,7 @@ class ProgramsController < ApplicationController
             json = {}
             json[:flash] = flash
             render :json => json
-          else 
+          else
             redirect_to @ts
           end
         end
@@ -229,7 +229,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             json[:errors] = @cs.errors
             render :json => json, :status => :unprocessable_entity
-          else 
+          else
             redirect_to @ts
           end
         end
@@ -253,14 +253,14 @@ class ProgramsController < ApplicationController
 
   def select_courses_for_term
     @program = Program.find(params[:id])
-    @term    = Term.find(params[:term_id])
+    @term = Term.find(params[:term_id])
     render :layout => 'standalone'
   end
 
   def courses_assign
-    @program          = Program.find(params[:id])
-    @studies_plan     = StudiesPlan.find(params[:studies_plan_id])
-    @term             = Term.find(params[:term_id])
+    @program = Program.find(params[:id])
+    @studies_plan = StudiesPlan.find(params[:studies_plan_id])
+    @term = Term.find(params[:term_id])
     @courses_assigned = TermCourse.where("term_id = :t AND status = :s", {:t => @term.id, :s => TermCourse::ASSIGNED}).collect {|i| i.course_id}
     render :layout => false
   end
@@ -269,7 +269,7 @@ class ProgramsController < ApplicationController
     @term = Term.find(params[:term_id])
     if !params[:courses].nil?
       courses = params[:courses].collect {|i| i.to_i}
-    else 
+    else
       courses = []
     end
     @term.assign_courses(courses)
@@ -313,7 +313,7 @@ class ProgramsController < ApplicationController
     flash = {}
     @cs = TermCourseSchedule.find(params[:cs][:id])
     if @cs.update_attributes(params[:cs])
-      if (@cs.status == TermCourseSchedule::INACTIVE) 
+      if (@cs.status == TermCourseSchedule::INACTIVE)
         flash[:notice] = "Sesión dada de baja."
       else
         flash[:notice] = "Sesión actualizada."
@@ -325,7 +325,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             json[:group] = @cs.term_course.group
             render :json => json
-          else 
+          else
             redirect_to @cs
           end
         end
@@ -339,7 +339,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             json[:errors] = @cs.errors
             render :json => json, :status => :unprocessable_entity
-          else 
+          else
             redirect_to @cs
           end
         end
@@ -351,11 +351,11 @@ class ProgramsController < ApplicationController
     @is_pdf = false
     if !params[:group].blank?
       @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
-    else 
+    else
       @tc = TermCourse.where('term_id = :t AND course_id = :c', {:t => params[:term_id], :c => params[:course_id]}).first
       params[:group] = @tc.group
     end
-    
+
     respond_with do |format|
       format.html do
         if @tc
@@ -369,19 +369,19 @@ class ProgramsController < ApplicationController
           @term_id = @tc[0].course.id
         else
           @term_id = @tc.course.id
-        end 
-     	  institution = Institution.find(1)
-      	@logo   = institution.image_url(:medium).to_s
-      	@is_pdf = true
-        @today  = Time.now
-      	html    = render_to_string(:layout => false , :action => "students_table.html.haml")
-      	kit     = PDFKit.new(html, :page_size => 'Letter')
+        end
+        institution = Institution.find(1)
+        @logo = institution.image_url(:medium).to_s
+        @is_pdf = true
+        @today = Time.now
+        html = render_to_string(:layout => false, :action => "students_table.html.haml")
+        kit = PDFKit.new(html, :page_size => 'Letter')
         kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}pdf.css"
-      	filename = "acta-#{@term_id}.pdf"
-      	send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      	return # to avoid double render call
+        filename = "acta-#{@term_id}.pdf"
+        send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+        return # to avoid double render call
       end
-    end  
+    end
   end
 
   def new_course_student
@@ -425,7 +425,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             json[:group] = @cs.term_course.group
             render :json => json
-          else 
+          else
             redirect_to @cs
           end
         end
@@ -439,7 +439,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             json[:errors] = @cs.errors
             render :json => json, :status => :unprocessable_entity
-          else 
+          else
             redirect_to @cs
           end
         end
@@ -460,7 +460,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             json[:group] = @cs.term_course.group
             render :json => json
-          else 
+          else
             redirect_to @cs
           end
         end
@@ -474,7 +474,7 @@ class ProgramsController < ApplicationController
             json[:flash] = flash
             json[:errors] = @cs.errors
             render :json => json, :status => :unprocessable_entity
-          else 
+          else
             redirect_to @cs
           end
         end
@@ -501,7 +501,7 @@ class ProgramsController < ApplicationController
       end
       format.pdf do
         @is_pdf = true
-        html = render_to_string(:layout => false , :action => "attendee_table.html.haml")
+        html = render_to_string(:layout => false, :action => "attendee_table.html.haml")
         kit = PDFKit.new(html, :page_size => 'Letter', :orientation => 'Landscape')
         kit.stylesheets << "#{Rails.root}#{Sapos::Application::ASSETS_PATH}pdf.css"
         filename = "asistencia-#{@tc.id}.pdf"
@@ -564,13 +564,13 @@ class ProgramsController < ApplicationController
     end
     render :layout => false
   end
-  
+
   def files
     @program = Program.includes(:documentation_file).find(params[:id])
-    @documentation_file  = DocumentationFile.new
+    @documentation_file = DocumentationFile.new
     render :layout => 'standalone'
   end
-  
+
   def upload_file
     flash = {}
     params[:documentation_file]['file'].each do |f|
@@ -591,10 +591,26 @@ class ProgramsController < ApplicationController
   def file
     p = Program.find(params[:id])
     pf = p.documentation_file.find(params[:file_id]).file
-    send_file pf.to_s, :x_sendfile=>true
-  end 
+    send_file pf.to_s, :x_sendfile => true
+  end
 
   def delete_file
   end
 
+  def delete_term_course
+    term_course = TermCourse.find(params[:term_course_id])
+    students = term_course.term_course_students
+    if students.where(:status => TermCourseStudent::ACTIVE).size == 0 && students.where(:status => TermCourseStudent::PENROLLMENT).size == 0
+      if term_course.destroy
+        mensaje = "Curso eliminado"
+      else
+        mensaje = "Error al eliminar curso"
+      end
+    else
+      mensaje = "Hay alumnos inscritos a este grupo"
+    end
+    render text:mensaje
+  end
 end
+
+
