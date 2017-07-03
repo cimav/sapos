@@ -32,4 +32,8 @@ class CommitteeSession < ActiveRecord::Base
       return "X"
     end 
   end
+
+  def get_type
+    TYPES[self.session_type]
+  end
 end

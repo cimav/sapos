@@ -347,17 +347,18 @@ class CommitteeSessionsController < ApplicationController
     Prawn::Document.new(:background => filename, :background_scale=>0.33, :margin=>60 ) do |pdf|
       ############# CABECERA
       x = 250
-      y = 660 #657
+      y = 590 #657
       w = 260
       h = 43
+      size = 10
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
       s_date           = @c_s.date
       last_change      = @c_s.updated_at
       today            = Date.today
-      @session_type    = CommitteeSession::TYPES[@c_s.session_type].downcase
+      @session_type    = @c_s.get_type
 
       #pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{today.day} de #{get_month_name(today.month)} de #{today.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h
-      pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h
+      pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h, size: size
 
 #{s_date.day} de #{get_mo     nth_name(s_date.month)} de #{s_date.year}
   
@@ -524,41 +525,46 @@ class CommitteeSessionsController < ApplicationController
         new_supervisor = Staff.find(tutor[0].attachable_id)
         # PRESENTE
         x = 0
-        y = 555
+        y = 550
         w = 300
         h = 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "</b>#{new_supervisor.title} #{new_supervisor.full_name_cap}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "</b>#{new_supervisor.title} #{new_supervisor.full_name_cap}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true, size: size
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
-        y = y - 60
+        y = y - 35
         w = 510
         h = 100
         texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado como director de tesis de #{student.full_name} del Programa de #{student.program.name}.\n\n A continuación le informo los avances que deberá tener el estudiante durante su trayectoria académica: \n\n"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.move_down 300
+        pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
+        pdf.move_down 235
         data = []
-        data << ["Segundo Semestre","Protocolo de investigación"]
-        data << ["Tercer Semestre","Resultados de desarrollo experimental"]
-        data << ["Cuarto Semestre","Semanario departamental final"]
-        tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>10,:padding=>3,:inline_format => true},:position=>:right,:column_widths=>[246,246])
+        data << ["Semestre 1","Protocolo de Investigación"]
+        data << ["Semestre 2","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa y discusión de los resultados del avance de su investigación"]
+        data << ["Semestre 3","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa y discusión de los resultados del avance de su investigación"]
+        data << ["Semestre 4","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, discusión de los resultados del avance de investigación"]
+        data << ["Semestre 5","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, discusión de los resultados del avance de investigación"]
+        data << ["Semestre 6","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, envío del artículo y discusión de los resultados del desarrollo experimental"]
+        data << ["Semestre 7","Primer borrador de la tesis y seguimiento al envío del artículo"]
+        data << ["Semestre 8","Seminario departamental final"]
+        tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>9,:padding=>3,:inline_format => true},:position=>:center,:column_widths=>{1 => 410}) #solo s especifica la columna 2
         tabla.draw
-        pdf.move_down 15
+        pdf.move_down 20
         texto= "Me encuentro a sus ordenes para cualquier duda al respecto. \n"
-        pdf.text texto, :align=>:justify, :valign=>:top, :inline_format=>true
+        pdf.text texto, :align=>:justify, :valign=>:top, :inline_format=>true, size: size
         #  FIRMA
         x = x + 100
-        y = y - h - 60
+        y = y - h - 50
         w = 300
         h = 80
         pdf.move_down 50
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+        texto = "Atentamente,\n\n\n\n\n<b>#{@signer}</b>"
+        pdf.text_box texto, :at=>[x,y-180], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
+
         # CCP
         x = 0
         y = 50
@@ -566,7 +572,7 @@ class CommitteeSessionsController < ApplicationController
         h = 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "c.c.p #{student.full_name}\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-        pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+        pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
       ############################### DESIGNACION DE SINODALES ###################################
       elsif @type.eql? 5
         @render_pdf  = true
