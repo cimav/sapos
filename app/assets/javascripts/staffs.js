@@ -9,6 +9,10 @@ $('#area').live("change", function() {
   liveSearch();
 });
 
+$('#staff_type').live("change", function() {
+    liveSearch();
+});
+
 // ** On change Status
 $('.status-cbs').live("click", function() {
   liveSearch();

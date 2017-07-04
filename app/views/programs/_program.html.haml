@@ -6,6 +6,8 @@
       %tr
         %td#terms-dropdown= select "tc", "term_id", Term.where("program_id = :p", {:p => @program.id}).collect {|i| [ i.name, i.id]}, :prompt => 'Selecciona un ciclo escolar'
         %td#courses-dropdown 
-          %span Es necesario seleccionar un ciclo escolar
+          %span Es necesario seleccionar un ciclo escolar0
+
 
 #program-area
+  =@mensaje

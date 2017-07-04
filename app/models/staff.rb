@@ -37,11 +37,24 @@ class Staff < ActiveRecord::Base
   mount_uploader :image, StaffImageUploader
   validates      :image, file_content_type: { allow: /^image\/.*/ }
 
+  CIMAV_STAFF = 1
+  EXTERNAL = 2
+  POSTDOC = 3
+
   ACTIVE    = 0
   INACTIVE  = 1
 
   STATUS = {ACTIVE    => 'Activo',
             INACTIVE  => 'Inactivo'}
+
+  TYPES = {CIMAV_STAFF    => 'CIMAV',
+            EXTERNAL  => 'Externo',
+            POSTDOC => 'Postdoctorado'}
+
+
+  def get_type
+    TYPES[self.staff_type]
+  end
 
   def full_name
     "#{first_name} #{last_name}" rescue ''

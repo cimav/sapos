@@ -19,3 +19,4 @@
     = link_to 'Horario', '#', :id=>'a-tc-schedule', :class => schedule_class
     = link_to 'Asistencia', '#', :id=>'a-tc-attendee', :class => attendee_class
     = link_to 'Documentación', '#', :id=>'a-tc-documentation', :class => documentation_class
+    = link_to "delete", "/programas/#{tc.course.program_id}/periodo/#{tc.term_id}/curso/#{tc.id}", :method => 'delete'

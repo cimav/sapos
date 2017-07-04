@@ -28,12 +28,18 @@ class StaffsController < ApplicationController
       @staffs = Staff.order("first_name").where(:area_id=>@aareas)
     end
 
-    if params[:area] != '' then
-      @staffs = @staffs.where(:area_id => params[:area])
+
+
+    if params[:staff_type] != '' then
+      @staffs = @staffs.where(:staff_type => params[:staff_type])
     end
 
     if params[:institution] != '0' then
       @staffs = @staffs.where(:institution_id => params[:institution])
+    end
+
+    if params[:area] != '' then
+      @staffs = @staffs.where(:area_id => params[:area])
     end
 
     if !params[:q].blank?
@@ -71,6 +77,7 @@ class StaffsController < ApplicationController
                    'CVU' => s.cvu,
                    'SNI' => s.sni,
                    'Estado' => s.status,
+                   'Estado' => s.get_type,
                  }
         end
         column_order = ["Numero_Empleado","Título","Nombre","Apellidos","Correo_Elec","Sexo","Fecha_Nac","CVU","SNI","Estado"]

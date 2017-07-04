@@ -39,7 +39,7 @@ gem 'prawn-table', '0.2.2'
 gem 'prawn-icon', '1.3.0'
 
 gem 'zipruby'
-gem 'fileutils'
+#gem 'fileutils'
 
 gem 'config', '1.0.0'
 gem 'file_validators'
