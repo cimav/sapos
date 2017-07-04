@@ -77,10 +77,10 @@ class StaffsController < ApplicationController
                    'CVU' => s.cvu,
                    'SNI' => s.sni,
                    'Estado' => s.status,
-                   'Estado' => s.get_type,
+                   'Tipo' => s.get_type,
                  }
         end
-        column_order = ["Numero_Empleado","Título","Nombre","Apellidos","Correo_Elec","Sexo","Fecha_Nac","CVU","SNI","Estado"]
+        column_order = ["Numero_Empleado","Título","Nombre","Apellidos","Correo_Elec","Sexo","Fecha_Nac","CVU","SNI","Estado","Tipo "]
         to_excel(rows,column_order,"Docentes","Docentes")
       end
     end

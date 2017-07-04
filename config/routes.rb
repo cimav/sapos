@@ -206,7 +206,7 @@ Sapos::Application.routes.draw do
   match 'programas/upload_file' => 'programs#upload_file'
   match 'programas/delete_file' => 'programs#delete_file'
   match 'programas/:id/documentos/:file_id' => 'programs#file'
-  match '/programas/:id/periodo/:term_id/curso/:term_course_id' =>'programs#delete_term_course'
+  match '/programas/:id/periodo/:term_id/grupo/:term_course_id' =>'programs#delete_term_course'
 
   match 'aspirantes/destroy_file/:id' => 'applicant_files#destroy'
   match 'aspirantes/file/:id' => 'applicant_files#download'

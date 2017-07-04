@@ -33,6 +33,8 @@ $('#program_type').live("change", function() {
   liveSearch();
 });
 
+
+
 function initializeSearchForm() {
   $("#program_type option[value=0]").attr("selected", true);
 }
@@ -428,6 +430,11 @@ $('#enrollment_term_id').live("change", function() {
   loadEnrollment();
 });
 
+//Delete group
+$('#a-tc-delete').live('click', function() {
+    deleteGroup()
+});
+
 function loadEnrollment() {
   term_id = $('#enrollment_term_id').val();
   program_id = $('#program_id').val();
@@ -525,6 +532,20 @@ function loadAttendee(g) {
       $("#program-area").html('');
   }
 }
+
+function deleteGroup(){
+    term_id = $('#tc_term_id').val();
+    term_course_id = $('#a-tc-delete').attr('term_course');
+    program_id = $('#program_id').val();
+    $.post( "/programas/"+program_id+"/periodo/"+term_id+"/grupo/"+term_course_id, function( data ) {
+
+        alert( data );
+    });
+}
+
+
+
+
 
 // Documentation
 
