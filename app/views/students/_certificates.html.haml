@@ -19,13 +19,14 @@
       var sid    = $(this).attr("student_id");
       var siid  = $("input[name='firma']:checked").val();
       var options = $("#chk_asesor:checked").val();
+      var city = $("#city").val();
       if ("#{@have_supervisor}"==0 && options == 1 && "#{@need_supervisor}" == "1")
       {
         alert("No puedes imprimir una constancia con asesor si el usuario no tiene uno asignado");
         return false;
       }
       
-      window.location.href="estudiantes/constancias/"+c_type+"/"+sid+"/"+siid+"?options="+options;
+      window.location.href="estudiantes/constancias/"+c_type+"/"+sid+"/"+siid+"?options="+options+"&city="+city;
     });
   });
 
@@ -55,6 +56,7 @@
   %b= "Opciones:"
   %br
   %br
+
     = check_box_tag "chk_asesor", 1, @checked, disabled: @disabled
     - if @disabled
       %text{:style=>"color:#D9D9D9"}= "Incluir asesor"
@@ -105,3 +107,9 @@
       - checked = false
       = "#{dir[:academic_coordinator_durango][:title]} #{dir[:academic_coordinator_durango][:name]}"
       = "(#{dir[:academic_coordinator_durango][:job]})"
+
+%br
+  %b Lugar de impresión:
+  %br
+  %br
+  = select_tag 'city', options_for_select(["Chihuahua, Chih.","Apodaca, N.L.", "Durango, Dgo."])

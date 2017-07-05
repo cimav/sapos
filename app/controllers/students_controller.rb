@@ -812,7 +812,10 @@ class StudentsController < ApplicationController
     @matricula   = @student.card
     @programa    = @student.program.name
     @sign        = params[:sign_id]
+    city        = params[:city]
     dir          = t(:directory)
+    options      = {}
+    options[:city] = city
 
     if @sign.eql? "1"
       title    = dir[:academic_director][:title]
@@ -876,7 +879,7 @@ class StudentsController < ApplicationController
 
     ################################ CONSTANCIA DE ESTUDIOS ##################################
     if params[:type] == "estudios"
-      options = {}
+
       options[:cert_type] = Certificate::STUDIES
 
       options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., hace constar que <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> está inscrit#{@genero} como alumn#{@genero} regular en nuestro programa #{@programa}"
@@ -2254,6 +2257,7 @@ private
 
     background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     @consecutivo = get_consecutive(@student, time, options[:cert_type])
+    @city =
     @rails_root  = "#{Rails.root}"
     @year_s      = year[2,4]
     @year        = year
@@ -2268,7 +2272,7 @@ private
       h = 50
         
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\nChihuahua, Chih., a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
+      pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
 
       y = y - 110
       x = 10
