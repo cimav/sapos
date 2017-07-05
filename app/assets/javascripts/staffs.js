@@ -118,7 +118,7 @@ function loadExternalCoursesTable() {
     $("#external-courses-area").html(html);
   });
   $("#new-external-course-dialog").remove();
-  $('#content-panel').append('<div title="Nuevo curso" id="new-external-course-dialog"><iframe width="550" height="440" src="/docentes/' + staff_id + '/nuevo_curso_externo" scrolling="no"></iframe></div>');
+  $('#content-panel').append('<div title="Nuevo curso" id="new-external-course-dialog"><iframe width="550" height="540" src="/docentes/' + staff_id + '/nuevo_curso_externo" scrolling="no"></iframe></div>');
   $("#new-external-course-dialog").dialog({ autoOpen: false, width: 640, height: 550, modal:true });
   $("#a-new-external-course").live("click", function() {
     $("#new-external-course-dialog").dialog('open');

@@ -5,11 +5,13 @@
         %th Titulo
         %th Inicio
         %th Lugar
+        %th Tipo
         %th Acciones
     - @staff.external_courses.where("status is null or status<>2").order("start_date DESC").each_with_index do |external_course, index|
       %tr.external-course-item{:id=>"tr_external_course_#{external_course.id}", :external_course_id=>external_course.id}
         %td= external_course.title
         %td.centered= l external_course.start_date, :format => :long
         %td= external_course.location
+        %td= external_course.get_type
         %td= link_to 'Eliminar',"docentes/#{@staff.id}/delete_external_course/#{external_course.id}",:confirm => '¿Estás seguro?', :method => 'post', :remote => true, :class => 'delete-file-ec'
 

@@ -37,5 +37,9 @@
         = fields.label :information, 'Información'
         = fields.text_area :information
 
+      %div{:id => "field_staff_external_courses_0_type", :class => 'field'}
+        = fields.label :course_type, 'Tipo'
+        = fields.select :course_type, [['Curso Externo', ExternalCourse::EXTERNAL_COURSE],['Taller', ExternalCourse::WORKSHOP]]
+
       #dialog-submit-button-area
         = fields.submit "Crear nuevo curso"

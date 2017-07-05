@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170704180015) do
+ActiveRecord::Schema.define(:version => 20170705180837) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -377,6 +377,7 @@ ActiveRecord::Schema.define(:version => 20170704180015) do
     t.string   "status",         :limit => 1
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "course_type"
   end
 
   add_index "external_courses", ["institution_id"], :name => "index_external_courses_on_institution_id"
