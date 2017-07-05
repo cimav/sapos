@@ -91,6 +91,10 @@
         = f.label :status, 'Estado'
         = f.select :status,  Staff::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
 
+      .field#field_staff_type
+        = f.label :staff_type, 'Tipo de docente'
+        = f.select :staff_type,  [['CIMAV', Staff::CIMAV_STAFF], ['Externo', Staff::EXTERNAL], ['Postdoctorado', Staff::POSTDOC]], prompt:'--Selecciona un tipo--'
+
     #estudiantes
       = render :partial => 'students', :locals => {:staff => @staff, :f => f}
 
