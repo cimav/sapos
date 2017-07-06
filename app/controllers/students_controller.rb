@@ -889,7 +889,6 @@ class StudentsController < ApplicationController
 
     ################################ CONSTANCIA DE INSCRIPCION  ##################################
     if params[:type] == "inscripcion"
-      options = {}
       options[:cert_type] = Certificate::ENROLLMENT
 
       time        = Time.new
@@ -904,7 +903,6 @@ class StudentsController < ApplicationController
 
     ################################ CONSTANCIA PARA VISA  ##################################
     if params[:type] == "visa"
-      options = {}
       options[:cert_type] = Certificate::VISA
 
       options[:text] = "#{@sgenero2.camelcase} suscrit#{@sgenero} <b>#{@firma}</b>, #{@puesto} del Centro de Investigación en Materiales Avanzados, S.C., Centro Público de Investigación con clave de Institución 080068 y con programas registrados ante la Dirección General de Profesiones de la Secretaría de Educación Pública, hace constar que #{@genero2} alumn#{@genero} <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> se encuentra inscrit#{@genero} como alumno regular en nuestro programa #{@programa}"
@@ -914,7 +912,6 @@ class StudentsController < ApplicationController
 
     ################################ CONSTANCIA DE PROMEDIO GENERAL  ##################################
     if params[:type] == "promedio"
-      options = {}
       options[:cert_type] = Certificate::AVERAGE
       @nombre      = @student.full_name
       @matricula   = @student.card
@@ -950,7 +947,6 @@ class StudentsController < ApplicationController
 
     ################################ CONSTANCIA DE PROMEDIO SEMESTRAL  ##################################
     if params[:type] == "semestral"
-      options = {}
       options[:cert_type] = Certificate::SEMESTER_AVERAGE
 
       ts = @student.term_students.joins(:term).order("terms.start_date")
@@ -975,7 +971,6 @@ class StudentsController < ApplicationController
 
     ################################ CONSTANCIA DE TRAMITE DE SEGURO  ##################################
     if params[:type] == "seguro"
-      options = {}
       options[:cert_type] = Certificate::SOCIAL_WELFARE
 
       @start_day    = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.start_date.day.to_s
@@ -1004,7 +999,6 @@ class StudentsController < ApplicationController
 
     ################################ CONSTANCIA DE CREDITOS CUBIERTOS  ##################################
     if params[:type] == "creditos"
-      options = {}
       options[:cert_type] = Certificate::CREDITS
 
       @programa     = @student.program.name
@@ -2267,7 +2261,7 @@ private
     Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
       pdf.font_size 13
       x = 232
-      y = 664 #664
+      y = 565 #664
       w = 255
       h = 50
         
@@ -2289,7 +2283,7 @@ private
 
       if !(options[:cert_type].in? [Certificate::SOCIAL_WELFARE, Certificate::CREDITS])
         if @op_asesor.eql? 1
-          @extra = "#{@extra}, bajo la supervisión académica de"
+          @extra = ", bajo la supervisión académica de"
           s = Staff.find(@student.supervisor).full_name rescue ""
           @point = "#{@extra} <b>#{s}</b>."
         else
@@ -2303,8 +2297,8 @@ private
       end
       
       if options[:cert_type].eql? Certificate::SEMESTER_AVERAGE
-        @point = @point[0..(@point.size-3)]
-        @point = "#{@point} y con un promedio semestral de #{options[:average]} en el último semestre cursado <b>#{options[:last_semester]}</b>."
+        @point = @point[0..(@point.size-2)]
+        @point = "#{@point}y con un promedio semestral de #{options[:average]} en el último semestre cursado <b>#{options[:last_semester]}</b>."
       end
 
       @extension   = "\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
@@ -2333,7 +2327,7 @@ private
       else
         y = y - 222 #202
         h = 155
-        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
       end
