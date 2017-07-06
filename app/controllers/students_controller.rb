@@ -2313,7 +2313,7 @@ private
         y = y - 222
         w = w - 150
         h = 155
-        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
  
