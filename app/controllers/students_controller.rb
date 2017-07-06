@@ -2268,7 +2268,7 @@ private
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
       pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
 
-      y = y - 110
+      y = y - 100
       x = 10
       h = 50
 
@@ -2320,8 +2320,8 @@ private
         x = x -150
         w = 150
         h = 155
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.bounding_box [x,y],:width=>w,:height=>h do 
+        if @rectangles then pdf.stroke_rectangle [x,y+20], w, h end
+        pdf.bounding_box [x,y+20],:width=>w,:height=>h do
           pdf.image "#{@rails_root}/public#{@student_image_uri}", :position=>:left,:width=>w,:height=>h
         end
       else
