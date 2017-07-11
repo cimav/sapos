@@ -1347,7 +1347,7 @@ class StudentsController < ApplicationController
     w = 400
     h = 40
     size  = 14
-    text = @thesis.title
+    text = math_format(@thesis.title)
     text = "\"#{text}\""
 
     if text.size >= 110 && text.size <= 165
@@ -1361,7 +1361,7 @@ class StudentsController < ApplicationController
     if @level.to_i.eql? 1
       y = y + 5
     end
-    pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
+    pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center ,:inline_format => true
 
     x = x + 20
     y = y - 47
@@ -2336,6 +2336,12 @@ private
       send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
       #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
+  end
+
+
+  def math_format(text)
+    text = text.gsub(/\^(\w+)\^/) {"<sup>#{$1}</sup>"}
+    text.gsub(/\¬(\w+)\¬/) {"<sub>#{$1}</sub>"}
   end
 
 end
