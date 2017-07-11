@@ -2121,7 +2121,7 @@ class StudentsController < ApplicationController
 
     ## GRADE/TITLE
     size = 28
-    w    = 550
+    w    = 700 #550
     y    = 412
     x    = x_right_top - w
     text = t.student.program.name
