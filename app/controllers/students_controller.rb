@@ -1201,10 +1201,11 @@ class StudentsController < ApplicationController
   end
 
   def grade_certificates
-    @r_root    = Rails.root.to_s
-    @time      = Time.now
-    @thesis    = Thesis.find(params[:thesis_id])
-    @level     = @thesis.student.program.level
+    @r_root     = Rails.root.to_s
+    @time       = Time.now
+    @thesis     = Thesis.find(params[:thesis_id])
+    @level      = @thesis.student.program.level
+    @rectangles = false
 
     @examiner1 = Staff.find(@thesis.examiner1)
     @examiner2 = Staff.find(@thesis.examiner2)
@@ -1385,9 +1386,21 @@ class StudentsController < ApplicationController
         end
       end
     end
-    pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
-      pdf.text "Una vez cubiertos los requisitos establecidos en el plan \nde estudios vigente, para obtener el grado de\n #{first_word}#{rest_of_words}, que sustenta:", :size=> size, :align=> :center
+
+    if @thesis.student.program.id.eql? 9
+      w = w - 6
+      h = h + 12
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+      pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
+        pdf.text "Una vez cubiertos los requisitos establecidos en el plan \nde estudios vigente, para obtener el grado de\n  Maestría en Ciencias en Comercialización de la Ciencia y la Tecnología,\n que sustenta:", :size=> size, :align=> :center
+      end
+    else
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+      pdf.bounding_box [x,y],:width => w, :height=> h,:kerning=>true do
+        pdf.text "Una vez cubiertos los requisitos establecidos en el plan \nde estudios vigente, para obtener el grado de\n #{first_word}#{rest_of_words}, que sustenta:", :size=> size , :align=> :center
+      end
     end
+
   
     ## STUDENT NAME
     student_name = @thesis.student.full_name.mb_chars
@@ -1399,7 +1412,12 @@ class StudentsController < ApplicationController
     if student_name.size >= 40
       s_size = 16
     end
-    @rectangles = false
+
+    if @thesis.student.program.id.eql? 9
+      y = y - 15
+    end
+
+    #@rectangles = false
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box student_name, :at=>[x,y], :width=>w, :height=>h, :size=>s_size, :align=> :center, :valign=> :center, :style=>:bold
     
@@ -2103,7 +2121,7 @@ class StudentsController < ApplicationController
 
     ## GRADE/TITLE
     size = 28
-    w    = 550
+    w    = 700 #550
     y    = 412
     x    = x_right_top - w
     text = t.student.program.name
