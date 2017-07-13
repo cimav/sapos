@@ -2358,8 +2358,9 @@ private
 
 
   def math_format(text)
-    text = text.gsub(/\^(\w+)\^/) {"<sup>#{$1}</sup>"}
-    text.gsub(/\¬(\w+)\¬/) {"<sub>#{$1}</sub>"}
+   # El símbolo ^ es el unicode 5E
+   text = text.gsub(/\^([\u{0000}-\u{005D}\u{006F}-\u{FFFF}]+)\^/) {"<sup>#{$1}</sup>"}
+   # El símbolo ¬ es el unicode AC
+   text.gsub(/\¬([\u{0000}-\u{00AB}\u{00AD}-\u{FFFF}]+)\¬/) {"<sub>#{$1}</sub>"}
   end
-
 end
