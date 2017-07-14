@@ -7,11 +7,11 @@ namespace :grades do
     filep     = "#{Rails.root}/log/inscripciones.log"
     @f        = File.open(filep,'a')
     @env      = Rails.env
-    SEND_MAIL         = 1
-    STATUS_CHANGE     = true
+    SEND_MAIL         = 0
+    STATUS_CHANGE     = false
     ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx"
-    CICLO             = "2016-1"
-    NCICLO            = "2016-2"
+    CICLO             = "2017-1"
+    NCICLO            = "2017-2"
   task :check => :environment do
     ################################################################################################################################
     ###########################################        NOTAS        ################################################################
@@ -239,9 +239,10 @@ end ## namespace
     ev        = 0
     adv_grade = nil
 
-    ts.term_course_student.each do |tcs|
+    ts.term_course_student.where(:status=>1).each do |tcs|
       #puts "#{tcs.term_course.course.name} #{tcs.grade} #{tcs.grade.nil?}"
       puts "#{tcs.term_student.student.full_name}"
+      puts "#{tcs.id}"
       if tcs.term_course.course.notes.eql? "[AI]"
         ai = ai + 1
       end
@@ -558,7 +559,7 @@ end ## namespace
         end ## if counter.nil?
       end # if level.eql? 2
     else ## Si las reprobadas son 2 o mas avisamos de la baja
-      staff   = Staff.find(s.supervisor).email
+      staff   = Staff.find(s.supervisor)
       set_line("El alumno #{s.full_name} sera dado de baja del programa #{s.program.name}")
       ## Enviar correo asesor y a Sandra y al mismo alumno
       content = "{:full_name=>\"#{s.full_name}\",:email=>\"#{s.email}\",:view=>2}"
