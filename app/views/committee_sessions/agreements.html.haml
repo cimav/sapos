@@ -7,7 +7,7 @@
   - @students_1   = Student.where(:status=>1)
   - @students_1_6 = Student.where(:status=>[1,6])
   - @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
-  - @students_all = Student.where(:status=>[1,6])
+  - @students_all = Student.where(:status=>[1..6])
   
   - if @committee_session.status.eql? 3
     - readonly       = true
