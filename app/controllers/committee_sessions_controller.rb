@@ -1083,7 +1083,7 @@ class CommitteeSessionsController < ApplicationController
         if destiny_name == "A quién corresponda."
           pdf.text_box destiny_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         else
-        pdf.text_box destiny_title+" "+destiny_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "#{destiny_title} #{destiny_name}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         end
         y = y - 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
