@@ -23,7 +23,7 @@
       %b= my_id
       %b= "Nuevo Ingreso:"
       = hidden_field_tag "my_id",my_id
-      - @applicants = Applicant.where(:status=>[1,2,3,5])
+      - @applicants = Applicant.select("MAX(id) as id,first_name,primary_last_name,second_last_name").where(:status=>[1,2,3,5]).group("first_name,primary_last_name, second_last_name").order("first_name")
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       = select_tag "agreement_applicants_#{my_id}", options_from_collection_for_select(@applicants,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"aspirante",:disabled=>readonly
       = select_tag "agreement_auth_#{my_id}",options_for_select({"Si"=>1,"No"=>2},ca.auth),:prompt=>"--Autorizado--",:class=>"agreement_auth",:disabled=>readonly
