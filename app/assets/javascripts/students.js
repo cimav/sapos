@@ -32,6 +32,17 @@ $('#status').live("change", function() {
   liveSearch({json: true});
 });
 
+$('#genero').live("change", function() {
+  $("#items-list").html("<img src=\"\/images\/ajax-load2.gif\">");
+  
+  valor = $(this).val();
+  h = {"command": null, "data": null};
+  if(valor!=0){h = {"command": "gender", "data": valor}}
+  
+  searchByCommand(h);  
+  setItems(items);
+});
+
 $('.div-config').live({
     mouseenter: function(){
       $("#search-config").css("visibility","visible");

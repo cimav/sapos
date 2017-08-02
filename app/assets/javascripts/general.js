@@ -110,6 +110,9 @@ function search(e){
     }
   }
 
+  if(!$("#accent_check").prop("checked")){
+    searchField = accent_finder(searchField);
+  }
   searchByCommand(command,searchField);
   setItems(items);
 
@@ -141,9 +144,6 @@ function searchCommand(searchField){
 }
 
 function searchByCommand(command,searchField){
-  if(!$("#accent_check").prop("checked")){
-    searchField = accent_finder(searchField);
-  }
   var regex   = new RegExp(searchField, "i");
   var counter = 0;
   items       = [];
@@ -162,6 +162,15 @@ function searchByCommand(command,searchField){
       $.each(objects,function(key,val){
         var regex = new RegExp(command.data,"i")
         if(val.card.search(regex) != -1){
+          items.push(getLi(val));
+          items_found.push(val.id);
+        }
+      });
+      break;
+    case "gender":
+      $.each(objects,function(key,val){
+        //var regex = new RegExp(command.data,"i")
+        if(val.gender==command.data){
           items.push(getLi(val));
           items_found.push(val.id);
         }

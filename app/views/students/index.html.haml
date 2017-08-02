@@ -14,7 +14,7 @@
 
 #items-panel.side-panel 
 
-  .panel-search{:style=>"height: 160px"}
+  .panel-search{:style=>"height: 180px"}
     .invisible-options
       - program_options = Array.new
       - program_options.push(["Todos los programas","0"])
@@ -36,6 +36,7 @@
         - campus_options[camp.name] = camp.id
       = select_tag "campus", options_for_select(campus_options)
 
+
       - supervisor_options = "<option value=\"0\">Cualquier asesor</option>"
       - @supervisors.each do |supervisor|
         - supervisor_options += "<option value=\"#{supervisor.id}\">#{supervisor.full_name}</option>" 
@@ -54,13 +55,18 @@
       = select_tag "status", status_options.html_safe
 
       =# text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id, :style=>"display: none;"
+      - genre_options = Hash.new
+      - genre_options["Todos los géneros"] = 0
+      - genre_options["Masculino"] = "H"
+      - genre_options["Femenino"] = "F"
+      = select_tag "genero", options_for_select(genre_options)
 
   .panel-mark
     = text_field_tag "searchy","", :placeholder=>"Busqueda ...", "data-toggle"=>"hideseek", "data-list"=>".panel-list", :size=>29, :disabled=>true
     .div-config
       = image_tag "/images/config2.png" , :id => "search-config", :width=>'25px', :style=>"visibility:hidden;"
   
-  #items-list.panel-items
+  #items-list.panel-items{:style=>"top: 200px;"}
   
   .panel-add
     - if can? :create, Student
