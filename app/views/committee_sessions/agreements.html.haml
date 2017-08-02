@@ -7,7 +7,7 @@
   - @students_1   = Student.where(:status=>1)
   - @students_1_6 = Student.where(:status=>[1,6])
   - @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
-  - @students_all = Student.where(:status=>[1,6])
+  - @students_all = Student.where(:status=>[1..6])
   
   - if @committee_session.status.eql? 3
     - readonly       = true
@@ -23,7 +23,7 @@
       %b= my_id
       %b= "Nuevo Ingreso:"
       = hidden_field_tag "my_id",my_id
-      - @applicants = Applicant.where(:status=>[1,2,3,5])
+      - @applicants = Applicant.select("MAX(id) as id,first_name,primary_last_name,second_last_name").where(:status=>[1,2,3,5]).group("first_name,primary_last_name, second_last_name").order("first_name")
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       = select_tag "agreement_applicants_#{my_id}", options_from_collection_for_select(@applicants,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"aspirante",:disabled=>readonly
       = select_tag "agreement_auth_#{my_id}",options_for_select({"Si"=>1,"No"=>2},ca.auth),:prompt=>"--Autorizado--",:class=>"agreement_auth",:disabled=>readonly
@@ -31,7 +31,7 @@
       =# button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 60px;"}="eliminar"
       %span{:my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}", :style=>"display:#{display_button}"}
-        %b=" Sin respuesta."
+        %b=" Sólo sale en minuta"
       %hr
       %br
     - ###############################################################################################################################################
