@@ -754,7 +754,7 @@ class CommitteeSessionsController < ApplicationController
         if !notes.blank?
           text = "#{text} \n\n#{notes}"
         end
-        text = "#{text}\n\n Agradecemos de antemano su apoyo en la formación de recursos humanos y quedamos a sus ordenes para cualquier duda al respecto."
+        text = "#{text}\n\n Agradecemos de antemano su apoyo en la formación de recursos humanos y quedamos a sus órdenes para cualquier duda al respecto."
         pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
         #  FIRMA
         x = x + 110
