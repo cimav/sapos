@@ -80,4 +80,45 @@ namespace :admin do
     end
   end ## task desist
 
+  task :get_applicants_id => :environment do 
+=begin
+  Hace una busqueda por nombres y apellidos de una lista ubicada en un archivo para aspirantes
+  El archivo debe estar en la forma: 
+      Apellido|Nombre
+      Apellido|Nombre
+      Apellido|Nombre
+         ...  |  ...
+         etc  |  etc
+=end
+    archivo = ""
+    counter = 0
+    counter_b = 0
+    File.open(archivo,'r') do |s|
+      while line = s.gets
+        #puts line
+        full_name = line.split("|")
+        first_name = full_name[1].chomp
+        last_name  = full_name[0].chomp
+
+        first_name = first_name.gsub(/^\s+/,"")
+        first_name = first_name.gsub(/\s+$/,"")
+
+        last_name = last_name.gsub(/^\s+/,"")
+        last_name = last_name.gsub(/\s+$/,"")
+        
+        puts "#{first_name.chomp}|#{last_name.chomp}"
+        
+        app =  Applicant.where("concat(TRIM(primary_last_name),' ',TRIM(second_last_name)) LIKE :a AND first_name LIKE :b",  {:a => "%#{last_name}%", :b => "%#{first_name}%"}).order(:id).last
+        
+        if !app.nil?
+          puts "-- #{app.full_name} [#{app.id}]" 
+          counter_b = counter_b + 1 
+        end
+
+        counter = counter + 1
+      end # while line
+    end #File
+    
+    puts counter.to_s+" "+counter_b.to_s
+  end## end task get_applicants_id
 end ## namespace
