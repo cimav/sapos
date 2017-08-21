@@ -7,8 +7,7 @@ class StudentsController < ApplicationController
   REALM = "Students"
   PASS  = Digest::MD5.hexdigest(["dap",REALM,"53cr3t"].join(":"))
   USERS = {"u1"=>PASS}
-  before_filter :auth_required, :except=>[:student_exists, :public]
-  before_filter :auth_digest, :only=>:student_exists
+  before_filter :auth_required
   respond_to :html, :xml, :json, :csv
 
   def index
@@ -2183,6 +2182,7 @@ class StudentsController < ApplicationController
 
     @fname    = params[:fname] rescue ""
     @lname    = params[:lname] rescue ""
+    @curp     = params[:curp] rescue ""
     @name     = "#{@fname} #{@lname}"
 
     if (!@fname.blank?)&&(!@lname.blank?)
@@ -2191,6 +2191,8 @@ class StudentsController < ApplicationController
       @student = Student.where("last_name like '%#{@lname}%' AND status in (1,6)")
     elsif (@lname.blank?)&&(!@fname.blank?)
       @student = Student.where("first_name like '%#{@fname}%' AND status in (1,6)")
+    elsif !@curp.blank
+      @student = Student.where("curp like '%#{@curp}%' AND status in (1,6)")
     else
       @student = []
     end
@@ -2202,6 +2204,7 @@ class StudentsController < ApplicationController
         s    = {}
         s[:name] = ss.full_name
         s[:curp] = ss.curp
+        s[:status] = ss.status
         json[i] = s
       end
     end
