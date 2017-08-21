@@ -39,7 +39,7 @@
   - if c == 0
     - avg = 0
   - else
-    - avg = total / c 
+    - avg = total.to_f / c.to_f
 
   - c += 1
   - if c % 2 == 0 
@@ -75,7 +75,7 @@
     %td
       %strong= "PROMEDIO"
     %td.centered
-      %strong= sprintf( "%0.02f", avg)
+      %strong= sprintf( "%.2f", avg)
     %td
     %td
 
