@@ -16,7 +16,10 @@
             %table#data
               %tr
                 %td
-                  #card_name= "#{@internship.first_name} #{@internship.last_name}"
+                  - if @internship.full_name.size.to_i > 33
+                    #card_name{:style=>"font-size: 40px;"}= @internship.full_name
+                  - else
+                    #card_name= "#{@internship.first_name} #{@internship.last_name}"
               %tr
                 %td
                   #card_start_date= "Fecha de Ingreso: #{l @internship.start_date, :format => :long}"
