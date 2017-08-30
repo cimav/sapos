@@ -601,7 +601,9 @@ class ProgramsController < ApplicationController
     term_course = TermCourse.find(params[:term_course_id])
     students = term_course.term_course_students
     if students.where(:status => TermCourseStudent::ACTIVE).size == 0 && students.where(:status => TermCourseStudent::PENROLLMENT).size == 0
-      if term_course.destroy
+      term_course.status = TermCourse::DELETED
+      if term_course.save
+        ActivityLog.new(user_id:current_user.id, activity:"Eliminar grupo #{term_course.name} id: #{term_course.id}").save
         mensaje = "Curso eliminado"
       else
         mensaje = "Error al eliminar curso"
