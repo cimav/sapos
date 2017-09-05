@@ -13,7 +13,7 @@ class TermCourse < ActiveRecord::Base
 
   ASSIGNED   = 1
   UNASSIGNED = 2
-
+  DELETED = 3
   after_create :set_group
 
   def set_group
