@@ -339,7 +339,7 @@ class CertificatesController < ApplicationController
       pdf.stroke_line [x + 10, y - 10],[x + 176,y - 8.5]
 
       set_general_director_sign(pdf,16,71)
-      set_posgrado_chief_sign(pdf,250,71)
+      set_academic_director_sign(pdf,250,71)
       send_data pdf.render, type: "application/pdf", disposition: "inline"
       return
     end
@@ -412,8 +412,8 @@ class CertificatesController < ApplicationController
   end
 
   ####################################################################################################
-  # SET POSGRADO CHIEF SIGN
-  def set_posgrado_chief_sign(pdf,x,y)
+  # SET ACADEMIC DIRECTOR SIGN
+  def set_academic_director_sign(pdf,x,y)
     ## SET LINE
     pdf.stroke_color= @text_color
     pdf.line_width= 0.5
@@ -424,9 +424,9 @@ class CertificatesController < ApplicationController
     size = 12
     # Load locale config
     dir = t(:directory)
-    title = dir[:posgrado_chief][:title].mb_chars
-    name = dir[:posgrado_chief][:name].mb_chars
-    job  = dir[:posgrado_chief][:job]
+    title = dir[:academic_director][:title].mb_chars
+    name = dir[:academic_director][:name].mb_chars
+    job  = dir[:academic_director][:job]
     text = "#{title} #{name}"
     pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
     # SET APPOINTMENT
