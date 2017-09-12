@@ -438,14 +438,15 @@ $(".agreement_student_staff").live("change",function(e){
     var sesion_id = $("#c_session_id").val();
     var p      = $(this).parent();
     var people = "docente";
-    var texto = $(this).find('option:selected').text();
+    var value = $(this).find('option:selected').val();
 
-    if (texto.charAt(0) == 'E'){
+    if (value.charAt(0) == 'E'){
         people = "estudiante";
+
     }
     var a_id   = p.find("#my_id").val();
     var aux    = $("#agreement_aux_"+a_id).val();
-    var valor  = $(this).val();
+    var valor  = $(this).val().substring(1, $(this).val().length);;
     var nombre = $(this).find('option:selected').text();
     var url    =  "/comite/acuerdos/"+a_id+"/agregar/"+people+"/"+valor;
     var data= ""
