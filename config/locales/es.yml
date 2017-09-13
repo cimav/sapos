@@ -117,10 +117,10 @@ es:
       job: "Coordinador Académico Unidad Monterrey"
       gender: "M"
     academic_coordinator_durango:
-      title: "Dra."
-      name: "Norma Alejandra Rodriguez Muñoz"
+      title: "Dr."
+      name: "Fernando Sosa Montemayor"
       job: "Coordinador Académico Unidad Durango"
-      gender: "F"
+      gender: "M"
   activerecord:
     errors:
       messages:
