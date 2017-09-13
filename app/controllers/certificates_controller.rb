@@ -424,9 +424,9 @@ class CertificatesController < ApplicationController
     size = 12
     # Load locale config
     dir = t(:directory)
-    title = dir[:academic_director][:title].mb_chars
-    name = dir[:academic_director][:name].mb_chars
-    job  = dir[:academic_director][:job]
+    title = dir[:posgrado_chief][:title].mb_chars
+    name = dir[:posgrado_chief][:name].mb_chars
+    job  = dir[:posgrado_chief][:job]
     text = "#{title} #{name}"
     pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :align=> :center, :valign=> :center
     # SET APPOINTMENT
