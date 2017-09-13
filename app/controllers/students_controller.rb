@@ -2158,7 +2158,7 @@ class StudentsController < ApplicationController
     y    = 212
     h    = 45
     x    = x_right_top - w - 2
-    text = "Lic. Emilio Pascual Domínguez Lechuga\nCoordinación de Estudios de Posgrado"
+    text = "Dr. José Alberto Duarte Moller\nDirector Académico"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
 
