@@ -15,7 +15,6 @@ class InternshipsController < ApplicationController
     campuses      = current_user.campus_id
     @internship_types = InternshipType.order('name')
 
-
     if current_user.access == User::OPERATOR
       if campuses.eql? 0
         @campus = Campus.order('name')
@@ -840,69 +839,81 @@ class InternshipsController < ApplicationController
   def send_mail(i,uri,opc,text)
     user    = get_user(i.area_id)
     
-    if opc.eql? 1
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo al solicitante'}"}).save
-    elsif opc.eql? 2
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo al asistente'}"}).save
-    elsif opc.eql? 3
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de fecha de entrevista'}"}).save
-    elsif opc.eql? 4
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social no autorizado'}"}).save
-    elsif opc.eql? 5
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social autorizado'}"}).save
-    end
-
-    if opc.eql? 1
-      @u_email   = i.email
-      subject = "Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>13,:reply_to=>'#{user.email}',:uri=>'#{uri}'}"
-    elsif opc.eql? 2
-      @u_email   = user.email
-      subject = "Se ha realizado una Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>14,:reply_to=>'#{i.email}',:uri=>'#{uri}'}"
-    elsif opc.eql? 3
-      @u_email   = i.email
-      subject = "Se ha programado fecha para entrevista Solicitud Servicio Social CIMAV"
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>15,:reply_to=>'#{user.email}',:text=>'#{text}'}"
-    elsif opc.eql? 4
-      @u_email   = i.email
-      subject = "No se ha autorizado Solicitud de Servicio CIMAV"
-      text    = "Se le informa que no se ha autorizado su solicitud de servicio CIMAV."
-      content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>23,:reply_to=>'#{user.email}',:text=>'#{text}'}"
-    elsif opc.eql? 5
-      @u_email = i.email
-      subject  = "Se ha autorizado Solicitud de Servicio CIMAV"
-      content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:i_id=>'#{i.id}',:pass=>'#{i.password}',:view=>24,:reply_to=>'#{user.email}'}"
-    elsif opc.eql? 6
-      @u_email = Settings.interships_cards_email
-      subject  = "Se ha registrado un alumno como Servicio CIMAV #{i.id}"
-      content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'25',:reply_to=>'#{user.email}'}"
-    end
-
-    email         = Email.new
-    email.from    ="atencion.posgrado@cimav.edu.mx"
-    email.to      = @u_email
-    email.subject = subject
-    email.content = content
-    email.status  = 0
-    email.save
-
-    if opc.eql? 1
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al solicitante'}"}).save
-    elsif opc.eql? 2
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al asistente'}"}).save
-    elsif opc.eql? 3
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El usuario programa fecha de entrevista'}"}).save
-    elsif opc.eql? 4 
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El entrevistador rechaza solicitud'}"}).save
-    elsif opc.eql? 5
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El entrevistador autoriza solicitud'}"}).save
+    if !user.nil?
+      if opc.eql? 1
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo al solicitante'}"}).save
+      elsif opc.eql? 2 
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo al asistente'}"}).save
+      elsif opc.eql? 3
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de fecha de entrevista'}"}).save
+      elsif opc.eql? 4
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social no autorizado'}"}).save
+      elsif opc.eql? 5
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social autorizado'}"}).save
+      end
+  
+      if opc.eql? 1
+        @u_email   = i.email
+        subject = "Solicitud Servicio Social CIMAV"
+        content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>13,:reply_to=>'#{user.email}',:uri=>'#{uri}'}"
+      elsif opc.eql? 2
+        @u_email   = user.email
+        subject = "Se ha realizado una Solicitud Servicio Social CIMAV"
+        content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>14,:reply_to=>'#{i.email}',:uri=>'#{uri}'}"
+      elsif opc.eql? 3
+        @u_email   = i.email
+        subject = "Se ha programado fecha para entrevista Solicitud Servicio Social CIMAV"
+        content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>15,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+      elsif opc.eql? 4
+        @u_email   = i.email
+        subject = "No se ha autorizado Solicitud de Servicio CIMAV"
+        text    = "Se le informa que no se ha autorizado su solicitud de servicio CIMAV."
+        content = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>23,:reply_to=>'#{user.email}',:text=>'#{text}'}"
+      elsif opc.eql? 5
+        @u_email = i.email
+        subject  = "Se ha autorizado Solicitud de Servicio CIMAV"
+        content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:i_id=>'#{i.id}',:pass=>'#{i.password}',:view=>24,:reply_to=>'#{user.email}'}"
+      elsif opc.eql? 6
+        @u_email = Settings.interships_cards_email
+        subject  = "Se ha registrado un alumno como Servicio CIMAV #{i.id}"
+        content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'25',:reply_to=>'#{user.email}'}"
+      end
+  
+      email         = Email.new
+      email.from    ="atencion.posgrado@cimav.edu.mx"
+      email.to      = @u_email
+      email.subject = subject
+      email.content = content
+      email.status  = 0
+      email.save
+  
+      if opc.eql? 1
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al solicitante'}"}).save
+      elsif opc.eql? 2
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda un correo al asistente'}"}).save
+      elsif opc.eql? 3
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El usuario programa fecha de entrevista'}"}).save
+      elsif opc.eql? 4 
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El entrevistador rechaza solicitud'}"}).save
+      elsif opc.eql? 5
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'El entrevistador autoriza solicitud'}"}).save
+      end
     end
   end#send_mail
 
   def get_user(area_id)
      users = User.where("areas like '%\"#{area_id}\"%'")
-     return users[0]
+     users.each do |u|
+       if !u.config[:internships_email_send].nil?
+         if u.config[:internships_email_send]==true
+           return u
+         else
+           return nil
+         end
+       end
+     end
+
+     return nil
   end
 
   def get_consecutive(object, time, type)
