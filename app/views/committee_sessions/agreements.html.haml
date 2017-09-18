@@ -412,19 +412,19 @@
       - @staffs_all.each do |staff|
         -if !@selected.nil?
           -if @selected.attachable_type == "Staff" && @selected.attachable_id == staff.id
-            -option += " <option value=\""+staff.id.to_s+"\""+"selected=selected>"+"D - "+staff.full_name + "</option>"
+            -option += " <option value=\"D"+staff.id.to_s+"\""+"selected=selected>"+"D - "+staff.full_name + "</option>"
           -else
-            -option += " <option value=\""+staff.id.to_s+"\">"+"D - "+staff.full_name + "</option>"
+            -option += " <option value=\"D"+staff.id.to_s+"\">"+"D - "+staff.full_name + "</option>"
         -else
-          -option += " <option value=\""+staff.id.to_s+"\">"+"D - "+staff.full_name + "</option>"
+          -option += " <option value=\"D"+staff.id.to_s+"\">"+"D - "+staff.full_name + "</option>"
       -option += "</optgroup><optgroup label=\"Estudiantes\">"
       - @students_all.each do |student|
         -if !@selected.nil?
           -if @selected.attachable_type == "Student" && @selected.attachable_id == student.id
-            -option += " <option value=\""+student.id.to_s+"\""+"selected=selected>"+"E - "+student.full_name + "</option>"
-          -option += " <option value=\""+student.id.to_s+"\">"+"E - "+student.full_name + "</option>"
+            -option += " <option value=\"E"+student.id.to_s+"\""+"selected=selected>"+"E - "+student.full_name + "</option>"
+          -option += " <option value=\"E"+student.id.to_s+"\">"+"E - "+student.full_name + "</option>"
         -else
-          -option += " <option value=\""+student.id.to_s+"\">"+"E - "+student.full_name + "</option>"
+          -option += " <option value=\"E"+student.id.to_s+"\">"+"E - "+student.full_name + "</option>"
       -option += "</optgroup>"
       = select_tag "student_staff", option.html_safe, :prompt=>"--Destinatario--", :class=>"agreement_student_staff", id:"student_staff",:disabled=>readonly
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
