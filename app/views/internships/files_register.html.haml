@@ -1,5 +1,5 @@
 :javascript
-  var my_id;    
+  var my_id;
   function display_status(type,my_id){
     if(type=="ok"){
       $("#img_ok_"+my_id).css("display","block");
@@ -41,7 +41,7 @@
 
       p      = $(this).parent();
       f_type = p.find("#file_type").val();
-      
+
       if(f_type==5)
       {
         var myRe = /\dfsdfsadsda$/i;
@@ -76,12 +76,12 @@
         }
       }
 
-    });  
-    
+    });
+
     $("#files_iframe2").load(function(){
       var sts = $('#files_iframe2').contents().find("status").html();
       var ref = $('#files_iframe2').contents().find("reference").html();
-      
+
       if(sts=="0")
       {
         errors  = $('#files_iframe2').contents().find("errors").html();
@@ -105,7 +105,7 @@
           $("#reqdoc_button_"+my_id).css("display","none");
           $("#reqdoc_button_download_"+my_id).css("display","block");
           $("#reqdoc_button_delete_"+my_id).css("display","block");
-          
+
           $("#reqdoc_button_"+my_id).attr("my_file_id",new_id);
           $("#reqdoc_button_download_"+my_id).attr("my_file_id",new_id);
           $("#reqdoc_button_delete_"+my_id).attr("my_file_id",new_id);
@@ -118,11 +118,11 @@
           $("#reqdoc_button_download_"+my_id).css("display","none");
           $("#reqdoc_button_delete_"+my_id).css("display","none");
         }
-      
+
 
         $(".reqdoc_button").removeAttr("disabled");
         $(".reqdoc_button_delete").removeAttr("disabled");
-        
+
        var files_req_missing  =  $(".fields_requested .field_requested_document[required=1] .img-ok:hidden")
        if(files_req_missing.length==0){
          $("#continue_button").show();
@@ -133,16 +133,17 @@
       }
     });
   });
+#content-panel
 
 -if @register
-  .header{:style=>"width:880px;height:130px;text-align:justify;margin:10px;"} 
+  .header{:style=>"width:880px;height:130px;text-align:justify;margin:10px;"}
     .message{:style=>"text-align:justify;position:relative;"}
       %h4
-        =@user.full_name 
+        =@user.full_name
         = button_tag @t[:logout], :type=>"button", :id=>"logout_button", :style=>"display:block-inline;font-size:70%;padding: 3px 4px;",:class=>"logout-button"
       %br
       %h4=@t[:message2].html_safe
-  .terms{:style=>"display:none; width:460px;height:270px;text-align:justify;margin:10px;position:absolute;"} 
+  .terms{:style=>"display:none; width:460px;height:270px;text-align:justify;margin:10px;position:absolute;"}
     = @t[:terms].html_safe
     %br
     = button_tag @t[:accept], :type=>'button',:id=>"application_button"
@@ -198,7 +199,36 @@
           - if !@register
             = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
           = button_tag @t[:delete_file], :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'display:none;', :my_file_id=> 0
-  %iframe{"name" => "files_iframe2", "id" => "files_iframe2" ,:style=> "display: none;"}
+= form_for @internship, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form', style:'margin-left:50%'} do |f|
+  %h2 Fotografía
+  %br
+  .resource-header
+    .resource-picture
+      = image_tag @internship.image_url(:medium).to_s, :id => "img-medium-#{@internship.id}"
+      %br
+      = link_to 'Cambiar foto', '#', :id=>'a-change-image'
+    :javascript
+      $(function() {
+        $('#resource-tabs').tabs();
+        $("#change-img-dialog").remove();
+        $('#content-panel').append('<div title="Cambiar fotografía" id="change-img-dialog"><iframe width="530" height="450" src="/internados/#{@internship.id}/cambiar_foto" scrolling="no"></iframe></div>');
+        $("#change-img-dialog").dialog({ autoOpen: false, width: 470, height: 550, modal:true });
+        $("#a-change-image").live("click", function() {
+          $("#change-img-dialog").dialog('open');
+        });
+      });
 
-.continue-button{:style=>"display:block;position:relative;width:100px;margin-left: 325px; top: 35px;"}
-  = button_tag @t[:continue], :type=>'button',:id=>"continue_button"
+  %iframe{"name" => "files_iframe2", "id" => "files_iframe2" ,:style=> "display: none;"}
+%br
+%br
+%br
+%br
+%br
+%br
+%br
+%br
+%br
+
+-if @internship.image.to_s != '/assets/internship/fallback/default.jpg'
+  .continue-button{:style=>"display:block;position:relative;width:100px;margin-left: 325px; top: 35px;"}
+    = button_tag @t[:continue], :type=>'button',:id=>"continue_button"

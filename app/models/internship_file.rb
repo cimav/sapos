@@ -17,7 +17,6 @@ class InternshipFile < ActiveRecord::Base
     SIGN_REQUEST        => 'Solicitud con firmas',
     INSTITUTION_REQUEST => 'Solicitud oficial de la institución de procedencia',
     REGISTRATION_PROOF  => 'Constancia de inscripción de institución de procedencia',
-    PHOTO               => 'Fotografía para la credencial',
     COURSE              => 'Curso de seguridad e higiene aprobado'
   }
 
