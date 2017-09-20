@@ -6,7 +6,7 @@ require 'open-uri'
 class InternshipsController < ApplicationController
   load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify]
+  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify]
   before_filter :auth_indigest, :only=>[:files_register,:upload_file_register,:finalize]
 
   def index
