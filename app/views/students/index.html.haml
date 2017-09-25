@@ -14,7 +14,7 @@
 
 #items-panel.side-panel 
 
-  .panel-search{:style=>"height: 180px"}
+  .panel-search{:style=>"height: 231px"}
     .invisible-options
       - program_options = Array.new
       - program_options.push(["Todos los programas","0"])
@@ -54,6 +54,10 @@
       - status_options += "<option value=\"preinscritos\">Todos los preinscritos</option>"
       = select_tag "status", status_options.html_safe
 
+      = select_tag "scholarship_type", options_for_select([['No filtrar por beca', 10],['Sin beca', Student::NONE_SCHOLARSHIP],['Beca CONACYT', Student::CONACYT_SCHOLARSHIP],['Otra', Student::OTHER_SCHOLARSHIP]])
+
+      = select_tag "student_time", options_for_select([['Cualquier tiempo de estudio', 10],['Tiempo completo', Student::FULL_TIME],['Medio tiempo', Student::HALF_TIME]])
+
       =# text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id, :style=>"display: none;"
       - genre_options = Hash.new
       - genre_options["Todos los géneros"] = 0
@@ -66,7 +70,7 @@
     .div-config
       = image_tag "/images/config2.png" , :id => "search-config", :width=>'25px', :style=>"visibility:hidden;"
   
-  #items-list.panel-items{:style=>"top: 200px;"}
+  #items-list.panel-items{:style=>"top: 254px;"}
   
   .panel-add
     - if can? :create, Student

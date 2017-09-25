@@ -32,6 +32,14 @@ $('#status').live("change", function() {
   liveSearch({json: true});
 });
 
+$('#scholarship_type').live("change", function() {
+    liveSearch({json: true});
+});
+
+$('#student_time').live("change", function() {
+    liveSearch({json: true});
+});
+
 $('#genero').live("change", function() {
   $("#items-list").html("<img src=\"\/images\/ajax-load2.gif\">");
   

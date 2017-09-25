@@ -96,6 +96,17 @@ class StudentsController < ApplicationController
       @students = @students.select("id,first_name,last_name,program_id,card,gender").where("status = #{Student::PENROLLMENT}")
     end
 
+    # filtrar por beca
+    if params[:scholarship_type] != "10" then
+      @students = @students.select("id,first_name,last_name,program_id,card,gender").where("scholarship_type = #{params[:scholarship_type]}")
+    end
+
+    # filtrar por tiempo de estudio
+    if params[:student_time] != "10" then
+      @students = @students.select("id,first_name,last_name,program_id,card,gender").where("student_time = #{params[:student_time]}")
+    end
+
+
 =begin
     if !params[:q].blank?
       if params[:q].to_i != 0

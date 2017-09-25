@@ -12,7 +12,7 @@ class EmailValidator < ActiveModel::EachValidator
 end
 
 class Student < ActiveRecord::Base
-  attr_accessible :id,:program_id,:card,:previous_card,:consecutive,:first_name,:last_name,:gender,:date_of_birth,:city,:state_id,:country_id,:email,:previous_institution,:previous_degree_type,:previous_degree_desc,:previous_degree_date,:contact_id,:start_date,:end_date,:graduation_date,:inactive_date,:supervisor,:co_supervisor,:department_id,:curp,:ife,:cvu,:location,:ssn,:blood_type,:accident_contact,:accident_phone,:passport,:image,:status,:notes,:created_at,:updated_at,:campus_id,:contact_attributes,:scholarship_attributes,:thesis_attributes,:email_cimav,:domain_password,:advance_attributes,:deleted,:deleted_at,:studies_plan_id,:external_supervisor
+  attr_accessible :id,:program_id,:card,:previous_card,:consecutive,:first_name,:last_name,:gender,:date_of_birth,:city,:state_id,:country_id,:email,:previous_institution,:previous_degree_type,:previous_degree_desc,:previous_degree_date,:contact_id,:start_date,:end_date,:graduation_date,:inactive_date,:supervisor,:co_supervisor,:department_id,:curp,:ife,:cvu,:location,:ssn,:blood_type,:accident_contact,:accident_phone,:passport,:image,:status,:notes,:created_at,:updated_at,:campus_id,:contact_attributes,:scholarship_attributes,:thesis_attributes,:email_cimav,:domain_password,:advance_attributes,:deleted,:deleted_at,:studies_plan_id,:external_supervisor,:student_time,:scholarship_type
   
   default_scope where(:deleted=>0)
   
@@ -70,6 +70,24 @@ class Student < ActiveRecord::Base
   FINISH       = 5
   PENROLLMENT  = 6
 
+  FULL_TIME = 1
+  HALF_TIME = 2
+
+  NONE_SCHOLARSHIP = 0
+  CONACYT_SCHOLARSHIP = 1
+  OTHER_SCHOLARSHIP = 2
+
+  SCHOLARSHIP_TYPES = {
+      NONE_SCHOLARSHIP => 'Sin beca',
+      CONACYT_SCHOLARSHIP => 'Beca CONACYT',
+      OTHER_SCHOLARSHIP => 'Otra'
+  }
+
+  STUDENT_TIMES = {
+      FULL_TIME => 'Tiempo completo',
+      HALF_TIME => 'Medio tiempo'
+  }
+
   STATUS = {
             ACTIVE        => 'Activo',
             FINISH        => 'Egresado no graduado',
@@ -80,7 +98,15 @@ class Student < ActiveRecord::Base
            }
 
   def status_type
-    STATUS[status]
+    STATUS[self.status]
+  end
+
+  def get_scholarship_type
+    SCHOLARSHIP_TYPES[self.scholarship_type]
+  end
+
+  def get_student_time
+    STUDENT_TIMES[self.student_time]
   end
   
   def set_card

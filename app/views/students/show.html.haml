@@ -140,9 +140,15 @@
       .field#field_student_cvu
         = f.label :cvu, 'CVU'
         = f.text_field :cvu
+      .field#field_student_scholarchip_type
+        =f.label :scholarship_type, 'Beca'
+        =f.select :scholarship_type, [['Sin beca', Student::NONE_SCHOLARSHIP],['Beca CONACYT', Student::CONACYT_SCHOLARSHIP],['Otra', Student::OTHER_SCHOLARSHIP]], prompt:'---Selecciona---'
+      .field#field_student_student_time
+        =f.label :student_time, 'Tiempo de estudio'
+        =f.select :student_time, [['Tiempo completo', Student::FULL_TIME],['Medio tiempo', Student::HALF_TIME]], prompt:'---Selecciona---'
       .field#field_student_campus_id
         = f.label :campus_id, 'Campus'
-        = f.collection_select :campus_id, @campus, :id, :name, options = {:prompt => "Selecciona un campus"} 
+        = f.collection_select :campus_id, @campus, :id, :name, options = {:prompt => "---Selecciona un campus---"}
       .field#field_student_location
         = f.label :location, 'Ubicación'
         = f.text_field :location
@@ -159,7 +165,7 @@
 
       .field#field_student_country_id
         = f.label :country_id, 'País de nacimiento'
-        = f.collection_select :country_id, @countries, :id, :name, options = {:prompt => "Selecciona un País"} 
+        = f.collection_select :country_id, @countries, :id, :name, options = {:prompt => "---Selecciona un País---"}
 
       .field#field_city
         = f.label :city, 'Ciudad de nacimiento'
@@ -167,7 +173,7 @@
 
       .field#field_state
         = f.label :state, 'Estado de nacimiento'
-        = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona el Estado"}
+        = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "---Selecciona el Estado---"}
       .field#field_student_ife
         = f.label :ife, 'IFE'
         = f.text_field :ife
@@ -183,7 +189,7 @@
         = f.collection_select :previous_institution, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"} 
       .field#field_previous_degree_type
         = f.label :previous_degree_type, 'Tipo'
-        = f.select :previous_degree_type,  [['Selecciona el grado',''], ['Post-Doctorado', 'POSDOCTORADO'], ['Doctorado', 'DOCTORADO'], ['Maestria', 'MAESTRIA'], ['Licenciatura', 'LICENCIATURA'], ['Bachillerato', 'BACHILLERATO']]
+        = f.select :previous_degree_type,  [['---Selecciona el grado---',''], ['Post-Doctorado', 'POSDOCTORADO'], ['Doctorado', 'DOCTORADO'], ['Maestria', 'MAESTRIA'], ['Licenciatura', 'LICENCIATURA'], ['Bachillerato', 'BACHILLERATO']]
       .field#field_previous_degree_desc
         = f.label :previous_degree_desc, 'Grado'
         = f.text_field :previous_degree_desc
