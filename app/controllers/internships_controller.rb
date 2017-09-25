@@ -382,6 +382,8 @@ class InternshipsController < ApplicationController
   def certificates
     @internship = Internship.find(params[:id])
     @sign        = params[:sign_id]
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+
 
     time = Time.new
     year = time.year.to_s
@@ -467,12 +469,47 @@ class InternshipsController < ApplicationController
         @genero2 = "x"
       end
 
-      #html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_aceptacion')
-      html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_aceptacion')
-      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "carta-aceptacion-#{@internship.id}.pdf"
-      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return
+
+      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+        pdf.font_size 11
+        x = 20
+        y = 565 #664
+        w = 300
+        h = 50
+
+
+
+        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :height=>h
+        x = 20
+        y -= 70
+        w = 300
+        pdf.font_size 13
+
+        @parrafo1 = "Por medio de la presente hago constar que #{@genero2} alumn#{@genero} <b>#{@nombre}</b>, perteneciente a <b>#{@institucion}</b>, de la carrera de <b>#{@carrera}</b> y con No. de control <b>#{@numero}</b> está aceptad#{@genero} en este Centro de Investigación para realizar <b>#{@internado}</b>, en el departamento de <b>#{@departamento}</b>, bajo la supervisión de <b>#{@asesor}</b>, cubriendo un total de <b>#{@horas}</b> Hrs., dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} al #{@end_day} de #{@end_month}</b> del presente año en el siguiente horario de <b>#{@horario}</b>, en este Centro de Investigación, desarrollando el siguiente proyecto: "
+
+        pdf.text_box @parrafo1, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
+
+        x= 40
+        y -= 140
+
+        pdf.text_box "<b>#{@proyecto}</b>", :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+
+        @parrafo2 = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
+        y -= 40
+        x = 20
+        pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+
+        y = y - 122 #202
+        h = 155
+        x = 98
+
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        filename = "carta-aceptacion-#{@internship.id}.pdf"
+
+        send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
+
+      end
     end
 
     if params[:type] == "liberacion"
@@ -512,12 +549,59 @@ class InternshipsController < ApplicationController
         @genero2 = "x"
       end
 
-      html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_liberacion')
-      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "carta-liberacion-#{@internship.id}.pdf"
-      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return
+      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+        pdf.font_size 11
+        x = 20
+        y = 565 #664
+        w = 300
+        h = 50
+
+
+
+        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :height=>h
+        x = 20
+        y -= 70
+        w = 300
+        pdf.font_size 13
+
+        @parrafo1 = "Por medio de la presente hago constar que el alumno <b>#{@nombre}</b>, de la carrera de <b>#{@carrera}</b> perteneciente a <b>#{@institucion}</b> y con número de control <b>#{@numero}</b> realizó <b>#{@internship_type}</b>, dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} de #{@start_year} al #{@end_day} de #{@end_month} de #{@end_year}</b> cubriendo un total de <b>#{@horas}</b> horas en este Centro de Investigación, desarrollando las siguientes actividades:"
+
+        pdf.text_box @parrafo1, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
+
+        x= 40
+        y -= 110
+
+        pdf.text_box "<b>#{@internado}</b>", :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+
+
+        @parrafo2 = "Que nos reporta con resultados muy satisfactorios el asesor <b>#{@asesor}</b>, una puntuación de <b>#{@puntuacion}</b>, por lo que no tenemos reserva alguna en felicitarlo por su excelente formación."
+        y -= 40
+        x = 20
+        pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+
+        @parrafo2 = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
+        y -= 60
+        x = 20
+        pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+
+        pdf.font_size 11
+        y = y - 122 #202
+        h = 155
+        x = -230
+        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top,:inline_format=>true
+
+        h = 155
+        x = 280
+        @firma_asesor = "\n<b>Vo. Bo \n\n\n\n#{@asesor}\n Asesor Responsable</b>"
+        pdf.text_box @firma_asesor, :at=>[x,y], :align=>:center,:valign=>:top,:inline_format=>true
+        filename = "carta-liberacion-#{@internship.id}.pdf"
+        send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
+
+
+      end
     end
+
 
     if params[:type] == "uso"
       @consecutivo = get_consecutive(@internship, time, Certificate::USE)

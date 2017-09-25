@@ -2365,7 +2365,7 @@ private
       end
 
       filename = options[:filename]
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
       #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
   end
