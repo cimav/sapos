@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170925155539) do
+ActiveRecord::Schema.define(:version => 20170925163226) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -549,6 +549,16 @@ ActiveRecord::Schema.define(:version => 20170925155539) do
     t.datetime "updated_at",    :null => false
   end
 
+  create_table "record_logs", :force => true do |t|
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.datetime "record_date"
+    t.text     "detail"
+    t.string   "record_type"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
   create_table "scholarship_categories", :force => true do |t|
     t.string   "name"
     t.string   "description"
@@ -739,6 +749,13 @@ ActiveRecord::Schema.define(:version => 20170925155539) do
   add_index "students", ["department_id"], :name => "index_students_on_department_id"
   add_index "students", ["program_id"], :name => "index_students_on_program_id"
   add_index "students", ["supervisor"], :name => "index_students_on_supervisor"
+
+  create_table "studies_plan_areas", :force => true do |t|
+    t.integer  "studies_plan_id"
+    t.string   "name"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
 
   create_table "studies_plans", :force => true do |t|
     t.integer  "program_id"

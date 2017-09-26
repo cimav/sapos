@@ -1,0 +1,25 @@
+= form_for @studies_plan_area, :remote => true, :html => {:'data-type' => 'html', :id => 'item-edit-form'} do |f|
+  = hidden_field :studies_plan_area, :id
+ 
+  .resource-header.student-header
+    .resource-picture
+    .resource-title
+      %h1
+        = "#{@studies_plan_area.name}"
+
+    .resource-save
+      - if can? :update, @studies_plan_area
+        = f.submit 'Actualizar'
+  
+
+  #resource-tabs
+    %ul
+      %li.first-tab= link_to "Detalles", "#detalles"
+    
+    .field#field_studies_plan_area_name
+      = f.label :name, 'Nombre del area'
+      = f.text_field :name
+   
+    .field#field_area_area_type
+      = f.label :studies_plan_id, 'Plan de estudios'
+      = f.collection_select :studies_plan_id, @studies_plans, :id, :name, options = {:prompt => "Selecciona el plan de estudios"}

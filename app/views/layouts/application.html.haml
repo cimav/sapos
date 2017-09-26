@@ -30,6 +30,8 @@
         %li.op#op-home= link_to "Escritorio", root_url
         - if can? :read, Area
           %li.op#op-students= link_to "Areas", areas_path
+        - if can? :read, StudiesPlanArea
+          %li.op#op-students= link_to "Areas (Planes de estudio)", studies_plan_areas_path
         - if can? :read, Applicant
           %li.op#op-users= link_to "Aspirantes", applicants_path
         - if can? :read, Classroom

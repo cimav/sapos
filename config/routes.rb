@@ -265,6 +265,9 @@ Sapos::Application.routes.draw do
   match 'objetos/borrar/:id' => 'committee_agreement_objects#delete'
   match 'acuerdos/busqueda' => 'committee_meeting_agreements#live_search'
 
+
+  match 'areas_planes_estudios/busqueda' => 'studies_plan_areas#live_search'
+
   resources :documentation_files
 
   match 'logs/show' => 'logs#index'
@@ -292,6 +295,7 @@ Sapos::Application.routes.draw do
     resources :committee_agreement_objects, :path => "objetos"
     resources :seminars, :path => "seminarios"
     resources :advances, :path => "avances"
+    resources :studies_plan_areas,:path=>"areas_planes_estudios"
     #resources :studies_plans, :path => "planes_estudios"
   end
 

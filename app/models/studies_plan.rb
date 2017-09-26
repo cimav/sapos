@@ -3,6 +3,8 @@ class StudiesPlan < ActiveRecord::Base
 
   belongs_to :program
 
+  has_many :studies_plan_area
+
   validates :code, :presence => true
   validates :name, :presence => true
   

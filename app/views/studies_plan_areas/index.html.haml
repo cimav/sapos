@@ -1,0 +1,15 @@
+- @include_js = 'studies_plan_areas'
+- @page_title = 'Areas (planes de estudio)'
+
+#items-panel.side-panel 
+  .panel-search{:style=>"height: 50px"}
+    = form_tag studies_plan_areas_path, :id => 'live-search', :method => 'get', :remote => true do
+      = text_field_tag :q, nil, :id => 'search-box', :placeholder => 'Busqueda', :value=> @remote_id
+
+  #items-list.panel-items{:style=>"top: 73px"}
+ 
+  .panel-add
+    - if can? :create, StudiesPlanArea
+      = link_to  'Agregar nueva area', {:action => 'new'},  {:id => 'add-new-item', :method => :get, :remote => true, :'data-type' => 'html'}
+    
+#content-panel.main-panel
