@@ -24,7 +24,7 @@ class StudiesPlanAreasController < ApplicationController
 
   def new
     @studies_plan_area = StudiesPlanArea.new
-    @studies_plans     = StudiesPlan.all
+    @studies_plans     = StudiesPlan.where(:status=>1)
     render :layout=>false
   end
 

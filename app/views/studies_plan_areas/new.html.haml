@@ -15,7 +15,11 @@
     .field#field_area_name
       = f.label :name, 'Nombre del area'
       = f.text_field :name
+
+    .field#not_field_area_program
+      = label_tag "Programa"
+      = select_tag "program_field", options_from_collection_for_select(Program.all,"id","name"), options = {:prompt => "Selecciona un programa"}
    
-    .field#field_area_area_type
+    .field#field_area_area_type{:style=>"display: none;"}
       = f.label :studies_plan_id, 'Plan de estudios'
-      = f.collection_select :studies_plan_id, @studies_plans, :id, :name, options = {:prompt => "Selecciona el plan de estudios"}
+      = f.select :studies_plan_id, options_for_select(@studies_plans.map{|sp|[sp.name,sp.id,{'program_id'=>sp.program_id,'style'=>'display: none;'}] }),options = {:prompt => "Selecciona el plan de estudios"}
