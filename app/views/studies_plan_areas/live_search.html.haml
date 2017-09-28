@@ -5,5 +5,7 @@
     %li 
       = link_to area, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "area_link_#{area.id}" do
         .title= area.name
+        .comment= area.studies_plan.program.name
+        .comment= area.studies_plan.name
 #counter
   .inner= "#{c} areas"

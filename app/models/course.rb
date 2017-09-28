@@ -1,11 +1,13 @@
 # coding: utf-8
 class Course < ActiveRecord::Base
-  attr_accessible :id,:program_id,:code,:name,:lecture_hours,:lab_hours,:credits,:description,:term,:prereq1,:prereq2,:prereq3,:coreq1,:coreq2,:coreq3,:notes,:status,:created_at,:updated_at,:studies_plan_id
+  attr_accessible :id,:program_id,:code,:name,:lecture_hours,:lab_hours,:credits,:description,:term,:prereq1,:prereq2,:prereq3,:coreq1,:coreq2,:coreq3,:notes,:status,:created_at,:updated_at,:studies_plan_id,:studies_plan_area_id
   #attr_accesor :full_name_extras
   belongs_to :program
   belongs_to :studies_plan
+  belongs_to :studies_plan_area
 
   has_many :term_courses
+
   accepts_nested_attributes_for :term_courses
 
   def full_name

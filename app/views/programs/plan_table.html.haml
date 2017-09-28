@@ -24,7 +24,41 @@
         %th Corequisitos
     %tr.course{:id=>"tr_#{course.id}", :course_id=>course.id}
       %td= course.code
-      %td= course.name
+      %td
+        = course.name
+        -if current_term>=99 and !course.studies_plan_area.nil?
+          - mod = course.studies_plan_area_id%10
+          - if mod.eql? 1
+            - color = "MediumPurple"
+            - text_color = "black"
+          - elsif mod.eql? 2
+            - color = "Green"
+            - text_color = "white"
+          - elsif mod.eql? 3
+            - color = "Darkblue"
+            - text_color = "white"
+          - elsif mod.eql? 4
+            - color = "Brown"
+            - text_color = "white"
+          - elsif mod.eql? 5
+            - color = "Gold"
+            - text_color = "black"
+          - elsif mod.eql? 6
+            - color = "Teal"
+            - text_color = "white"
+          - elsif mod.eql? 7
+            - color = "MistyRose"
+            - text_color = "black"
+          - elsif mod.eql? 8
+            - color = "Orange"
+            - text_color = "black"
+          - elsif mod.eql? 9
+            - color = "Black"
+            - text_color = "white"
+          - else
+            - color = "Gray"
+            - text_color = "white"
+          %span{:style=>"float:right; background-color:#{color}; color:#{text_color}; text-size:10px; padding:3px; margin:0px;"}= course.studies_plan_area.name rescue ""
       %td.centered= "#{course.lecture_hours_int}–#{course.lab_hours_int}–#{course.credits_int}"
       - prereq = []
       - if !course.prereq1.nil?
