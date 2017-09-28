@@ -550,16 +550,6 @@ ActiveRecord::Schema.define(:version => 20170927164957) do
     t.datetime "updated_at",    :null => false
   end
 
-  create_table "record_logs", :force => true do |t|
-    t.integer  "attachable_id"
-    t.string   "attachable_type"
-    t.datetime "record_date"
-    t.text     "detail"
-    t.string   "record_type"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
-  end
-
   create_table "scholarship_categories", :force => true do |t|
     t.string   "name"
     t.string   "description"
