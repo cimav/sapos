@@ -165,4 +165,27 @@ class Student < ActiveRecord::Base
     
     (today.year * 12 + today.month) - (yesterday.year * 12 + yesterday.month)
   end
+  
+  def get_average
+    counter = 0
+    counter_grade = 0
+    sum = 0
+    avg = 0
+    self.term_students.each do |te|
+      te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
+        counter += 1
+        if !(tcs.grade.nil?)
+          if !(tcs.grade<70)
+            counter_grade += 1
+            sum = sum + tcs.grade
+          end
+        end
+      end
+    end
+
+    if counter > 0
+      avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
+    end
+    return avg.to_s
+  end
 end

@@ -231,6 +231,8 @@ class StudentsController < ApplicationController
       end  
       last_advance = s.advance.where(:status=>["P","C"],).order(:advance_date).first
 
+
+
       rows << {'Matricula' => s.card,
         'Nombre' => s.first_name,
         'Apellidos' => s.last_name,
@@ -245,6 +247,7 @@ class StudentsController < ApplicationController
         "Institucion_Anterior" => (Institution.find(s.previous_institution).full_name rescue ''),
         "Campus" => (s.campus.name rescue ''),
         'Programa' => s.program.name,
+        'Promedio' => (s.get_average rescue ''),
         'Inicio' => s.start_date,
         'Fin' => end_date,
         'Meses' => months,
@@ -262,10 +265,11 @@ class StudentsController < ApplicationController
         'Tutor3' => (Staff.find(last_advance.tutor3).full_name rescue ''),
         'Tutor4' => (Staff.find(last_advance.tutor4).full_name rescue ''),
         'Tutor5' => (Staff.find(last_advance.tutor5).full_name rescue ''),
+
       }
     end#Students
 
-    column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+    column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa","Promedio", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
     @filename = to_excel(rows, column_order, "Estudiantes", "Estudiantes",1)
     render :layout => false
   end
@@ -991,7 +995,7 @@ class StudentsController < ApplicationController
       @end_year     = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.end_date.year.to_s
 
       @creditos     =  get_credits(@student)
-      @promedio     = get_average(@student)
+      @promedio     = @student.get_average
       @result = @student.scholarship.where("scholarships.status = 'ACTIVA' AND scholarships.start_date<=CURDATE() AND scholarships.end_date>=CURDATE()")
       @semestre = @student.term_students.joins(:term).order("terms.start_date desc").limit(1)[0].term.code
 
@@ -1013,7 +1017,7 @@ class StudentsController < ApplicationController
 
       @programa     = @student.program.name
       @creditos     = get_credits(@student)
-      @promedio     = get_average(@student)
+      @promedio     = @student.get_average
 
       if @student.program.level.eql? "1"
         @creditos_totales = "75.0"
@@ -1065,30 +1069,6 @@ class StudentsController < ApplicationController
     certificate.save
 
     return "%03d" % maximum
-  end
-
-  def get_average(student)
-    counter = 0
-    counter_grade = 0
-    sum = 0
-    avg = 0
-    student.term_students.each do |te|
-      te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
-        counter += 1
-        if !(tcs.grade.nil?)
-          if !(tcs.grade<70)
-            counter_grade += 1
-            sum = sum + tcs.grade
-          end
-        end
-      end
-    end
-
-    if counter > 0
-      avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
-    end
-
-    return avg.to_s
   end
 
   def get_credits(student)
