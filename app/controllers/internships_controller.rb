@@ -480,17 +480,26 @@ class InternshipsController < ApplicationController
 
 
         pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :height=>h
+
         x = 20
         y -= 70
         w = 300
         pdf.font_size 13
+
+        @a_quien_corr = "A quien corresponda \n\n <b>Presente.-</b>"
+
+        pdf.text_box @a_quien_corr, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
+
+        x = 20
+        y -= 60
+        w = 300
 
         @parrafo1 = "Por medio de la presente hago constar que #{@genero2} alumn#{@genero} <b>#{@nombre}</b>, perteneciente a <b>#{@institucion}</b>, de la carrera de <b>#{@carrera}</b> y con No. de control <b>#{@numero}</b> está aceptad#{@genero} en este Centro de Investigación para realizar <b>#{@internado}</b>, en el departamento de <b>#{@departamento}</b>, bajo la supervisión de <b>#{@asesor}</b>, cubriendo un total de <b>#{@horas}</b> Hrs., dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} al #{@end_day} de #{@end_month}</b> del presente año en el siguiente horario de <b>#{@horario}</b>, en este Centro de Investigación, desarrollando el siguiente proyecto: "
 
         pdf.text_box @parrafo1, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
 
         x= 40
-        y -= 140
+        y -= 150
 
         pdf.text_box "<b>#{@proyecto}</b>", :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
 
@@ -499,7 +508,7 @@ class InternshipsController < ApplicationController
         x = 20
         pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
 
-        y = y - 122 #202
+        y = y - 100 #202
         h = 155
         x = 98
 
@@ -559,10 +568,20 @@ class InternshipsController < ApplicationController
 
 
         pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :height=>h
+
         x = 20
         y -= 70
         w = 300
         pdf.font_size 13
+
+        @a_quien_corr = "A quien corresponda \n\n <b>Presente.-</b>"
+
+        pdf.text_box @a_quien_corr, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
+
+        x = 20
+        y -= 70
+        w = 300
+
 
         @parrafo1 = "Por medio de la presente hago constar que el alumno <b>#{@nombre}</b>, de la carrera de <b>#{@carrera}</b> perteneciente a <b>#{@institucion}</b> y con número de control <b>#{@numero}</b> realizó <b>#{@internship_type}</b>, dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} de #{@start_year} al #{@end_day} de #{@end_month} de #{@end_year}</b> cubriendo un total de <b>#{@horas}</b> horas en este Centro de Investigación, desarrollando las siguientes actividades:"
 
@@ -585,7 +604,7 @@ class InternshipsController < ApplicationController
         pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
 
         pdf.font_size 11
-        y = y - 122 #202
+        y = y - 80 #202
         h = 155
         x = -230
         @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
