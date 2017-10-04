@@ -2,7 +2,7 @@
 namespace :becas do
   task :put => :environment do
     students = Student.where(:status=>1)
-    BecasRemote.connection.execute("DELETE from becas")
+    BecasRemote.connection.execute("TRUNCATE TABLE becas")
 
     students.each do |s|
       my_curp = s.curp
