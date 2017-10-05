@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170927164957) do
+ActiveRecord::Schema.define(:version => 20171005172245) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -520,14 +520,16 @@ ActiveRecord::Schema.define(:version => 20170927164957) do
 
   create_table "programs", :force => true do |t|
     t.string   "name"
-    t.string   "level",          :limit => 20
-    t.string   "prefix",         :limit => 5
+    t.string   "level",           :limit => 20
+    t.string   "prefix",          :limit => 5
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "terms_duration"
     t.integer  "terms_qty"
     t.integer  "program_type"
+    t.string   "institution_key"
+    t.string   "program_key"
   end
 
   create_table "protocols", :force => true do |t|

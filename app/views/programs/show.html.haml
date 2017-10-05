@@ -25,7 +25,7 @@
         = f.text_field :name
 
       .field#field_program_prefix
-        = f.label :prefix, mark_required(@program, :prefix) + 'Clave'
+        = f.label :prefix, mark_required(@program, :prefix) + 'Prefijo'
         = f.text_field :prefix
       
       .field#field_program_program_type
@@ -46,6 +46,13 @@
       .field#field_program_terms_qty
         = f.label :terms_qty, 'Cantidad de ciclos'
         = f.select :terms_qty, (1..12).to_a
+
+      .field#field_program_key
+        = f.label :program_key,'Clave de programa'
+        = f.text_field :program_key
+      .field#field_institution_key
+        = f.label :institution_key, 'Clave de institución'
+        = f.text_field :institution_key
 
     #plan
       = render :partial => 'plan', :locals => {:program => @program, :f => f}
