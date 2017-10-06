@@ -299,6 +299,9 @@ Sapos::Application.routes.draw do
     #resources :studies_plans, :path => "planes_estudios"
   end
 
+  #serve image
+  get '/imagen/:object_type/:object_id' => 'application#serve_image'
+
   # API
   get '/api/estudiantes-activos/:email' => 'api#active_students', :constraints  => { :email => /[0-z\.\@]+/ }
 

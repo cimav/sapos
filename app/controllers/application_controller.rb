@@ -244,6 +244,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def serve_image
+    case params[:object_type]
+      when "estudiante"
+        student = Student.find(params[:object_id])
+        redirect_to student.image_url
+      when "docente"
+        staff = Staff.find(params[:object_id])
+        redirect_to staff.image_url
+    end
+  end
 
   private
   def current_user
