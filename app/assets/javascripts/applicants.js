@@ -84,11 +84,43 @@ $(document).ready(function() {
     }
   });
 
+    $('#status_documentos_ingreso').live("change",function(){
+    var checked = $(this).attr("checked");
+
+    if(checked){
+      if(confirm("¿Esta seguro que desea activar el acceso a documentos?"))
+      {
+        activate(1,1);
+        alert("Formato Activado");
+      }
+      else
+      {
+        $(this).attr("checked",false);
+      }
+    }
+    else
+    {
+      if(confirm("¿Esta seguro que desea desactivar el acceso a documentos?"))
+      {
+        activate(0,1);
+        alert("Desactivado");
+      }
+      else
+      {
+        $(this).attr("checked",true);
+      }
+    }
+  });
+
 });
 
-function activate(opt) {
+function activate(opt,opt2) {
   var uri   = '/usuarios/0/config/1';
-  var data  = 'value='+opt ;
+  if(opt2==1){
+    uri = '/usuarios/0/config/2';
+  }
+
+  var data  = 'value='+opt;
   $.ajax({
     type: 'POST',
     url:   uri,

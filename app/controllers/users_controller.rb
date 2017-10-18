@@ -130,9 +130,26 @@ class UsersController < ApplicationController
       @user = User.find(params[:u_id])
     end
 
-    if params[:option].to_i.eql? 1
-      config[:applicants] = {:form_status => params[:value]}
+    config = @user.config
 
+    if params[:option].to_i.eql? 1
+      #config[:applicants] = {:form_status => params[:value]}
+      if config[:applicants].nil?
+        config[:applicants] = {:form_status => params[:value]}
+      else
+        config[:applicants].merge!(:form_status => params[:value])    
+      end
+
+  
+      @user.config = config
+      @user.save 
+    elsif params[:option].to_i.eql? 2
+      #config[:applicants] = {:documents_status => params[:value]}
+      if config[:applicants].nil?
+        config[:applicants] = {:documents_status => params[:value]}
+      else
+        config[:applicants].merge!(:documents_status => params[:value])
+      end
       @user.config = config
       @user.save 
     end

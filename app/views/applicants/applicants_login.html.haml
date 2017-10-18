@@ -2,23 +2,25 @@
 - @t = t(:applicants)
 #login-logo
   = image_tag image_path("login-logo.png"),:width=>"200px"
-
-= form_tag @url do 
-  #login-box
-    .field#title
-      = "Registro de solicitud de ingreso"
-    .field#user 
-      = label_tag @t[:user]
-      %br
-      = text_field_tag "user",@user
-    .field#password
-      = label_tag "Password"
-      %br
-      = password_field_tag "password"
-    .field#submit
-      = submit_tag "Enviar"
-    .field#message
-      = @message
+- if @active.to_i.eql? 0
+  %h4=@t[:message3]
+- else
+  = form_tag @url do 
+    #login-box
+      .field#title
+        = "Registro de solicitud de ingreso"
+      .field#user 
+        = label_tag @t[:user]  
+        %br
+        = text_field_tag "user",@user
+      .field#password
+        = label_tag "Password"
+        %br
+        = password_field_tag "password"
+      .field#submit
+        = submit_tag "Enviar"
+      .field#message
+        = @message
 
 #language
   - if I18n.locale.eql? :es

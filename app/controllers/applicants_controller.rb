@@ -657,6 +657,9 @@ class ApplicantsController < ApplicationController
     session[:locale] = nil
     @message = "Out of session"
     @url = "/aspirantes/registro/datos"
+
+    @config = User.where(:email=>'SYSTEM').first.config rescue nil
+    @active = @config[:applicants][:documents_status] rescue nil
     render :template => "applicants/applicants_login",:layout=>false
   end
   
@@ -699,6 +702,8 @@ private
       return true
     else
       @url = "/aspirantes/registro/datos"
+      @config = User.where(:email=>'SYSTEM').first.config rescue nil
+      @active = @config[:applicants][:documents_status] rescue nil
       render :template => "applicants/applicants_login",:layout=>false
     end
   end ##auth_digest

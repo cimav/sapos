@@ -2,7 +2,7 @@
 - @page_title = 'Aspirantes'
 - @nav_icon = 'applicants'
 #items-panel.side-panel 
-  .panel-search{:style=>"height: 115px"}
+  .panel-search{:style=>"height: 135px"}
     .invisible-options
       - program_options = Array.new
       - program_options.push(["Todos los programas","0"])
@@ -37,8 +37,15 @@
             - checked = true
           = check_box_tag 'status_formato_ingreso', '2', checked, :class => 'status-cbs-sts'
           = label_tag 'status_formato_ingreso', 'Activar formato ingreso'
+
+        %span 
+          - checked = false
+          - if (@config[:applicants][:documents_status].to_i.eql? 1 rescue false)
+            - checked = true
+          = check_box_tag 'status_documentos_ingreso', '3', checked, :class => 'status-cbs-sts'
+          = label_tag 'status_documentos_ingreso', 'Activar documentos ingreso'
  
-  #items-list.panel-items{:style=>"top: 135px;"}
+  #items-list.panel-items{:style=>"top: 155px;"}
   
   .panel-add
     - if can? :create, Applicant
