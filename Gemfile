@@ -27,7 +27,6 @@ gem 'spreadsheet'
 gem 'pdfkit'
 gem 'cancan'
 
-
 #gem 'prawn'
 #gem 'prawn-table'
 #gem 'prawn-icon'
@@ -39,7 +38,7 @@ gem 'prawn-table', '0.2.2'
 gem 'prawn-icon', '1.3.0'
 
 gem 'zipruby'
-gem 'fileutils', '0.7.0'
+#gem 'fileutils', '0.7.0'
 
 gem 'config', '1.0.0'
 gem 'file_validators'

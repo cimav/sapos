@@ -1,4 +1,4 @@
--# NUEVO INGRESO
+- @terms    = Term.where(:status=>[1..4]).where("start_date >?",Date.today() -365)
 - @committee_agreements.each do |ca|
   - ca_type = ca.committee_agreement_type_id.to_i
   - my_id= ca.id
@@ -188,7 +188,6 @@
       %b= "Designación de docentes para cursos: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
-      - @terms    = Term.where(:status=>[1,2])
       = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name_prefix",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
       - @courses = []
       - if !ca.auth.nil?
@@ -208,7 +207,6 @@
       = hidden_field_tag "my_id",my_id
       %b= my_id
       %b= "Evaluación de temarios propuestos: "
-      - @terms    = Term.where(:status=>[1,2])
       - @selected = ca.auth rescue 0
       = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
       - @courses = []
