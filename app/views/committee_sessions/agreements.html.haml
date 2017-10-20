@@ -1,14 +1,15 @@
 - @terms    = Term.where(:status=>[1..4]).where("start_date >?",Date.today() -365)
+- @staffs_all   = Staff.includes(:institution).where(:status=>0)
+- @staffs_cimav = Staff.includes(:institution).where(:status=>0,:institution_id=>1)
+- @students_1   = Student.where(:status=>1)
+- @students_1_6 = Student.where(:status=>[1,6])
+- @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
+- @students_all = Student.where(:status=>[1..6])
+
 - @committee_agreements.each do |ca|
   - ca_type = ca.committee_agreement_type_id.to_i
   - my_id= ca.id
-  - @staffs_all   = Staff.includes(:institution).where(:status=>0)
-  - @staffs_cimav = Staff.includes(:institution).where(:status=>0,:institution_id=>1)
-  - @students_1   = Student.where(:status=>1)
-  - @students_1_6 = Student.where(:status=>[1,6])
-  - @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
-  - @students_all = Student.where(:status=>[1..6])
-  
+
   - if @committee_session.status.eql? 3
     - readonly       = true
     - display_delete = "none"
@@ -107,10 +108,11 @@
       %b= "Designación de sinodales: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       - if !@selected.eql? 0
+        - students_1_6_2 = @students_1_6
         - if @students_1_6.where(:id=>@selected).size.eql? 0
           - s = Student.where(:id=>@selected)
-          - @students_1_6 = @students_1_6 + s
-      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(@students_1_6,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
+          - students_1_6_2 = students_1_6_2 + s
+      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(students_1_6_2,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
         - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
           .agreement-staff
