@@ -6,7 +6,10 @@
 - @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
 - @students_all = Student.where(:status=>[1..6])
 
-- @committee_agreements.each do |ca|
+=# "Páginas #{@pages}"
+=# "Total #{@size}"
+
+- @committee_agreements.each_with_index do |ca,index|
   - ca_type = ca.committee_agreement_type_id.to_i
   - my_id= ca.id
 
@@ -19,9 +22,11 @@
     - display_delete = "inline-block"
     - display_button = "none"
 
+  -# my_id_text = "#{index+1} [#{my_id}]"
+  - my_id_text = "[#{my_id}]"
   - if ca_type.eql? 1
     .myagreement
-      %b= my_id
+      %b= my_id_text
       %b= "Nuevo Ingreso:"
       = hidden_field_tag "my_id",my_id
       - @applicants = Applicant.select("MAX(id) as id,first_name,primary_last_name,second_last_name").where(:status=>[1,2,3,5]).group("first_name,primary_last_name, second_last_name").order("first_name")
@@ -38,7 +43,7 @@
     - ###############################################################################################################################################
   - elsif ca_type.eql? 2
     .myagreement
-      %b= my_id
+      %b= my_id_text
       %b= "Permanencia:"
       = hidden_field_tag "my_id",my_id
       = hidden_field_tag "my_type", ca.committee_agreement_type_id
@@ -66,7 +71,7 @@
   - elsif ca_type.eql? 3
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Cambio de programa: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       - if !@selected.eql? 0
@@ -86,7 +91,7 @@
   - elsif ca_type.eql? 4
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Cambio de director de tesis:"
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
       - if !@selected.eql? 0
@@ -104,14 +109,15 @@
   - elsif ca_type.eql? 5
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Designación de sinodales: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
+      - students_1_6_2 = @students_1_6
       - if !@selected.eql? 0
-        - students_1_6_2 = @students_1_6
         - if @students_1_6.where(:id=>@selected).size.eql? 0
-          - s = Student.where(:id=>@selected)
+          - s = Student.where(:id=>@selected) rescue Student.where(:id=>1)
           - students_1_6_2 = students_1_6_2 + s
+
       = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(students_1_6_2,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
       %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
         - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
@@ -135,7 +141,7 @@
   - elsif ca_type.eql? 6
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Designación de comite tutoral:"
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       - if !@selected.eql? 0
@@ -159,7 +165,7 @@
   - elsif ca_type.eql? 7
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Dispensa de grado: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       - if !@selected.eql? 0
@@ -186,7 +192,7 @@
     .myagreement
       = hidden_field_tag "my_id",my_id
       = hidden_field_tag "my_type", ca.committee_agreement_type_id
-      %b= my_id
+      %b= my_id_text
       %b= "Designación de docentes para cursos: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase",@selected),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"docente",:disabled=> readonly
@@ -207,7 +213,7 @@
   - elsif ca_type.eql? 9
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Evaluación de temarios propuestos: "
       - @selected = ca.auth rescue 0
       = select_tag "agreement_auth_#{my_id}",options_from_collection_for_select(@terms,"id","name",@selected),:prompt=>"--Elige Ciclo Escolar--",:class=>"agreement_auth",:disabled=>readonly
@@ -250,7 +256,7 @@
   - elsif ca_type.eql? 10
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Cuotas: "
       %br
       - inscripciones = ca.auth rescue ""
@@ -268,7 +274,7 @@
   - elsif ca_type.eql? 12
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Permiso de ausencia: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
       - if !@selected.eql? 0
@@ -288,7 +294,7 @@
   - elsif ca_type.eql? 13
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Presupuesto de becas: "
       - @areas = Area.all
       - monto = ca.notes[/\[(.*?)\]/m,1] rescue ""
@@ -306,7 +312,7 @@
   - elsif ca_type.eql? 14
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Posdoctorado: "
       = select_tag "agreement_auth_#{my_id}",options_for_select({"Si"=>1,"No"=>2},ca.auth),:prompt=>"--Autorizado--",:class=>"agreement_auth",:disabled=>readonly
       - @internships = Internship.where(:status=>3,:internship_type_id=>6)
@@ -326,7 +332,7 @@
   - elsif ca_type.eql? 15
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Normatividad: "
       - text = CommitteeAgreementNote.where(:committee_agreement_id=>ca.id)[0].notes rescue nil
       %u{:id=>"save_text_agreement_#{my_id}",:class=>"save-text-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 170px;"}="Agregar texto"
@@ -338,7 +344,7 @@
   - elsif ca_type.eql? 16
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Reeevalidación de cursos: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
       - if !@selected.eql? 0
@@ -359,7 +365,7 @@
   - elsif ca_type.eql? 17
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Comité de ingreso: "
       =#   CONTENIDO
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}"}="eliminar"
@@ -370,7 +376,7 @@
   - elsif ca_type.eql? 18
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Protocolo de maestría: "
       =#   CONTENIDO
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}"}="eliminar"
@@ -381,7 +387,7 @@
   - elsif ca_type.eql? 19
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Asignacion de Director: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
       - if !@selected.eql? 0
@@ -403,7 +409,7 @@
   - elsif ca_type.eql? 20
     .myagreement
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Asuntos generales: "
       / Poblar el select
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0] rescue 0
@@ -438,7 +444,7 @@
       = hidden_field_tag "my_id",my_id
       = hidden_field_tag "my_people","docente"
       = hidden_field_tag "my_id",my_id
-      %b= my_id
+      %b= my_id_text
       %b= "Tipo de acuerdo no desarrollado"
       %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}"}="eliminar"
       %hr
