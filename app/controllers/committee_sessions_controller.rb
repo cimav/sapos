@@ -1135,7 +1135,7 @@ class CommitteeSessionsController < ApplicationController
     today            = Date.today
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
-    Prawn::Document.new(:background => filename, :background_scale=>0.33, :margin=>[130,60,60,60] ) do |pdf|
+    Prawn::Document.new(:background => filename, :background_scale=>0.33, :margin=>[150,60,80,60] ) do |pdf|
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
       texto = "<b>Comité de Estudios de Posgrado</b>"
       pdf.text texto, :align=>:center, :inline_format=>true, :size=>13
