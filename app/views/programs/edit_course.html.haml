@@ -12,6 +12,11 @@
       - terms << ['Complementarias',101]
       = fields.select :term,terms
 
+    - if @course.term.eql? 100
+      %div{:id => "field_program_courses_0_studies_plan_area_id", :class => 'field'}
+        = fields.label :studies_plan_area_id, 'Area'
+        = fields.select :studies_plan_area_id, options_for_select(StudiesPlanArea.where(:studies_plan_id=>@course.studies_plan_id).map{|c|[c.name,c.id]}), options = {:prompt => "Seleccciona el area"}
+
     %div{:id => "field_program_courses_0_code", :class => 'field'}
       = fields.label :code, 'Clave'
       = fields.text_field :code
@@ -59,10 +64,7 @@
           %tr
             %td= fields.select :coreq3, [['Ninguno', 0]] + Course.where("program_id = :p AND term <= :t AND id <> :i", {:p => @program.id, :t => @course.term, :i => @course.id}).collect {|i| [ i.full_name, i.id]}
     
-    - if @course.term.eql? 99
-      %div{:id => "field_program_courses_0_studies_plan_area_id", :class => 'field'}
-        = fields.label :studies_plan_area_id, 'Area'
-        = fields.select :studies_plan_area_id, options_for_select(StudiesPlanArea.where(:studies_plan_id=>@course.studies_plan_id).map{|c|[c.name,c.id]}), options = {:prompt => "Seleccciona el area"}
+
 
     %div{:id => "field_program_courses_0_notes", :class => 'field'}
       = fields.label :notes, 'Notas'
