@@ -1171,7 +1171,7 @@ class CommitteeSessionsController < ApplicationController
       data << [{:content=>"<b>Acuerdos</b>",:colspan=>3}]
       data << ["<b>No.de acuerdo</b>","<b>Asunto</b>","<b>Resolución</b>"]
       data = get_array_agreement(@c_s,last_change,data)
-      data = get_general_issues(@c_s,data)
+      data = get_general_issues(@c_s,last_change,data)
 
       tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>10,:padding=>3,:inline_format => true},:position=>:right,:column_widths=>[80,206,206])
       tabla.rows(0).background_color = "F0F0F0"
@@ -1446,21 +1446,18 @@ class CommitteeSessionsController < ApplicationController
     return data
   end
 
-  def get_general_issues(c_s,data)
+  def get_general_issues(c_s,last_change,data)
     issue = "<b><i>Asuntos Generales</i></b>"
     authorized = ""
     counter    = 1
     @committee_agreements = CommitteeAgreement.where(:committee_session_id=>c_s.id)
     @committee_agreements.where(:committee_agreement_type_id=>20).each do |ca|
       notes      = ca.committee_agreement_note[0].notes rescue ""
-      if counter.eql? 1
-        authorized = "#{notes}"
-      else
-        authorized = "#{authorized}\n\n #{notes}"
-      end
+      authorized = " Para:<b> #{ca.committee_agreement_person[0].attachable.full_name}</b>\n\n #{notes}"
       counter = counter + 1
+      data << ["<b>A#{ca.id}.#{last_change.month}<sup>#{c_s.folio_sup}</sup>.#{last_change.year}</b>",issue,authorized]
     end
-    data << ["",issue,authorized]
+
     return data
   end
 

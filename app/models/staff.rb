@@ -28,6 +28,7 @@ class Staff < ActiveRecord::Base
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact
 
+
   validates :first_name, :presence => true
   validates :last_name, :presence => true
   validates :institution_id, :presence => true
