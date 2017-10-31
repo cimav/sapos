@@ -26,7 +26,8 @@
       %td= course.code
       %td
         = course.name
-        -if current_term>=99 and !course.studies_plan_area.nil?
+        -if current_term>=99 and !course.studies_plan_area_id.nil?
+          - my_rescue = ""
           - mod = course.studies_plan_area_id%10
           - if mod.eql? 1
             - color = "MediumPurple"
@@ -58,7 +59,14 @@
           - else
             - color = "Gray"
             - text_color = "white"
-          %span{:style=>"float:right; background-color:#{color}; color:#{text_color}; text-size:10px; padding:3px; margin:0px;"}= course.studies_plan_area.name rescue ""
+
+          - # No estan en db
+          - if course.studies_plan_area_id.to_i.eql? 999
+            - my_rescue = "Transverzales"
+            - color = "Black"
+            - text_color = "pink"
+
+          %span{:style=>"float:right; background-color:#{color}; color:#{text_color}; text-size:10px; padding:3px; margin:0px;"}= course.studies_plan_area.name rescue my_rescue
       %td.centered= "#{course.lecture_hours_int}–#{course.lab_hours_int}–#{course.credits_int}"
       - prereq = []
       - if !course.prereq1.nil?

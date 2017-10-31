@@ -19,11 +19,4 @@
   #notas
     %h2 Notas
     = f.text_area :notes, :cols=>70, :rows=>3
-
   = f.submit 'Guardar'
-
-:javascript
-  $('#item-edit-form').live("ajax:success", function(evt, data, status, xhr) {
-    parent.reloadStudiesPlansCombo(#{@studies_plan.id});
-    parent.$("#studies-plan-dialog").dialog('close');
-  });

@@ -53,6 +53,7 @@ $('#item-edit-form')
     var r = $.parseJSON(xhr.responseText);
     loadPlanTable();
     loadTermsTable();
+    reloadStudiesPlansCombo();
   });
 
 // Studies Plan
@@ -73,9 +74,9 @@ function loadStudiesPlan(id){
   $("#studies-plan-dialog").dialog('open');
 }
 
-function reloadStudiesPlansCombo(studies_plan_id){
+function reloadStudiesPlansCombo(){
   var program_id      = $('#program_id').val();
-  /*var studies_plan_id = $("#studies-plans-combo_id").val()*/
+  var studies_plan_id = $("#studies-plans-combo_id").val();
   url = '/planes_estudios/'+program_id+'/combo'
   $.get(url, {}, function(html) {
     $('#planes-area').html(html);
