@@ -1,26 +1,20 @@
+%br
 - if @logs.blank?
-  %br
   %h3.centered= " No hay logs registrados"
 -else 
-  %table#logs_table
-    %tr
-      %th.centered= "#"
-      %th.centered= "Usuario"
-      %th.centered= "Fecha"
-      %th.centered= "Acción"
+.div-table{:style=>"width: 50%;"}
+  .table
+    .row
+      .header{:style=>"width: 5%;"}="#"
+      .header="Usuario"
+      .header="Fecha"
+      .header="Acción"
+    .body
       - counter = 1
       - @logs.each do |l|
-        - mod = counter % 2
-        - if mod==0 
-          %tr.row-even
-            %td= "#{counter} &nbsp;".html_safe
-            %td= l.user.email rescue "N.D."
-            %td= "&nbsp; #{l l.updated_at, :format => :long}  &nbsp;".html_safe
-            %td= l.activity
-        - else 
-          %tr.row-odd
-            %td= "#{counter} &nbsp;".html_safe
-            %td= l.user.email rescue "N.D."
-            %td= "&nbsp; #{l l.updated_at, :format => :long} &nbsp;".html_safe
-            %td= l.activity
-        - counter = counter + 1
+        .row
+          .cell= counter
+          .cell= l.user.email rescue "N.D."
+          .cell= "#{l l.updated_at, :format => :long}".html_safe
+          .cell= l.activity
+          -counter = counter + 1

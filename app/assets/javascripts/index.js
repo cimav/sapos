@@ -1,5 +1,12 @@
 $(document).ready(function(){
   loadLogs();
+  $(".show-details").live("click",function(){
+    d = $(this).parent().parent().find(".details")//.find(".details");
+    $(d).toggle("fast");
+    //data =$(d).html();
+  });
+
+
 });
 
 // Load Log

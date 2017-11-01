@@ -2,25 +2,19 @@
   %br
   %h3.centered= " No hay avances programados"
 -else 
-  %table#advances_table
-    %tr
-      %th.centered= "#"
-      %th.centered= "Estudiante"
-      %th.centered= "Tema"
-      %th.centered= "Fecha"
-      - counter = 1
-      - @advances.each do |l|
-        - mod = counter % 2
-        - if mod==0 
-          %tr.row-even
-            %td= counter
-            %td= l.student.full_name
-            %td= l.title
-            %td= "#{l l.advance_date, :format => :long}"
-        - else 
-          %tr.row-odd
-            %td= counter
-            %td= l.student.full_name
-            %td= l.title
-            %td= "#{l l.advance_date, :format => :long}"
-        - counter = counter + 1
+  .div-table.center{:style=>"width: 60%;"}
+    .table
+      .row
+        .header="#"
+        .header="Estudiante"
+        .header="Tema"
+        .header{:style=>"width: 15%;"}="Fecha"
+      .body
+        - counter = 1
+        - @advances.each do |l|
+          .row
+            .cell=counter
+            .cell=l.student.full_name
+            .cell=l.title
+            .cell= "#{l l.advance_date, :format => :long}"
+            - counter = counter + 1

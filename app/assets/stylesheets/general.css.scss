@@ -343,3 +343,61 @@ tr.row-odd {
   cursor: hand;
 }
 
+span.click-page.inactive{
+  font-weight: bold;
+  color: black;
+}
+
+span.click-page.active{
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer; cursor: hand;
+  color: blue;
+}
+
+
+.div-table.center{
+  margin: auto;
+  width: 100%;
+  border: 1px solid white;
+  padding: 5px;
+}
+
+.div-table{
+  .table{
+    width: 100%;
+    display: table;
+  }
+
+  .header{
+    display: table-header-group;
+    background-color: #EEE;
+  }
+
+  .row{
+    display: table-row;
+  }
+
+  .cell{
+    display: table-cell;
+  }
+
+  .cell, .header{
+    border: 1px solid #999999;
+    display: table-cell;
+    padding: 3px 10px;
+  }
+
+  .body {
+    display: table-row-group;
+  }
+
+  .details{
+    display: none;
+  }
+
+  .show-details{
+    color: blue;
+    cursor: pointer;
+  }
+}

@@ -296,18 +296,11 @@ $("#flash-notice").live('click', function() {
     $(this).removeClass('error').removeClass('success').removeClass('notice').removeClass('info');
 });
 
-$("#search-box")
-  .live("keyup", function() {
-    delay(function(){
-      liveSearch();
-    }, 300 );
-  })
-  .live("click", function() {
-    if (this.value == '') {
-      liveSearch();
-    }
+$("#search-box").live("keyup", function(e) {
+   if(e.which==13){
+    liveSearch();
+   }
   });
-
 
 // ** Get Item **
 $('.get-item')
