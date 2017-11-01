@@ -70,8 +70,10 @@
       .field#field_internship_last_name
         = f.label :last_name, mark_required(@internship, :last_name) + 'Apellidos'
         = f.text_field :last_name
-      
 
+      .field#field_internship_curp
+        = f.label :curp, 'Curp'
+        = f.text_field :curp
       .field#field_internship_email
         = f.label :email, 'Correo Electrónico'
         = f.email_field :email

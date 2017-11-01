@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171005172245) do
+ActiveRecord::Schema.define(:version => 20171101185854) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -19,8 +19,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "name"
     t.integer  "institution_id"
     t.text     "notes"
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "academic_degrees", ["institution_id"], :name => "index_academic_degrees_on_institution_id"
@@ -29,8 +29,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
   create_table "activity_logs", :force => true do |t|
     t.integer  "user_id"
     t.text     "activity"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "advances", :force => true do |t|
@@ -44,8 +44,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "tutor5"
     t.string   "status",        :limit => 1
     t.text     "notes"
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "grade1"
     t.integer  "grade2"
     t.integer  "grade3"
@@ -126,8 +126,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "name"
     t.integer  "contact_id"
     t.string   "image"
-    t.datetime "created_at",               :null => false
-    t.datetime "updated_at",               :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "certificates", :force => true do |t|
@@ -144,8 +144,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "code"
     t.string   "name"
     t.integer  "room_type"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "status"
   end
 
@@ -288,8 +288,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "website"
     t.string   "lat",             :limit => 20
     t.string   "long",            :limit => 20
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "contacts", ["country_id"], :name => "index_contacts_on_country_id"
@@ -298,8 +298,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
   create_table "countries", :force => true do |t|
     t.string   "name"
     t.string   "code"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "courses", :force => true do |t|
@@ -319,8 +319,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "coreq3"
     t.text     "notes"
     t.integer  "status",                                                           :default => 1
-    t.datetime "created_at",                                                                      :null => false
-    t.datetime "updated_at",                                                                      :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "studies_plan_id"
     t.integer  "studies_plan_area_id"
   end
@@ -330,16 +330,16 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
   create_table "departments", :force => true do |t|
     t.string   "name",        :limit => 100, :null => false
     t.string   "description"
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "documentation_files", :force => true do |t|
     t.integer  "program_id"
     t.string   "description"
     t.string   "file"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "documentation_files", ["program_id"], :name => "index_documentation_files_on_program_id"
@@ -354,6 +354,17 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.datetime "updated_at",                :null => false
   end
 
+  create_table "error_monterreu_quimica_materiales", :id => false, :force => true do |t|
+    t.integer  "id",         :default => 0, :null => false
+    t.integer  "term_id"
+    t.integer  "course_id"
+    t.integer  "status",     :default => 1
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "staff_id"
+    t.string   "group"
+  end
+
   create_table "external_courses", :force => true do |t|
     t.integer  "staff_id"
     t.integer  "institution_id"
@@ -365,8 +376,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "participants"
     t.text     "information"
     t.string   "status",         :limit => 1
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "course_type"
   end
 
@@ -405,16 +416,16 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "name"
     t.integer  "contact_id"
     t.string   "image"
-    t.datetime "created_at",               :null => false
-    t.datetime "updated_at",               :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "internship_files", :force => true do |t|
     t.integer  "internship_id"
     t.string   "description"
     t.string   "file"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "file_type"
   end
 
@@ -422,8 +433,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
 
   create_table "internship_types", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "internships", :force => true do |t|
@@ -444,8 +455,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "status",                                 :default => 0
     t.string   "image"
     t.text     "notes"
-    t.datetime "created_at",                                            :null => false
-    t.datetime "updated_at",                                            :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "blood_type"
     t.integer  "campus_id"
     t.string   "career"
@@ -463,6 +474,7 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "health_insurance_number", :limit => 50
     t.string   "accident_contact"
     t.string   "password"
+    t.string   "curp"
   end
 
   add_index "internships", ["contact_id"], :name => "index_internships_on_contact_id"
@@ -482,8 +494,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "participants"
     t.text     "information"
     t.string   "status",         :limit => 1
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "lab_practices", ["institution_id"], :name => "index_lab_practices_on_institution_id"
@@ -494,8 +506,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "campus_id"
     t.string   "code"
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "laboratories", ["campus_id"], :name => "index_laboratories_on_campus_id"
@@ -512,8 +524,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "level",           :limit => 20
     t.string   "prefix",          :limit => 5
     t.text     "description"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "terms_duration"
     t.integer  "terms_qty"
     t.integer  "program_type"
@@ -544,16 +556,16 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
   create_table "scholarship_categories", :force => true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "scholarship_types", :force => true do |t|
     t.integer  "scholarship_category_id"
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "scholarship_types", ["scholarship_category_id"], :name => "index_scholarship_types_on_scholarship_category_id"
@@ -564,8 +576,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.date     "end_date"
     t.string   "status"
     t.text     "notes"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "scholarship_type_id"
     t.string   "amount"
     t.integer  "institution_id"
@@ -584,8 +596,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.datetime "end_date"
     t.text     "information"
     t.string   "status",      :limit => 1
-    t.datetime "created_at",               :null => false
-    t.datetime "updated_at",               :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "seminars", ["staff_id"], :name => "index_seminars_on_staff_id"
@@ -594,8 +606,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "staff_id"
     t.string   "description"
     t.string   "file"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "staff_files", ["staff_id"], :name => "index_staff_files_on_staff_id"
@@ -616,8 +628,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "status",          :limit => 20, :default => "0"
     t.string   "image"
     t.text     "notes"
-    t.datetime "created_at",                                     :null => false
-    t.datetime "updated_at",                                     :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "area_id"
     t.integer  "staff_type"
   end
@@ -630,8 +642,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "agreement"
     t.string   "status"
     t.text     "notes"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "stances", ["institution_id"], :name => "index_stances_on_institution_id"
@@ -640,8 +652,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
   create_table "states", :force => true do |t|
     t.string   "name"
     t.string   "code"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "student_advances_file_messages", :force => true do |t|
@@ -666,8 +678,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "student_id"
     t.string   "description"
     t.string   "file"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "file_type"
   end
 
@@ -710,8 +722,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "image"
     t.integer  "status",                             :default => 1
     t.text     "notes"
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "campus_id"
     t.string   "email_cimav"
     t.string   "domain_password"
@@ -762,8 +774,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.date     "end_date"
     t.integer  "class_type"
     t.integer  "status",         :default => 1
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "term_course_schedules", ["classroom_id"], :name => "index_term_course_schedules_on_classroom_id"
@@ -775,8 +787,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "term_student_id"
     t.integer  "grade"
     t.integer  "status",          :default => 1
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "term_course_students", ["term_course_id"], :name => "index_term_course_students_on_term_course_id"
@@ -786,8 +798,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "term_id"
     t.integer  "course_id"
     t.integer  "status",     :default => 1
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "staff_id"
     t.string   "group"
   end
@@ -807,8 +819,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "term_student_id"
     t.decimal  "amount",          :precision => 10, :scale => 0
     t.integer  "status"
-    t.datetime "created_at",                                     :null => false
-    t.datetime "updated_at",                                     :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "folio"
   end
 
@@ -817,8 +829,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "student_id"
     t.string   "notes"
     t.integer  "status",     :default => 1
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "term_students", ["student_id"], :name => "index_term_students_on_student_id"
@@ -831,8 +843,8 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.date     "start_date"
     t.date     "end_date"
     t.integer  "status",                           :default => 1
-    t.datetime "created_at",                                      :null => false
-    t.datetime "updated_at",                                      :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.date     "advance_start_date"
     t.date     "advance_end_date"
     t.date     "grade_start_date"
@@ -842,6 +854,32 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
   add_index "terms", ["program_id"], :name => "index_terms_on_program_id"
 
   create_table "theses", :force => true do |t|
+    t.integer  "student_id"
+    t.string   "number",       :limit => 20
+    t.integer  "consecutive"
+    t.text     "title",        :limit => 16777215
+    t.text     "abstract",     :limit => 16777215
+    t.datetime "defence_date"
+    t.integer  "examiner1"
+    t.integer  "examiner2"
+    t.integer  "examiner3"
+    t.integer  "examiner4"
+    t.integer  "examiner5"
+    t.string   "status",       :limit => 1
+    t.text     "notes",        :limit => 16777215
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "theses", ["examiner1"], :name => "index_theses_on_examiner1"
+  add_index "theses", ["examiner2"], :name => "index_theses_on_examiner2"
+  add_index "theses", ["examiner3"], :name => "index_theses_on_examiner3"
+  add_index "theses", ["examiner4"], :name => "index_theses_on_examiner4"
+  add_index "theses", ["examiner5"], :name => "index_theses_on_examiner5"
+  add_index "theses", ["student_id"], :name => "index_theses_on_student_id"
+
+  create_table "theses_bak", :id => false, :force => true do |t|
+    t.integer  "id",                         :default => 0, :null => false
     t.integer  "student_id"
     t.string   "number",       :limit => 20
     t.integer  "consecutive"
@@ -855,16 +893,9 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.integer  "examiner5"
     t.string   "status",       :limit => 1
     t.text     "notes"
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
-
-  add_index "theses", ["examiner1"], :name => "index_theses_on_examiner1"
-  add_index "theses", ["examiner2"], :name => "index_theses_on_examiner2"
-  add_index "theses", ["examiner3"], :name => "index_theses_on_examiner3"
-  add_index "theses", ["examiner4"], :name => "index_theses_on_examiner4"
-  add_index "theses", ["examiner5"], :name => "index_theses_on_examiner5"
-  add_index "theses", ["student_id"], :name => "index_theses_on_student_id"
 
   create_table "tokens", :force => true do |t|
     t.integer  "attachable_id"
@@ -880,13 +911,30 @@ ActiveRecord::Schema.define(:version => 20171005172245) do
     t.string   "email"
     t.integer  "access",                      :default => 2
     t.integer  "status",                      :default => 1
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "program_id"
     t.integer  "campus_id"
     t.integer  "program_type"
     t.string   "areas",        :limit => 150
     t.text     "config"
+  end
+
+  create_table "xprotocols", :id => false, :force => true do |t|
+    t.integer  "id",                                         :default => 0, :null => false
+    t.integer  "advance_id"
+    t.integer  "staff_id"
+    t.integer  "group"
+    t.integer  "grade_status"
+    t.integer  "status"
+    t.datetime "created_at",                                                :null => false
+    t.datetime "updated_at",                                                :null => false
+    t.decimal  "grade",        :precision => 8, :scale => 2
+  end
+
+  create_table "xxx", :id => false, :force => true do |t|
+    t.integer "term_course_id"
+    t.float   "total"
   end
 
 end
