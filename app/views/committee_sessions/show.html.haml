@@ -65,8 +65,8 @@
         = select_tag "staff_combo", options_from_collection_for_select(@staffs, "id", "full_name_upcase"), prompt: "--Seleccionar asistente--",:disabled=>readonly
     #agreements
       %h2= "Acuerdos Sesión #{@c_session.id}"
+      = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: block;'
       .field{:id=>"div_agreements_#{@c_session.id}"}
-        = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: block;'
       .field#div_agreements_combo
 
         = label_tag "agreement_label", "Acuerdos", :style=>"display:#{display_type}",:class=>"agreement-group"

@@ -1,5 +1,7 @@
 var model_name = 'committee_session'
 var counter    = 1
+var page       = 1
+var pages      = 0
 
 $(document).ready(function() {
   liveSearch();
@@ -296,6 +298,7 @@ $(".notes-agreement").live("click",function(){
 $(".delete-agreement").live("click",function(){
   var p     = $(this).parent();
   var my_id = p.find("#my_id").val();
+  var sesion_id = $("#c_session_id").val();
   if(!confirm("Eliminar acuerdo "+my_id+"?")){return false;}
   $("#img_load").show();
   var url  =  "/comite/acuerdos/borrar/"+my_id;
@@ -307,8 +310,6 @@ $(".delete-agreement").live("click",function(){
     beforeSend: function( xhr ) {
     },
     success:  function(data){
-      //$("#div_agreements").append(data);
-      p.remove();
     },
     error: function(xhr, textStatus, error){
        var text = xhr.responseText;
@@ -316,20 +317,25 @@ $(".delete-agreement").live("click",function(){
          var jq   = jQuery.parseJSON(xhr.responseText);
        }
        catch(e){
-         alert("Error desconocido: "+e.message)
+         alert("Error desconocido: "+e.message);
        }
     },
     complete: function(){
-      $("#img_load").hide();
+      //$("#img_load").hide();
+      get_committee_agreements("sub");
     },
   });
 });
 
-function get_committee_agreements()
+function get_committee_agreements(operation)
 {
   var sesion_id = $("#c_session_id").val();
-  var url  =  "/comite/acuerdos/"+sesion_id+"/todos";
-  var data =  "";
+  $("#div_agreements_"+sesion_id).html("");
+  if(page==0){
+        page = 1;
+  }
+  var url  =  "/comite/acuerdos/"+sesion_id+"/todos/"+page;//page es global
+  var data =  "operation="+operation;
   $.ajax({
     type:  'POST',
     url:   url,
@@ -337,7 +343,7 @@ function get_committee_agreements()
     beforeSend: function( xhr ) {
     },
     success:  function(data){
-      $("#div_agreements_"+sesion_id).append(data);
+      $("#div_agreements_"+sesion_id).html(data);
     },
     error: function(xhr, textStatus, error){
        var text = xhr.responseText;
@@ -357,14 +363,17 @@ function get_committee_agreements()
       $("#img_load").hide();
     },
   });
-
-
 }
 
+$(".click-page.active").live("click",function(e){
+  var sesion_id = $("#c_session_id").val();
+  page = $(this).attr("page"); // se queda sin var porque es global
+  $("#img_load").show();
+  get_committee_agreements();
+});
+
 $("#agreement_button").live("click",function(e){
-  /*var p       = $(this).parent();
-  var my_id   = p.find("#my_id").val();*/
-  var my_id   = 120
+  var my_id     = 120
   var valor     = $("#agreement_combo").val();
   var sesion_id = $("#c_session_id").val();
   if(valor=="")
@@ -372,9 +381,9 @@ $("#agreement_button").live("click",function(e){
     alert("Por favor seleccione un tipo de acuerdo");
     return false;
   }
-  //var valor = $(this).val();
+
   $("#img_load").show();
-  var url  =  "/comite/acuerdos/"+sesion_id+"/"+valor;
+  var url  =  "/comite/acuerdos/"+sesion_id+"/"+valor+"/0";
   var data =  "";
   $.ajax({
     type:  'POST',
@@ -383,7 +392,7 @@ $("#agreement_button").live("click",function(e){
     beforeSend: function( xhr ) {
     },
     success:  function(data){
-      $("#div_agreements_"+sesion_id).append(data);
+      get_committee_agreements("add");
     },
     error: function(xhr, textStatus, error){
        var text = xhr.responseText;

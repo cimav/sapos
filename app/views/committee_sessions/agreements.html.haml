@@ -6,9 +6,30 @@
 - @courses_all   = Course.joins(:program).joins(:studies_plan).select("courses.id,courses.name,programs.prefix as prefix,studies_plans.code as code").where(:status=>1)
 - @students_all = Student.where(:status=>[1..6])
 
-=# "Páginas #{@pages}"
-=# "Total #{@size}"
-
+.my-thing
+  - if !@pages.nil?
+    = "Página #{@page} de #{@pages}"
+    :javascript
+      pages = #{@pages};
+      page  = #{@page};
+  = "Total de acuerdos: #{@size}"
+  %br
+  - if !@pages.nil?
+    - @pages.times do |p|
+      - if (p+1).to_i.eql? @page.to_i
+        = "["
+        %span.click-page.inactive
+          =p+1
+        ="]"
+      -else
+        = "["
+        %span.click-page.active{:page=>p+1}
+          =p+1
+        ="]"
+%hr 
+:javascript
+  console.log("PAGES: "+pages+"|"+page);
+  
 - @committee_agreements.each_with_index do |ca,index|
   - ca_type = ca.committee_agreement_type_id.to_i
   - my_id= ca.id
@@ -22,8 +43,7 @@
     - display_delete = "inline-block"
     - display_button = "none"
 
-  -# my_id_text = "#{index+1} [#{my_id}]"
-  - my_id_text = "[#{my_id}]"
+  - my_id_text = "#{(@page.to_i*10)+index-9} [#{my_id}]"
   - if ca_type.eql? 1
     .myagreement
       %b= my_id_text

@@ -93,14 +93,52 @@ class CommitteeSessionsController < ApplicationController
   end
 
   def agreements
-    @a_id = params[:a_id]
-    @s_id = params[:s_id]
+    @a_id      = params[:a_id]
+    @s_id      = params[:s_id]
+    @page      = params[:page]
+    @operation = params[:operation]
 
     @committee_agreements = []
     @committee_session = CommitteeSession.find(@s_id)
+
     if @a_id.eql? "todos"
-      @committee_agreements = CommitteeAgreement.where(:committee_session_id=>@s_id).to_a
+      @size = @committee_agreements = CommitteeAgreement.where(:committee_session_id=>@s_id).size
+
+      if @size <= 12
+        @committee_agreements = CommitteeAgreement.where(:committee_session_id=>@s_id).to_a
+      else
+        @pages = @size/10
+
+        if @operation.eql? "add" #devuelve la última página
+          @page = @pages
+        elsif @operation.eql? "sub" #devuelve la página actual o ...
+          if @pages.to_i.eql? @page.to_i # ... si la última página ha quedado vacía y estamos ... 
+            @page  = @pages-1            # ... en ella nos regresamos 1
+            @pages = @pages-1
+          end
+        else
+          if (@size%10).eql? 0 #si es entero el total de paginas es incorrecto, restamos 1
+            @pages = @pages-1
+          elsif (@size%10)<=1  #si es 1 u otro número es la página correcta
+            #@page = @pages
+            vacio = nil
+          end
+        end
+
+        begining  = 0
+        registers = 10
+
+        if @page.to_i>=2
+          begining  = @page.to_i * 10
+        end
+
+        limit = "#{begining},#{registers}"
+
+        @committee_agreements = CommitteeAgreement.where(:committee_session_id=>@s_id).limit(limit).to_a 
+      end
     else
+
+  
       ## NUEVO INGRESO
       @committee_agreement = CommitteeAgreement.new
 

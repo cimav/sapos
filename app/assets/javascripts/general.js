@@ -305,6 +305,7 @@ $("#search-box").live("keyup", function(e) {
 // ** Get Item **
 $('.get-item')
   .live('ajax:success', function(data, status, xhr) {
+    page = 1
     $('.panel-list li').removeClass("selected");
     $('.panel-add').removeClass("selected");
     $(this).closest('li').addClass("selected");
