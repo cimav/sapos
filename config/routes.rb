@@ -257,7 +257,7 @@ Sapos::Application.routes.draw do
   match 'comite/acuerdos/:a_id/agregar/auth/:id' => 'committee_sessions#add_auth'
   match 'comite/acuerdos/:a_id/agregar/note/:note' => 'committee_sessions#add_note'
   match 'comite/acuerdos/:a_id/agregar/:person/:id' => 'committee_sessions#add_person'
-  match 'comite/acuerdos/:s_id/:a_id' => 'committee_sessions#agreements'
+  match 'comite/acuerdos/:s_id/:a_id/:page' => 'committee_sessions#agreements'
   match 'comite/traer/cursos/:term' => 'committee_sessions#get_courses'
   match 'comite/revalidacion/cursos/:id' => 'committee_sessions#get_revalidation_courses'
   match 'comite/desbloquear/:id' => 'committee_sessions#unlock'
