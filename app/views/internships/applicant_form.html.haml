@@ -27,6 +27,10 @@
     = f.label :state_id, 'Estado de Nacimiento'
     = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona un estado"}
 
+  .field#field_internship_curp
+    = f.label :curp, 'Curp'
+    = f.text_field :curp
+
   .field#field_internship_email
     = f.label :email, 'Correo Electrónico'
     = f.email_field :email

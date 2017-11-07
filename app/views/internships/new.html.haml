@@ -31,6 +31,10 @@
         = f.label :last_name, mark_required(@internship, :last_name) + 'Apellidos'
         = f.text_field :last_name
 
+      .field#field_internship_curp
+        = f.label :curp, 'Curp'
+        = f.text_field :curp
+
       .field#field_internship_date_of_birth
         = f.label :date_of_birth, 'Fecha de nacimiento'
         = f.date_select :date_of_birth, :start_year => DateTime.now.year - 80
