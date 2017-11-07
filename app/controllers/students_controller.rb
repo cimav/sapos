@@ -185,6 +185,7 @@ class StudentsController < ApplicationController
 		   'Meses' => months,
 		   'Asesor' => (Staff.find(s.supervisor).full_name rescue ''),
 		   'Coasesor' => (Staff.find(s.co_supervisor).full_name rescue ''),
+       'Ubicacion' => s.location,
 		   'Tesis' => s.thesis.title,
 		   'Sinodal1' => (Staff.find(s.thesis.examiner1).full_name rescue ''),
 		   'Sinodal2' => (Staff.find(s.thesis.examiner2).full_name rescue ''),
@@ -200,7 +201,7 @@ class StudentsController < ApplicationController
 		   }
              
 	end
-	column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+	column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
 	to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
@@ -254,6 +255,7 @@ class StudentsController < ApplicationController
         'Asesor' => (Staff.find(s.supervisor).full_name rescue ''),
         'Coasesor' => (Staff.find(s.co_supervisor).full_name rescue ''),
         'Tesis' => s.thesis.title,
+        'Ubicacion' => s.location,
         'Sinodal1' => (Staff.find(s.thesis.examiner1).full_name rescue ''),
         'Sinodal2' => (Staff.find(s.thesis.examiner2).full_name rescue ''),
         'Sinodal3' => (Staff.find(s.thesis.examiner3).full_name rescue ''),
@@ -269,7 +271,7 @@ class StudentsController < ApplicationController
       }
     end#Students
 
-    column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa","Promedio", "Inicio", "Fin", "Meses", "Asesor", "Coasesor", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+    column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa","Promedio", "Inicio", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
     @filename = to_excel(rows, column_order, "Estudiantes", "Estudiantes",1)
     render :layout => false
   end
