@@ -14,7 +14,7 @@
 
 #items-panel.side-panel 
 
-  .panel-search{:style=>"height: 231px"}
+  .panel-search{:style=>"height: 244px"}
     .invisible-options
       - program_options = Array.new
       - program_options.push(["Todos los programas","0"])
@@ -65,12 +65,20 @@
       - genre_options["Femenino"] = "F"
       = select_tag "genero", options_for_select(genre_options)
 
-  .panel-mark
+      - order_by_options = Hash.new
+      - order_by_options["Ordernar por id (default)"] = "students.id"
+      - order_by_options["Ordenar por Apellido"] = "last_name"
+      - order_by_options["Ordenar por Nombre"] = "first_name"
+      - order_by_options["Ordenar por Carrera"] = "program_id"
+
+      = select_tag 'order_by', options_for_select(order_by_options)
+
+  .panel-mark{:style=>"top: 230px;"}
     = text_field_tag "searchy","", :placeholder=>"Busqueda ...", "data-toggle"=>"hideseek", "data-list"=>".panel-list", :size=>29, :disabled=>true
     .div-config
       = image_tag "/images/config2.png" , :id => "search-config", :width=>'25px', :style=>"visibility:hidden;"
   
-  #items-list.panel-items{:style=>"top: 254px;"}
+  #items-list.panel-items{:style=>"top: 265px;"}
   
   .panel-add
     - if can? :create, Student

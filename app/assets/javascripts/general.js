@@ -211,8 +211,8 @@ function accent_finder(s)
 }
 
 function getLi(val){
-  var full_name = val.first_name+" "+val.last_name
-  var program   = "N.D"
+  var full_name = val.first_name+" "+val.last_name;
+  var program   = "N.D";
 
   $.each(programs, function(k, v) {
     if(v.id==val.program_id){

@@ -34,10 +34,11 @@ class StudentsController < ApplicationController
   end
 
   def live_search
+    @order_by = params[:order_by] || "last_name"
     if current_user.program_type==Program::ALL
-      @students = Student.select("id,first_name,last_name,program_id,card,gender").order("first_name").includes(:program)
+      @students = Student.select("id,first_name,last_name,program_id,card,gender").order(@order_by).includes(:program)
     else
-      @students = Student.select("id,first_name,last_name,program_id,card,gender").joins(:program => :permission_user).where(:permission_users=>{:user_id=>current_user.id}).order("first_name").includes(:program)
+      @students = Student.select("id,first_name,last_name,program_id,card,gender").joins(:program => :permission_user).where(:permission_users=>{:user_id=>current_user.id}).order(@order_by).includes(:program)
     end
 
     if params[:program_type] != '0' then
@@ -211,8 +212,9 @@ class StudentsController < ApplicationController
     rows = Array.new
     now = Time.now.utc
     items = params[:items].split(",")
+    order_by = params[:order_by] || "last_name"
 
-    Student.where(:id=>items).collect do |s|
+    Student.where(:id=>items).order(order_by).collect do |s|
       if s.status == Student::GRADUATED || s.status == Student::FINISH
         end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
 
@@ -235,8 +237,7 @@ class StudentsController < ApplicationController
 
 
       rows << {'Matricula' => s.card,
-        'Nombre' => s.first_name,
-        'Apellidos' => s.last_name,
+        'Nombre' => s.last_name + s.first_name,
         'Correo'  => s.email,
         'Sexo' => s.gender,
         'Estado' => s.status_type,
@@ -271,7 +272,7 @@ class StudentsController < ApplicationController
       }
     end#Students
 
-    column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa","Promedio", "Inicio", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+    column_order = ["Matricula", "Nombre", "Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa","Promedio", "Inicio", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
     @filename = to_excel(rows, column_order, "Estudiantes", "Estudiantes",1)
     render :layout => false
   end

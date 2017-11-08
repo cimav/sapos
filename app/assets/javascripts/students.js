@@ -40,6 +40,10 @@ $('#student_time').live("change", function() {
     liveSearch({json: true});
 });
 
+$('#order_by').live("change", function() {
+    liveSearch({json: true});
+});
+
 $('#genero').live("change", function() {
   $("#items-list").html("<img src=\"\/images\/ajax-load2.gif\">");
   
@@ -78,7 +82,8 @@ $("#search-config").live("click",function(){
 // ** Xls
 $('#to_excel').live('click', function() {
   url = location.pathname + "/set/xls";
-  data = "items="+items_found
+  var order_by = $("#order_by").val();
+  data = "items="+items_found+"order_by="+order_by
   $.post(url,data)
     .done(function(data){
       url = location.pathname + "/get/xls/"+data;
