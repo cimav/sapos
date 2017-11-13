@@ -237,7 +237,7 @@ class StudentsController < ApplicationController
 
 
       rows << {'Matricula' => s.card,
-        'Nombre' => s.last_name + s.first_name,
+        'Nombre' => "#{s.last_name} #{s.first_name}",
         'Correo'  => s.email,
         'Sexo' => s.gender,
         'Estado' => s.status_type,
