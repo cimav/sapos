@@ -28,8 +28,8 @@ class Student < ActiveRecord::Base
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact
   
-  has_one :graduate
-  accepts_nested_attributes_for :graduate
+  has_one :exstudent
+  accepts_nested_attributes_for :exstudent
 
   has_one :thesis
   accepts_nested_attributes_for :thesis

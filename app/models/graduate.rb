@@ -87,7 +87,7 @@ class Graduate < ActiveRecord::Base
     RANGE_1 => '$0 - $10,000',
     RANGE_2 => '$10,000 - $25,000',
     RANGE_3 => '$25,000 - $40,000',
-    RANGE_4 => '$40,000+',
+    RANGE_4 => '$40,000+'
   }
 
 end
