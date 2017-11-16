@@ -92,7 +92,7 @@ class Exstudent < ActiveRecord::Base
 
 
   SNI_STATUS = {
-      SNI_NONE        => 'Ninguno',
+      NONE        => 'Ninguno',
       CANDIDATE => 'Candidato',
       SNI_1 => 'SNI 1',
       SNI_2 => 'SNI 2',
