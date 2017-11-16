@@ -130,6 +130,11 @@
         %table{:style=>"border: 1px border black;"}
           %tbody
             %tr
+              %td{:colspan=>2,:align=>:center}
+                .title{:style=>"font-weight: bold;"}= "TITLE"
+            %tr
+              %td{:colspan=>2}= "&nbsp;".html_safe
+            %tr
               %td{:align=>"left"}
                 = "Fecha Inicio: "
               %td
@@ -153,8 +158,14 @@
                 = button_tag "Cerrar", :id=>"button_close_mine", :name=>"button_close_mine", :class=>"my_class", :type=>"button"
 
       .field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
-        = label_tag 'Constancia como director de tesis' 
-        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"dir_tesis",:staff_id=>@staff.id
+        - label = 'Constancia como director de tesis'
+        = label_tag label
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"dir_tesis",:staff_id=>@staff.id, :desc=>label
+
+      .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
+        - label = 'Constancia como sinodal'
+        = label_tag label
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"sinodal",:staff_id=>@staff.id, :desc=>label
 
       .radioDiv
         - dir = t(:directory)
@@ -214,11 +225,13 @@
   console.log("CONFIG AUX DATES");
 
   $('.reqdoc_button').click(function(){
+    desc   = $(this).attr("desc");
     c_type = $(this).attr("c_type");
     sid    = $(this).attr("staff_id");
-    siid  = $("input[name='firma']:checked").val();
-    city = $("#city").val();
+    siid   = $("input[name='firma']:checked").val();
+    city   = $("#city").val();
       
+    $("#aux-page .title").html(desc)
     $("#aux-page").show("slow");
     return false;
   });
@@ -241,9 +254,9 @@
       }
     }
 
-
     href = "docentes/constancias/"+c_type+"/"+sid+"/"+siid+"?city="+
     city+"&start_date="+start_date+"&end_date="+end_date;  
+    
     window.location.href=href
 
     close_me();

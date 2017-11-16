@@ -703,7 +703,20 @@ class StaffsController < ApplicationController
       else  
         options[:students] = Student.where(:supervisor=>@staff.id)
       end
-      
+    ################################ CONSTANCIA COMO SINODAL ##################################
+    elsif params[:type] == "sinodal"
+      start_date = params[:start_date]
+      end_date   = params[:end_date]
+      options[:cert_type] = Certificate::STAFF_SINODAL
+      options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
+      options[:text]      << " quien participó como sinodal de tesis de los siguientes estudiantes:"
+      options[:filename]  =  "constancia-sinodal-tesis-#{@staff.id}.pdf"
+
+      if !start_date.blank?
+        options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C')
+      else  
+          options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id)
+      end
     end
 
     generate_certificate(options)
@@ -756,6 +769,7 @@ class StaffsController < ApplicationController
       pdf.text options[:text], :align=>:justify, :inline_format=>true              
       pdf.text "\n"
    
+      ################################ CONSTANCIA DE DIRECTOR DE TESIS ##################################
       if options[:cert_type].eql? Certificate::STAFF_THESIS_DIR
         @students = options[:students]
          
@@ -764,6 +778,18 @@ class StaffsController < ApplicationController
 
         @students.each do |s|
           data << [s.full_name ,s.program.name,s.thesis.title]
+        end
+
+        tabla = pdf.make_table(data,:width=>490,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
+        tabla.draw
+      ################################ CONSTANCIA COMO SINODAL ##################################
+      elsif options[:cert_type].eql? Certificate::STAFF_SINODAL
+        @theses = options[:theses]
+        data = []
+        data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center}]
+
+        @theses.each do |t|
+          data << [t.student.full_name ,t.student.program.name,t.title]
         end
 
         tabla = pdf.make_table(data,:width=>490,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
