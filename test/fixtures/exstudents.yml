@@ -1,0 +1,55 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  student: 
+  phone: MyString
+  cellphone: MyString
+  email: MyString
+  scholarship_type: 1
+  subsequent_studies: MyString
+  sni: 1
+  academic_mobility: false
+  academic_mobility_place: MyString
+  have_job: false
+  job_type: 1
+  job_legal_regime: 1
+  job_company_name: MyString
+  job_role: MyString
+  salary: 1
+  job_chief_name: MyString
+  job_phone: MyString
+  job_email: MyString
+  job_coincidence: 1
+  job_studies_impact: 1
+  recommendations: MyString
+  satisfaction_level: 1
+  satisfaction_reason: MyString
+  study_program_again: false
+  study_program_again_reason: MyString
+
+two:
+  student: 
+  phone: MyString
+  cellphone: MyString
+  email: MyString
+  scholarship_type: 1
+  subsequent_studies: MyString
+  sni: 1
+  academic_mobility: false
+  academic_mobility_place: MyString
+  have_job: false
+  job_type: 1
+  job_legal_regime: 1
+  job_company_name: MyString
+  job_role: MyString
+  salary: 1
+  job_chief_name: MyString
+  job_phone: MyString
+  job_email: MyString
+  job_coincidence: 1
+  job_studies_impact: 1
+  recommendations: MyString
+  satisfaction_level: 1
+  satisfaction_reason: MyString
+  study_program_again: false
+  study_program_again_reason: MyString
