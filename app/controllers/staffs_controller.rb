@@ -750,10 +750,10 @@ class StaffsController < ApplicationController
 
       y = y - 60
       h = 220
-      w = 480
+      w = 500
       
       pdf.text "\n"
-      pdf.text options[:text], :align=>:left, :inline_format=>true              
+      pdf.text options[:text], :align=>:justify, :inline_format=>true              
       pdf.text "\n"
    
       if options[:cert_type].eql? Certificate::STAFF_THESIS_DIR
@@ -766,7 +766,7 @@ class StaffsController < ApplicationController
           data << [s.full_name ,s.program.name,s.thesis.title]
         end
 
-        tabla = pdf.make_table(data,:width=>450,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
+        tabla = pdf.make_table(data,:width=>490,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
         tabla.draw
       end
   
