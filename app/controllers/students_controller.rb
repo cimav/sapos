@@ -2275,13 +2275,13 @@ private
 
     Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
       pdf.font_size 13
-      x = 232
-      y = 565 #664
-      w = 255
+      x = 190 #232
+      y = 565 #565
+      w = 300
       h = 50
         
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
+      pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
 
       y = y - 100
       x = 10
