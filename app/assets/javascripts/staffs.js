@@ -1,5 +1,15 @@
 var model_name = 'staff';
 
+$.datepicker.setDefaults($.datepicker.regional["es"]);
+var config = {
+  changeMonth: true,
+  changeYear: true,
+  dateFormat: 'yy-mm-dd',
+  showButtonPanel: true,
+  minDate: '-80Y',
+  maxDate: '+2Y',
+};
+
 // ** On change Program
 $('#institution').live("change", function() {
   liveSearch();
@@ -30,7 +40,7 @@ function initializeSearchForm() {
   $('#status_inactivos').attr('checked', false);
 }
 
-$(document).ready(function() {
+$(document).ready(function(){
   liveSearch();
 });
 
@@ -244,18 +254,10 @@ $('#search-staff-schedule').live("click",function(){
 
 function start_datepicker()
 {
-	$.datepicker.setDefaults($.datepicker.regional["es"]);
-  var config = {
-    changeMonth: true,
-    changeYear: true,
-    dateFormat: 'yy-mm-dd',
-    showButtonPanel: true,
-    minDate: '-80Y',
-    maxDate: '+2Y',
-	};
-
   $( "#start_date" ).datepicker(config);
   $( "#end_date" ).datepicker(config);
+
+  console.log("Cool1");
 }
 
 $('.delete-file')

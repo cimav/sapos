@@ -39,6 +39,7 @@
       %li= link_to "Notas", "#notas"
       %li= link_to "Horario", "#horario"
       %li= link_to "Archivos", "#archivos"
+      %li= link_to "Constancias", "#constancias"
 
     #detalles
       %h2 Detalles
@@ -122,3 +123,139 @@
     #archivos
       %h2 Archivos
       %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250", "src" => "/docentes/#{@staff.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
+
+    #constancias
+      %h2 Constancias
+      %div{:id => "aux-page", :style => "display:none;",:align=>"center"}
+        %table{:style=>"border: 1px border black;"}
+          %tbody
+            %tr
+              %td{:align=>"left"}
+                = "Fecha Inicio: "
+              %td
+                %input{:type=>'text',:id=>'aux_start_date',:readonly=>true} 
+            %tr
+              %td{:colspan=>2}= "&nbsp;".html_safe
+            %tr
+              %td{:align=>"left"}
+                = "Fecha Fin"
+              %td
+                %input{:type=>'text',:id=>'aux_end_date',:readonly=>true}     
+            %tr
+              %td{:colspan=>2}= "&nbsp;".html_safe
+            %tr
+              %td{:colspan=>2}= "*Dejar en blanco para traer todos los registros existentes"
+            %tr
+              %td{:colspan=>2}= "&nbsp;".html_safe
+            %tr
+              %td{:colspan=>2,:align=>"center"}
+                = button_tag "Imprimir", :id=>"button_mine", :name=>"button_mine", :class=>"my_class", :type=>"button"
+                = button_tag "Cerrar", :id=>"button_close_mine", :name=>"button_close_mine", :class=>"my_class", :type=>"button"
+
+      .field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
+        = label_tag 'Constancia como director de tesis' 
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"dir_tesis",:staff_id=>@staff.id
+
+      .radioDiv
+        - dir = t(:directory)
+        - checked = false
+        %br
+        %b= "Firmantes:" 
+        %br
+        %br
+          = radio_button_tag "firma", 1,checked, class: "radio-button-sign"
+          = "#{dir[:academic_director][:title]} #{dir[:academic_director][:name]}"
+          = "(#{dir[:academic_director][:job]})"
+        %br
+          - if current_user.campus_id.to_i.eql? 0
+            - checked = true
+          - if !(dir[:posgrado_chief].nil?)
+            = radio_button_tag "firma", 2, checked, class: "radio-button-sign"
+            - checked = false
+            = "#{dir[:posgrado_chief][:title]} #{dir[:posgrado_chief][:name]}"
+            = "(#{dir[:posgrado_chief][:job]})"
+        - if (current_user.campus_id == 1 || current_user.campus_id==0)
+          %br
+            - if current_user.campus_id.to_i.eql? 1
+              - checked = false
+            = radio_button_tag "firma", 3, checked, class: "radio-button-sign"
+            - checked = false
+            = "#{dir[:scholar_control][:title]} #{dir[:scholar_control][:name]}"
+            = "(#{dir[:scholar_control][:job]})"
+        - if (current_user.campus_id == 2 || current_user.campus_id==0)
+          %br
+            - if current_user.campus_id.to_i.eql? 2
+              - checked = false
+            = radio_button_tag "firma", 4, checked, class: "radio-button-sign"
+            - checked = false
+            = "#{dir[:academic_coordinator_monterrey][:title]} #{dir[:academic_coordinator_monterrey][:name]}"
+            = "(#{dir[:academic_coordinator_monterrey][:job]})"
+        - if (current_user.campus_id == 4 || current_user.campus_id==0)
+          %br
+            - if current_user.campus_id.to_i.eql? 4
+              - checked = false
+            = radio_button_tag "firma", 5, checked, class: "radio-button-sign"
+            - checked = false
+            = "#{dir[:academic_coordinator_durango][:title]} #{dir[:academic_coordinator_durango][:name]}"
+            = "(#{dir[:academic_coordinator_durango][:job]})"
+
+        %br
+          %b Lugar de impresión:
+          %br
+          %br
+          = select_tag 'city', options_for_select(["Chihuahua, Chih.","Apodaca, N.L.", "Durango, Dgo."])        
+
+-# %div{:id => "aux-page", :style => "display:none;"}
+
+
+:javascript
+  $( "#aux_start_date" ).datepicker(config);
+  $( "#aux_end_date" ).datepicker(config);
+  console.log("CONFIG AUX DATES");
+
+  $('.reqdoc_button').click(function(){
+    c_type = $(this).attr("c_type");
+    sid    = $(this).attr("staff_id");
+    siid  = $("input[name='firma']:checked").val();
+    city = $("#city").val();
+      
+    $("#aux-page").show("slow");
+    return false;
+  });
+
+  $("#button_mine").live("click",function(){
+    start_date  = $('#aux_start_date').val();
+    end_date    = $('#aux_end_date').val();
+
+    if(start_date.length==0){
+      if(end_date.length>0){
+        alert("Tienes que llenar ambas fechas");
+        return false;
+      }
+    }
+
+    if(end_date.length==0){
+      if(start_date.length>0){
+        alert("Tienes que llenar ambas fechas");
+        return false;
+      }
+    }
+
+
+    href = "docentes/constancias/"+c_type+"/"+sid+"/"+siid+"?city="+
+    city+"&start_date="+start_date+"&end_date="+end_date;  
+    window.location.href=href
+
+    close_me();
+  });
+
+  $("#button_close_mine").live("click",function(){
+    close_me();
+  });
+
+  function close_me(){
+    $('#aux_start_date').val("");
+    $('#aux_end_date').val("");
+    $("#aux-page").hide("slow");
+  }
+

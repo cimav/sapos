@@ -99,6 +99,7 @@ Sapos::Application.routes.draw do
   match 'docentes/:id/archivo/:file_id' => 'staffs#file'
   match 'docentes/upload_file' => 'staffs#upload_file'
   match 'docentes/delete_file' => 'staffs#delete_file'
+  match 'docentes/constancias/:type/:id/:sign_id' => 'staffs#certificates'
 
   resources :staff_files
 

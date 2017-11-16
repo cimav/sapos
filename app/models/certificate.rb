@@ -15,6 +15,7 @@ class Certificate < ActiveRecord::Base
   USE               = 10
   EXAMINER          = 11
   APP_ACCEPTANCE    = 12
+  STAFF_THESIS_DIR  = 13
 
   TYPE = {STUDIES           => 'Constancia de estudios',
           ENROLLMENT        => 'Constancia de inscripcion',
@@ -28,5 +29,6 @@ class Certificate < ActiveRecord::Base
           USE               => 'Carta de uso de informacion',
           EXAMINER          => 'Constancia para sinodales externos',
           APP_ACCEPTANCE    => 'Carta de aceptacion de aspirante',
+          STAFF_THESIS_DIR  => 'Constancia de director de tesis'
           } 
 end

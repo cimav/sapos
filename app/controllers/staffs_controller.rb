@@ -616,5 +616,187 @@ class StaffsController < ApplicationController
   def delete_file
   end
 
+  def certificates
+    staff_id = params[:id]
+    @staff   = Staff.find(staff_id)
 
+    @sign    = params[:sign_id]
+    city     = params[:city]
+    dir            = t(:directory)
+    options        = {}
+    options[:city] = city
+
+        if @sign.eql? "1"
+      title    = dir[:academic_director][:title]
+      name     = dir[:academic_director][:name]
+      job      = dir[:academic_director][:job]
+      @sgender = dir[:academic_director][:gender]
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
+    elsif @sign.eql? "2"
+      title    = dir[:posgrado_chief][:title]
+      name     = dir[:posgrado_chief][:name]
+      job      = dir[:posgrado_chief][:job]
+      @sgender = dir[:posgrado_chief][:gender]
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
+    elsif @sign.eql? "3"
+      title    = dir[:scholar_control][:title]
+      name     = dir[:scholar_control][:name]
+      job      = dir[:scholar_control][:job]
+      @sgender = dir[:scholar_control][:gender]
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
+    elsif @sign.eql? "4"
+      title    = dir[:academic_coordinator_monterrey][:title]
+      name     = dir[:academic_coordinator_monterrey][:name]
+      job      = dir[:academic_coordinator_monterrey][:job]
+      @sgender = dir[:academic_coordinator_monterrey][:gender]
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
+    elsif @sign.eql? "5"
+      title    = dir[:academic_coordinator_durango][:title]
+      name     = dir[:academic_coordinator_durango][:name]
+      job      = dir[:academic_coordinator_durango][:job]
+      @sgender = dir[:academic_coordinator_durango][:gender]
+      @firma   = "#{title} #{name}"
+      @puesto  = "#{job}"
+    end
+
+    ##### GENERO GRAMATICAL #####
+    if @staff.gender == 'F'
+      @genero   = "a"
+      @genero2  = "la"
+      @sgenero3 = "a la"
+    elsif @staff.gender == 'H'
+      @genero   = "o"
+      @genero2  = "el"
+      @sgenero3 = "al"
+    else
+      @genero   = "x"
+      @genero2  = "x"
+      @sgenero3 = "x"
+    end
+
+    if @sgender == "F"
+      @sgenero  = "a"
+      @sgenero2 = "la"
+    elsif @sgender == "M"
+      @sgenero  = "o"
+      @sgenero2 = "el"
+    else
+      @sgenero  = "x"
+      @sgenero2 = "x"
+    end
+
+    ################################ CONSTANCIA DE DIRECTOR DE TESIS ##################################
+    if params[:type] == "dir_tesis"
+      start_date = params[:start_date]
+      end_date   = params[:end_date]
+      options[:cert_type] = Certificate::STAFF_THESIS_DIR
+      options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
+      options[:text]      << " quien participó como Director de tesis de los siguientes estudiantes:"
+      options[:filename]  =  "constancia-director-tesis-#{@staff.id}.pdf"
+
+      if !start_date.blank?
+        options[:students] = Student.where(:supervisor=>@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
+      else  
+        options[:students] = Student.where(:supervisor=>@staff.id)
+      end
+      
+    end
+
+    generate_certificate(options)
+  end#def certificates
+
+  def generate_certificate(options)
+    @rectangles = false
+    ## OPTIONS
+    @options     = params[:options]
+    if @options.eql? "1"
+      @op_asesor = 1
+    else
+      @op_asesor = 0
+    end
+
+    time = Time.new
+    year = time.year.to_s
+
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+    @consecutivo = get_consecutive(@staff, time, options[:cert_type])
+    @rails_root  = "#{Rails.root}"
+    @year_s      = year[2,4]
+    @year        = year
+    @days        = time.day.to_s
+    @month       = get_month_name(time.month)
+
+    Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+      pdf.font_size 13
+      x = 232
+      y = 565 #664
+      w = 255
+      h = 50
+        
+      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+      pdf.text "\n\n\n\n\n\n"
+      pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
+
+      y = y - 70
+      x = 10
+      h = 50
+
+      pdf.text "\n\n"
+      pdf.text "A quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+
+      y = y - 60
+      h = 220
+      w = 480
+      
+      pdf.text "\n"
+      pdf.text options[:text], :align=>:left, :inline_format=>true              
+      pdf.text "\n"
+   
+      if options[:cert_type].eql? Certificate::STAFF_THESIS_DIR
+        @students = options[:students]
+         
+        data = []
+        data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center}]
+
+        @students.each do |s|
+          data << [s.full_name ,s.program.name,s.thesis.title]
+        end
+
+        tabla = pdf.make_table(data,:width=>450,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
+        tabla.draw
+      end
+  
+      ############################## FIRMA ##############################
+      @atentamente = "\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
+      pdf.text @atentamente, :align=>:center,:inline_format=>true
+      ############################## ###### ##############################
+
+      filename = options[:filename]
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+    end
+  end
+
+  def get_consecutive(object, time, type)
+    maximum = Certificate.where(:year => time.year).maximum("consecutive")
+
+    if maximum.nil?
+      maximum = 1
+    else
+      maximum = maximum + 1
+    end
+
+    certificate                 = Certificate.new()
+    certificate.consecutive     = maximum
+    certificate.year            = time.year
+    certificate.attachable_id   = object.id
+    certificate.attachable_type = object.class.to_s
+    certificate.type_id         = type
+    certificate.save
+
+    return "%03d" % maximum
+  end
 end

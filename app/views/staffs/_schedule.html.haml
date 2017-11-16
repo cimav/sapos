@@ -19,4 +19,8 @@
             =link_to '  Buscar','#', :id=>'search-staff-schedule'
 
 #staff-schedule-area
-= javascript_include_tag "end.js"
+
+:javascript
+  $( "#start_date" ).datepicker(config);
+  $( "#end_date" ).datepicker(config);
+  console.log("CONFIG DATES");
