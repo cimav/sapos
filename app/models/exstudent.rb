@@ -8,7 +8,7 @@ class Exstudent < ActiveRecord::Base
 
   # Variables genéricas
   NONE = 0
-  OTHER = 10
+  OTHER = 99
 
   # Niveles de SNI
   CANDIDATE = 1
@@ -70,7 +70,7 @@ class Exstudent < ActiveRecord::Base
       OTHER => 'Otro'
   }
 
-  SHOLARSHIP_TYPES = {
+  SCHOLARSHIP_TYPES = {
       CONACYT_SCHOLARSHIP => 'Beca CONACYT',
       NONE => 'Ninguna',
       OTHER => 'Otra'
