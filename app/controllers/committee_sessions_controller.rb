@@ -117,20 +117,20 @@ class CommitteeSessionsController < ApplicationController
             @pages = @pages-1
           end
         else
+          logger.info "INFOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: #{@size%10}"
           if (@size%10).eql? 0 #si es entero el total de paginas es incorrecto, restamos 1
+             logger.info "INFOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: HEEEEEEEEEEEEEEEEREEEEEEEEE0"
             @pages = @pages-1
-          elsif (@size%10)<=1  #si es 1 u otro número es la página correcta
+          elsif (@size%10)>=1  #si es 1 u otro número es la página correcta mas 1
+             logger.info "INFOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: HEEEEEEEEEEEEEEEEREEEEEEEEE1"
             #@page = @pages
+            @pages = @pages + 1
             vacio = nil
           end
         end
 
-        begining  = 0
+        begining  = (@page.to_i-1) * 10
         registers = 10
-
-        if @page.to_i>=2
-          begining  = @page.to_i * 10
-        end
 
         limit = "#{begining},#{registers}"
 
