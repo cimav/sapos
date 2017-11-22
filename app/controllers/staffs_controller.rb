@@ -713,9 +713,9 @@ class StaffsController < ApplicationController
       options[:filename]  =  "constancia-sinodal-tesis-#{@staff.id}.pdf"
 
       if !start_date.blank?
-        options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C')
+        options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
       else  
-          options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id)
+          options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).order(:defence_date)
       end
     end
 
@@ -723,6 +723,7 @@ class StaffsController < ApplicationController
   end#def certificates
 
   def generate_certificate(options)
+    @t = t(:date)
     @rectangles = false
     ## OPTIONS
     @options     = params[:options]
@@ -779,20 +780,22 @@ class StaffsController < ApplicationController
         end
 
         pdf.text "<b>Participación como director de tesis</b>\n", :align=>:center, :inline_format=>true              
-        tabla = pdf.make_table(data,:width=>490,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
+        tabla = pdf.make_table(data,:width=>495,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
         tabla.draw
       ################################ CONSTANCIA COMO SINODAL ##################################
       elsif options[:cert_type].eql? Certificate::STAFF_SINODAL
         @theses = options[:theses]
         data = []
-        data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center}]
+        get_month_name(time.month)
+        data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center},{:content=>"<b>FECHA DE DEFENSA</b>",:align=>:center}]
 
         @theses.each do |t|
-          data << [t.student.full_name ,t.student.program.name,t.title]
+          defence_month = get_month_name(t.defence_date.month)
+          data << [t.student.full_name ,t.student.program.name,t.title,t.defence_date.strftime("%-d de #{defence_month} de %Y")]
         end
         
         pdf.text "<b>Participación como sinodal</b>\n", :align=>:center, :inline_format=>true              
-        tabla = pdf.make_table(data,:width=>490,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
+        tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [100,95,200,105])
         tabla.draw
       end
 
