@@ -743,22 +743,20 @@ class StaffsController < ApplicationController
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
-      pdf.font_size 13
+    Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>[138,50,85,50] ) do |pdf|
+      pdf.font_size 11
       x = 232
       y = 565 #664
       w = 255
       h = 50
         
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      pdf.text "\n\n\n\n\n\n"
-      pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
+      pdf.text "<b>Coordinación de estudios de Posgrado</b>\nNo° de Oficio  <b>PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
 
       y = y - 70
       x = 10
       h = 50
 
-      pdf.text "\n\n"
       pdf.text "A quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
 
       y = y - 60
@@ -780,6 +778,7 @@ class StaffsController < ApplicationController
           data << [s.full_name ,s.program.name,s.thesis.title]
         end
 
+        pdf.text "<b>Participación como director de tesis</b>\n", :align=>:center, :inline_format=>true              
         tabla = pdf.make_table(data,:width=>490,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
         tabla.draw
       ################################ CONSTANCIA COMO SINODAL ##################################
@@ -791,15 +790,21 @@ class StaffsController < ApplicationController
         @theses.each do |t|
           data << [t.student.full_name ,t.student.program.name,t.title]
         end
-
+        
+        pdf.text "<b>Participación como sinodal</b>\n", :align=>:center, :inline_format=>true              
         tabla = pdf.make_table(data,:width=>490,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
         tabla.draw
       end
+
+      pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
   
       ############################## FIRMA ##############################
       @atentamente = "\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
       pdf.text @atentamente, :align=>:center,:inline_format=>true
       ############################## ###### ##############################
+
+      pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:center,:size=>8}
+
 
       filename = options[:filename]
       send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
