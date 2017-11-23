@@ -109,23 +109,15 @@ class CommitteeSessionsController < ApplicationController
       else
         @pages = @size/10
 
+        if (@size%10)>=1  #si es 1 u otro número es la página correcta mas 1
+          @pages = @pages + 1
+        end
+
         if @operation.eql? "add" #devuelve la última página
           @page = @pages
         elsif @operation.eql? "sub" #devuelve la página actual o ...
-          if @pages.to_i.eql? @page.to_i # ... si la última página ha quedado vacía y estamos ... 
-            @page  = @pages-1            # ... en ella nos regresamos 1
-            @pages = @pages-1
-          end
-        else
-          logger.info "INFOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: #{@size%10}"
-          if (@size%10).eql? 0 #si es entero el total de paginas es incorrecto, restamos 1
-             logger.info "INFOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: HEEEEEEEEEEEEEEEEREEEEEEEEE0"
-            @pages = @pages-1
-          elsif (@size%10)>=1  #si es 1 u otro número es la página correcta mas 1
-             logger.info "INFOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: HEEEEEEEEEEEEEEEEREEEEEEEEE1"
-            #@page = @pages
-            @pages = @pages + 1
-            vacio = nil
+          if (@size%10).eql? 0 #si es entero el total de paginas es incorrecto 
+            @page  = @pages
           end
         end
 

@@ -94,8 +94,8 @@
       %b= my_id_text
       %b= "Cambio de programa: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
+      - students_1_2 = @students_1
       - if !@selected.eql? 0
-        - students_1_2 = @students_1
         - if @students_1.where(:id=>@selected).size.eql? 0
           - s = Student.where(:id=>@selected)
           - students_1_2 = students_1_2 + s
@@ -301,8 +301,8 @@
       %b= my_id_text
       %b= "Permiso de ausencia: "
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Student")[0].attachable_id rescue 0
+      - students_1_2 = @students_1
       - if !@selected.eql? 0
-        - students_1_2 = @students_1
         - if @students_1.where(:id=>@selected).size.eql? 0
           - s = Student.where(:id=>@selected)
           - students_1_2 = students_1_2 + s
