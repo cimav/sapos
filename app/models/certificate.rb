@@ -17,6 +17,7 @@ class Certificate < ActiveRecord::Base
   APP_ACCEPTANCE    = 12
   STAFF_THESIS_DIR  = 13
   STAFF_SINODAL     = 14
+  STAFF_RH         = 15
 
   TYPE = {STUDIES           => 'Constancia de estudios',
           ENROLLMENT        => 'Constancia de inscripcion',
@@ -32,5 +33,6 @@ class Certificate < ActiveRecord::Base
           APP_ACCEPTANCE    => 'Carta de aceptacion de aspirante',
           STAFF_THESIS_DIR  => 'Constancia de director de tesis',
           STAFF_SINODAL     => 'Constancia como sinodal',
-          } 
+          STAFF_RH     => 'Constancia formación de RH',
+          }
 end
