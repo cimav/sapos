@@ -466,6 +466,31 @@
       = button_tag "Imprimir respuesta", :type=>'button', :class=>'response-agreement', :my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}",:style=>"display:#{display_button}"
       %hr
       %br
+    - ###################################################################################################################################################
+  - elsif ca_type.eql? 21
+    .myagreement
+      = hidden_field_tag "my_id",my_id
+      %b= my_id_text
+      %b= "BLABLABLABLABLABLABLA  ABLABLABLALB"
+      - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
+      - students_1_2 = @students_1
+      - if !@selected.eql? 0
+        - if @students_1.where(:id=>@selected).size.eql? 0
+          - s = Student.where(:id=>@selected)
+          - students_1_2 = students_1_2 + s
+      = select_tag "agreement_permanence_#{my_id}", options_from_collection_for_select(students_1_2,"id","full_name",@selected),:prompt=>"--Elegir alumno--",:class=>"agreement_people",:autt=>"estudiante",:disabled=> readonly
+      %div{:id=>"agreement-staffs_#{my_id}",:style=>"display: inline-block;"}
+        - CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id,:attachable_type=>"Staff").each do |cap|
+          .agreement-staff
+            = hidden_field_tag "my_sinodal_id",cap.id
+            = Staff.includes(:institution).find(cap.attachable_id).full_name_upcase
+            - if !readonly
+              = image_tag "/images/grey_action_delete.png",:valign=>:center,:style=>"cursor: pointer;opacity:0.3",:class=>'delete-agreement-staff'
+      = select_tag "agreement_staffs_#{my_id}", options_from_collection_for_select(@staffs_all,"id","full_name_upcase"),:prompt=>"--Elegir académico--",:class=>"agreement_people",:autt=>"sinodales",:disabled=> readonly
+      %u{:class=>"delete-agreement",:style=>"cursor: pointer; display: #{display_delete}; width: 60px;"}="eliminar"
+      = button_tag "Imprimir respuesta", :type=>'button', :class=>'response-agreement', :my_id=>"#{my_id}", :id=>"response-agreement_#{my_id}",:style=>"display:#{display_button}"
+      %hr
+      %br
   - else
     .myagreement
       = hidden_field_tag "my_id",my_id
