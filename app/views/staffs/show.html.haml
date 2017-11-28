@@ -159,13 +159,18 @@
 
       .field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
         - label = 'Constancia como director de tesis'
-        = label_tag label
+        = label_tag '',label
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"dir_tesis",:staff_id=>@staff.id, :desc=>label
 
       .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
         - label = 'Constancia como sinodal'
-        = label_tag label
+        = label_tag '', label
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"sinodal",:staff_id=>@staff.id, :desc=>label
+
+      .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
+        - label = 'Constancia formación de RH'
+        = label_tag '', label
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"RH",:staff_id=>@staff.id, :desc=>label
 
       .radioDiv
         - dir = t(:directory)
@@ -239,6 +244,7 @@
   $("#button_mine").live("click",function(){
     start_date  = $('#aux_start_date').val();
     end_date    = $('#aux_end_date').val();
+    console.log("//////////"+start_date +"//////////////"+end_date+"//////////")
 
     if(start_date.length==0){
       if(end_date.length>0){
@@ -259,7 +265,7 @@
     
     window.location.href=href
 
-    close_me();
+    //close_me();
   });
 
   $("#button_close_mine").live("click",function(){
