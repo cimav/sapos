@@ -978,7 +978,7 @@ class StaffsController < ApplicationController
       pdf.text @atentamente, :align=>:center,:inline_format=>true
       ############################## ###### ##############################
 
-      pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:center,:size=>8}
+      pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
 
 
       filename = options[:filename]
