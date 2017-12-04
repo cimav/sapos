@@ -375,7 +375,7 @@ class CommitteeSessionsController < ApplicationController
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     Prawn::Document.new(:background => filename, :background_scale=>0.33, :margin=>60 ) do |pdf|
-      if !(@type.eql? 6)
+      if !(@type.in? 6,21)
         ############# CABECERA
         x = 250
         y = 590 #657
@@ -696,7 +696,7 @@ class CommitteeSessionsController < ApplicationController
             h = 45
           end
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "</b>#{comma_tutors.chop.chop}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          pdf.text_box "</b>#{comma_tutors}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
           y = y - h
           w = 200
           h = 15
@@ -1161,58 +1161,77 @@ class CommitteeSessionsController < ApplicationController
       ############################### DESIGNACION DE COMITÉ DE PARES ###################################
       elsif @type.eql? 21
         @render_pdf  = true
+
         s            = @c_a.committee_agreement_person.where(:attachable_type=>"Student")
         tutors       = @c_a.committee_agreement_person.where(:attachable_type=>"Staff")
         student      = Student.find(s[0].attachable_id)
         supervisor   = Staff.find(student.supervisor)
-        comma_tutors = ""
-        tutors.each do |t|
-          tutor = Staff.find(t.attachable_id)
-          comma_tutors = "#{comma_tutors}#{tutor.title} #{tutor.full_name_cap}, "
-        end
-        # PRESENTE
-        x = 0
-        y = 505
-        w = 480
-        h = 15
-        if comma_tutors.chop.chop.size > 85
-          h = 30
-        end
+        counter      = 0
 
-        if comma_tutors.chop.chop.size > 170
-          h = 45
-        end
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "</b>#{comma_tutors.chop.chop}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        y = y - h
-        w = 200
-        h = 15
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
-        # CONTENIDO
-        x = 0
-        y = y - 60
-        w = 510
-        h = 100
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité de Pares de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        #  FIRMA
-        x = x + 110
-        y = y - 180
-        w = 300
-        h = 80
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
-        # CCP
-        x = 0
-        y = y - 150
-        w = 350
-        h = 25
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-        pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+        tutors.each do |t|
+          counter = counter + 1
+          ############# CABECERA
+          x = 250
+          y = 590 #657
+          w = 260
+          h = 43
+          size = 10
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          s_date           = @c_s.date
+          last_change      = @c_s.updated_at
+          today            = Date.today
+          @session_type    = @c_s.get_type
+          pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}.#{counter}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h, size: size
+          ############ CABECERA
+          tutor = Staff.find(t.attachable_id)
+          comma_tutors = "#{tutor.title} #{tutor.full_name_cap}"
+          # PRESENTE
+          x = 0
+          y = 505
+          w = 480
+          h = 15
+          if comma_tutors.chop.chop.size > 85
+            h = 30
+          end
+
+          if comma_tutors.chop.chop.size > 170
+            h = 45
+          end
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          pdf.text_box "</b>#{comma_tutors}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          y = y - h
+          w = 200
+          h = 15
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+          # CONTENIDO
+          x = 0
+          y = y - 60
+          w = 510
+          h = 100
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité de Pares de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          #  FIRMA
+          x = x + 110
+          y = y - 180
+          w = 300
+          h = 80
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
+          pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+          # CCP
+          x = 0
+          y = y - 150
+          w = 350
+          h = 25
+          if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
+          pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+          if !(tutors.size.eql? counter)
+            pdf.start_new_page
+          end
+        end# tutors
 
       ############################### NO IDENTIFICADO ###################################
       else

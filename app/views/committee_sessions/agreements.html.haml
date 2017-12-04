@@ -471,7 +471,7 @@
     .myagreement
       = hidden_field_tag "my_id",my_id
       %b= my_id_text
-      %b= "BLABLABLABLABLABLABLA  ABLABLABLALB"
+      %b= "Designación de comité de pares"
       - @selected   = CommitteeAgreementPerson.where(:committee_agreement_id=>ca.id)[0].attachable_id rescue 0
       - students_1_2 = @students_1
       - if !@selected.eql? 0
