@@ -23,8 +23,8 @@
         .comment= student.program.name
         - if !r.nil?
           .progressbar{:id=>"progressbar_#{student.id}"}
-            .percentage{:style=>"width: #{percentage}%; background-color: #{background_color};"}
-              = "#{percentage.to_s}%"
+            .percentage{:style=>"width: #{percentage.round(0)}%; background-color: #{background_color};"}
+              = "#{percentage.round(0)}%"
     
                 
 #counter
