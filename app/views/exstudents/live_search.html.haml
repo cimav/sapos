@@ -2,10 +2,30 @@
   - c = 0
   - @students.each do |student|
     - c += 1
-    %li 
-      = link_to "/egresados/analizar/#{student.id}", :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html', :id => "student_link_#{student.id}" do
+    - r = student.get_exstudent_status
+    - percentage = (0 if r.nil?)||r
+    
+    %li{:style=>"height: 60px;"}
+      = link_to "/egresados/analizar/#{student.id}", :method => :get, :remote => true, :class => 'get-item', :style=> 'height: 55px;', :'data-type' => 'html', :id => "student_link_#{student.id}" do
         = image_tag student.image_url(:small).to_s, :id => "img-small-#{student.id}"
-        .title= student.first_name + " " + student.last_name
+        .circle-div
+          - if r.nil? 
+            .circle.red
+            - background_color = "#cc3c29";
+          - elsif percentage <= 20
+            - background_color = "#FF8000";
+          - elsif percentage <= 96
+            - background_color = "#FFD700";
+          - else
+            - background_color = "#32CD32";
+
+        .title= student.full_name
         .comment= student.program.name
+        - if !r.nil?
+          .progressbar{:id=>"progressbar_#{student.id}"}
+            .percentage{:style=>"width: #{percentage}%; background-color: #{background_color};"}
+              = "#{percentage.to_s}%"
+    
+                
 #counter
   .inner= "#{c} egresados"

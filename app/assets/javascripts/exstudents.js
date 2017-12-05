@@ -1,4 +1,4 @@
-var model_name = 'students';
+var model_name = 'graduates';
 var advprev = 0;
 var schprev = 0;
 
@@ -15,19 +15,14 @@ $('#campus').live("change", function() {
   liveSearch();
 });
 
-$('#estatus').live("change", function() {
+$('#supervisor').live("change", function() {
   liveSearch();
-});
-
-$(document).ready(function() {
-  //liveSearch();
 });
 
 // ** Xls
 $('#to_excel').live('click', function() {
   window.location = location.pathname + "/busqueda.xls?" + $("#live-search").serialize();
 });
-
 
 function initializeSearchForm() {
   $("#program_type option[value=0]").attr("selected", true);
@@ -37,6 +32,23 @@ function initializeSearchForm() {
   $('#status_egresados').attr('checked', false);
   $('#status_bajas').attr('checked', false);
 }
+
+$('#advance-select').live("change", function() {
+  $('#advance-' + advprev).hide();
+  $('#advance-' + $('#advance-select').val()).show();
+  advprev = $('#advance-select').val();
+});
+
+$('#scholarship-select').live("change", function() {
+  $('#scholarship-' + schprev).hide();
+  $('#scholarship-' + $('#scholarship-select').val()).show();
+  schprev = $('#scholarship-select').val();
+});
+
+$(document).ready(function() {
+  liveSearch();
+
+});
 
 function modifyProgram()
 {
@@ -55,3 +67,4 @@ function modifyProgram()
     }
   });
 }
+

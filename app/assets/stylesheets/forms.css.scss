@@ -131,6 +131,15 @@ input[type=button].disabled:hover {
 #field_student_thesis_notes label { 
   width: 100%; 
 }
+
+#resource-tabs #pertinencia .field label { 
+  width: 210px;
+}
+
+#resource-tabs #ubicacion .field label { 
+  width: 170px;
+}
+
 #field_student_scholarship_notes textarea {
   margin-top: 10px;
   width: 100%;
@@ -193,4 +202,8 @@ input[type=button].disabled:hover {
 
 #item-new-internship-applicant-form label{
   width: 210px;
+}
+
+#field_exstudent_salary label{
+  left: 0px;
 }

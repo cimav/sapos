@@ -1,9 +1,10 @@
 var studies_plans_flag = 0;
+var item_edit_form_func = 0;
 var objects;
 var items = [];
 var items_found = [];
-var please = "<center><br>&nbsp;<br>&nbsp;<br>&nbsp;<br>&nbsp;<h2>Presionar Enter para seleccionar el primer resultado o seleccionar con el Mouse</h2></center>";
 
+var please = "<center><br>&nbsp;<br>&nbsp;<br>&nbsp;<br>&nbsp;<h2>Presionar Enter para seleccionar el primer resultado o seleccionar con el Mouse</h2></center>";
 
 delay = (function(){
   var timer = 0;
@@ -39,6 +40,8 @@ function liveSearch(options) {
     options = (typeof options === 'undefined') ? 'default' : options;
 
     $("#search-box").addClass("loading");
+
+    $("#content-panel").html("<img src=\"\/images\/ajax-load2.gif\">");
     
     if(options.json){
       $("#searchy").val("");
@@ -92,6 +95,7 @@ function search(e){
   var keys = [9,16,17,18,19,20,27,33,34,35,36,37,38,39,40,41,42,43,44,45,91,92,93,112,113,114,115,116,117,118,119,120,121,122,123,144,145,192];
   if(keys.indexOf(e.which)!=-1){return false;}
 
+
   if(!$("#first_check").prop("checked")){
     $("#content-panel").html(please);
 
@@ -102,6 +106,7 @@ function search(e){
         return;
       }
       else{
+
         $("#content-panel").html("<img src=\"\/images\/ajax-load2.gif\">");
         $("#items-list li:first").addClass("selected");
         $("#items-list li:first a").click();
@@ -474,6 +479,9 @@ $('#item-edit-form')
         var $submitButton = $(this).find('input[type="submit"]');
         $submitButton.text( $(this).data('origText') );
         $submitButton.attr('disabled', 'disabled').addClass('disabled');
+        if(item_edit_form_func==1){
+          itemEditFormFunc();
+        }
     })
 
     .live("ajax:error", function(evt, xhr, status, error) {
