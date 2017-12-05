@@ -119,37 +119,37 @@ class Exstudent < ActiveRecord::Base
     value = 1
 
     ## 1
-    if !self.email.nil?
+    if !self.email.blank?
       sum=sum+value
     end
     total = total + 1
     
     ## 2
-    if !self.phone.nil?
+    if !self.phone.blank?
       sum=sum+value
     end 
     total = total + 1
     
     ## 3
-    if !self.cellphone.nil?
+    if !self.cellphone.blank?
       sum=sum+value
     end 
     total = total + 1
     
     ## 4
-    if !self.scholarship_type.nil?
+    if !self.scholarship_type.blank?
       sum=sum+value
     end 
     total = total + 1
 
     ## 5
-    if !self.subsequent_studies.nil?
+    if !self.subsequent_studies.blank?
       sum=sum+value
     end 
     total = total + 1
 
     ## 6
-    if !self.sni.nil?
+    if !self.sni.blank?
       sum=sum+value
     end 
     total = total + 1
@@ -159,8 +159,8 @@ class Exstudent < ActiveRecord::Base
       total = total + 1
     else
       sum=sum+value
-      if self.academic_mobility.eql? true
-        if !self.academic_mobility_place.nil?
+      if self.academic_mobility
+        if !self.academic_mobility_place.blank?
           sum= sum+value
         end
         total = total + 1
@@ -175,49 +175,49 @@ class Exstudent < ActiveRecord::Base
       sum=sum+1
       if self.have_job.eql? true
         ## 10
-        if !self.job_type.nil?
+        if !self.job_type.blank?
           sum=sum+value
         end 
         total = total + 1
 
         ## 11
-        if !self.job_legal_regime.nil?
+        if !self.job_legal_regime.blank?
           sum=sum+value
         end 
         total = total + 1
 
         ## 12
-        if !self.job_company_name.nil?
+        if !self.job_company_name.blank?
           sum=sum+value
         end 
         total = total + 1
 
         ## 13
-        if !self.job_role.nil?
+        if !self.job_role.blank?
           sum=sum+value
         end 
         total = total + 1
 
         ## 14
-        if !self.salary.nil?
+        if !self.salary.blank?
           sum=sum+value
         end 
         total = total + 1
 
         ## 15
-        if !self.job_chief_name.nil?
+        if !self.job_chief_name.blank?
           sum=sum+value
         end 
         total = total + 1
 
         ## 16
-        if !self.job_phone.nil?
+        if !self.job_phone.blank?
           sum=sum+value
         end 
         total = total + 1
 
         ## 17
-        if !self.job_email.nil?
+        if !self.job_email.blank?
           sum=sum+value
         end 
         total = total + 1
@@ -227,49 +227,49 @@ class Exstudent < ActiveRecord::Base
 
 
     ## 18
-    if !self.job_coincidence.nil?
+    if !self.job_coincidence.blank?
       sum=sum+value
     end 
     total = total + 1
 
     ## 19
-    if !self.job_studies_impact.nil?
+    if !self.job_studies_impact.blank?
       sum=sum+value
     end
     total = total + 1
 
     ## 20
-    if !self.job_studies_impact_reason.nil?
+    if !self.job_studies_impact_reason.blank?
       sum=sum+value
     end 
     total = total + 1
 
     ## 21
-    if !self.recommendations.nil?
+    if !self.recommendations.blank?
       sum=sum+value
     end 
     total = total + 1
 
     ## 22
-    if !self.satisfaction_level.nil?
+    if !self.satisfaction_level.blank?
       sum=sum+value
     end 
     total = total + 1
 
     ## 23
-    if !self.satisfaction_reason.nil?
+    if !self.satisfaction_reason.blank?
       sum=sum+value
     end 
     total = total + 1
 
     ## 24
-    if !self.study_program_again.nil?
+    if !self.study_program_again.blank?
       sum=sum+value
     end 
     total = total + 1
 
     ## 25
-    if !self.study_program_again_reason.nil?
+    if !self.study_program_again_reason.blank?
       sum=sum+value
     end 
     total = total + 1

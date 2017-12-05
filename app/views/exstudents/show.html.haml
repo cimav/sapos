@@ -168,7 +168,48 @@
 
   item_edit_form_func=1
   function itemEditFormFunc(){
-    var progressbar_id   = "#progressbar_"+$("#exstudent_student_id").val()+" > div";
-    var percentage_width = $(progressbar_id).attr('id');
-    console.log("|"+percentage_width+"|");
+    var exstudent_id    = $("#exstudent_id").val()
+    var student_id      = $("#exstudent_student_id").val()
+    var progressbar_id  = "#progressbar_"+student_id+" > div";
+    uri                 = '/egresados/porcentaje/'+exstudent_id;
+    data                = ""
+
+    $.ajax({
+      type:  'POST',
+      url:   uri,
+      data:  data,
+      beforeSend: function( xhr ) {
+      },
+      success:  function(data){
+        if(parseInt(data,10)<=0){
+          $(progressbar_id).css('background-color','#CC3C29');
+        }
+        else if(parseInt(data,10)<=20){
+          $(progressbar_id).css('background-color','#FF8000');
+        }
+        else if(parseInt(data,10)<=83){
+          $(progressbar_id).css('background-color','#FFD700');
+        }
+        else if(parseInt(data,10)<=98){
+          $(progressbar_id).css('background-color','#9DC789');
+        }
+        else{
+          $(progressbar_id).css('background-color','#32CD32');
+        }
+
+        $(progressbar_id).css('width',data+'%');
+        $(progressbar_id).html(data+'%');
+
+
+      },
+      error: function(xhr, textStatus, error){
+         var text = xhr.responseText;
+         try{
+           var jq   = jQuery.parseJSON(xhr.responseText);
+         }
+         catch(e){
+           alert("Error desconocido: "+e.message)
+         }
+      },
+    });
   }

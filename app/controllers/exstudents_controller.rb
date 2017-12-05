@@ -114,4 +114,13 @@ class ExstudentsController < ApplicationController
       render_error(@exstudent,"Error al actualizar",parameters)
     end
   end#update
+
+  def get_percentage
+    @exstudent = Exstudent.find(params[:id]) rescue nil
+    if @exstudent.nil?
+      render :text => "-1"
+    else
+      render :text => @exstudent.percentage.round(0)
+    end
+  end  
 end

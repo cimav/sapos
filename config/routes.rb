@@ -8,6 +8,7 @@ Sapos::Application.routes.draw do
   match 'egresados/busqueda' => 'exstudents#live_search'
   match 'egresados/analizar/:student_id' => 'exstudents#analizer'
   match 'egresados/nuevo/:id/:dialog' => 'exstudents#new'
+  match 'egresados/porcentaje/:id' => 'exstudents#get_percentage'
   #match 'egresados2/listo' => 'graduates#ready'
 
   match 'estudiantes/contacto/:id'       => 'students#contact'
