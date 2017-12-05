@@ -57,7 +57,6 @@ class ExstudentsController < ApplicationController
       end
     end
     
-
     if !params[:q].empty? ## si el campo llega vacío se va al else
       q = params[:q]
       if extra_where.empty?
