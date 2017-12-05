@@ -32,6 +32,11 @@ class ExstudentsController < ApplicationController
     extra_where = ""
     where_hash  = {:status=>[2,5],:programs=>{:level=>[1,2]}}  ## hash de busqueda por default
 
+    if !(params[:q].to_i.eql? 0)  ## busqueda por id
+      where_hash[:exstudents]= {:id=>params[:q]}
+      params[:q] = ""
+    end
+
     if !(params[:program].to_i.eql? 0)  ## busqueda por programa
       where_hash[:program_id]= params[:program]     ## agregamos al hash el program id
     end

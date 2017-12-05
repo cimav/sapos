@@ -1,31 +1,4 @@
 # coding: utf-8
-=begin
-class ExmailValidator < ActiveModel::EachValidator
-  def validate_each(record, attribute, value)
-    if value=="" 
-    else
-      unless value =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
-        msg_email = I18n.t :email, :scope=>[:activerecord,:errors,:messages]
-        record.errors[attribute] << (options[:message] || msg_email )
-      end
-    end
-  end
-end
-
-
-class PhoneValidator < ActiveModel::EachValidator
-  def validate_each(record, attribute, value)
-    if value=="" 
-    else
-      unless value =~ /\A([0-9]+\s*)+\z/
-        msg_phone = "Solo se permiten números y espacios"
-        record.errors[attribute] << (options[:message] || msg_phone)
-      end
-    end
-  end
-end
-=end
-
 class Exstudent < ActiveRecord::Base
   belongs_to :student
   attr_accessible :student_id, :academic_mobility, :academic_mobility_place, :cellphone, :email, :have_job, :job_chief_name, :job_coincidence, :job_company_name, :job_email, :job_legal_regime, :job_phone, :job_role, :job_studies_impact, :job_studies_impact_reason, :job_type, :phone, :recommendations, :salary, :satisfaction_level, :satisfaction_reason, :scholarship_type, :sni, :study_program_again, :study_program_again_reason, :subsequent_studies
@@ -317,8 +290,14 @@ private
       errors = errors + 1
     end
 
+=begin  ## para validar vacíos
     if self.phone.empty?
       msg_phone = "No puede ser vacío"
+      self.errors[:phone] << ( msg_phone )
+      errors = errors + 1
+=end
+    if self.phone =~ /\A\s+\z/i
+      msg_phone = "No puede dejar espacios en blanco"
       self.errors[:phone] << ( msg_phone )
       errors = errors + 1
     else
