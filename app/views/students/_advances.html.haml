@@ -58,8 +58,10 @@
         - elsif adv.advance_type.eql? 2 #protocol
           = link_to 'Formato', "/estudiantes/protocolo/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
         - elsif adv.advance_type.eql? 3 #seminar
-          = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
-
+          = "Formato:"
+          = link_to 'Estudiante', "/estudiantes/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
+          = link_to 'Comité', "/estudiantes/seminario/#{adv.id}/#{adv.tutor1}/cep", :target=> "_blank"
+          
       %div{:id => "field_student_advance_#{index}_tutor2", :class => 'field'}
         = fields.label :tutor2, 'Comite Tutoral 2'
         = fields.collection_select :tutor2, staffs, :id, :full_name, options = {:include_blank => true}
@@ -68,7 +70,9 @@
         - elsif adv.advance_type.eql? 2 #protocol
           = link_to 'Formato', "/estudiantes/protocolo/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
         - elsif adv.advance_type.eql? 3 #seminar
-          = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
+          = "Formato:"
+          = link_to 'Estudiante', "/estudiantes/seminario/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
+          = link_to 'Comité', "/estudiantes/seminario/#{adv.id}/#{adv.tutor2}/cep", :target=> "_blank"
 
       %div{:id => "field_student_advance_#{index}_tutor3", :class => 'field'}
         = fields.label :tutor3, 'Comite Tutoral 3'
@@ -76,7 +80,9 @@
         - if adv.advance_type.eql? 1 #advance
           = fields.select :grade3, (0..100).to_a.unshift(["NP",-1]), :prompt => '---'
         - elsif adv.advance_type.eql? 3 #seminar
-          = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
+          = "Formato:"
+          = link_to 'Estudiante', "/estudiantes/seminario/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
+          = link_to 'Comité', "/estudiantes/seminario/#{adv.id}/#{adv.tutor3}/cep", :target=> "_blank"
 
       %div{:id => "field_student_advance_#{index}_tutor4", :class => 'field'}
         = fields.label :tutor4, 'Comite Tutoral 4'
@@ -84,7 +90,9 @@
         - if adv.advance_type.eql? 1 #advance
           = fields.select :grade4, (0..100).to_a.unshift(["NP",-1]), :prompt => '---'
         - elsif adv.advance_type.eql? 3 #seminar
-          = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor4}", :target=> "_blank"
+          = "Formato:"
+          = link_to 'Estudiante', "/estudiantes/seminario/#{adv.id}/#{adv.tutor4}", :target=> "_blank"
+          = link_to 'Comité', "/estudiantes/seminario/#{adv.id}/#{adv.tutor4}/cep", :target=> "_blank"
 
       %div{:id => "field_student_advance_#{index}_tutor5", :class => 'field'}
         = fields.label :tutor5, 'Comite Tutoral 5'
@@ -92,8 +100,25 @@
         - if adv.advance_type.eql? 1 #advance
           = fields.select :grade5, (0..100).to_a.unshift(["NP",-1]), :prompt => '---'
         - elsif adv.advance_type.eql? 3 #seminar
-          = link_to 'Formato', "/estudiantes/seminario/#{adv.id}/#{adv.tutor5}", :target=> "_blank"
+          = "Formato:"
+          = link_to 'Estudiante', "/estudiantes/seminario/#{adv.id}/#{adv.tutor5}", :target=> "_blank"
+          = link_to 'Comité', "/estudiantes/seminario/#{adv.id}/#{adv.tutor5}/cep", :target=> "_blank"
+          
 
       %div{:id => "field_student_advance_#{index}_notes", :class => 'field'}
         = fields.label :notes, 'Notas'
         = fields.text_area :notes
+
+
+:javascript
+  $(".link-format-o").click(function(){
+    var href = $(this).attr("href")
+    $(".link-format-selecter").toggle("fast");
+    return false;
+  });
+
+  $(".dropbtn").click(function(){
+      $("#myDropdown").toggle("fast");
+
+    return false;
+  });
