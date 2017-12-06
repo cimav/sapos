@@ -4,6 +4,7 @@ class Staff < ActiveRecord::Base
   belongs_to :institution
   belongs_to :area
   has_many :term_course_schedule
+  has_many :admission_exams
 
   has_many :seminars
   accepts_nested_attributes_for :seminars

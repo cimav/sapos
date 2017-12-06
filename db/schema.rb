@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171116163242) do
+ActiveRecord::Schema.define(:version => 20171201191033) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -32,6 +32,19 @@ ActiveRecord::Schema.define(:version => 20171116163242) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "admission_exams", :force => true do |t|
+    t.boolean  "make"
+    t.boolean  "apply"
+    t.boolean  "review"
+    t.date     "exam_date"
+    t.integer  "staff_id"
+    t.integer  "status"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "admission_exams", ["staff_id"], :name => "index_admission_exams_on_staff_id"
 
   create_table "advances", :force => true do |t|
     t.integer  "student_id"

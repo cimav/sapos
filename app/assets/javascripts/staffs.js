@@ -49,12 +49,14 @@ $('#item-edit-form')
     hideCurrentSeminar();
     hideCurrentExternalCourse();
     hideCurrentLabPractice();
+    hideCurrentAdmissionExam();
   })
   .live('ajax:success', function(evt, data, status, xhr) {
     var r = $.parseJSON(xhr.responseText);
     loadSeminarsTable();
     loadExternalCoursesTable();
     loadLabPracticesTable();
+    loadAdmissionExamsTable();
   });
 
 
@@ -287,3 +289,65 @@ $('.delete-file-lp')
     var s_id = r.lab_practice_id;
     $("#tr_lab_practice_"+s_id).hide();
   });
+
+
+// Exámenes de admisión
+var current_admission_exam_edit = 0;
+function loadAdmissionExamsTable() {
+    staff_id = $('#staff_id').val();
+    url = location.pathname + '/' + staff_id + '/examenes_admision';
+    $.get(url, {}, function(html) {
+        $("#admission-exams-area").html(html);
+    });
+    $("#new-admission_exam-dialog").remove();
+    $('#content-panel').append('<div title="Nuevo examen de admisión" id="new-admission_exam-dialog"><iframe width="550" height="540" src="/docentes/' + staff_id + '/nuevo_examen_admision" scrolling="no"></iframe></div>');
+    $("#new-admission_exam-dialog").dialog({ autoOpen: false, width: 640, height: 550, modal:true });
+    $("#a-new-admission-exam").live("click", function() {
+        $("#new-admission_exam-dialog").dialog('open');
+    });
+}
+
+function hideCurrentAdmissionExam() {
+    if (current_admission_exam_edit != 0) {
+        $("#div_"+current_admission_exam_edit).slideUp("fast", function() {
+            $('#tr_admission_exam_'+current_admission_exam_edit).animate({ backgroundColor: "white" }, 1000, function() {
+                $('#tr_admission_exam_'+current_admission_exam_edit).removeClass("selected");
+            });
+        });
+    }
+}
+
+$(".admission-exam-item").live("click", function() {
+    staff_id = $('#staff_id').val();
+    var admission_exam_id = $('#'+this.id).attr('admission_exam_id');
+    var tr_admission_exam_id = this.id;
+    if (current_admission_exam_edit != admission_exam_id) {
+        if (current_admission_exam_edit != 0) {
+            current_admission_exam_edit2 = current_admission_exam_edit;
+            $("#div_"+current_admission_exam_edit).slideUp("fast", function() {
+                $("#edit-admission_exam_"+current_admission_exam_edit2).remove();
+                $('#tr_admission_exam_'+current_admission_exam_edit2).animate({ backgroundColor: "white" }, 1000, function() {
+                    $('#tr_admission_exam_'+current_admission_exam_edit2).removeClass("selected");
+                });
+            });
+        }
+
+        url = location.pathname + '/' + staff_id + '/examen_admision/' + admission_exam_id;
+        $("<tr class=\"edit-admission_exam_\" id=\"edit-admission_exam_" + admission_exam_id + "\"><td colspan=\"5\"><div class=\"edit-admission_exam_-div\" id=\"div_"+admission_exam_id+"\"></div></td></tr>").insertAfter($('#'+this.id));
+        $.get(url, {}, function(html) {
+            $('#'+tr_admission_exam_id).animate({ backgroundColor: "#dddddd" }, 1000);
+            $("#div_"+admission_exam_id).hide().html(html).slideDown("fast", function() {
+                $('#'+tr_admission_exam_id).addClass("selected");
+            });
+        });
+        current_admission_exam_edit = admission_exam_id;
+    } else {
+        $("#div_"+admission_exam_id).slideUp("fast", function() {
+            $(".edit-admission_exam").remove();
+            $('#'+tr_admission_exam_id).animate({ backgroundColor: "white" }, 1000, function() {
+                $('#'+tr_admission_exam_id).removeClass("selected");
+            });
+        });
+        current_admission_exam_edit = 0;
+    }
+});

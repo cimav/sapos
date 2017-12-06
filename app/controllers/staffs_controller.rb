@@ -1005,4 +1005,58 @@ class StaffsController < ApplicationController
 
     return "%03d" % maximum
   end
+
+  def admission_exams_table
+    @staff = Staff.find(params[:id])
+    render :layout => false
+  end
+
+  def new_admission_exam
+    @staff = Staff.find(params[:id])
+    @exam = AdmissionExam.new
+    render :layout => false
+  end
+
+  def edit_admission_exam
+    @staff = Staff.find(params[:id])
+    @exam = AdmissionExam.find(params[:admission_exam_id])
+    render :layout => false
+  end
+
+  def create_admission_exam
+    staff = Staff.find(params[:id])
+    exam = AdmissionExam.new(params[:admission_exam])
+
+    exam.staff = staff
+
+    if exam.save
+      flash[:notice] = "Examen de admision creado"
+    else
+      flash[:error] = "Error al crear examen de admision"
+    end
+    render :layout => 'standalone'
+  end
+
+  def update_admission_exam
+    exam = AdmissionExam.find(params[:admission_exam_id])
+
+    if exam.update_attributes(params[:admission_exam])
+      flash[:notice] = "Examen de admision actualizado"
+    else
+      flash[:error] = "Error al actualizar examen de admision"
+    end
+    render :layout => 'standalone'
+  end
+
+  def update_admission_exam
+    exam = AdmissionExam.find(params[:admission_exam_id])
+
+    if exam.update_attributes(params[:admission_exam])
+      flash[:notice] = "Examen de admision actualizado"
+    else
+      flash[:error] = "Error al actualizar examen de admision"
+    end
+    render :layout => 'standalone'
+  end
+
 end
