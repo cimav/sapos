@@ -5,10 +5,11 @@ Sapos::Application.routes.draw do
 
   match 'areas/busqueda' => 'areas#live_search'
 
-  match 'egresados/busqueda' => 'graduates#live_search'
-  match 'egresados/analizar/:student_id' => 'graduates#analizer'
-  match 'egresados/nuevo/:id/:dialog' => 'graduates#new'
-  match 'egresados/listo' => 'graduates#ready'
+  match 'egresados/busqueda' => 'exstudents#live_search'
+  match 'egresados/analizar/:student_id' => 'exstudents#analizer'
+  match 'egresados/nuevo/:id/:dialog' => 'exstudents#new'
+  match 'egresados/porcentaje/:id' => 'exstudents#get_percentage'
+  #match 'egresados2/listo' => 'graduates#ready'
 
   match 'estudiantes/contacto/:id'       => 'students#contact'
   match 'estudiantes/avance/:id'         => 'students#advance'
@@ -51,6 +52,7 @@ Sapos::Application.routes.draw do
   match 'estudiantes/upload_one_file' => 'students#upload_one_file'
   match 'estudiantes/protocolo/:id/:staff_id' => 'students#get_protocol'
   match 'estudiantes/seminario/:id/:staff_id' => 'students#get_protocol'
+  match 'estudiantes/seminario/:id/:staff_id/cep' => 'students#get_protocol_cep'
   match 'estudiantes/datos/:id' => 'students#students_data'
   match 'estudiantes/publico/' => 'students#public'
   match 'estudiantes/publico/csv' => 'students#public_csv'
@@ -291,7 +293,8 @@ Sapos::Application.routes.draw do
     resources :users, :path => "usuarios"
     resources :departments, :path => "departamentos"
     resources :internship_types, :path => "tipos_internados"
-    resources :graduates, :path => "egresados"
+    #resources :graduates, :path => "egresados"
+    resources :exstudents, :path => "egresados"
     resources :scholarship, :path => "becas"
     resources :applicants, :path => "aspirantes"
     resources :committee_meetings, :path => "cep"

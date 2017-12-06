@@ -1,11 +1,11 @@
-= form_for @graduate, :remote => true, :html => { :'data-type' => 'html', :id => 'item-edit-form' } do |f|
+= form_for @exstudent, :remote => true, :html => { :'data-type' => 'html', :id => 'item-edit-form' } do |f|
   .resource-header.student-header
     .resource-picture
       = image_tag @student.image_url(:medium).to_s, :id => "img-medium-#{@student.id}"
       %br
     .resource-title
-      %h1= "#{@student.first_name} #{@student.last_name}"
-      .comment= "Matrícula: #{@student.card} (#{@student.program.name})"
+      %h1= @student.full_name
+      .comment= @student.program.name
       .comment
     .resource-save
       - if can? :update, @student
@@ -13,57 +13,203 @@
 
   #resource-tabs
     %ul
-      %li.first-tab= link_to "Datos", "#datos"
-     
+      %li.first-tab= link_to "Datos Personales", "#datos"
+      %li= link_to "Datos Académicos", "#academicos"
+      %li= link_to "Ubicación en el mercado laboral", "#ubicacion"
+      %li= link_to "Pertinencia", "#pertinencia"
+
     #datos
-      %h2 Datos
+      %h2= "Datos Personales"
       = f.hidden_field :id
-      = f.hidden_field :student_id, {:value => @student.id }
 
-      .field#field_graduate_email
-        = f.label :email, "Correo Electrónico"
+      .field#field_exstudent_date_of_birth
+        = f.hidden_field :student_id, {:value => @student.id }
+        = label_tag "Fecha de Nacimiento"
+        - d = t(:date)
+        - month = d[:month_names][@student.date_of_birth.month]
+        = text_field_tag "field_date_of_birth", @student.date_of_birth.strftime("%e de #{month} del %Y")
+        = hidden_field_tag "field_date_of_birth", @student.date_of_birth
+      .field#field_exstudent_age
+        = label_tag "Edad"
+        = text_field_tag "field_age", @student.get_age
+      .field#field_exstudent_gender
+        = label_tag "Género"
+        = text_field_tag "field_gender", (@student.gender.eql? 'H')? "Masculino" : "Femenino"
+      .field#email
+        = f.label :email, "Email"
         = f.text_field :email
-
-      .field#field_graduate_phone
+      .field#field_phone
         = f.label :phone, "Teléfono"
         = f.text_field :phone
+      .field#field_cellphone
+        = f.label :cellphone, "Celular"
+        = f.text_field :cellphone
 
-      .field#field_graduate_workplace
-        = f.label :workplace, "Lugar de Trabajo"
-        = f.text_field :workplace
+    #academicos
+      %h2= "Datos Académicos"
+      .field#field_exstudent_last_grade
+        = label_tag "Grado anterior"
+        = text_field_tag :last_grade, Program::LEVEL[@student.program.level.to_i], :size=>50
+      .field#field_exstudent_last_program
+        = label_tag "Programa de Egreso"
+        = text_field_tag :last_grade, @student.program.name, :size=>50
+      .field#field_exstudent_scholarship_type
+        = f.label :scholarship_type, "Tipo de Beca"
+        = f.select :scholarship_type, options_for_select([["Beca Nacional CONACYT",1],["PROMEP",2],["ANUIES-SEP",3],["Sin Beca",4]]), :prompt=>"-- Elegir Beca --"
+      .field#field_exstudent_subsequent_studies
+        = f.label :subsequent_studies, "Estudios subsecuentes"
+        = f.text_field :subsequent_studies
+      .field#field_exstudent_sni
+        = f.label :sni, "Nivel SNI"
+        = f.select :sni, [['I', 1], ['II', 2], ['III', 3], ['IV', 4], ['Candidato', 99], ['Ninguno', 0]], :prompt=>"-- Elegir Nivel SNI --"
+      .field#field_exstudent_academic_mobility
+        = f.label :academic_mobility, "Movilidad Académica"
+        = f.radio_button :academic_mobility, true
+        = "Si"
+        = "&nbsp;".html_safe
+        = f.radio_button :academic_mobility, false
+        = "No"
+      - if @exstudent.academic_mobility
+        - mobility_style = "display: block;"
+      - else
+        - mobility_style = "display: none;"
 
-      .field#field_graduate_income
-        = f.label :income, "Ingresos"
-        = f.select :income, Graduate::INCOMES.invert.sort {|a,b| a[1] <=> b[1] }
+      .field#field_exstudent_academic_mobility_place{:style=>mobility_style}
+        = f.label :academic_mobility_place, "Lugar de movilidad"
+        = f.text_field :academic_mobility_place
+
+    #ubicacion
+      %h2= "Ubicación en el mercado laboral"
       
-      .field#field_graduate_gyre
-        = f.label :gyre, "Giro"
-        = f.select :gyre, Graduate::GYRE.invert.sort {|a,b| a[1] <=> b[1] }
-        
-      .field#field_graduate_prizes
-        = f.label :prizes, "Premios"
-        = f.text_area :prizes
+      .field#field_exstudent_have_job
+        = f.label :have_job, "Con Empleo"
+        = f.radio_button :have_job, true
+        = "Si"
+        = "&nbsp;".html_safe
+        = f.radio_button :have_job, false
+        = "No"
 
-      .field#field_graduate_sni
-        = f.label :sni, "SNI"
-        = f.text_field :sni
-      
-      .field#field_graduate_sni_status
-        = f.label :sni_status, "Estatus SNI"
-        = f.select :sni_status, Graduate::SNI_STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+      - if @exstudent.have_job
+        - job_group_display = "display: block;"
+      - else
+        - job_group_display = "display: none;"
 
-      .field#field_graduate_subsequent_studies
-        = f.label :subsequent_studies, "Estudios Subsecuentes"
-        = f.text_area :subsequent_studies
+      .job-group-style{:style=>job_group_display}
+        .field#field_exstudent_job_type
+          = f.label :job_type, "Tipo de trabajo"
+          = f.select :job_type, Exstudent::JOB_TYPES.invert.sort {|a,b| a[1] <=> b[1] },:prompt=>"-- Elegir tipo de trabajo --"
+        .field#field_exstudent_job_role
+          = f.label :job_role, "Rol en el trabajo"
+          = f.text_field :job_role, :size=>50
+        .field#field_exstudent_job_legal_regime
+          = f.label :job_legal_regime, "Regimen jurídico"
+          = f.select :job_legal_regime, Exstudent::JOB_LEGAL_TYPES.invert.sort {|a,b| a[1] <=> b[1] },:prompt=>"-- Elegir Régimen jurídico --"
+        .field#field_exstudent_job_company_name
+          = f.label :job_company_name, "Nombre de la compañía"
+          = f.text_field :job_company_name, :size=>50
+        .field#field_exstudent_salary
+          = f.label :salary, "Salario Mensual"
+          = f.select :salary, Exstudent::SALARY_RANGES.invert.sort {|a,b| a[1] <=> b[1] },:prompt=>"-- Elegir rango --"
+        .field#field_job_chief_name
+          = f.label :job_chief_name, "Nombre del jefe inmediato"
+          = f.text_field :job_chief_name, :size=>50
+        .field#field_job_phone
+          = f.label :job_phone, "Telefono de la oficina"
+          = f.text_field :job_phone, :size=>30
+        .field#field_job_email
+          = f.label :job_email, "E-mail de la oficina"
+          = f.text_field :job_email, :size=>30
 
-      .field#field_student_period_from
-        = f.label :period_from, 'Periodo de'
-        = f.date_select :period_from, :start_year => 1994
-      
-      .field#field_student_period_to
-        = f.label :period_to, 'Periodo a'
-        = f.date_select :period_to, :start_year => 1994
-      
-      .field#field_graduate_notes
-        = f.label :notes, "Notas"
-        = f.text_area :notes
+    #pertinencia
+      .field#field_job_coincidence
+        = f.label :job_coincidence, "Coincidencia con los estudios"
+        = f.select :job_coincidence,  Exstudent::JOB_COINCIDENCES.invert.sort {|a,b| a[1] <=> b[1]},:prompt=>"-- Elegir coincidencia --"
+      .field#field_job_studies_impact
+        = f.label :job_studies_impact, "Indicendia en situación laboral"
+        = f.select :job_studies_impact,  Exstudent::JOB_IMPACTS.invert.sort {|a,b| a[1] <=> b[1]},:prompt=>"-- Elegir impacto --"
+      .field#field_job_studies_impact_reason
+        = f.label :job_studies_impact_reason, "Razón del impacto negativo"
+        = f.text_field :job_studies_impact_reason
+      .field#field_recommendations
+        = f.label :recommendations, "Recomendaciones"
+        = f.text_area :recommendations
+      .field#field_satisfaction_level
+        = f.label :satisfaction_level, "Nivel de satisfacción"
+        = f.select :satisfaction_level, Exstudent::SATISFACTION_LEVELS.invert.sort {|a,b| a[1] <=> b[1]},:prompt=>"-- Elegir nivel de satisfacción --"
+      .field#field_satisfaction_reason
+        = f.label :satisfaction_reason, "Razón de satisfacción negativa"
+        = f.text_field :satisfaction_reason      
+      .field#field_study_program_again
+        = f.label :study_program_again, "¿Volvería a cursar en cimav?"
+        = f.select :study_program_again, [["SI",Exstudent::YES],["NO",Exstudent::NO]], :prompt=>"-- Elegir opción --"
+      .field#field_study_program_again_reason
+        = f.label :study_program_again_reason, "Razón de respuesta negativa"
+        = f.text_field :study_program_again_reason
+
+:javascript
+  $("input[name='exstudent[academic_mobility]'").change(function(){
+    if($(this).val()=='true')
+    {
+      $('#field_exstudent_academic_mobility_place').show();
+    }else{
+      $('#field_exstudent_academic_mobility_place').hide();
+    }
+  });
+
+  $("input[name='exstudent[have_job]'").change(function(){
+    if($(this).val()=='true')
+    {
+      $('.job-group-style').show();
+    }else{
+      $('.job-group-style').hide();
+    }
+    
+  });
+
+  item_edit_form_func=1
+  function itemEditFormFunc(){
+    var exstudent_id    = $("#exstudent_id").val()
+    var student_id      = $("#exstudent_student_id").val()
+    var progressbar_id  = "#progressbar_"+student_id+" > div";
+    uri                 = '/egresados/porcentaje/'+exstudent_id;
+    data                = ""
+
+    $.ajax({
+      type:  'POST',
+      url:   uri,
+      data:  data,
+      beforeSend: function( xhr ) {
+      },
+      success:  function(data){
+        if(parseInt(data,10)<=0){
+          $(progressbar_id).css('background-color','#CC3C29');
+        }
+        else if(parseInt(data,10)<=20){
+          $(progressbar_id).css('background-color','#FF8000');
+        }
+        else if(parseInt(data,10)<=83){
+          $(progressbar_id).css('background-color','#FFD700');
+        }
+        else if(parseInt(data,10)<=98){
+          $(progressbar_id).css('background-color','#9DC789');
+        }
+        else{
+          $(progressbar_id).css('background-color','#32CD32');
+        }
+
+        $(progressbar_id).css('width',data+'%');
+        $(progressbar_id).html(data+'%');
+
+
+      },
+      error: function(xhr, textStatus, error){
+         var text = xhr.responseText;
+         try{
+           var jq   = jQuery.parseJSON(xhr.responseText);
+         }
+         catch(e){
+           alert("Error desconocido: "+e.message)
+         }
+      },
+    });
+  }

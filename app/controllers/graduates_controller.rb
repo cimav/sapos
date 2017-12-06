@@ -108,11 +108,12 @@ class GraduatesController < ApplicationController
                    'SNI' => (s.graduate.sni rescue ''),
                    'Estatus_SNI' => (Graduate::SNI_STATUS[s.graduate.sni_status] rescue ''),
                    'Estudios_Subsecuentes' => (s.graduate.subsequent_studies rescue ''),
-                   'Del' => (s.graduate.period_from rescue ''),
-                   'Al' => (s.graduate.period_to rescue ''),
+                   'Del' => (s.start_date rescue ''),
+                   'Al' => (s.thesis.defence_date rescue ''),
+                   'Tesis' => (s.thesis.title rescue '')
                    }
         end
-        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Email", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Campus", "Programa", "Asesor", "Lugar_de_trabajo","Ingresos","Giro","Premios","SNI","Estatus_SNI","Estudios_Subsecuentes","Del","Al"]
+        column_order = ["Matricula", "Nombre", "Apellidos", "Estado", "Email", "Fecha_Nac", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Campus", "Programa", "Asesor", "Lugar_de_trabajo","Ingresos","Giro","Premios","SNI","Estatus_SNI","Estudios_Subsecuentes","Del","Al","Tesis"]
         to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end

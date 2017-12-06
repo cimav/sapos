@@ -188,4 +188,16 @@ class Student < ActiveRecord::Base
     end
     return avg.to_s
   end
+
+  def get_exstudent_status
+    if self.exstudent.nil?
+      return nil
+    elsif self.exstudent
+      return self.exstudent.percentage
+    end
+  end# get_exstudent_status
+
+  def get_age
+    return (Date.today - self.date_of_birth).to_i/365 rescue nil
+  end
 end
