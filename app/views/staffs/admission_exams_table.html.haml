@@ -1,4 +1,4 @@
--if @staff.admission_exams.count > 0
+-if @staff.admission_exams.where("status is null or status = ?",AdmissionExam::ACTIVE).count > 0
   %table.admission_exams
     %tbody
       %tr.header
