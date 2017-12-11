@@ -1,0 +1,27 @@
+= fields_for "staff[admission_exams_attributes][0]", @exam do |fields|
+  = hidden_field_tag 'staff_id', @staff.id
+  = hidden_field_tag 'id', @staff.id
+  = hidden_field_tag 'staff[admission_exams_attributes][0][staff_id]', @staff.id
+
+  = fields.hidden_field :id
+
+  %div{:id => "field_staff_admission_exams_0_exam_date", :class => 'field'}
+    = fields.label :exam_date, 'Fecha'
+    = fields.date_select :exam_date
+
+  %div{:id => "field_staff_admission_exams_0_make", :class => 'field'}
+    = fields.label :make, 'Elaboración'
+    = fields.check_box :make
+
+  %div{:id => "field_staff_admission_exams_0_apply", :class => 'field'}
+    = fields.label :apply, 'Aplicación'
+    = fields.check_box :apply
+
+  %div{:id => "field_staff_admission_exams_0_review", :class => 'field'}
+    = fields.label :review, 'Revisión'
+    = fields.check_box :review
+
+
+
+  #dialog-submit-button-area
+    = fields.submit 'Actualizar examen de admisión'

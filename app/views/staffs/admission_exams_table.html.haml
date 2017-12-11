@@ -1,0 +1,16 @@
+-if @staff.admission_exams.count > 0
+  %table.admission_exams
+    %tbody
+      %tr.header
+        %th Fecha
+        %th Elaboró
+        %th Aplicó
+        %th Revisó
+        %th Acciones
+    - @staff.admission_exams.where("status is null or status = ?",AdmissionExam::ACTIVE).order("exam_date DESC").each_with_index do |exam|
+      %tr.admission-exam-item{:id=>"tr_admission_exam#{exam.id}", :admission_exam_id=>exam.id}
+        %td= l exam.exam_date, :format => :long
+        %td= exam.make ? "Sí":"No"
+        %td= exam.apply ? "Sí":"No"
+        %td= exam.review ? "Sí":"No"
+        %td= link_to 'Eliminar',"docentes/#{@staff.id}/delete_admission_exam/#{exam.id}",:confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'

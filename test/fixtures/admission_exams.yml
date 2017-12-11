@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  make: MyString
+  apply: MyString
+  review: MyString
+  exam_date: 2017-12-01
+  staff: 
+
+two:
+  make: MyString
+  apply: MyString
+  review: MyString
+  exam_date: 2017-12-01
+  staff: 

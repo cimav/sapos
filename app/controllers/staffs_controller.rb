@@ -1013,7 +1013,6 @@ class StaffsController < ApplicationController
 
   def new_admission_exam
     @staff = Staff.find(params[:id])
-    @exam = AdmissionExam.new
     render :layout => false
   end
 
@@ -1024,39 +1023,52 @@ class StaffsController < ApplicationController
   end
 
   def create_admission_exam
-    staff = Staff.find(params[:id])
-    exam = AdmissionExam.new(params[:admission_exam])
-
-    exam.staff = staff
-
-    if exam.save
-      flash[:notice] = "Examen de admision creado"
+    flash = {}
+    @staff = Staff.find(params[:staff_id])
+    if @staff.update_attributes(params[:staff])
+      flash[:notice] = "Examen de admisión registrado"
     else
-      flash[:error] = "Error al crear examen de admision"
+      flash[:error] = "Error al registrar el examen de admisión."
     end
     render :layout => 'standalone'
   end
 
-  def update_admission_exam
-    exam = AdmissionExam.find(params[:admission_exam_id])
 
-    if exam.update_attributes(params[:admission_exam])
-      flash[:notice] = "Examen de admision actualizado"
+  def delete_admission_exam
+    flash = {}
+    @exam  = AdmissionExam.find(params[:admission_exam_id])
+    @exam.status = AdmissionExam::DELETED
+    if @exam.save
+      flash[:notice] = "Examen de admisión eliminado"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Admission Exam: #{@exam.id}"}).save
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:admission_exam_id] = params[:admission_exam_id]
+            render :json => json
+          else
+            redirect_to @staff
+          end
+        end
+      end
     else
-      flash[:error] = "Error al actualizar examen de admision"
+      flash[:error] = "Error al eliminar examen de admisión"
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:errors] = @exam.errors
+            json[:errors_full] = @exam.errors.full_messages
+            render :json => json, :status => :unprocessable_entity
+          else
+            redirect_to @staff
+          end
+        end
+      end
     end
-    render :layout => 'standalone'
-  end
-
-  def update_admission_exam
-    exam = AdmissionExam.find(params[:admission_exam_id])
-
-    if exam.update_attributes(params[:admission_exam])
-      flash[:notice] = "Examen de admision actualizado"
-    else
-      flash[:error] = "Error al actualizar examen de admision"
-    end
-    render :layout => 'standalone'
   end
 
 end
