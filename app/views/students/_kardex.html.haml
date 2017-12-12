@@ -20,31 +20,32 @@
     %th.centered= "Calificación"
     - @student.term_students.each do |te|
       - te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
-        - counter += 1
-        - if counter % 2 == 0
-          - klass = 'row-even'
-        - else
-          - klass = 'row-odd'
-
-        %tr{:class  => klass}
-          %td= tcs.term_course.course.name
-          %td.centered= tcs.term_course.term.name
-          - if !(tcs.grade.nil?)
-            - if !(tcs.grade<70)
-              - counter_grade += 1
-              - sum = sum + tcs.grade
-            - else
-              -counter_grade +=1
-              - sum = sum + tcs.grade
-
-          - if tcs.grade.nil?
-            %td.centered= "N.D."
+        -if !tcs.term_course.nil?
+          - counter += 1
+          - if counter % 2 == 0
+            - klass = 'row-even'
           - else
-            %td.centered
-              - if (tcs.grade<70)
-                %span{:style=>"color: red;"} #{tcs.grade}
-              -else
-                = tcs.grade
+            - klass = 'row-odd'
+
+          %tr{:class  => klass}
+            %td= tcs.term_course.course.name
+            %td.centered= tcs.term_course.term.name
+            - if !(tcs.grade.nil?)
+              - if !(tcs.grade<70)
+                - counter_grade += 1
+                - sum = sum + tcs.grade
+              - else
+                -counter_grade +=1
+                - sum = sum + tcs.grade
+
+            - if tcs.grade.nil?
+              %td.centered= "N.D."
+            - else
+              %td.centered
+                - if (tcs.grade<70)
+                  %span{:style=>"color: red;"} #{tcs.grade}
+                -else
+                  = tcs.grade
     
     - avg = "N.D."
     - if counter == 0
