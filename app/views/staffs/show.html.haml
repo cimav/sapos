@@ -40,6 +40,7 @@
       %li= link_to "Horario", "#horario"
       %li= link_to "Archivos", "#archivos"
       %li= link_to "Constancias", "#constancias"
+      %li= link_to "Exámenes de admisión", "#examenes_admision"
 
     #detalles
       %h2 Detalles
@@ -68,7 +69,7 @@
           = f.label :institution_id, 'Institucion'
           = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"}
       - else
-        .field#field_staff_last_name
+        .field#field_employee_number
           = f.label :employee_number, 'Número de Empleado'
           = f.text_field :employee_number
 
@@ -116,6 +117,9 @@
     #notas
       %h2 Notas
       = f.text_area :notes
+
+    #examenes_admision
+      = render :partial => 'admission_exams', :locals => {:staff => @staff}
 
     #horario
       = render :partial => 'schedule', :locals => {:staff => @staff}
