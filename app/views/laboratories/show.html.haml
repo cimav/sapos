@@ -2,7 +2,7 @@
   .resource-header
     .resource-title
       %h1= "#{@laboratory.full_name}"
-      .comment= @laboratory.campus.name
+      .comment= @laboratory.campus.name rescue "N.D."
     .resource-save
       - if can? :create || :update, @laboratory
         = f.submit 'Actualizar'
