@@ -5,11 +5,20 @@
       .header="Cambio"
     .body
       .row
+        .cell= "Jueves 14 Diciembre 14:52"
+        .cell
+          .description
+            %h1= "Aviso importante"
+            %h2= "Se modificó el menú para hacerlo mas conciso, dar click en detalles"
+            %span.show-details= "detalles"
+          .details{:style=>"text-align:justify; font-size: 17px;"}
+            = "Las opciones del menú cambiaron de orden y algunas se agruparon para hacerlo mas pequeño, si usted es usuario operador verá las opciones muy similares a las que veia antes, si usted es administrador recibirá un correo con indicaciones específicas, si no ha recibido el correo por favor reportarlo a sistemas o a la siguiente cuenta de correo: enrique.turcott@cimav.edu.mx"
+      .row
         .cell= "Miercoles 8 Noviembre 16:26"
         .cell
           .description
             %b= "Se agregó una opción de ordenación para la sección de estudiantes"
-            %span.show-details= "mas detalles"
+            %span.show-details= "detalles"
           .details
             = "Se agregó la ordenación por id, nombre, apellidos y carrera como parte de los filtros de búsqueda, los datos saldrán automáticamente ordenados en el reporte xls"
       .row
@@ -17,7 +26,7 @@
         .cell
           .description
             %b= "Todas las busquedas se deben realizar con un ENTER"
-            %span.show-details= "mas detalles"
+            %span.show-details= "detalles"
           .details
             = "Para evitar que el sistema esté haciendo llamadas innecesarias a la base de datos se ha colocado por default el ENTER en las busquedas, esto puede variar en la pantalla de estudiantes dado que es configurable."
 
@@ -26,6 +35,6 @@
         .cell
           .description
             %b= "Se agregó opción de areas de los planes de estudio para las materias de especialización"
-            %span.show-details= "mas detalles"
+            %span.show-details= "detalles"
           .details
             = "Si el plan de estudios pertenece a la maestria aparecerá de forma automática un area definida como transverzal, entonces no es necesario agregarla a la base de datos."
