@@ -725,13 +725,13 @@ class StaffsController < ApplicationController
       options[:end_date] = params[:end_date].to_date
       options[:cert_type] = Certificate::STAFF_RH
       options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
-      options[:text]      << " quien participó en la formación de recursos humanos de los siguientes estudiantes:"
+      options[:text]      << " quien participó en la formación de recursos humanos en el periodo del <b>#{options[:start_date].strftime("%-d de #{get_month_name("%b".to_i)} de %Y")} a #{options[:end_date].strftime("%-d de #{get_month_name("%b".to_i)} de %Y")}</b> de los siguientes estudiantes:"
       options[:filename]  =  "constancia-formacion-RH-#{@staff.id}.pdf"
 
       if !start_date.blank?
         options[:students] = Student.where(:supervisor=>@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
-        options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'1').order(:advance_date)
+        options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1')
         options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'3').order(:advance_date)
         options[:term_courses] = TermCourse.where(staff_id:@staff.id).where(term_id: Term.select(:id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date}))
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
@@ -829,145 +829,136 @@ class StaffsController < ApplicationController
       ################################################################# CONSTANCIA FORMACIÓN DE RH ###############################################################################
       elsif options[:cert_type].eql? Certificate::STAFF_RH
 
-        # se va a iterar para ordenar la información por año
-        @target_date = options[:start_date]
-        while @target_date.year <= options[:end_date].year do
+        # Alumnos como director de tesis
+        @students = options[:students]
+        if @students.size > 0
+          data = []
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}]
 
-          pdf.text "\n\n\n<b>Año #{@target_date.year}</b>\n", :align=>:left,:inline_format=>true
-          # Alumnos como director de tesis
-          @students = options[:students]
-
-          students_in_year = @students.where('year(start_date) =?',@target_date.year)
-          if students_in_year.size > 0
-            data = []
-            data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center}]
-
-            students_in_year.each do |s|
-              data << [s.full_name ,s.program.name]
-            end
-
-            pdf.text "<b>Participación como director de tesis</b>\n", :align=>:center, :inline_format=>true
-            tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
-            tabla.draw
+          @students.each do |s|
+            data << [s.full_name, s.program.name]
           end
 
+          pdf.text "<b>Participación como director de tesis</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
+          tabla.draw
+        end
 
-          # tesis como sinodal
-          @theses = options[:theses]
 
-          theses_in_year = @theses.where('extract(year  from defence_date) = ?', @target_date.year)
-          if theses_in_year.size > 0
-            data = []
-            get_month_name(time.month)
-            data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>FECHA DE DEFENSA</b>",:align=>:center}]
+        # tesis como sinodal
+        @theses = options[:theses]
 
-            theses_in_year.each do |t|
-              defence_month = get_month_name(t.defence_date.month)
-              data << [t.student.full_name ,t.student.program.name,t.defence_date.strftime("%-d de #{defence_month} de %Y")]
-            end
+        if @theses.size > 0
+          data = []
+          get_month_name(time.month)
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE DEFENSA</b>", :align => :center}]
 
-            pdf.text "\n<b>Participación como sinodal</b>\n", :align=>:center, :inline_format=>true
-            tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [195,200,105])
-            tabla.draw
+          @theses.each do |t|
+            defence_month = get_month_name(t.defence_date.month)
+            data << [t.student.full_name, t.student.program.name, t.defence_date.strftime("%-d de #{defence_month} de %Y")]
           end
 
-          # avances como comité tutoral
-          @advances = options[:advances]
+          pdf.text "\n<b>Participación como sinodal</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 190, 120])
+          tabla.draw
+        end
 
-          advances_in_year = @advances.where('extract(year  from advance_date) = ?', @target_date.year)
-          if advances_in_year.size >0
-            data = []
-            get_month_name(time.month)
-            data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>FECHA DE AVANCE</b>",:align=>:center}]
+        # avances como comité tutoral
+        @advances = options[:advances]
+        active_advances = []
+        @advances.each do |advance|
+          if advance.student.start_date.between?(options[:start_date],options[:end_date]) # tabien debería checarse la fecha de termino del estudiante pero la base de datos tiene demasiados datos faltantes
+            active_advances << advance
+          end
+        end
 
-            advances_in_year.each do |a|
-              advance_month = get_month_name(a.advance_date.month)
-              data << [a.student.full_name ,a.student.program.name,a.advance_date.strftime("%-d de #{advance_month} de %Y")]
-            end
+        if active_advances.size > 0
+          data = []
+          get_month_name(time.month)
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE AVANCE</b>", :align => :center}]
 
-            pdf.text "\n<b>Participación como comité tutoral</b>\n", :align=>:center, :inline_format=>true
-            tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [190,185,125])
-            tabla.draw
+          active_advances.uniq { |x| x[:student_id] }.each do |a|
+            advance_month = get_month_name(a.advance_date.month)
+            data << [a.student.full_name, a.student.program.name, a.advance_date.strftime("%-d de #{advance_month} de %Y")]
           end
 
-          # Seminaros departamentales como comité tutoral
-          @seminars = options[:seminars]
+          pdf.text "\n<b>Participación como comité tutoral</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 185, 125])
+          tabla.draw
+        end
 
-          seminars_in_year =  @seminars.where('extract(year  from advance_date) = ?', @target_date.year)
-          if seminars_in_year.size > 0
-            data = []
-            get_month_name(time.month)
-            data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>FECHA DE AVANCE</b>",:align=>:center}]
+        # Seminaros departamentales como comité tutoral
+        @seminars = options[:seminars]
 
-            seminars_in_year.each do |s|
-              advance_month = get_month_name(s.advance_date.month)
-              data << [s.student.full_name ,s.student.program.name,s.advance_date.strftime("%-d de #{advance_month} de %Y")]
-            end
+        if @seminars.size > 0
+          data = []
+          get_month_name(time.month)
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE AVANCE</b>", :align => :center}]
 
-            pdf.text "\n<b>Seminarios departamentales</b>\n", :align=>:center, :inline_format=>true
-            tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [190,185,125])
-            tabla.draw
+          @seminars.each do |s|
+            advance_month = get_month_name(s.advance_date.month)
+            data << [s.student.full_name, s.student.program.name, s.advance_date.strftime("%-d de #{advance_month} de %Y")]
           end
 
-          # clases impartidas
-          @term_courses = options[:term_courses]
+          pdf.text "\n<b>Seminarios departamentales</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 185, 125])
+          tabla.draw
+        end
 
-          term_courses_in_year = @term_courses.includes(:term).where('year(terms.start_date) =?',@target_date.year)
-          if term_courses_in_year.size > 0
-            data = []
-            get_month_name(time.month)
-            data << [{:content=>"<b>CLASE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>FECHA DE INICIO</b>",:align=>:center}]
+        # clases impartidas
+        @term_courses = options[:term_courses]
 
-            term_courses_in_year.each do |c|
-              term_month = get_month_name(c.term.start_date.month)
-              data << [c.course.name ,c.term.program.name,c.term.start_date.strftime("%-d de #{term_month} de %Y")]
-            end
+        if @term_courses.size > 0
+          data = []
+          get_month_name(time.month)
+          data << [{:content => "<b>CLASE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}]
 
-            pdf.text "\n<b>Clases impartidas</b>\n", :align=>:center, :inline_format=>true
-            tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [200,195,105])
-            tabla.draw
+          @term_courses.each do |c|
+            term_month = get_month_name(c.term.start_date.month)
+            data << [c.course.name, c.term.program.name, c.term.start_date.strftime("%-d de #{term_month} de %Y")]
           end
 
-          # Cursos o talleres
-          @external_courses = options[:external_courses]
+          pdf.text "\n<b>Clases impartidas</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [200, 195, 105])
+          tabla.draw
+        end
 
-          external_courses_in_year = @external_courses.where('year(start_date) =?',@target_date.year)
-          if external_courses_in_year.size > 0
-            data = []
-            get_month_name(time.month)
-            data << [{:content=>"<b>TÍTULO</b>",:align=>:center},{:content=>"<b>FECHA DE INICIO</b>",:align=>:center},{:content=>"<b>TIPO</b>",:align=>:center}]
+        # Cursos o talleres
+        @external_courses = options[:external_courses]
 
-            external_courses_in_year.each do |e|
-              course_month = get_month_name(e.start_date.month)
-              data << [e.title ,e.start_date.strftime("%-d de #{course_month} de %Y"), e.get_type]
-            end
+        if @external_courses.size > 0
+          data = []
+          get_month_name(time.month)
+          data << [{:content => "<b>TÍTULO</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}, {:content => "<b>TIPO</b>", :align => :center}]
 
-            pdf.text "\n<b>Cursos o talleres</b>\n", :align=>:center, :inline_format=>true
-            tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [300,100,100])
-            tabla.draw
+          @external_courses.each do |e|
+            course_month = get_month_name(e.start_date.month)
+            data << [e.title, e.start_date.strftime("%-d de #{course_month} de %Y"), e.get_type]
           end
 
-          # Prácticas de laboratorio
-          @lab_practices = options[:lab_practices]
+          pdf.text "\n<b>Cursos o talleres</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [300, 100, 100])
+          tabla.draw
+        end
 
-          lab_practices_in_year = @lab_practices.where('year(start_date) =?',@target_date.year)
-          if lab_practices_in_year.size > 0
-            data = []
-            get_month_name(time.month)
-            data << [{:content=>"<b>Título</b>",:align=>:center},{:content=>"<b>FECHA DE INICIO</b>",:align=>:center},{:content=>"<b>TIEMPO DE PRÁCTICA</b>",:align=>:center}]
+        # Prácticas de laboratorio
+        @lab_practices = options[:lab_practices]
 
-            lab_practices_in_year.each do |l|
-              practice_month = get_month_name(l.start_date.month)
-              data << [l.title ,l.start_date.strftime("%-d de #{practice_month} de %Y"),l.hours ]
-            end
+        if @lab_practices.size > 0
+          data = []
+          get_month_name(time.month)
+          data << [{:content => "<b>Título</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}, {:content => "<b>TIEMPO DE PRÁCTICA</b>", :align => :center}]
 
-            pdf.text "\n<b>Prácticas de laboratorio</b>\n", :align=>:center, :inline_format=>true
-            tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [280,100,120])
-            tabla.draw
-
-
+          @lab_practices.each do |l|
+            practice_month = get_month_name(l.start_date.month)
+            data << [l.title, l.start_date.strftime("%-d de #{practice_month} de %Y"), l.hours]
           end
-          @target_date+=1.year
+
+          pdf.text "\n<b>Prácticas de laboratorio</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [280, 100, 120])
+          tabla.draw
+
+
         end
       end
 
