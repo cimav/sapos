@@ -2,6 +2,7 @@
 %html
   %head
     %title= @page_title || 'CIMAV'
+    = stylesheet_link_tag "https://fonts.googleapis.com/icon?family=Material+Icons"
     = stylesheet_link_tag    "application"
     - if !@include_css.nil?
       = stylesheet_link_tag @include_css
@@ -17,58 +18,98 @@
     - if !@include4_js.nil?
       = javascript_include_tag @include4_js, :charset=>"UTF-8"
     = csrf_meta_tag
+    - admin_access = false
+    - if current_user.access.eql? User::ADMINISTRATOR or current_user.access.eql? User::MANAGER
+      - admin_access = true
   %body
     #top-bar
-      = image_tag "logo.png", :id => "logo"
-      #nav-select= @page_title || 'Posgrado'
+      #logo
+        = image_tag "logo.png"
+      #nav-select
+        ="Posgrado CIMAV"
+        %i.material-icons="play_arrow"
+      -# Criterio 1: Posición en el ciclo del proceso de posgrado
+      -# Criterio 2: Alfabético
+      #nav-system-menu
+        %ul.main-nav
+          %li.header-nav
+            %a
+              = @page_title
+              %i.material-icons.md-18="expand_more"
+            %ul.body-nav
+              %li= link_to "Inicio", root_url
+              - if admin_access
+                %li= link_to "Comité de Estudios de Posgrado", "/comite"
+              - if can? :read, Program
+                %li= link_to "Programas", programs_path
+              - if can? :read, Staff
+                %li= link_to "Docentes", staffs_path
+              - if can? :read, Applicant
+                %li= link_to "Aspirantes", applicants_path
+              - if can? :read, Student
+                %li= link_to "Estudiantes", students_path
+              - if can? :read, Graduate
+                %li= link_to "Seguimiento de Egresados", exstudents_path         
+             
+              %li.li-tree-nav
+                %a.tree-nav{:menu_counter=>0}
+                  ="Catálogos"
+                  %i.material-icons.md-18="chevron_right"
+                %ul
+                  - counter = 0
+                  - if can? :read, Area
+                    %li= link_to "Areas Departamentales", areas_path
+                    - counter = counter + 1
+                  - if can? :read, StudiesPlanArea
+                    %li= link_to "Areas de Especialidad", studies_plan_areas_path
+                    - counter = counter + 1
+                  - if can? :read, Campus
+                    %li= link_to "Campus", campus_path
+                    - counter = counter + 1
+                  - if can? :read, Department
+                    %li= link_to "Departamentos", departments_path
+                    - counter = counter + 1
+                  - if can? :read, Institution
+                    %li= link_to "Instituciones", institutions_path
+                    - counter = counter + 1
+                  - if can? :read, Laboratory
+                    %li= link_to "Laboratorios", laboratories_path
+                    - counter = counter + 1
+                  - if can? :read, Classroom
+                    %li= link_to "Salones", classrooms_path
+                    - counter = counter + 1
+                  - if can? :read, ScholarshipCategory
+                    %li= link_to "Tipos de Becas", scholarship_categories_path
+                    - counter = counter + 1
+                  - if can? :read, InternshipType
+                    %li= link_to "Tipos de Servicios CIMAV", internship_types_path
+                    - counter = counter + 1
+                  - if can? :read, User
+                    %li= link_to "Usuarios", users_path
+                  - if counter.eql? 0
+                    :javascript
+                      $(".tree-nav:contains('Catálogos')").hide();
+              - if admin_access
+                %li.li-tree-nav
+                  %a.tree-nav{:menu_counter=>0}
+                    ="Reportes"
+                    %i.material-icons.md-18="chevron_right"
+                  %ul
+                    %li= link_to "Generales", "/reportes"
+                    %li= link_to "Inscripciones", "/inscripciones"
+            
+              %li.transparent
+              - if can? :read, Internship
+                %li= link_to "Servicios CIMAV", internships_path
+              - if admin_access or current_user.access.eql? User::OPERATOR
+                %li= link_to "Seminarios Departamentales","/seminarios"
+              
+
       #account
         = current_user.email
         = link_to "[salir]", "/logout"
 
-    #nav-menu
-      %ul.nav
-        %li.op#op-home= link_to "Escritorio", root_url
-        - if can? :read, Area
-          %li.op#op-students= link_to "Areas", areas_path
-        - if can? :read, StudiesPlanArea
-          %li.op#op-students= link_to "Areas (Planes de estudio)", studies_plan_areas_path
-        - if can? :read, Applicant
-          %li.op#op-users= link_to "Aspirantes", applicants_path
-        - if can? :read, Classroom
-          %li.op#op-classrooms= link_to "Aulas", classrooms_path
-        - if can? :read, ScholarshipCategory
-          %li.op#op-scholarship_categories= link_to "Becas", scholarship_categories_path
-        - if can? :read, Campus
-          %li.op#op-users= link_to "Campus", campus_path
-        - if current_user.access.eql? User::ADMINISTRATOR or current_user.access.eql? User::MANAGER
-          %li.op#op-users= link_to "Comité de Estudios de Posgrado", "/comite"
-        - if can? :read, Department
-          %li.op#op-users= link_to "Departamentos", departments_path
-        - if can? :read, Staff
-          %li.op#op-staff= link_to "Docentes", staffs_path
-        - if can? :read, Student
-          %li.op#op-students= link_to "Estudiantes", students_path
-        - if current_user.access.eql? User::ADMINISTRATOR or current_user.access.eql? User::MANAGER
-          %li.op#op-users= link_to "Inscripciones", "/inscripciones"
-        - if can? :read, Institution
-          %li.op#op-institutions= link_to "Instituciones", institutions_path
-        - if can? :read, Laboratory
-          %li.op#op-laboratories= link_to "Laboratorios", laboratories_path
-        - if can? :read, Program
-          %li.op#op-staff= link_to "Programas", programs_path
-        - if current_user.access.eql? User::ADMINISTRATOR or current_user.access.eql? User::MANAGER
-          %li.op#op-users= link_to "Reportes", "/reportes"
-        - if can? :read, Graduate
-          %li.op#op-users= link_to "Seguimiento de Egresados", exstudents_path
-        - if current_user.access.eql? User::ADMINISTRATOR or current_user.access.eql? User::MANAGER or current_user.access.eql? User::OPERATOR
-          %li.op#op-users= link_to "Seminarios Departamentales","/seminarios"
-        - if can? :read, Internship
-          %li.op#op-internships= link_to "Servicios CIMAV", internships_path
-        - if can? :read, InternshipType
-          %li.op#op-internships= link_to "Tipos de Servicios CIMAV", internship_types_path
-        - if can? :read, User
-          %li.op#op-users= link_to "Usuarios", users_path
-
+      
     #flash-notice
 
     #main

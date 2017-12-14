@@ -1,39 +1,55 @@
 #top-bar {
   position: fixed;
   z-index: 999999;
-  background: transparent url(/assets/bg-bar.png) repeat-x;
-  height: 31px;
+  height: 33px;
   width: 100%;
   color: #fff;
+  background: #1653a4;
 
   #logo {
-    position: absolute;
+    position: relative;
     top: 2px;
-    left: 10px;
+    float: left;
+    padding-right: 5px;
   }
 
   #nav-select {
     color: #fff;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: bold;
-    position: absolute; 
-    padding-top: 8px; 
-    left: 46px;
-    width: 256px;
-    height: 22px;
-    text-shadow: #113f7d 0px -1px 1px;
-    background: transparent url(/assets/bg-nav.png) repeat-x;
-    &:hover {
-      background: transparent url(/assets/bg-nav-hover.png) repeat-x;
-      cursor: pointer;
+    position: relative; 
+    float: left;
+    display: inline-block;
+    margin-top: 5px;
+
+    .material-icons {
+      position: relative;
+      font-size: 17px;
+      top: 2px;
     }
   }
+  
+  /*** NEW SYSTEM MENU ***/
+  #nav-system-menu {
+   position: relative;
+   padding-top: 1px;
+   float: left;
+   font-size: 18px;
+   margin-top: -5px;
+   margin-left: 5px;
+   display: inline-block;
+  
+   .material-icons {
+     position: relative;
+     top: 5px;
+     font-size: 19px;
+   }
+  }//SYSTEM-MENU
 
   #account {
     float: right;
     height: 31px;
-    background: transparent url(/assets/sep-account.png) no-repeat;
-    padding: 7px 0px 0px 20px;
+    padding: 7px 0px 0px 10px;
     margin-right: 20px;
   }
 }
@@ -396,3 +412,101 @@
    font-size: 45%; 
 }
 
+/*************** NEW SYSTEM MENU **************/
+
+#nav-system-menu ul.main-nav {
+  position: relative;
+  font-weight: bold;
+  opacity: 0.96;
+}
+
+#nav-system-menu .transparent {
+  height: 18px;
+}
+
+#nav-system-menu ul.body-nav {
+  position: relative;
+  top: 37px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  .material-icons{
+    position:relative;
+    top: 5px;
+    font-size: 19px;
+  }
+}
+
+#nav-system-menu ul li {
+  display: block;
+  position: relative;
+  float: left;
+  background: #1653a4;
+
+}
+
+#nav-system-menu li ul {
+  display: none;
+  border-top: 1px solid transparent;
+
+  .material-icons{
+    position:relative;
+    top: 5px;
+    font-size: 19px;
+  }
+}
+
+#nav-system-menu ul li a {
+  display: block;
+  padding: 7px;
+  text-decoration: none;
+  white-space: nowrap;
+  color: #fff;
+}
+
+#nav-system-menu .colored {
+  color: yellow;
+}
+
+#nav-system-menu ul li a:hover {
+  background: #2c3e50;
+  cursor: pointer;
+}
+
+/* Uncomment for menu without javascript */
+/*#nav-system-menu li:hover > ul {
+  display: block;
+  position: absolute;
+}
+
+#nav-system-menu li:hover li {
+  float: none;
+}*/
+
+#nav-system-menu li:hover a {
+  background: #1653a4;
+}
+
+#nav-system-menu li:hover li a:hover {
+  background: #2c3e50;
+}
+
+#nav-system-menu ul.main li ul li {
+  border-top: 0;
+}
+
+#nav-system-menu ul ul ul {
+  left: 100%;
+  top: 0;
+  border-left: 1px solid transparent;
+}
+
+#nav-system-menu ul:before, ul:after{
+  content: " ";
+  display: table;
+}
+
+#nav-system-menu ul:after{
+  clear: both;
+}

@@ -294,6 +294,7 @@ function showFlash(msg,type,errors) {
     }
 }
 
+/************* READY! **************************/
 $(document).ready(function() {
 
 $("#flash-notice").live('click', function() {
@@ -488,26 +489,97 @@ $('#item-edit-form')
         showFormErrors(xhr, status, error);
     }
 );
+  
+  /*****************  MENU SYSTEM EVENTS ****************/
+  
+  /** cuando damos click en cualquier parte excepto el menú, reseteamos el menú **/
+  $("html:not(#nav-system-menu ul.main-nav)").click(function(){
+    $("#nav-system-menu ul.body-nav").css("display","none");
+    $("#nav-system-menu ul.body-nav").css("position","");
+    $("#nav-system-menu li").css("float","");
+
+    $("#nav-system-menu ul li ul").css("display","none");
+    $("#nav-system-menu ul li ul").css("position","");
+  });
+
+  /** Cuando damos click en la cabecera del menú **/
+  $("#nav-system-menu ul.main-nav").click(function(e){
+    if (!e) var e = window.event;
+    // ie
+    e.cancelBubble = true;
+    e.returnValue = false;
+    // ff / webkit
+    if (e.stopPropagation) {
+      e.stopPropagation();
+      //e.preventDefault();
+      e.defaultPrevented;
+    }
+
+    $("#nav-system-menu a.tree-nav").each(function(){
+      $(this).removeClass("colored");
+    });
+
+    if($("#nav-system-menu ul.body-nav").css("display")=="none")
+    {
+      $("#nav-system-menu ul.body-nav").css("display","block");
+      $("#nav-system-menu ul.body-nav").css("position","absolute");
+      $("#nav-system-menu li").css("float","none");
+    }
+    else{
+      $("#nav-system-menu ul.body-nav").css("display","none");
+      $("#nav-system-menu ul.body-nav").css("position","");
+      $("#nav-system-menu li").css("float","");
+    }
 
 
-$('#nav-select').bind('click', function(e) {
-  if (!e) var e = window.event;
-  // ie
-  e.cancelBubble = true;
-  e.returnValue = false;
-  // ff / webkit
-  if (e.stopPropagation) {
+
     e.stopPropagation();
     e.preventDefault();
-  }
-  $('#nav-menu').slideToggle('fast');
-});
+  });
+  
+  // si el link es tree mostramos los hijos (que en realidad son hermanos)
+  $("#nav-system-menu a.tree-nav").click(function(e){
+    // identificamos el padre
+    var li = $(this).parent();
+    var tree_nav = $(this);
+    if($(this).attr("menu_counter")==1){
+        $(this).removeClass("colored")
+        $(this).parent().find("ul").css("display","none");
+        $(this).parent().find("ul").css("position","");
+        tree_nav.attr("menu_counter",0);
+    }//if
+    else{
+      $("#nav-system-menu a.tree-nav").each(function(){
+          $(this).removeClass("colored")
+          $(this).parent().find("ul").css("display","none");
+          $(this).parent().find("ul").css("position","");
+          $(this).attr("menu_counter",0);
+      });//nav-system-menu a.tree-nav
+
+        $(li).find("ul").each(function(){
+          $(this).css("display","block");
+          $(this).css("position","absolute");
+          $("#nav-system-menu li").css("float","none");
+          tree_nav.attr("menu_counter",1);
+          tree_nav.addClass("colored");
+        });
+    }//else
+
+
+    e.stopPropagation();
+    e.preventDefault();
+  });
+
+  // para direccionar los links que no son tree
+  $("#nav-system-menu ul li a").click(function(e){
+    var href = $(this).attr("href");
+    if(!(href==undefined)){
+      window.location.href = href;
+    }    
+  });
+
 
 });  // READY
-
-$('html').click(function() {
-  $('#nav-menu').slideUp('fast');
-});
 
 
 function autoResizeIFRAME(id){
