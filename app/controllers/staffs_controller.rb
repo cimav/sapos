@@ -973,7 +973,7 @@ class StaffsController < ApplicationController
 
 
       filename = options[:filename]
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
     end
   end
 
