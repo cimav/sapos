@@ -725,7 +725,7 @@ class StaffsController < ApplicationController
       options[:end_date] = params[:end_date].to_date
       options[:cert_type] = Certificate::STAFF_RH
       options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
-      options[:text]      << " quien participó en la formación de recursos humanos en el periodo del <b>#{options[:start_date].strftime("%-d de #{get_month_name("%b".to_i)} de %Y")} a #{options[:end_date].strftime("%-d de #{get_month_name("%b".to_i)} de %Y")}</b> de los siguientes estudiantes:"
+      options[:text]      << " quien participó en la formación de recursos humanos en el periodo del <b> #{options[:start_date].day} de #{get_month_name(options[:start_date].month)} del #{options[:start_date].year} al #{options[:end_date].day} de #{get_month_name(options[:end_date].month)} del #{options[:end_date].year} </b> de los siguientes estudiantes:"
       options[:filename]  =  "constancia-formacion-RH-#{@staff.id}.pdf"
 
       if !start_date.blank?
@@ -973,7 +973,7 @@ class StaffsController < ApplicationController
 
 
       filename = options[:filename]
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
   end
 
