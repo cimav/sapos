@@ -19,4 +19,4 @@
     = link_to 'Horario', '#', :id=>'a-tc-schedule', :class => schedule_class
     = link_to 'Asistencia', '#', :id=>'a-tc-attendee', :class => attendee_class
     = link_to 'Documentación', '#', :id=>'a-tc-documentation', :class => documentation_class
-    = link_to 'Eliminar grupo', '#', id: 'a-tc-delete', term_course:tc.id, :confirm=>'¿Estás seguro?'
+    = link_to 'Eliminar grupo', "/programas/#{tc.course.program_id}/periodo/#{tc.term_id}/grupo/#{tc.id}", id: 'a-tc-delete', term_course:tc.id, :confirm=>'¿Estás seguro?'
