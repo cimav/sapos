@@ -922,10 +922,13 @@ class StaffsController < ApplicationController
 
           @term_course_schedules.each do |tcs|
             term_course = tcs.term_course
-            if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
-              term_month = get_month_name(term_course.term.start_date.month)
-              data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
+            if term_course.status != TermCourse::DELETED
+              if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
+                term_month = get_month_name(term_course.term.start_date.month)
+                data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
+              end
             end
+
           end
 
           pdf.text "\n<b>Clases impartidas</b>\n", :align => :center, :inline_format => true
