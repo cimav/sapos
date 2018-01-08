@@ -729,7 +729,7 @@ class StaffsController < ApplicationController
       options[:filename]  =  "constancia-formacion-RH-#{@staff.id}.pdf"
 
       if !start_date.blank?
-        options[:students] = Student.where(:supervisor=>@staff.id).where("(start_date > :start_date AND :end_date > start_date)",{:start_date=>start_date,:end_date=>end_date})
+        options[:students] = Student.where(:supervisor=>@staff.id).where("(start_date > :start_date AND :end_date > end_date) OR (start_date > :start_date AND end_date IS NULL) OR (start_date < :start_date AND end_date IS NULL AND status = 1)",{:start_date=>start_date,:end_date=>end_date})
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
         options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1')
         options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'3').order(:advance_date)
