@@ -725,19 +725,20 @@ class StaffsController < ApplicationController
       options[:end_date] = params[:end_date].to_date
       options[:cert_type] = Certificate::STAFF_RH
       options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
-      options[:text]      << " quien participó en la formación de recursos humanos en el periodo del <b>#{options[:start_date].strftime("%-d de #{get_month_name("%b".to_i)} de %Y")} a #{options[:end_date].strftime("%-d de #{get_month_name("%b".to_i)} de %Y")}</b> de los siguientes estudiantes:"
+      options[:text]      << " quien participó en la formación de recursos humanos en el periodo del <b> #{options[:start_date].day} de #{get_month_name(options[:start_date].month)} del #{options[:start_date].year} al #{options[:end_date].day} de #{get_month_name(options[:end_date].month)} del #{options[:end_date].year} </b> de los siguientes estudiantes:"
       options[:filename]  =  "constancia-formacion-RH-#{@staff.id}.pdf"
 
       if !start_date.blank?
-        options[:students] = Student.where(:supervisor=>@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
+        options[:active_students] = Student.where(:supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status = 1) OR (start_date < :start_date AND end_date IS NULL AND status = 1)",{:start_date=>start_date,:end_date=>end_date})
+        options[:graduate_students] = Student.where(:supervisor=>@staff.id).where(status:Student::GRADUATED)
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
         options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1')
         options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'3').order(:advance_date)
-        options[:term_courses] = TermCourse.where(staff_id:@staff.id).where(term_id: Term.select(:id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date}))
-        options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
+        options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
+        options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where(status:[nil,ExternalCourse::ACTIVE]).where("(start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
       else
-        options[:students] = Student.where(:supervisor=>@staff.id)
+        options[:active_students] = Student.where(:supervisor=>@staff.id)
         options[:term_courses] = TermCourse.where(staff_id:@staff.id)
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id)
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id)
@@ -830,13 +831,20 @@ class StaffsController < ApplicationController
       elsif options[:cert_type].eql? Certificate::STAFF_RH
 
         # Alumnos como director de tesis
-        @students = options[:students]
+        @students = options[:active_students]
+        @graduate_students = options[:graduate_students]
         if @students.size > 0
           data = []
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}]
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
 
           @students.each do |s|
-            data << [s.full_name, s.program.name]
+            data << [s.full_name, s.program.name, "Activo"]
+          end
+
+          @graduate_students.each do |s|
+            if s.thesis.defence_date.between?(options[:start_date],options[:end_date])
+              data << [s.full_name, s.program.name, "Egresado"]
+            end
           end
 
           pdf.text "<b>Participación como director de tesis</b>\n", :align => :center, :inline_format => true
@@ -906,16 +914,21 @@ class StaffsController < ApplicationController
         end
 
         # clases impartidas
-        @term_courses = options[:term_courses]
+        @term_course_schedules = options[:term_course_schedules]
 
-        if @term_courses.size > 0
+        if @term_course_schedules.size > 0
           data = []
-          get_month_name(time.month)
           data << [{:content => "<b>CLASE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}]
 
-          @term_courses.each do |c|
-            term_month = get_month_name(c.term.start_date.month)
-            data << [c.course.name, c.term.program.name, c.term.start_date.strftime("%-d de #{term_month} de %Y")]
+          @term_course_schedules.each do |tcs|
+            term_course = tcs.term_course
+            if term_course.status != TermCourse::DELETED
+              if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
+                term_month = get_month_name(term_course.term.start_date.month)
+                data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
+              end
+            end
+
           end
 
           pdf.text "\n<b>Clases impartidas</b>\n", :align => :center, :inline_format => true
@@ -928,7 +941,6 @@ class StaffsController < ApplicationController
 
         if @external_courses.size > 0
           data = []
-          get_month_name(time.month)
           data << [{:content => "<b>TÍTULO</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}, {:content => "<b>TIPO</b>", :align => :center}]
 
           @external_courses.each do |e|
