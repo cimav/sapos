@@ -69,7 +69,7 @@ function loadNewStudiesPlan(){
 function loadStudiesPlan(id){
   url = '/planes_estudios/'+id
   $("#studies-plan-dialog").remove();
-  $("#content-panel").append('<div title="Nuevo plan de estudios" id="studies-plan-dialog"><iframe width="740" height="480" src="' + url  + '" scrolling="no"></iframe></div>')
+  $("#content-panel").append('<div title="Editar plan de estudios" id="studies-plan-dialog"><iframe width="740" height="480" src="' + url  + '" scrolling="no"></iframe></div>')
   $("#studies-plan-dialog").dialog({ autoOpen: false, width: 800, height: 600, modal:true });
   $("#studies-plan-dialog").dialog('open');
 }

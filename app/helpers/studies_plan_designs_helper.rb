@@ -1,0 +1,2 @@
+module StudiesPlanDesignsHelper
+end

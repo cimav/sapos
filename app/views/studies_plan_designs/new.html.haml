@@ -1,0 +1,21 @@
+#detalles
+  = form_for @design do |f|
+    = hidden_field_tag "[studies_plan_design]studies_plan_id", (params[:sp_id]||sp_id)
+    .field#field_staff_id
+      = f.label :staff_id, "Docente"
+      = f.select :staff_id, Staff.where(:status=>0).collect {|p| [ p.full_name, p.id ] }, {:include_blank => 'Selecciona al académico'}
+    .field#field_modification_type_id
+      = f.label :modification_type_id , "Tipo de modificación"
+      = f.select :modification_type_id, StudiesPlanDesign::MODIFICATION_TYPE.invert.sort {|a,b| a[1] <=> b[1] }.unshift(["Selecciona el tipo",""])
+    .field#field_design_date
+      = f.label :design_date , "Fecha"
+      = f.date_select :design_date, :start_year => 1995, end_year:Date.today.year
+    .field#field_submit
+      = f.submit "Agregar"
+    .field#errors
+      %br
+      - @design.errors.full_messages.each do |m|
+        %p{:style=>"font-weight: bold; color: red;"}= m
+  
+  %br
+  = link_to "<<Volver", {:action=>"index", :id=>(params[:sp_id]||sp_id)}
