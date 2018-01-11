@@ -1,6 +1,30 @@
 = render :partial => 'term_course_header', :locals => {:tc => @tc, :selected => 'schedule'}
+-term_course_scheadules = @tc.term_course_schedules.where(:status => TermCourseSchedule::ACTIVE)
+-if term_course_scheadules.count > 0
 
--if @tc.term_course_schedules.where(:status => TermCourseSchedule::ACTIVE).count > 0 
+  -# El conteo se hace en un hash {k,v} donde k es el docente y v son las horas impartidas
+  -staff_hours = Hash.new(0)
+  -term_course_scheadules.each do |tcs|
+    -hours_per_day = tcs.end_hour.strftime("%H").to_i - tcs.start_hour.strftime("%H").to_i
+    -days = (tcs.start_date..tcs.end_date).to_a.select {|k| [tcs.day].include?(k.wday)}.size
+    -staff_hours[tcs.staff] += hours_per_day * days
+
+  -# Tabla del conteo de horas
+  %table.staff_hours
+    %thead
+      %tr
+        %th Docente
+        %th Horas impartidas
+    %tbody
+      -staff_hours.each do |staff, hours|
+        %tr
+          %td
+            =staff.full_name
+          %td
+            =hours
+  %h5.staff_hours
+    Horas del curso:
+    =staff_hours.values.inject { |a, b| a + b }
   %table.schedule
     %tbody
       %tr.header

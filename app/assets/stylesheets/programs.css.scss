@@ -336,3 +336,24 @@ table.payments {
   color:red;
   background-color: #eeeeee;
 }
+
+table.staff_hours{
+  background: $white;
+  tr {
+    margin-bottom: 1px;
+    th {
+      font-weight: bold;
+      padding: 4px;
+      background-color: $blue-soft;
+      border: 1px solid $light-grey;
+    }
+    td {
+      padding: 4px;
+      border: 1px solid $light-grey;
+    }
+  }
+  margin-bottom: 15px;
+}
+h5.staff_hours{
+  margin-bottom: 20px;
+}
