@@ -1,0 +1,28 @@
+- if @designs.size.eql? 0
+  %b= "No hay diseños dados de alta para este plan de estudios"
+- else
+  %table.plan
+    %tr
+      %th="Académico"
+      %th="Tipo"
+      %th="Fecha"
+      %th="Opciones"
+    - @designs.each do |d|
+      %tr
+        %td= Staff.find(d.staff_id).full_name
+        %td= StudiesPlanDesign::MODIFICATION_TYPE[d.modification_type_id]
+        %td= d.design_date
+        %td
+          = link_to "Eliminar", {:action=> :destroy, :id=>d.id}
+  - if params[:register_ok]
+    %br
+    %br
+    %b="Registro dado de alta correctamente" 
+
+%br
+%br
+= link_to "Nuevo", {:action=> "new", :sp_id=>@studies_plan_id}
+
+%br
+%br
+= link_to "<<Volver", {:controller=>:studies_plans,:action=>"show", :id=>params[:id]}

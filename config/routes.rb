@@ -241,6 +241,9 @@ Sapos::Application.routes.draw do
   match 'planes_estudios/:program_id/combo' => 'studies_plans#combo'
   match 'planes_estudios/:id' => 'studies_plans#show'
   match 'planes_estudios/editar/:id' => 'studies_plans#update'
+
+  match 'planes_estudios/editar/disenos/:id' => 'studies_plan_designs#index'
+  match 'planes_estudios/eliminar/disenos/:id' => 'studies_plan_designs#destroy'
   
   match 'reportes' => 'reports#index'
   
@@ -305,6 +308,7 @@ Sapos::Application.routes.draw do
     resources :seminars, :path => "seminarios"
     resources :advances, :path => "avances"
     resources :studies_plan_areas,:path=>"areas_planes_estudios"
+    resources :studies_plan_designs,:path=>"editar/disenos"
     #resources :studies_plans, :path => "planes_estudios"
   end
 

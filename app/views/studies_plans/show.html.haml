@@ -20,3 +20,4 @@
     %h2 Notas
     = f.text_area :notes, :cols=>70, :rows=>3
   = f.submit 'Guardar'
+  = link_to "Modificaciones", "editar/disenos/#{@studies_plan.id}"
