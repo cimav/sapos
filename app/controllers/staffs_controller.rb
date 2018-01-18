@@ -725,7 +725,12 @@ class StaffsController < ApplicationController
       options[:end_date] = params[:end_date].to_date
       options[:cert_type] = Certificate::STAFF_RH
       options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
-      options[:text]      << " quien participó en la formación de recursos humanos en el periodo del <b> #{options[:start_date].day} de #{get_month_name(options[:start_date].month)} del #{options[:start_date].year} al #{options[:end_date].day} de #{get_month_name(options[:end_date].month)} del #{options[:end_date].year} </b> de los siguientes estudiantes:"
+
+      if !start_date.blank?
+        options[:text]      << " quien participó en la formación de recursos humanos en el periodo del <b> #{options[:start_date].day} de #{get_month_name(options[:start_date].month)} del #{options[:start_date].year} al #{options[:end_date].day} de #{get_month_name(options[:end_date].month)} del #{options[:end_date].year} </b> de los siguientes estudiantes:"
+      else
+        options[:text]      << " quien participó en la formación de recursos humanos de los siguientes estudiantes: "
+      end  
       options[:filename]  =  "constancia-formacion-RH-#{@staff.id}.pdf"
 
       if !start_date.blank?
@@ -737,6 +742,7 @@ class StaffsController < ApplicationController
         options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where(status:[nil,ExternalCourse::ACTIVE]).where("(start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
+        options[:internships] = Internship.where(staff_id:@staff.id,status:1).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
       else
         options[:active_students] = Student.where(:supervisor=>@staff.id)
         options[:term_courses] = TermCourse.where(staff_id:@staff.id)
@@ -745,6 +751,7 @@ class StaffsController < ApplicationController
         options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1').order(:advance_date)
         options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'3').order(:advance_date)
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).order(:defence_date)
+        options[:internships] = Internship.where(staff_id:@staff.id,status: 1).order(:start_date)
       end
     end
 
@@ -970,9 +977,23 @@ class StaffsController < ApplicationController
           tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [280, 100, 120])
           tabla.draw
 
-
         end
-      end
+
+        # Servicios CIMAV
+        @internships= options[:internships]
+        if @internships.size > 0
+          data = []
+          data << [{:content => "<b>Nombre</b>", :align => :center}, {:content => "<b>Tipo de Servicio</b>", :align => :center}]          
+
+          @internships.each do |i|
+            data << [i.full_name, i.internship_type.name]
+          end 
+
+          pdf.text "\n<b>Servicios CIMAV</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [280, 220])
+          tabla.draw
+        end#if
+      end#elsif
 
       pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
 
@@ -986,6 +1007,8 @@ class StaffsController < ApplicationController
 
       filename = options[:filename]
       send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      ## linea para desarrollo (es más productivo actualizar la página que estar descargando archivos):
+      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
   end
 
