@@ -5,6 +5,9 @@ class TermCourseSchedule < ActiveRecord::Base
   belongs_to :staff
   belongs_to :classroom
 
+  validate :expiration_date_cannot_be_in_the_past
+  validates :staff_id, :presence => true
+
   ACTIVE   = 1
   INACTIVE = 2
 
@@ -54,5 +57,32 @@ class TermCourseSchedule < ActiveRecord::Base
 
   def class_type_name
     CLASSTYPE[class_type]
+  end
+
+  def expiration_date_cannot_be_in_the_past
+    if self.start_date >= self.end_date
+      errors.add(:start_date, "La fecha final no puede ser menor o igual que la inicial")
+    end
+
+    if self.start_hour >= self.end_hour
+      errors.add(:start_date, "La hora final no debe ser menor o igual que la final")
+    end
+    
+    tcs = TermCourseSchedule.where(:classroom_id=>self.classroom_id,:day=>self.day).where("(:start_date between start_date AND end_date) OR (:end_date between start_date AND end_date) OR (start_date >= :start_date AND end_date <= :end_date)",{:start_date=>self.start_date,:end_date=>self.end_date}).where("(:start_hour between start_hour AND end_hour) OR (:end_hour between start_hour AND end_hour) OR (start_hour >= :start_hour AND end_hour <= :end_hour)",{:start_hour=>self.start_hour,:end_hour=>self.end_hour})
+    ndays = (self.start_date..self.end_date).to_a.select {|k| [self.day].include?(k.wday)}
+
+    if tcs.size > 0
+      tcs.each do |t|
+        days = (t.start_date..t.end_date).to_a.select {|k| [t.day].include?(k.wday)}
+        days.each do |d|
+          if ndays.include?(d)
+            errors.add(:start_date, "Se empalman horarios para esta Aula!!")
+            break
+          end
+        end
+      end
+
+      
+    end
   end
 end

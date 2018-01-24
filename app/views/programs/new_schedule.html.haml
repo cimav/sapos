@@ -1,8 +1,15 @@
+- @include_js = 'select2'
+- @include2_js = 'select2_locale_es'
+- @include_css = 'select2/select2'
+- @include3_js = 'programs_new_schedule'
+:javascript
+  var new_schedule_term_course_group = "#{params[:group]}";
+    
 #schedule-header
   %h3= @tc.course.name
   #schedule-term= "Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
   #schedule-term-group Grupo: #{@tc.group}: #{(@tc.staff.full_name rescue 'Sin titular')}
-= form_for(@program, :url => { :action => "create_schedule" }) do |f|
+= form_for(@program, :url => {:action => "create_schedule" },:remote=>true) do |f|
   = hidden_field_tag 'term_course_id', @tc.id
   = hidden_field_tag 'term_course[term_course_schedules_attributes][0][term_course_id]', @tc.id
   = hidden_field_tag 'new_schedule_term_course_group', @tc.group
@@ -10,9 +17,9 @@
     #term-new
 
       %div{:id => "field_term_course_term_course_schedules_attributes_0_staff_id", :class => 'field'}
-        = fields.label :start_date, 'Docente'
-        = fields.grouped_collection_select :staff_id, @institutions, :staffs_active, :name, :id, :full_name
-
+        = fields.label :staff_id, 'Docente'
+        = fields.select :staff_id, @staffs.collect{|p| ["#{p.full_name} (#{p.institution.name})",p.id]}, options = {:prompt => "Seleccionar docente"},:style=>"width:385px"
+        
       %div{:id => "field_term_course_term_course_schedules_attributes_0_day", :class => 'field'}
         = fields.label :day, 'Horario'
         = fields.select :day, TermCourseSchedule::DAY.invert.sort {|a,b| a[1] <=> b[1] }
@@ -31,9 +38,20 @@
         = fields.label :start_date, 'Fecha Inicio'
         = fields.date_select :start_date, :default => @tc.term.start_date
 
+
       %div{:id => "field_term_course_term_course_schedules_attributes_0_end_date", :class => 'field'}
         = fields.label :end_date, 'Fecha Fin'
         = fields.date_select :end_date, :default => @tc.term.end_date
 
       #dialog-submit-button-area
         = fields.submit "Agregar sesión al curso"
+
+%center
+  %br  
+  %pre{:style=>"font-weight: bold; color: red;"}
+    #notice
+
+:javascript
+  $(document).ready(function(){
+    $('#term_course_term_course_schedules_attributes_0_staff_id').select2();
+  });
