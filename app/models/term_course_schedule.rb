@@ -5,7 +5,7 @@ class TermCourseSchedule < ActiveRecord::Base
   belongs_to :staff
   belongs_to :classroom
 
-  validate :expiration_date_cannot_be_in_the_past
+  validate :splice_schedules_search_engine
   validates :staff_id, :presence => true
 
   ACTIVE   = 1
@@ -59,7 +59,7 @@ class TermCourseSchedule < ActiveRecord::Base
     CLASSTYPE[class_type]
   end
 
-  def expiration_date_cannot_be_in_the_past
+  def splice_schedules_search_engine
     if self.start_date >= self.end_date
       errors.add(:start_date, "La fecha final no puede ser menor o igual que la inicial")
     end
