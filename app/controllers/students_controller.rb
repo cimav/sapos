@@ -2399,7 +2399,7 @@ private
     time = Time.new
     year = time.year.to_s
 
-    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada2018.jpg"
     @consecutivo = get_consecutive(@student, time, options[:cert_type])
     @city =
     @rails_root  = "#{Rails.root}"

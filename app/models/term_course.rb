@@ -5,6 +5,8 @@ class TermCourse < ActiveRecord::Base
   belongs_to :course
   belongs_to :staff
 
+  has_many :teacher_evaluations
+
   has_many :term_course_schedules
   accepts_nested_attributes_for :term_course_schedules
 

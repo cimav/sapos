@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171219232807) do
+ActiveRecord::Schema.define(:version => 20180126185817) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -599,16 +599,6 @@ ActiveRecord::Schema.define(:version => 20171219232807) do
     t.datetime "updated_at",    :null => false
   end
 
-  create_table "record_logs", :force => true do |t|
-    t.integer  "attachable_id"
-    t.string   "attachable_type"
-    t.datetime "record_date"
-    t.text     "detail"
-    t.string   "record_type"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
-  end
-
   create_table "scholarship_categories", :force => true do |t|
     t.string   "name"
     t.string   "description"
@@ -828,6 +818,28 @@ ActiveRecord::Schema.define(:version => 20171219232807) do
 
   add_index "studies_plans", ["program_id"], :name => "index_studies_plans_on_program_id"
 
+  create_table "teacher_evaluations", :force => true do |t|
+    t.integer  "staff_id"
+    t.integer  "term_course_id"
+    t.integer  "question1"
+    t.integer  "question2"
+    t.integer  "question3"
+    t.integer  "question4"
+    t.integer  "question5"
+    t.integer  "question6"
+    t.integer  "question7"
+    t.integer  "question8"
+    t.integer  "question9"
+    t.integer  "question10"
+    t.integer  "question11"
+    t.integer  "question12"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "teacher_evaluations", ["staff_id"], :name => "index_teacher_evaluations_on_staff_id"
+  add_index "teacher_evaluations", ["term_course_id"], :name => "index_teacher_evaluations_on_term_course_id"
+
   create_table "term_course_schedules", :force => true do |t|
     t.integer  "term_course_id"
     t.integer  "day"
@@ -851,9 +863,10 @@ ActiveRecord::Schema.define(:version => 20171219232807) do
     t.integer  "term_course_id"
     t.integer  "term_student_id"
     t.integer  "grade"
-    t.integer  "status",          :default => 1
+    t.integer  "status",             :default => 1
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "teacher_evaluation"
   end
 
   add_index "term_course_students", ["term_course_id"], :name => "index_term_course_students_on_term_course_id"
