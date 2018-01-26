@@ -278,6 +278,7 @@ class ProgramsController < ApplicationController
 
   def new_schedule
     @program = Program.find(params[:id])
+
     if !params[:group].blank?
       @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
     else
@@ -285,20 +286,21 @@ class ProgramsController < ApplicationController
       params[:group] = @tc.group
     end
 
-    @staffs = Staff.order('first_name').includes(:institution)
-    @institutions = Institution.order('name')
+    @staffs = Staff.where(:status=>0).order('institution_id').includes(:institution)
     render :layout => 'standalone'
   end
 
   def create_schedule
-    flash = {}
+    parameters = {}
     @tc = TermCourse.find(params[:term_course_id])
+    program = @tc.course.program
+
     if @tc.update_attributes(params[:term_course])
       flash[:notice] = "Sesión creada."
+      render_message(@tc,"Sesión Creada", parameters)
     else
-      flash[:error] = "Error al crear sesión."
-    end
-    render :layout => 'standalone'
+      render_error(@tc,"Error al dar de alta horario",parameters)
+    end#else
   end
 
   def edit_schedule
