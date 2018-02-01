@@ -12,8 +12,8 @@ class Internship < ActiveRecord::Base
   has_many :internship_file
   accepts_nested_attributes_for :internship_file
 
-  validates :first_name, :presence => true, :uniqueness=>{:scope=>[:last_name,:institution_id,:internship_type_id,:gender,:status]}
-  validates :last_name, :presence => true, :uniqueness=>{:scope=>[:first_name,:institution_id,:internship_type_id,:gender,:status]}
+  validates :first_name, :presence => true#, :uniqueness=>{:scope=>[:last_name,:institution_id,:internship_type_id,:gender,:status]}
+  validates :last_name, :presence => true#, :uniqueness=>{:scope=>[:first_name,:institution_id,:internship_type_id,:gender,:status]}
   validates :institution_id,:presence => true,:if=>"self.origin.eql? 0"
   validates :internship_type_id, :presence => true
   validates :gender, :presence => true
