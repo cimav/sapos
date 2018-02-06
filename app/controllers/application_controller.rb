@@ -246,12 +246,17 @@ class ApplicationController < ActionController::Base
 
   def serve_image
     case params[:object_type]
-      when "estudiante"
+      when "student"
         student = Student.find(params[:object_id])
         redirect_to student.image_url
-      when "docente"
+      when "internship"
+        internship = Internship.find(params[:object_id])
+        redirect_to internship.image_url
+      when "staff"
         staff = Staff.find(params[:object_id])
         redirect_to staff.image_url
+      else
+        render text:'No es posible mostrar imagen'
     end
   end
 
