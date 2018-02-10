@@ -608,6 +608,12 @@ $("#update-staff-group").live("click", function() {
   openUpdateStaffGroupDialog();
 });
 
+
+$("#download_teacher_evaluation").live("click", function() {
+   tcs = $(this).attr('tc_id');
+   window.location = "/evaluacion/docente/"+tcs;
+});
+
 function openUpdateStaffGroupDialog() {
   term_id = $('#tc_term_id').val();
   course_id = $('#tc_course_id').val();
