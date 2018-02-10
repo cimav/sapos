@@ -276,6 +276,7 @@ Sapos::Application.routes.draw do
   match 'objetos/borrar/:id' => 'committee_agreement_objects#delete'
   match 'acuerdos/busqueda' => 'committee_meeting_agreements#live_search'
 
+  match 'evaluacion/docente/:tc_id' => 'teacher_evaluations#download'
 
   match 'areas_planes_estudios/busqueda' => 'studies_plan_areas#live_search'
 

@@ -79,6 +79,13 @@
 -if !@is_pdf
   - if @tc.term.status == Term::OPEN
     = link_to 'Agregar estudiante', '#', :id => 'add-student-to-course'
+  - else 
+    - if @remaining > 0
+      %span.disabled
+        = "Descargar evaluación docente (#{@remaining})"
+    - else
+      = link_to 'Descargar evaluación docente', '#', :id => 'download_teacher_evaluation', :tc_id=> @tc.id
+
   - if @tc.term.status == Term::ENDED
     = link_to "Imprimir acta de calificaciones", :controller =>"programs", :action=>"students_table", :id => @tc.course.program.id, :format => 'pdf',:group=>@tc.group
 

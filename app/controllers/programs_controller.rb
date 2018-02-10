@@ -358,6 +358,8 @@ class ProgramsController < ApplicationController
       params[:group] = @tc.group
     end
 
+    @remaining = @tc.term_course_students.where(:status=>1,:teacher_evaluation=>false).size
+
     respond_with do |format|
       format.html do
         if @tc

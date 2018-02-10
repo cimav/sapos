@@ -8,7 +8,7 @@
       - items += [['Agregar nuevo grupo', 0]] if (tc.term.status == Term::OPEN) 
       = select "tc", "group", items, :selected => params[:group]
       - if (tc.term.status == Term::OPEN) 
-        = link_to 'Cambiar titular del curso', '#', :id => 'update-staff-group'
+        = link_to 'Cambiar titular del curso', '#', :id => 'update-staff-group', :class=>'tc-link'
 
   #tc-options
     - student_class = selected == 'students'?'tc-selected':''
@@ -19,4 +19,4 @@
     = link_to 'Horario', '#', :id=>'a-tc-schedule', :class => schedule_class
     = link_to 'Asistencia', '#', :id=>'a-tc-attendee', :class => attendee_class
     = link_to 'Documentación', '#', :id=>'a-tc-documentation', :class => documentation_class
-    = link_to 'Eliminar grupo', "/programas/#{tc.course.program_id}/periodo/#{tc.term_id}/grupo/#{tc.id}", id: 'a-tc-delete', term_course:tc.id, :confirm=>'¿Estás seguro?'
+    = link_to 'Eliminar grupo', "/programas/#{tc.course.program_id}/periodo/#{tc.term_id}/grupo/#{tc.id}", id: 'a-tc-delete', term_course:tc.id, :confirm=>'¿Estás seguro?' 

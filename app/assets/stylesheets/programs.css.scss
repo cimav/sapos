@@ -296,7 +296,7 @@ table.attendee_list {
   }
 }
 
-#update-staff-group {
+.tc-link{
   font-size: 80%;
 }
 
@@ -356,4 +356,9 @@ table.staff_hours{
 }
 h5.staff_hours{
   margin-bottom: 20px;
+}
+
+.disabled{
+  opacity: 0.5;
+  text-decoration: underline;
 }
