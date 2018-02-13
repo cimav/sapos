@@ -734,6 +734,7 @@ class StaffsController < ApplicationController
       options[:filename]  =  "constancia-formacion-RH-#{@staff.id}.pdf"
 
       if !start_date.blank?
+        options[:ranges]=true
         options[:active_students] = Student.where(:supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status = 1) OR (start_date < :start_date AND end_date IS NULL AND status = 1)",{:start_date=>start_date,:end_date=>end_date})
         options[:graduate_students] = Student.where(:supervisor=>@staff.id).where(status:Student::GRADUATED)
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
@@ -744,7 +745,12 @@ class StaffsController < ApplicationController
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:internships] = Internship.where(staff_id:@staff.id,status:1).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
       else
+        options[:ranges]= false
         options[:active_students] = Student.where(:supervisor=>@staff.id)
+        options[:graduate_students] = Student.where(:supervisor=>@staff.id).where(status:Student::GRADUATED)
+        options[:active_students_co] = Student.where(:co_supervisor=>@staff.id)
+        options[:graduate_students_co] = Student.where(:co_supervisor=>@staff.id).where(status:Student::GRADUATED)
+        options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
         options[:term_courses] = TermCourse.where(staff_id:@staff.id)
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id)
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id)
@@ -834,7 +840,7 @@ class StaffsController < ApplicationController
         pdf.text "<b>Participación como sinodal</b>\n", :align=>:center, :inline_format=>true              
         tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [100,95,200,105])
         tabla.draw
-      ################################################################# CONSTANCIA FORMACIÓN DE RH ###############################################################################
+      ##################################### CONSTANCIA FORMACIÓN DE RH ################################################################
       elsif options[:cert_type].eql? Certificate::STAFF_RH
 
         # Alumnos como director de tesis
@@ -849,7 +855,11 @@ class StaffsController < ApplicationController
           end
 
           @graduate_students.each do |s|
-            if s.thesis.defence_date.between?(options[:start_date],options[:end_date])
+            if options[:ranges]
+              if s.thesis.defence_date.between?(options[:start_date],options[:end_date])
+                data << [s.full_name, s.program.name, "Egresado"]
+              end
+            else
               data << [s.full_name, s.program.name, "Egresado"]
             end
           end
@@ -859,6 +869,31 @@ class StaffsController < ApplicationController
           tabla.draw
         end
 
+        # Alumnos como co-director de tesis
+        @students = options[:active_students_co]
+        @graduate_students = options[:graduate_students_co]
+        if @students.size > 0
+          data = []
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
+
+          @students.each do |s|
+            data << [s.full_name, s.program.name, "Activo"]
+          end
+
+          @graduate_students.each do |s|
+            if options[:ranges]
+              if s.thesis.defence_date.between?(options[:start_date],options[:end_date])
+                data << [s.full_name, s.program.name, "Egresado"]
+              end
+            else
+              data << [s.full_name, s.program.name, "Egresado"]
+            end
+          end
+
+          pdf.text "\n<b>Participación como co-director de tesis</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
+          tabla.draw
+        end
 
         # tesis como sinodal
         @theses = options[:theses]
@@ -882,8 +917,10 @@ class StaffsController < ApplicationController
         @advances = options[:advances]
         active_advances = []
         @advances.each do |advance|
-          if advance.student.start_date.between?(options[:start_date],options[:end_date]) # tabien debería checarse la fecha de termino del estudiante pero la base de datos tiene demasiados datos faltantes
-            active_advances << advance
+          if options[:ranges]
+            if advance.student.start_date.between?(options[:start_date],options[:end_date]) # tabien debería checarse la fecha de termino del estudiante pero la base de datos tiene demasiados datos faltantes
+              active_advances << advance
+            end
           end
         end
 
@@ -930,7 +967,12 @@ class StaffsController < ApplicationController
           @term_course_schedules.each do |tcs|
             term_course = tcs.term_course
             if term_course.status != TermCourse::DELETED
-              if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
+              if options[:ranges]
+                if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
+                  term_month = get_month_name(term_course.term.start_date.month)
+                  data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
+                end
+              else
                 term_month = get_month_name(term_course.term.start_date.month)
                 data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
               end
