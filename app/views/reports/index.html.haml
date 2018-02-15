@@ -2,6 +2,11 @@
 - @nav_icon = 'applicants'
 #content-panel.main-panel
   %h3="Docentes"
-  = link_to 'Número de alumnos graduados y eficiencia terminal','/docentes/reporte.xls'
-  = "[XLS]"
+  %ul
+    %li
+      = link_to 'Número de alumnos graduados y eficiencia terminal','/docentes/reporte.xls'
+      = "[XLS]"
+    %li
+      = link_to 'Evaluación docente al momento','/docentes/evaluacion.xls'
+      = "[XLS]"
 
