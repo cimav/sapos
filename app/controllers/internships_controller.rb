@@ -2,6 +2,7 @@
 
 require 'digest/md5'
 require 'open-uri'
+require 'json'
 
 class InternshipsController < ApplicationController
   load_and_authorize_resource
@@ -708,17 +709,25 @@ class InternshipsController < ApplicationController
     if @internship.save
       flash[:notice] = "Servicio creado para applicant."
 
-      ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud por internet'}"}).save
-      @uri = generate_applicant_document(@internship)
-      send_mail(@internship,@uri,1,nil)
-      send_mail(@internship,@uri,2,nil)
-
+      if @internship.internship_type_id.eql? 8
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud de Verano CIMAV por internet'}"}).save
+        send_mail(@internship,@uri,7,nil)
+        send_mail(@internship,@uri,8,nil)
+      else
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud por internet'}"}).save
+        @uri = generate_applicant_document(@internship)
+        send_mail(@internship,@uri,1,nil)
+        send_mail(@internship,@uri,2,nil)
+      end
+      
+      
       respond_with do |format|
         format.html do
           if request.xhr?
             json = {}
             json[:flash] = flash
             json[:uniq]  = @internship.id
+            json[:internship_type_id] = @internship.internship_type_id
             json[:uri]   = @uri
             render :json => json
           else
@@ -939,7 +948,11 @@ class InternshipsController < ApplicationController
 
 
   def send_mail(i,uri,opc,text)
-    user    = get_user(i.area_id)
+    if opc.in? [7,8] ## solo Verano CIMAV
+      user    = User.find(15)  ## <- Marcos López, esto en un futuro debe quedar en configuraciones
+    else
+      user    = get_user(i.area_id)
+    end
     
     if !user.nil?
       if opc.eql? 1
@@ -952,6 +965,10 @@ class InternshipsController < ApplicationController
         ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social no autorizado'}"}).save
       elsif opc.eql? 5
         ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se intenta mandar un correo de servicio social autorizado'}"}).save
+      elsif opc.eql? 7 # Verano CIMAV
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda correo al solicitante'}"}).save
+      elsif opc.eql? 8 # Verano CIMAV
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda correo al contacto de Posgrado'}"}).save
       end
   
       if opc.eql? 1
@@ -979,6 +996,14 @@ class InternshipsController < ApplicationController
         @u_email = Settings.interships_cards_email
         subject  = "Se ha registrado un alumno como Servicio CIMAV #{i.id}"
         content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'25',:reply_to=>'#{user.email}'}"
+      elsif opc.eql? 7 
+        @u_email = i.email
+        subject  = "Ha registrado una solicitud para el Verano CIMAV"
+        content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'26',:reply_to=>'#{user.email}'}"
+      elsif opc.eql? 8
+        @u_email = user.email
+        subject  = "Alguien ha realizado una solicitud para el Verano CIMAV"
+        content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'27',:reply_to=>'#{i.email}'}"
       end
   
       email         = Email.new
