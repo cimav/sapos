@@ -73,6 +73,7 @@ Sapos::Application.routes.draw do
   resources :applicant_files
 
   match 'docentes/reporte' => 'staffs#report'
+  match 'docentes/evaluacion' => 'staffs#evaluation'
   match 'docentes/busqueda' => 'staffs#live_search'
   match 'docentes/:id/cambiar_foto' => 'staffs#change_image'
   match 'docentes/upload_image' => 'staffs#upload_image'
@@ -276,6 +277,7 @@ Sapos::Application.routes.draw do
   match 'objetos/borrar/:id' => 'committee_agreement_objects#delete'
   match 'acuerdos/busqueda' => 'committee_meeting_agreements#live_search'
 
+  match 'evaluacion/docente/:tc_id' => 'teacher_evaluations#download'
 
   match 'areas_planes_estudios/busqueda' => 'studies_plan_areas#live_search'
 

@@ -440,9 +440,17 @@ $('#item-new-internship-applicant-form')
     .live("ajax:success", function(evt, data, status, xhr) {
         // Load new
         var res    = $.parseJSON(xhr.responseText);
+        var html   = ''
         if(res['uniq']!=0){
-          var uri = res['uri']
-          var html = "<h3>Se ha dado de alta su solicitud y se ha enviado un mensaje con instrucciones a su correo, puede descargar e imprimir su formato de registro: <a href="+uri+">Descargar</a></h3>"
+          if(res['internship_type_id']==8)
+          {
+            html = "<h3>Se ha dado de alta su solicitud y se ha enviado un mensaje con instrucciones al correo que ha registrado.</h3>"
+          }
+          else
+          {
+            var uri = res['uri']
+            html = "<h3>Se ha dado de alta su solicitud y se ha enviado un mensaje con instrucciones a su correo, puede descargar e imprimir su formato de registro: <a href="+uri+">Descargar</a></h3>"
+          }
           $('#standalone-content').html(html);
         }
     })

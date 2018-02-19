@@ -167,6 +167,60 @@ class StaffsController < ApplicationController
     end ## end respond_with
   end ## end reporte
 
+  def evaluation
+    @staffs = Staff.includes(:term_courses=>:term).where(:status=>0).where("terms.name like '%2017-2%'")
+    rows = Array.new
+ 
+    @staffs.each do |s|
+      s.term_courses.each do |tc|
+        averages= get_teacher_evaluation_averages(tc)
+        if !(averages["question1"].nil?)
+          logger.info "################################# averages: #{averages["question1"]}"
+          rows << {
+            "Nombre"=>s.full_name,
+            "Curso"=>tc.course.name,
+            "Grupo"=>tc.group,
+            "Ciclo Escolar"=>tc.term.name,
+            "Pregunta1" => TeacherEvaluation::ANSWERS[averages["question1"]],
+            "Pregunta2" => TeacherEvaluation::ANSWERS[averages["question2"]],
+            "Pregunta3" => TeacherEvaluation::ANSWERS[averages["question3"]],
+            "Pregunta4" => TeacherEvaluation::ANSWERS[averages["question4"]],
+            "Pregunta5" => TeacherEvaluation::ANSWERS[averages["question5"]],
+            "Pregunta6" => TeacherEvaluation::ANSWERS[averages["question6"]],
+            "Pregunta7" => TeacherEvaluation::ANSWERS[averages["question7"]],
+            "Pregunta8" => TeacherEvaluation::ANSWERS[averages["question8"]],
+            "Pregunta9" => TeacherEvaluation::ANSWERS[averages["question9"]],
+            "Pregunta10" => TeacherEvaluation::ANSWERS[averages["question10"]],
+            "Pregunta11" => TeacherEvaluation::ANSWERS[averages["question11"]],
+            "Pregunta12" => TeacherEvaluation::ANSWERS[averages["question12"]],
+          } 
+        end
+      end
+    end
+
+    column_order=["Nombre","Curso","Grupo","Ciclo Escolar","Pregunta1","Pregunta2","Pregunta3","Pregunta4","Pregunta5","Pregunta6","Pregunta7","Pregunta8","Pregunta9","Pregunta10","Pregunta11","Pregunta12"]
+    to_excel(rows,column_order,"Evaluacion","Evaluacion")
+  end#end evaluation
+
+  def get_teacher_evaluation_averages(tc)
+    averages = Hash.new
+    tc.teacher_evaluations.each do |te|
+      (1..12).each do |n|
+        averages["sum#{n}"] = averages["sum#{n}"].to_f + te["question#{n}"].to_f
+      end
+    end
+    
+    if !(averages["sum1"].nil?)
+      (1..12).each do |n|
+        averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round
+        averages.delete("sum#{n}")
+      end
+    end
+   
+    return averages
+  end
+  #def get_teacher_evaluation_averages(tc)
+
   def show
     @aareas       = get_areas(current_user)
     @staff        = Staff.find(params[:id])
@@ -734,8 +788,9 @@ class StaffsController < ApplicationController
       options[:filename]  =  "constancia-formacion-RH-#{@staff.id}.pdf"
 
       if !start_date.blank?
-        options[:active_students] = Student.where(:supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status = 1) OR (start_date < :start_date AND end_date IS NULL AND status = 1)",{:start_date=>start_date,:end_date=>end_date})
-        options[:graduate_students] = Student.where(:supervisor=>@staff.id).where(status:Student::GRADUATED)
+        options[:ranges]=true
+        options[:active_students] = Student.where(:supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status = 1) OR (start_date < :start_date AND end_date IS NULL)",{:start_date=>start_date,:end_date=>end_date}).order(:status)
+        options[:active_students_co] = Student.where(:co_supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status = 1) OR (start_date < :start_date AND end_date IS NULL)",{:start_date=>start_date,:end_date=>end_date}).order(:status)
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
         options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1')
         options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'3').order(:advance_date)
@@ -744,7 +799,10 @@ class StaffsController < ApplicationController
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:internships] = Internship.where(staff_id:@staff.id,status:1).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
       else
-        options[:active_students] = Student.where(:supervisor=>@staff.id)
+        options[:ranges]= false
+        options[:active_students] = Student.where(:supervisor=>@staff.id).order(:status)
+        options[:active_students_co] = Student.where(:co_supervisor=>@staff.id).order(:status)
+        options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
         options[:term_courses] = TermCourse.where(staff_id:@staff.id)
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id)
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id)
@@ -834,7 +892,7 @@ class StaffsController < ApplicationController
         pdf.text "<b>Participación como sinodal</b>\n", :align=>:center, :inline_format=>true              
         tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [100,95,200,105])
         tabla.draw
-      ################################################################# CONSTANCIA FORMACIÓN DE RH ###############################################################################
+      ##################################### CONSTANCIA FORMACIÓN DE RH ################################################################
       elsif options[:cert_type].eql? Certificate::STAFF_RH
 
         # Alumnos como director de tesis
@@ -842,15 +900,14 @@ class StaffsController < ApplicationController
         @graduate_students = options[:graduate_students]
         if @students.size > 0
           data = []
+          data_helper = []
           data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
 
           @students.each do |s|
-            data << [s.full_name, s.program.name, "Activo"]
-          end
-
-          @graduate_students.each do |s|
-            if s.thesis.defence_date.between?(options[:start_date],options[:end_date])
-              data << [s.full_name, s.program.name, "Egresado"]
+            if s.status.eql? 5 ##  Para que Egresado No Graduado salga como Egresado
+              data_helper << [s.full_name, s.program.name, "Egresado"]
+            else
+              data << [s.full_name, s.program.name, Student::STATUS[s.status]]
             end
           end
 
@@ -859,6 +916,21 @@ class StaffsController < ApplicationController
           tabla.draw
         end
 
+        # Alumnos como co-director de tesis
+        @students = options[:active_students_co]
+        @graduate_students = options[:graduate_students_co]
+        if @students.size > 0
+          data = []
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
+
+          @students.each do |s|
+            data << [s.full_name, s.program.name, Student::STATUS[s.status]]
+          end
+
+          pdf.text "\n<b>Participación como co-director de tesis</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
+          tabla.draw
+        end
 
         # tesis como sinodal
         @theses = options[:theses]
@@ -882,8 +954,10 @@ class StaffsController < ApplicationController
         @advances = options[:advances]
         active_advances = []
         @advances.each do |advance|
-          if advance.student.start_date.between?(options[:start_date],options[:end_date]) # tabien debería checarse la fecha de termino del estudiante pero la base de datos tiene demasiados datos faltantes
-            active_advances << advance
+          if options[:ranges]
+            if advance.student.start_date.between?(options[:start_date],options[:end_date]) # tabien debería checarse la fecha de termino del estudiante pero la base de datos tiene demasiados datos faltantes
+              active_advances << advance
+            end
           end
         end
 
@@ -930,7 +1004,12 @@ class StaffsController < ApplicationController
           @term_course_schedules.each do |tcs|
             term_course = tcs.term_course
             if term_course.status != TermCourse::DELETED
-              if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
+              if options[:ranges]
+                if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
+                  term_month = get_month_name(term_course.term.start_date.month)
+                  data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
+                end
+              else
                 term_month = get_month_name(term_course.term.start_date.month)
                 data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
               end
@@ -1006,9 +1085,9 @@ class StaffsController < ApplicationController
 
 
       filename = options[:filename]
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
       ## linea para desarrollo (es más productivo actualizar la página que estar descargando archivos):
-      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
   end
 

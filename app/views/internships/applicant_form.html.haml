@@ -53,7 +53,7 @@
 
   .field#field_internship_institution_id
     = f.label :institution_id, 'Institución'
-    = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona tu institucion de procedencia"}
+    = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona tu institucion de procedencia"},:style=>"width: 400px"
     = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
 
   .field#field_internship_internship_type_id
@@ -82,7 +82,7 @@
 
 :javascript
   var model_name = 'internship';
-  var states     = #{@st_js.to_json}
+  var states = #{@st_js.to_json}
 
   function full_states(){
     var select = $("#internship_state_id")
@@ -133,6 +133,15 @@
         if($(this).val()==0){
           $("#text_internship_type_id").show();
         }else{
+          if($(this).val()==8){
+            $("#internship_area_id option").hide();
+            $("#internship_area_id option[value='3']").show();
+          }
+          else
+          {
+            $("#internship_area_id option").show();
+          }
+
           $("#text_internship_type_id").hide();
         }
     });
