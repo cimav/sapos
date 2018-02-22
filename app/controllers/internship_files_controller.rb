@@ -79,7 +79,11 @@ class InternshipFilesController < ApplicationController
   
   def download
     af = InternshipFile.find(params[:id]).file
-    send_file af.to_s, :x_sendfile=>true
+    if params[:disposition].eql?'inline'
+      send_file af.to_s, disposition: :inline
+    else
+      send_file af.to_s, :x_sendfile=>true
+    end
   end
   
   def applicant_destroy
