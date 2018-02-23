@@ -168,32 +168,56 @@ class StaffsController < ApplicationController
   end ## end reporte
 
   def evaluation
-    @staffs = Staff.includes(:term_courses=>:term).where(:status=>0).where("terms.name like '%2017-2%'")
+    @staffs  = Staff.includes(:term_courses=>:term).where(:status=>0).where("terms.name like '%2017-2%'")
+    numeric = !params[:numeric].to_i.zero?
+    
     rows = Array.new
- 
+
     @staffs.each do |s|
       s.term_courses.each do |tc|
-        averages= get_teacher_evaluation_averages(tc)
+        averages= get_teacher_evaluation_averages(tc,numeric)
         if !(averages["question1"].nil?)
           logger.info "################################# averages: #{averages["question1"]}"
-          rows << {
-            "Nombre"=>s.full_name,
-            "Curso"=>tc.course.name,
-            "Grupo"=>tc.group,
-            "Ciclo Escolar"=>tc.term.name,
-            "Pregunta1" => TeacherEvaluation::ANSWERS[averages["question1"]],
-            "Pregunta2" => TeacherEvaluation::ANSWERS[averages["question2"]],
-            "Pregunta3" => TeacherEvaluation::ANSWERS[averages["question3"]],
-            "Pregunta4" => TeacherEvaluation::ANSWERS[averages["question4"]],
-            "Pregunta5" => TeacherEvaluation::ANSWERS[averages["question5"]],
-            "Pregunta6" => TeacherEvaluation::ANSWERS[averages["question6"]],
-            "Pregunta7" => TeacherEvaluation::ANSWERS[averages["question7"]],
-            "Pregunta8" => TeacherEvaluation::ANSWERS[averages["question8"]],
-            "Pregunta9" => TeacherEvaluation::ANSWERS[averages["question9"]],
-            "Pregunta10" => TeacherEvaluation::ANSWERS[averages["question10"]],
-            "Pregunta11" => TeacherEvaluation::ANSWERS[averages["question11"]],
-            "Pregunta12" => TeacherEvaluation::ANSWERS[averages["question12"]],
-          } 
+
+          if numeric
+            rows << {
+              "Nombre"=>s.full_name,
+              "Curso"=>tc.course.name,
+              "Grupo"=>tc.group,
+              "Ciclo Escolar"=>tc.term.name,
+              "Pregunta1" => averages["question1"],
+              "Pregunta2" => averages["question2"],
+              "Pregunta3" => averages["question3"],
+              "Pregunta4" => averages["question4"],
+              "Pregunta5" => averages["question5"],
+              "Pregunta6" => averages["question6"],
+              "Pregunta7" => averages["question7"],
+              "Pregunta8" => averages["question8"],
+              "Pregunta9" => averages["question9"],
+              "Pregunta10" => averages["question10"],
+              "Pregunta11" => averages["question11"],
+              "Pregunta12" => averages["question12"],
+            } 
+          else
+            rows << {
+              "Nombre"=>s.full_name,
+              "Curso"=>tc.course.name,
+              "Grupo"=>tc.group,
+              "Ciclo Escolar"=>tc.term.name,
+              "Pregunta1" => TeacherEvaluation::ANSWERS[averages["question1"]],
+              "Pregunta2" => TeacherEvaluation::ANSWERS[averages["question2"]],
+              "Pregunta3" => TeacherEvaluation::ANSWERS[averages["question3"]],
+              "Pregunta4" => TeacherEvaluation::ANSWERS[averages["question4"]],
+              "Pregunta5" => TeacherEvaluation::ANSWERS[averages["question5"]],
+              "Pregunta6" => TeacherEvaluation::ANSWERS[averages["question6"]],
+              "Pregunta7" => TeacherEvaluation::ANSWERS[averages["question7"]],
+              "Pregunta8" => TeacherEvaluation::ANSWERS[averages["question8"]],
+              "Pregunta9" => TeacherEvaluation::ANSWERS[averages["question9"]],
+              "Pregunta10" => TeacherEvaluation::ANSWERS[averages["question10"]],
+              "Pregunta11" => TeacherEvaluation::ANSWERS[averages["question11"]],
+              "Pregunta12" => TeacherEvaluation::ANSWERS[averages["question12"]],
+            } 
+          end
         end
       end
     end
@@ -202,7 +226,7 @@ class StaffsController < ApplicationController
     to_excel(rows,column_order,"Evaluacion","Evaluacion")
   end#end evaluation
 
-  def get_teacher_evaluation_averages(tc)
+  def get_teacher_evaluation_averages(tc,numeric)
     averages = Hash.new
     tc.teacher_evaluations.each do |te|
       (1..12).each do |n|
@@ -212,7 +236,11 @@ class StaffsController < ApplicationController
     
     if !(averages["sum1"].nil?)
       (1..12).each do |n|
-        averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round
+        if numeric
+          averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round(2)
+        else
+          averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round
+        end
         averages.delete("sum#{n}")
       end
     end
