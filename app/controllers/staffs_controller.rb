@@ -1091,9 +1091,9 @@ class StaffsController < ApplicationController
 
 
       filename = options[:filename]
-      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
       ## linea para desarrollo (es más productivo actualizar la página que estar descargando archivos):
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
   end
 
