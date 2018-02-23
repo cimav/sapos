@@ -571,14 +571,21 @@ class CommitteeSessionsController < ApplicationController
         pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
         pdf.move_down 235
         data = []
-        data << ["Semestre 1","Protocolo de Investigación"]
-        data << ["Semestre 2","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa y discusión de los resultados del avance de su investigación"]
-        data << ["Semestre 3","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa y discusión de los resultados del avance de su investigación"]
-        data << ["Semestre 4","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, discusión de los resultados del avance de investigación"]
-        data << ["Semestre 5","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, discusión de los resultados del avance de investigación"]
-        data << ["Semestre 6","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, envío del artículo y discusión de los resultados del desarrollo experimental"]
-        data << ["Semestre 7","Primer borrador de la tesis y seguimiento al envío del artículo"]
-        data << ["Semestre 8","Seminario departamental final"]
+        if student.program.level.eql? 2
+          data << ["Semestre 1","Protocolo de Investigación"]
+          data << ["Semestre 2","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa y discusión de los resultados del avance de su investigación"]
+          data << ["Semestre 3","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa y discusión de los resultados del avance de su investigación"]
+          data << ["Semestre 4","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, discusión de los resultados del avance de investigación"]
+          data << ["Semestre 5","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, discusión de los resultados del avance de investigación"]
+          data << ["Semestre 6","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa, envío del artículo y discusión de los resultados del desarrollo experimental"]
+          data << ["Semestre 7","Primer borrador de la tesis y seguimiento al envío del artículo"]
+          data << ["Semestre 8","Seminario departamental final"]
+        else
+          data << ["Semestre 2","Protocolo de Investigación"]
+          data << ["Semestre 3","Resultados del desarrollo experimental"]
+          data << ["Semestre 4","Seminario departamental final"]
+        end
+
         tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>9,:padding=>3,:inline_format => true},:position=>:center,:column_widths=>{1 => 410}) #solo s especifica la columna 2
         tabla.draw
         pdf.move_down 20
