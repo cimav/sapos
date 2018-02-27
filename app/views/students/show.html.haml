@@ -123,13 +123,13 @@
         = f.collection_select :studies_plan_id, @student.program.studies_plan,:id,:name, options = {:prompt => "Selecciona un plan de estudios"}
       .field#field_student_supervisor
         = f.label :supervisor, 'Director'
-        = f.grouped_collection_select :supervisor, @institutions, :staffs, :name, :id, :full_name, options = {:prompt => "Selecciona el asesor"}
+        = f.select :supervisor, options_from_collection_for_select(@staffs, :id, :full_name_upcase_origin, @student.supervisor), :prompt => "Selecciona al Director"
       .field#field_student_co_supervisor
         = f.label :co_supervisor, 'Codirector'
-        = f.grouped_collection_select :co_supervisor, @institutions, :staffs, :name, :id, :full_name, options = {:include_blank => true}
+        = f.select :co_supervisor, options_from_collection_for_select(@staffs, :id, :full_name_upcase_origin, @student.co_supervisor), :prompt => "Selecciona al Co-director"
       .field#field_student_co_supervisor
         = f.label :external_supervisor, 'Director externo'
-        = f.grouped_collection_select :external_supervisor, @institutions, :staffs, :name, :id, :full_name, options = {:include_blank => true}
+        = f.select :external_supervisor, options_from_collection_for_select(@staffs.where("institution_id!=1"), :id, :full_name_upcase_origin, @student.external_supervisor), :prompt => "Selecciona al Director externo"
       .field#field_student_start_date
         = f.label :start_date, 'Fecha de inicio'
         = f.date_select :start_date, :start_year => 1994, end_year:Date.today.year+5
@@ -186,7 +186,7 @@
       %h3 Grado anterior
       .field#field_previous_institution
         = f.label :previous_institution, 'Institucion'
-        = f.collection_select :previous_institution, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"} 
+        = f.select :previous_institution, options_from_collection_for_select(@institutions, :id, :name, @student.previous_institution), :prompt => "Selecciona la institucion"
       .field#field_previous_degree_type
         = f.label :previous_degree_type, 'Tipo'
         = f.select :previous_degree_type,  [['---Selecciona el grado---',''], ['Post-Doctorado', 'POSDOCTORADO'], ['Doctorado', 'DOCTORADO'], ['Maestria', 'MAESTRIA'], ['Licenciatura', 'LICENCIATURA'], ['Bachillerato', 'BACHILLERATO']]
@@ -244,3 +244,12 @@
     #constancias
 
 %iframe{"name" => "downloads_iframe", "id" => "downloads_iframe", :height=>"100px" ,"src" => "", "scrolling" => "no", :frameborder=>"0"}
+
+:javascript
+  $(document).ready(function(){
+    $('#student_supervisor').select2({width: '400px'});
+    $('#student_co_supervisor').select2({width: '400px'});
+    $('#student_external_supervisor').select2({width: '400px'});
+    $('#student_previous_institution').select2({width: '530px'});
+  }); 
+
