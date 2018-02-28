@@ -85,7 +85,7 @@
       - if @internship.institution_id.to_i != 1
         .field#field_internship_institution_id
           = f.label :institution_id, 'Institucion'
-          = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"}
+          = f.select :institution_id, options_from_collection_for_select(@institutions, :id, :name, @internship.institution_id), :prompt => "Selecciona la institucion"
 
       .field#field_internship_career
         = f.label :career,'Carrera'
@@ -316,4 +316,5 @@
 :javascript
   $(document).ready(function(){
     $('#internship_staff_id').select2({width: '400px'});
+    $('#internship_institution_id').select2({width: '530px'});
   }); 
