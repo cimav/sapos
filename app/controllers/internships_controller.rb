@@ -393,7 +393,7 @@ class InternshipsController < ApplicationController
   def certificates
     @internship = Internship.find(params[:id])
     @sign        = params[:sign_id]
-    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada2018.png"
 
 
     time = Time.new
