@@ -785,6 +785,21 @@ class StaffsController < ApplicationController
       else  
         options[:students] = Student.where(:supervisor=>@staff.id)
       end
+    ################################ CONSTANCIA DE CO-DIRECTOR DE TESIS ##################################
+    elsif params[:type] == "co_dir_tesis"
+      start_date = params[:start_date]
+      end_date   = params[:end_date]
+      options[:cert_type] = Certificate::STAFF_THESIS_DIR
+      options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
+      options[:text]      << " quien participó como Co-Director de tesis de los siguientes estudiantes:"
+      options[:filename]  =  "constancia-director-tesis-#{@staff.id}.pdf"
+
+      if !start_date.blank?
+        options[:students] = Student.where(:co_supervisor=>@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
+      else  
+        options[:students] = Student.where(:co_supervisor=>@staff.id)
+      end
+    
     ################################ CONSTANCIA COMO SINODAL ##################################
     elsif params[:type] == "sinodal"
       start_date = params[:start_date]
