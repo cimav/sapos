@@ -383,7 +383,7 @@ class InternshipsController < ApplicationController
   def certificates
     @internship = Internship.find(params[:id])
     @sign        = params[:sign_id]
-    background = "#{Rails.root.to_s}/private/prawn_templates/membretada2018.png"
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
 
 
     time = Time.new
@@ -471,7 +471,7 @@ class InternshipsController < ApplicationController
       end
 
 
-      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
         pdf.font_size 11
         x = 20
         y = 565 #664
@@ -559,7 +559,7 @@ class InternshipsController < ApplicationController
         @genero2 = "x"
       end
 
-      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
         pdf.font_size 11
         x = 20
         y = 565 #664
