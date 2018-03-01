@@ -21,6 +21,7 @@ class Internship < ActiveRecord::Base
   #validates :country_id, :presence => true
   #validates :state_id, :presence => true
   validates :area_id, :presence => true
+  validates :curp, :presence => true
   validates :phone, :presence => true,:if=>"self.origin.eql? 0"
   validates :health_insurance, :presence => true,:if=>"self.origin.eql? 0"
   validates :health_insurance_number, :presence => true,:if=>"self.origin.eql? 0"
