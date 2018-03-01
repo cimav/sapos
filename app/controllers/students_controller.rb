@@ -2453,7 +2453,7 @@ private
     time = Time.new
     year = time.year.to_s
 
-    background = "#{Rails.root.to_s}/private/prawn_templates/membretada2018.jpg"
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     @consecutivo = get_consecutive(@student, time, options[:cert_type])
     @city =
     @rails_root  = "#{Rails.root}"
@@ -2462,7 +2462,7 @@ private
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
       pdf.font_size 13
       x = 190 #232
       y = 565 #565

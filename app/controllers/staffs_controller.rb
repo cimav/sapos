@@ -881,7 +881,7 @@ class StaffsController < ApplicationController
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>[158,50,85,50] ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[158,50,85,50] ) do |pdf|
       pdf.font_size 10
       x = 232
       y = 565 #664
