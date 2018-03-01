@@ -537,6 +537,13 @@ class ProgramsController < ApplicationController
 
   def update_staff_to_group
     @tc = TermCourse.where('term_id = :t AND course_id = :c AND `group` = :g', {:t => params[:term_id], :c => params[:course_id], :g => params[:group]}).first
+
+    @staffs = Staff.includes(:institution).where(:status=>0).order(:first_name)
+
+    if !@tc.staff_id.nil?
+      s = Staff.find(@tc.staff_id)
+      @staffs << s
+    end
     render :layout => 'standalone'
   end
 
