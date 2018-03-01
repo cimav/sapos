@@ -5,6 +5,14 @@ class CertificatesController < ApplicationController
   respond_to :html, :xml, :json
 
   def total_studies_certificate
+=begin 
+  NOTAS
+  @template_mode - esta variable se activa y desactiva manualmente cuando el usuario solicita machote de algun plan de estudios
+                   hay que especificar manualmente el plan pero el titulo de la maestria no lo hace por lo que hay que
+                   elegir un estudiante que sea del programa que necesitamos.
+=end
+
+    @template_mode  = false  ## leer NOTAS
     @r_root    = Rails.root.to_s
     t = Thesis.find(params[:thesis_id])
     libro = params[:libro]
@@ -58,6 +66,12 @@ class CertificatesController < ApplicationController
       y = y + 8
       w = 40
       h = 13
+
+      if @template_mode
+        libro = "XX"
+        foja = "XX"
+      end
+
       text = "#{libro}-#{foja}"
       pdf.text_box text , :at=>[x,y + 2], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :center
 
@@ -68,7 +82,13 @@ class CertificatesController < ApplicationController
       w = 550
       h = 13
       size = 14
-      text = "Hace constar que #{t.student.full_name.mb_chars}"
+ 
+      if @template_mode
+        text = "Hace constar que XXXXXXXXXXXXXXXX"
+      else
+        text = "Hace constar que #{t.student.full_name.mb_chars}"
+      end
+
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
       # SET PROGRAM NAME
       y = y - 14
@@ -133,9 +153,54 @@ class CertificatesController < ApplicationController
       else
         tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?",t.student.id,TermCourseStudent::ACTIVE,70).order(:code)
       end
+ 
+      if @template_mode     
+        # usualmente se utiliza esta linea y llegan las materias  de forma correcta
+        #tcss  = Course.where(:program_id=>3,:studies_plan_id=>17).where("term not in (99,100,101)").order(:code)
+
+        ## estas lineas son para el caso del plan 17 que trae desordenados los codes de las materias (se trae primero los blancos)
+        tcss1  = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=1").order("courses.term")
+        tcss2 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=2").order("courses.term, courses.id desc")
+        tcss3 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=3").order("courses.term, courses.id asc")
+        tcss4 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=4").order("courses.term, courses.id desc")
+
+        tcss = tcss1 + tcss2 + tcss3 + tcss4
+      end
 
       #pdf.font "Arial"
-      if tcss.size >= 11
+      if tcss.size >= 14
+        offset = 5
+        # CODE INITIAL DATA
+        x = 63
+        y = 210 + offset
+        w = 20
+        h = 9
+        size = 8
+        # COURSE NAME INITIAL DATA
+        x_1 = 107
+        y_1 = y + 8 + offset
+        w_1 = 106
+        h_1 = 25
+        size_1 = 8
+        # TERMS INITIAL DATA
+        x_2 = 220
+        y_2 = y + 1 + offset
+        w_2 = 45
+        h_2 = 9
+        size_2 = 8
+        # GRADE INITIAL DATA
+        x_3 = 273
+        y_3 = y + offset
+        w_3 = 38
+        h_3 = 9
+        size_3 = 8
+        # GRADE ON TEXT INITIAL DATA
+        x_4 = 317
+        y_4 = y + 5 + offset
+        w_4 = 82
+        h_4 = 20
+        size_4 = 8
+      elsif tcss.size >= 11
         # CODE INITIAL DATA
         x = 63
         y = 210
@@ -204,15 +269,24 @@ class CertificatesController < ApplicationController
       counter = 0
       tcss.each_with_index do |tcs,index|
         ## SET CODE
-        text= tcs.term_course.course.code
+        if @template_mode
+          text = tcs.code
+        else
+          text= tcs.term_course.course.code
+        end
 
         pdf.fill_color @text_color
         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
         ## SET COURSE NAME
-        text= tcs.term_course.course.name.mb_chars
+        if @template_mode
+          text = tcs.name.mb_chars
+        else
+          text= tcs.term_course.course.name.mb_chars
+        end
 
         pdf.fill_color @text_color
 
+        # Para hacer pruebas con el nombre mas largo que se encuentre en courses
         #text = "Medición y caracterización"  #26
         #text = "Medición y caracterización de recursos energéticos y" #52
         #text = "Medición y caracterización de recursos energéticos y evaluación económica de" #76
@@ -237,32 +311,58 @@ class CertificatesController < ApplicationController
         pdf.text_box text , :at=>[x_1,y_1], :width => w_1, :height=> h_1, :size=>size_1, :style=> :bold, :align=> :center, :valign=> :center
 
         ## SET TERM
-        term = tcs.term_course.term.name
+        if @template_mode
+          term = ""
+        else
+          term = tcs.term_course.term.name
+        end
+     
         year = term.at(2..3)
         subterm = term.at(5)
 
-        text = "#{year}/#{subterm}"
+        if @template_mode
+          text = ""
+        else
+          text = "#{year}/#{subterm}"
+        end
+        
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x_2,y_2], w_2, h_2
         pdf.fill_color @text_color
         pdf.text_box text , :at=>[x_2,y_2], :width => w_2, :height=> h_2, :size=>size_2, :style=> :bold, :align=> :center, :valign=> :center
 
         ## SET GRADE
-        sum  = sum + tcs.grade.to_f
-        text = tcs.grade.to_s
+        if @template_mode
+          text = ""
+        else
+          sum  = sum + tcs.grade.to_f
+          text = tcs.grade.to_s
+        end
+
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x_3,y_3], w_3, h_3
         pdf.fill_color @text_color
         pdf.text_box text , :at=>[x_3,y_3], :width => w_3, :height=> h_3, :size=>size_3, :style=> :bold, :align=> :center, :valign=> :center
 
         ## SET GRADE ON TEXT
-        text = get_cardinal_name(tcs.grade.to_i)
+        if @template_mode
+          text = ""
+        else
+          text = get_cardinal_name(tcs.grade.to_i)
+        end
+
         pdf.fill_color "ffffff"
         pdf.fill_rectangle [x_4,y_4], w_4, h_4
         pdf.fill_color @text_color
         pdf.text_box text.capitalize, :at=>[x_4,y_4], :width => w_4, :height=> h_4, :size=>size_4, :style=> :bold, :align=> :center, :valign=> :center
         ## SET INTERLINE SPACE
-        if tcss.size >= 11
+        if tcss.size >= 14
+          y = y - 33 + offset
+          y_1 = y_1 - 33 + offset
+          y_2 = y_2 - 33 + offset
+          y_3 = y_3 - 33 + offset
+          y_4 = y_4 - 33 + offset
+        elsif tcss.size >= 11
           y = y - 33
           y_1 = y_1 - 33
           y_2 = y_2 - 33
@@ -279,7 +379,16 @@ class CertificatesController < ApplicationController
         #text = "#{tcss.size}|#{index}"
         #pdf.text_box text , :at=>[x_4 + 80,y_4], :width => w_4, :height=> h_4, :size=>size_4, :style=> :bold, :align=> :center, :valign=> :center
 
-        if ((tcss.size >= 11) && (index==3))
+        if ((tcss.size.in? [14,15,16]) && (index==4))
+          pdf.start_new_page
+          set_lines(pdf,648,235)
+          #pdf.font "Arial"
+          y   = 575
+          y_1 = y + 14
+          y_2 = y 
+          y_3 = y
+          y_4 = y + 6 
+        elsif ((tcss.size.in? [11,12,13]) && (index==3))
           pdf.start_new_page
           set_lines(pdf,648,235)
           #pdf.font "Arial"
@@ -333,7 +442,12 @@ class CertificatesController < ApplicationController
       day   = params[:day]
       month = params[:month]
       year  = params[:year] 
-      text = "#{day} de #{get_month_name(month.to_i)} de #{year}"
+      if @template_mode
+        text = "XX de XXXXXXX de XXXX"
+      else
+        text = "#{day} de #{get_month_name(month.to_i)} de #{year}"
+      end
+
       pdf.text_box text , :at=>[x+45,y], :width => w, :height=> h, :size=>size, :align=> :left, :valign=> :center
       pdf.line_width   = 0.5
       pdf.stroke_line [x + 10, y - 10],[x + 176,y - 8.5]

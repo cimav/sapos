@@ -168,32 +168,56 @@ class StaffsController < ApplicationController
   end ## end reporte
 
   def evaluation
-    @staffs = Staff.includes(:term_courses=>:term).where(:status=>0).where("terms.name like '%2017-2%'")
+    @staffs  = Staff.includes(:term_courses=>:term).where(:status=>0).where("terms.name like '%2017-2%'")
+    numeric = !params[:numeric].to_i.zero?
+    
     rows = Array.new
- 
+
     @staffs.each do |s|
       s.term_courses.each do |tc|
-        averages= get_teacher_evaluation_averages(tc)
+        averages= get_teacher_evaluation_averages(tc,numeric)
         if !(averages["question1"].nil?)
           logger.info "################################# averages: #{averages["question1"]}"
-          rows << {
-            "Nombre"=>s.full_name,
-            "Curso"=>tc.course.name,
-            "Grupo"=>tc.group,
-            "Ciclo Escolar"=>tc.term.name,
-            "Pregunta1" => TeacherEvaluation::ANSWERS[averages["question1"]],
-            "Pregunta2" => TeacherEvaluation::ANSWERS[averages["question2"]],
-            "Pregunta3" => TeacherEvaluation::ANSWERS[averages["question3"]],
-            "Pregunta4" => TeacherEvaluation::ANSWERS[averages["question4"]],
-            "Pregunta5" => TeacherEvaluation::ANSWERS[averages["question5"]],
-            "Pregunta6" => TeacherEvaluation::ANSWERS[averages["question6"]],
-            "Pregunta7" => TeacherEvaluation::ANSWERS[averages["question7"]],
-            "Pregunta8" => TeacherEvaluation::ANSWERS[averages["question8"]],
-            "Pregunta9" => TeacherEvaluation::ANSWERS[averages["question9"]],
-            "Pregunta10" => TeacherEvaluation::ANSWERS[averages["question10"]],
-            "Pregunta11" => TeacherEvaluation::ANSWERS[averages["question11"]],
-            "Pregunta12" => TeacherEvaluation::ANSWERS[averages["question12"]],
-          } 
+
+          if numeric
+            rows << {
+              "Nombre"=>s.full_name,
+              "Curso"=>tc.course.name,
+              "Grupo"=>tc.group,
+              "Ciclo Escolar"=>tc.term.name,
+              "Pregunta1" => averages["question1"],
+              "Pregunta2" => averages["question2"],
+              "Pregunta3" => averages["question3"],
+              "Pregunta4" => averages["question4"],
+              "Pregunta5" => averages["question5"],
+              "Pregunta6" => averages["question6"],
+              "Pregunta7" => averages["question7"],
+              "Pregunta8" => averages["question8"],
+              "Pregunta9" => averages["question9"],
+              "Pregunta10" => averages["question10"],
+              "Pregunta11" => averages["question11"],
+              "Pregunta12" => averages["question12"],
+            } 
+          else
+            rows << {
+              "Nombre"=>s.full_name,
+              "Curso"=>tc.course.name,
+              "Grupo"=>tc.group,
+              "Ciclo Escolar"=>tc.term.name,
+              "Pregunta1" => TeacherEvaluation::ANSWERS[averages["question1"]],
+              "Pregunta2" => TeacherEvaluation::ANSWERS[averages["question2"]],
+              "Pregunta3" => TeacherEvaluation::ANSWERS[averages["question3"]],
+              "Pregunta4" => TeacherEvaluation::ANSWERS[averages["question4"]],
+              "Pregunta5" => TeacherEvaluation::ANSWERS[averages["question5"]],
+              "Pregunta6" => TeacherEvaluation::ANSWERS[averages["question6"]],
+              "Pregunta7" => TeacherEvaluation::ANSWERS[averages["question7"]],
+              "Pregunta8" => TeacherEvaluation::ANSWERS[averages["question8"]],
+              "Pregunta9" => TeacherEvaluation::ANSWERS[averages["question9"]],
+              "Pregunta10" => TeacherEvaluation::ANSWERS[averages["question10"]],
+              "Pregunta11" => TeacherEvaluation::ANSWERS[averages["question11"]],
+              "Pregunta12" => TeacherEvaluation::ANSWERS[averages["question12"]],
+            } 
+          end
         end
       end
     end
@@ -202,7 +226,7 @@ class StaffsController < ApplicationController
     to_excel(rows,column_order,"Evaluacion","Evaluacion")
   end#end evaluation
 
-  def get_teacher_evaluation_averages(tc)
+  def get_teacher_evaluation_averages(tc,numeric)
     averages = Hash.new
     tc.teacher_evaluations.each do |te|
       (1..12).each do |n|
@@ -212,7 +236,11 @@ class StaffsController < ApplicationController
     
     if !(averages["sum1"].nil?)
       (1..12).each do |n|
-        averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round
+        if numeric
+          averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round(2)
+        else
+          averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round
+        end
         averages.delete("sum#{n}")
       end
     end
@@ -757,6 +785,21 @@ class StaffsController < ApplicationController
       else  
         options[:students] = Student.where(:supervisor=>@staff.id)
       end
+    ################################ CONSTANCIA DE CO-DIRECTOR DE TESIS ##################################
+    elsif params[:type] == "co_dir_tesis"
+      start_date = params[:start_date]
+      end_date   = params[:end_date]
+      options[:cert_type] = Certificate::STAFF_THESIS_DIR
+      options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
+      options[:text]      << " quien participó como Co-Director de tesis de los siguientes estudiantes:"
+      options[:filename]  =  "constancia-director-tesis-#{@staff.id}.pdf"
+
+      if !start_date.blank?
+        options[:students] = Student.where(:co_supervisor=>@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
+      else  
+        options[:students] = Student.where(:co_supervisor=>@staff.id)
+      end
+    
     ################################ CONSTANCIA COMO SINODAL ##################################
     elsif params[:type] == "sinodal"
       start_date = params[:start_date]
@@ -790,7 +833,7 @@ class StaffsController < ApplicationController
       if !start_date.blank?
         options[:ranges]=true
         options[:active_students] = Student.where(:supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status = 1) OR (start_date < :start_date AND end_date IS NULL)",{:start_date=>start_date,:end_date=>end_date}).order(:status)
-        options[:active_students_co] = Student.where(:co_supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status = 1) OR (start_date < :start_date AND end_date IS NULL)",{:start_date=>start_date,:end_date=>end_date}).order(:status)
+        options[:active_students_co] = Student.where(:co_supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status in (1,6)) OR (start_date < :start_date AND end_date IS NULL)",{:start_date=>start_date,:end_date=>end_date}).order(:status)
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
         options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1')
         options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'3').order(:advance_date)
@@ -838,7 +881,7 @@ class StaffsController < ApplicationController
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>[158,50,85,50] ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[158,50,85,50] ) do |pdf|
       pdf.font_size 10
       x = 232
       y = 565 #664
@@ -1003,16 +1046,22 @@ class StaffsController < ApplicationController
 
           @term_course_schedules.each do |tcs|
             term_course = tcs.term_course
-            if term_course.status != TermCourse::DELETED
-              if options[:ranges]
-                if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
+
+            if !term_course.nil?
+              if term_course.status != TermCourse::DELETED
+                if options[:ranges]
+                  if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
+                    term_month = get_month_name(term_course.term.start_date.month)
+                    data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
+                  end
+                else
                   term_month = get_month_name(term_course.term.start_date.month)
                   data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
                 end
-              else
-                term_month = get_month_name(term_course.term.start_date.month)
-                data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
               end
+            else
+              logger.info "################# No se que pasa aquí"  
+              #data << [tcs.id.to_s,"######","######"]
             end
 
           end
@@ -1085,9 +1134,9 @@ class StaffsController < ApplicationController
 
 
       filename = options[:filename]
-      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
       ## linea para desarrollo (es más productivo actualizar la página que estar descargando archivos):
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end
   end
 

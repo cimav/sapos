@@ -293,8 +293,30 @@ class StudentsController < ApplicationController
     elsif program_id.to_i.eql? 7
       program_id = 3
     end
+    
+    @staffs = Staff.order('first_name').includes(:institution).where(:status=>0)
 
-    @staffs = Staff.order('first_name').includes(:institution)
+    if !@student.supervisor.nil?
+      s = Staff.find(@student.supervisor)
+      if s.status.to_i.eql? 1
+        @staffs << s
+      end
+    end
+    
+    if !@student.co_supervisor.nil?
+      s = Staff.find(@student.co_supervisor)
+      if s.status.to_i.eql? 1
+        @staffs << s
+      end
+    end
+
+    if !@student.external_supervisor.nil?
+      s = Staff.find(@student.co_supervisor)
+      if s.status.to_i.eql? 1
+        @staffs << s
+      end
+    end
+    
     @countries = Country.order('name')
     @institutions = Institution.order('name')
     @states = State.order('code')
@@ -2036,7 +2058,13 @@ class StudentsController < ApplicationController
     end
   end
 
+=begin 
+  NOTAS def diploma
+  @template_mode - esta variable se activa y desactiva manualmente cuando el usuario solicita machote 
+                   hay que elegir un estudiante que sea del programa que necesitamos.
+=end
   def diploma
+    @template_mode = false ## leer NOTAS arriba ^
     @r_root = Rails.root.to_s
     time    = Time.new
     t       = Thesis.find(params[:thesis_id])
@@ -2096,7 +2124,11 @@ class StudentsController < ApplicationController
     h = size - 1
     x = x_right_top - w + 8
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-    pdf.text_box t.student.full_name, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    if @template_mode
+      pdf.text_box "XXXXX XXXXXX", :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    else
+     pdf.text_box t.student.full_name, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+    end
 
     ## EL GRADO DE
     size = 28
@@ -2145,12 +2177,19 @@ class StudentsController < ApplicationController
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => 0.45 #0.18
 
     y = y - 28
-    diax  = t.defence_date.day.to_s
-    mesx  = get_month_name(t.defence_date.month).capitalize
-    aniox = t.defence_date.year.to_s
+
+    if @template_mode
+      diax = "XX"
+      aniox = "XXXX"
+      mesx = "XXXX"
+    else
+      diax  = t.defence_date.day.to_s
+      mesx  = get_month_name(t.defence_date.month).capitalize
+      aniox = t.defence_date.year.to_s
+    end
 
     if mesx.size.eql? 4
-      char_space = 9.9
+      char_space = 8.2
       if diax.size.eql? 1
         char_space = char_space + 0.85
       end
@@ -2185,9 +2224,15 @@ class StudentsController < ApplicationController
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:justify, :valign=>:justify, :character_spacing => char_space
 
     ## FECHA
-    diay  = day
-    mesy  = get_month_name(month.to_i)
-    anioy = year
+    if @template_mode
+      diay  = "XX"
+      mesy  = "XXXXX"
+      anioy = "XXXX"
+    else
+      diay  = day
+      mesy  = get_month_name(month.to_i)
+      anioy = year
+    end
 
     size = 22
     x = 8
@@ -2236,7 +2281,11 @@ class StudentsController < ApplicationController
     w    = 500
     y    = 475
     x    = x_right_top - w
-    text = t.student.full_name
+    if @template_mode
+      text = "XXXXXXXXXXXX"
+    else
+      text = t.student.full_name
+    end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
 
     ## TEXTO
@@ -2268,6 +2317,10 @@ class StudentsController < ApplicationController
     w    = 600
     y    = 358
     x    = x_right_top - w
+    if @template_mode
+      libro = "X"
+      foja  = "X"
+    end
     text = "El día #{diax} de #{mesx} de #{aniox} quedó registrado en el libro No #{libro} Foja No. #{foja}"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
     
@@ -2277,6 +2330,7 @@ class StudentsController < ApplicationController
     h    = size
     w    = 403
     x    = x_right_top - w
+ 
     text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
@@ -2399,7 +2453,7 @@ private
     time = Time.new
     year = time.year.to_s
 
-    background = "#{Rails.root.to_s}/private/prawn_templates/membretada2018.jpg"
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.jpg"
     @consecutivo = get_consecutive(@student, time, options[:cert_type])
     @city =
     @rails_root  = "#{Rails.root}"
@@ -2408,7 +2462,7 @@ private
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
       pdf.font_size 13
       x = 190 #232
       y = 565 #565

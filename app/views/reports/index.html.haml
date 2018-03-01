@@ -7,6 +7,22 @@
       = link_to 'Número de alumnos graduados y eficiencia terminal','/docentes/reporte.xls'
       = "[XLS]"
     %li
-      = link_to 'Evaluación docente al momento','/docentes/evaluacion.xls'
+      %br
+      = link_to 'Evaluación docente al momento', {:controller=>"staffs", :action=>"evaluation",:format=>:xls}, :id=>"link_evaluation"
       = "[XLS]"
+      ="&nbsp;".html_safe
+      = check_box_tag "check_numeric_evaluation"
+      = " Numérico "
 
+:javascript
+  $(document).ready(function() {
+    $("#check_numeric_evaluation").live("click",function(){
+      var _href = $("#link_evaluation").attr("href");
+      if($(this).prop("checked")){
+        $("#link_evaluation").attr("href",_href + "?numeric=1");
+     }else{
+        $("#link_evaluation").attr("href",_href.replace("?numeric=1",""));
+     }
+    });
+  });
+ 

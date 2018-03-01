@@ -152,12 +152,22 @@ class InternshipsController < ApplicationController
     if current_user.access == User::OPERATOR
       @campus   = Campus.order('name').where(:id=> current_user.campus_id)
       @areas    = Area.where(:id=> @aareas).order('name')
-      @staffs   = Staff.where(:area_id=> @aareas).order('first_name').includes(:institution)
+      @staffs   = Staff.includes(:institution).where(:area_id=> @aareas).where(:status=>0).where("institution_id = 1").order(:first_name)
       @operator = true
     else
       @areas  = Area.order('name')
-      @staffs = Staff.order('first_name').includes(:institution)
+      @staffs = Staff.includes(:institution).order('first_name').where(:status=>0).where("institution_id = 1").order(:first_name)
       @campus = Campus.order('name')
+    end
+
+    logger.info "###################### AQUI 1 #{@internship.staff_id}"
+    if !@internship.staff_id.nil?
+      s = Staff.find(@internship.staff_id)
+      logger.info "#################### AQUI 2 #{s.id} #{s.status} #{s.class}"
+      if s.status.to_i.eql? 1
+        logger.info "################## AQUI 3 #{s.class}"
+        @staffs << s
+      end
     end
 
     render :layout => false
@@ -471,7 +481,7 @@ class InternshipsController < ApplicationController
       end
 
 
-      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
         pdf.font_size 11
         x = 20
         y = 565 #664
@@ -559,7 +569,7 @@ class InternshipsController < ApplicationController
         @genero2 = "x"
       end
 
-      Prawn::Document.new(:background => background, :background_scale=>0.33, :margin=>60 ) do |pdf|
+      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
         pdf.font_size 11
         x = 20
         y = 565 #664

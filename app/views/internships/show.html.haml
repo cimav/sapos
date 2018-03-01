@@ -85,7 +85,7 @@
       - if @internship.institution_id.to_i != 1
         .field#field_internship_institution_id
           = f.label :institution_id, 'Institucion'
-          = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"}
+          = f.select :institution_id, options_from_collection_for_select(@institutions, :id, :name, @internship.institution_id), :prompt => "Selecciona la institucion"
 
       .field#field_internship_career
         = f.label :career,'Carrera'
@@ -105,7 +105,8 @@
 
       .field#field_internship_staff_id
         = f.label :staff_id, 'Docente responsable'
-        = f.collection_select :staff_id, @staffs, :id, :full_name, options = {:prompt=> "Selecciona el responsable"}
+        = f.select :staff_id, options_from_collection_for_select(@staffs,:id,:full_name_upcase_origin,@internship.staff_id),:prompt=>"Selecciona al responsable"
+
       .field#field_internship_campus
         = f.label :campus_id, 'Campus'
         - q = ["Ninguno",0]
@@ -311,3 +312,9 @@
           %td{:colspan=>2}
             = button_tag "Responder", :id=>"iapplicant_button", :type=>'button'
             = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
+
+:javascript
+  $(document).ready(function(){
+    $('#internship_staff_id').select2({width: '400px'});
+    $('#internship_institution_id').select2({width: '530px'});
+  }); 

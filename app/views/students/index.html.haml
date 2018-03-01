@@ -1,6 +1,13 @@
 - @include_js  = 'students'
 - @page_title = 'Estudiantes'
 - @nav_icon = 'students'
+- @page_title  = 'Estudiantes'
+- @nav_icon    = 'students'
+- @include2_js = 'select2'
+- @include3_js = 'select2_locale_es'
+- @include_css = Array.new
+- @include_css = 'select2/select2'
+
 :javascript
   var programs = #{@programs_json.to_json.html_safe};
   var remote_id = #{@remote_id.html_safe};
