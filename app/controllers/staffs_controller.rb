@@ -831,9 +831,16 @@ class StaffsController < ApplicationController
       options[:filename]  =  "constancia-formacion-RH-#{@staff.id}.pdf"
 
       if !start_date.blank?
-        options[:ranges]=true
-        options[:active_students] = Student.where(:supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status = 1) OR (start_date < :start_date AND end_date IS NULL)",{:start_date=>start_date,:end_date=>end_date}).order(:status)
-        options[:active_students_co] = Student.where(:co_supervisor=>@staff.id).where("(start_date > :start_date AND end_date IS NULL AND status in (1,6)) OR (start_date < :start_date AND end_date IS NULL)",{:start_date=>start_date,:end_date=>end_date}).order(:status)
+        options[:ranges]=true  
+        
+        as_director = Student.where(:supervisor=>@staff.id).where("start_date >= :start_date  AND start_date <= :end_date AND status in (1,6)",{:start_date=>start_date,:end_date=>end_date})
+        as_director = as_director + Student.where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        options[:active_students] = as_director
+
+        as_co_director = Student.where(:supervisor=>@staff.id).where("start_date >= :start_date  AND start_date <= :end_date AND status in (1,6)",{:start_date=>start_date,:end_date=>end_date})
+        as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        options[:active_students_co] = as_co_director
+        
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
         options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1')
         options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'3').order(:advance_date)
