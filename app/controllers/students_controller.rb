@@ -311,7 +311,7 @@ class StudentsController < ApplicationController
     end
 
     if !@student.external_supervisor.nil?
-      s = Staff.find(@student.co_supervisor)
+      s = Staff.find(@student.external_supervisor)
       if s.status.to_i.eql? 1
         @staffs << s
       end
