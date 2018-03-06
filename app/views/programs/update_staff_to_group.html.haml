@@ -1,3 +1,8 @@
+- @include2_js = 'select2'
+- @include3_js = 'select2_locale_es'
+- @include_css = Array.new
+- @include_css = 'select2/select2'
+
 #schedule-header
   %h3= @tc.course.name
   #schedule-term Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})
@@ -7,7 +12,11 @@
   = f.hidden_field :id
   %div{:id => "group_staff", :class => 'field'}
     = f.label :staff_id, 'Titular'
-    = f.grouped_collection_select :staff_id, Institution.order('name'), :staffs, :name, :id, :full_name, options = {:prompt => "Selecciona el docente"}
+    = f.select :staff_id,  options_from_collection_for_select(@staffs, :id, :full_name_upcase_origin,@tc.staff_id), :prompt => "Selecciona al docente"
   #dialog-submit-button-area
     = f.submit "Cambiar titular"
 
+:javascript
+  $(document).ready(function(){
+    $('#term_course_staff_id').select2({width: '350px'});
+  }); 

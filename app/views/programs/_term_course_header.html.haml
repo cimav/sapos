@@ -4,7 +4,7 @@
     %div Ciclo Escolar: #{tc.term.name} (#{l tc.term.start_date, :format => :long} – #{l tc.term.end_date, :format => :long})
     #groups-dropdown 
       = "Grupo: "
-      - items = TermCourse.where(:status != TermCourse::DELETED).where("term_id = :t AND course_id = :c", {:t => tc.term_id, :c => tc.course_id}).collect {|i| [ i.group + ': ' + (i.staff_id.nil?? 'Sin titular':Staff.find(i.staff_id).full_name), i.group]}
+      - items = TermCourse.where(:status != TermCourse::DELETED).where("term_id = :t AND course_id = :c", {:t => tc.term_id, :c => tc.course_id}).collect {|i| [ i.group + ': ' + (i.staff_id.nil?? 'Sin titular':Staff.find(i.staff_id).full_name_status), i.group]}
       - items += [['Agregar nuevo grupo', 0]] if (tc.term.status == Term::OPEN) 
       = select "tc", "group", items, :selected => params[:group]
       - if (tc.term.status == Term::OPEN) 

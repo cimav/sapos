@@ -74,14 +74,24 @@ class Staff < ActiveRecord::Base
   end
 
   def full_name_upcase_origin
-      name_upcase = self.full_name.mb_chars.upcase rescue ''
-      origin  = self.institution.short_name
+    name_upcase = self.full_name.mb_chars.upcase rescue ''
+    origin  = self.institution.short_name
 
-      if self.status.to_i.eql? 1
-        return "#{name_upcase} (#{origin}) [INACTIVO]"
-      else
-        return "#{name_upcase} (#{origin})"
-      end
+    if self.status.to_i.eql? 1
+      return "#{name_upcase} (#{origin}) [INACTIVO]"
+    else
+      return "#{name_upcase} (#{origin})"
+    end
+  end
+
+  def full_name_status
+    name = self.full_name.mb_chars rescue ''
+
+    if self.status.to_i.eql? 1
+      return "#{name} [INACTIVO]"
+    else
+      return "#{name}"
+    end
   end
 
   def full_name_cap

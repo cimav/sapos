@@ -311,7 +311,7 @@ class StudentsController < ApplicationController
     end
 
     if !@student.external_supervisor.nil?
-      s = Staff.find(@student.co_supervisor)
+      s = Staff.find(@student.external_supervisor)
       if s.status.to_i.eql? 1
         @staffs << s
       end
@@ -2453,7 +2453,7 @@ private
     time = Time.new
     year = time.year.to_s
 
-    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.jpg"
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     @consecutivo = get_consecutive(@student, time, options[:cert_type])
     @city =
     @rails_root  = "#{Rails.root}"
