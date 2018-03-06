@@ -169,7 +169,7 @@ class ProgramsController < ApplicationController
   end
 
   def courses_dropdown
-    @term_course = TermCourse.where('term_id = :t', {:t => params[:term_id]}).group('course_id')
+    @term_course = TermCourse.where('term_id = :t', {:t => params[:term_id]}).where('status != ?',TermCourse::DELETED).group('course_id')
     @term = Term.find(params[:term_id])
     render :layout => false
   end
@@ -615,7 +615,7 @@ class ProgramsController < ApplicationController
     else
       mensaje = "Hay alumnos inscritos a este grupo"
     end
-    render text:mensaje
+    render text:mensaje #cambiar por mensaje via javascript
   end
 end
 
