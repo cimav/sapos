@@ -297,23 +297,29 @@ class StudentsController < ApplicationController
     @staffs = Staff.order('first_name').includes(:institution).where(:status=>0)
 
     if !@student.supervisor.nil?
-      s = Staff.find(@student.supervisor)
-      if s.status.to_i.eql? 1
-        @staffs << s
+      if !@student.supervisor.zero?
+        s = Staff.find(@student.supervisor)
+        if s.status.to_i.eql? 1
+          @staffs << s
+        end
       end
     end
-    
+
     if !@student.co_supervisor.nil?
-      s = Staff.find(@student.co_supervisor)
-      if s.status.to_i.eql? 1
-        @staffs << s
+      if !@student.co_supervisor.zero?
+        s = Staff.find(@student.co_supervisor)
+        if s.status.to_i.eql? 1
+          @staffs << s
+        end
       end
     end
 
     if !@student.external_supervisor.nil?
-      s = Staff.find(@student.external_supervisor)
-      if s.status.to_i.eql? 1
-        @staffs << s
+      if !@student.supervisor.zero?
+        s = Staff.find(@student.external_supervisor)
+        if s.status.to_i.eql? 1
+          @staffs << s
+        end
       end
     end
     
