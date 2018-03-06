@@ -833,11 +833,11 @@ class StaffsController < ApplicationController
       if !start_date.blank?
         options[:ranges]=true  
         
-        as_director = Student.where(:supervisor=>@staff.id).where("start_date >= :start_date  AND start_date <= :end_date AND status in (1,6)",{:start_date=>start_date,:end_date=>end_date})
+        as_director = Student.where(:supervisor=>@staff.id).where("status in (1,6)")
         as_director = as_director + Student.where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students] = as_director
 
-        as_co_director = Student.where(:co_supervisor=>@staff.id).where("start_date >= :start_date  AND start_date <= :end_date AND status in (1,6)",{:start_date=>start_date,:end_date=>end_date})
+        as_co_director = Student.where(:co_supervisor=>@staff.id).where("status in (1,6)")
         as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students_co] = as_co_director
         
@@ -847,7 +847,8 @@ class StaffsController < ApplicationController
         options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where(status:[nil,ExternalCourse::ACTIVE]).where("(start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
-        options[:internships] = Internship.where(staff_id:@staff.id,status:1).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
+        
+        options[:internships] = Internship.where(staff_id:@staff.id).where("(start_date between :start_date and :end_date) OR (end_date between :start_date and :end_date)",{:start_date=>start_date,:end_date=>end_date}).order(:internship_type_id)
       else
         options[:ranges]= false
         options[:active_students] = Student.where(:supervisor=>@staff.id).order(:status)
