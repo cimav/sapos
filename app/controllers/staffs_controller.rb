@@ -852,8 +852,8 @@ class StaffsController < ApplicationController
         options[:internships] = Internship.where(staff_id:@staff.id).where("(start_date between :start_date and :end_date) OR (end_date between :start_date and :end_date)",{:start_date=>start_date,:end_date=>end_date}).order(:internship_type_id)
       else
         options[:ranges]= false
-        options[:active_students] = Student.where(:supervisor=>@staff.id).order(:status)
-        options[:active_students_co] = Student.where(:co_supervisor=>@staff.id).order(:status)
+        options[:active_students] = Student.where(:supervisor=>@staff.id).where("status not in (0,4)").order(:status)
+        options[:active_students_co] = Student.where(:co_supervisor=>@staff.id).where("status not in (0,4)").order(:status)
         options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
         options[:term_courses] = TermCourse.where(staff_id:@staff.id)
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id)
