@@ -793,6 +793,7 @@ class StaffsController < ApplicationController
       options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
       options[:text]      << " quien participó como Co-Director de tesis de los siguientes estudiantes:"
       options[:filename]  =  "constancia-director-tesis-#{@staff.id}.pdf"
+      options[:co_director] = true
 
       if !start_date.blank?
         options[:students] = Student.where(:co_supervisor=>@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
@@ -919,14 +920,20 @@ class StaffsController < ApplicationController
         @students = options[:students]
          
         data = []
-        data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center}]
+        data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center},{:content=>"<b>ESTATUS</b>",:align=>:center}]
 
         @students.each do |s|
-          data << [s.full_name ,s.program.name,s.thesis.title]
+          data << [s.full_name ,s.program.name,s.thesis.title,Student::STATUS[s.status]]
         end
 
-        pdf.text "<b>Participación como director de tesis</b>\n", :align=>:center, :inline_format=>true              
-        tabla = pdf.make_table(data,:width=>495,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center)
+        if options[:co_director]
+          text = "<b>Participación como co-director de tesis</b>\n"
+        else
+          text = "<b>Participación como director de tesis</b>\n"
+        end
+        pdf.text text, :align=>:center, :inline_format=>true              
+        
+        tabla = pdf.make_table(data,:width=>510,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [100,100,240,70])
         tabla.draw
       ################################ CONSTANCIA COMO SINODAL ##################################
       elsif options[:cert_type].eql? Certificate::STAFF_SINODAL
