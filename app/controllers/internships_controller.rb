@@ -152,11 +152,11 @@ class InternshipsController < ApplicationController
     if current_user.access == User::OPERATOR
       @campus   = Campus.order('name').where(:id=> current_user.campus_id)
       @areas    = Area.where(:id=> @aareas).order('name')
-      @staffs   = Staff.includes(:institution).where(:area_id=> @aareas).where(:status=>0).where("institution_id = 1").order(:first_name)
+      @staffs   = Staff.includes(:institution).where(:area_id=> @aareas).where(:status=>0).order(:first_name)
       @operator = true
     else
       @areas  = Area.order('name')
-      @staffs = Staff.includes(:institution).order('first_name').where(:status=>0).where("institution_id = 1").order(:first_name)
+      @staffs = Staff.includes(:institution).order('first_name').where(:status=>0).order(:first_name)
       @campus = Campus.order('name')
     end
 
