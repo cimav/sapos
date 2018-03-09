@@ -571,64 +571,38 @@ class InternshipsController < ApplicationController
 
       Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
         pdf.font_size 11
-        x = 20
-        y = 565 #664
-        w = 300
-        h = 50
 
+        pdf.text "\n\n\n\n\n\n\n\nCoordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right ,:valign=>:top
 
-
-        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :height=>h
-
-        x = 20
-        y -= 70
-        w = 300
         pdf.font_size 13
 
-        @a_quien_corr = "A quien corresponda \n\n <b>Presente.-</b>"
+        correspondencia = "\n\nA quien corresponda \n\n <b>Presente.-</b>"
+        pdf.text correspondencia, :align=>:justify, :valign=>:top, :inline_format=>true
 
-        pdf.text_box @a_quien_corr, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
+        parrafo1 = "\n\nPor medio de la presente hago constar que el alumno <b>#{@nombre}</b>, de la carrera de <b>#{@carrera}</b> perteneciente a <b>#{@institucion}</b> y con número de control <b>#{@numero}</b> realizó <b>#{@internship_type}</b>, dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} de #{@start_year} al #{@end_day} de #{@end_month} de #{@end_year}</b> cubriendo un total de <b>#{@horas}</b> horas en este Centro de Investigación, desarrollando las siguientes actividades:"
+        pdf.text parrafo1, :align=>:justify, :valign=>:top, :inline_format=>true
 
-        x = 20
-        y -= 70
-        w = 300
+        actividades = "\n<b>#{@internado}</b>"
+        pdf.text actividades, :align=>:justify,:valign=>:top,:inline_format=>true
 
+        parrafo2 = "\nQue nos reporta con resultados muy satisfactorios el asesor <b>#{@asesor}</b>, una puntuación de <b>#{@puntuacion}</b>, por lo que no tenemos reserva alguna en felicitarlo por su excelente formación."
+        pdf.text parrafo2, :align=>:justify,:valign=>:top,:inline_format=>true
 
-        @parrafo1 = "Por medio de la presente hago constar que el alumno <b>#{@nombre}</b>, de la carrera de <b>#{@carrera}</b> perteneciente a <b>#{@institucion}</b> y con número de control <b>#{@numero}</b> realizó <b>#{@internship_type}</b>, dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} de #{@start_year} al #{@end_day} de #{@end_month} de #{@end_year}</b> cubriendo un total de <b>#{@horas}</b> horas en este Centro de Investigación, desarrollando las siguientes actividades:"
-
-        pdf.text_box @parrafo1, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
-
-        x= 40
-        y -= 110
-
-        pdf.text_box "<b>#{@internado}</b>", :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
-
-
-        @parrafo2 = "Que nos reporta con resultados muy satisfactorios el asesor <b>#{@asesor}</b>, una puntuación de <b>#{@puntuacion}</b>, por lo que no tenemos reserva alguna en felicitarlo por su excelente formación."
-        y -= 40
-        x = 20
-        pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
-
-        @parrafo2 = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
-        y -= 60
-        x = 20
-        pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+        parrafo3 = "\nSe extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
+        pdf.text parrafo3, :align=>:justify,:valign=>:top,:inline_format=>true
 
         pdf.font_size 11
-        y = y - 80 #202
-        h = 155
-        x = -230
-        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
-        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top,:inline_format=>true
 
-        h = 155
-        x = 280
-        @firma_asesor = "\n<b>Vo. Bo \n\n\n\n#{@asesor}\n Asesor Responsable</b>"
-        pdf.text_box @firma_asesor, :at=>[x,y], :align=>:center,:valign=>:top,:inline_format=>true
+        atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        
+        firma_asesor = "\n<b>Vo. Bo \n\n\n\n#{@asesor}\n Asesor Responsable</b>"
+
+        pdf.text "\n\n"
+        data  = [[atentamente,firma_asesor]]
+        tabla = pdf.make_table(data, :width => 500, :cell_style => {:align=>:center,:size => 11, :padding => 0, :inline_format => true, :border_width => 0}, :position => :center, :column_widths => [250,250])
+        tabla.draw
         filename = "carta-liberacion-#{@internship.id}.pdf"
         send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
-
-
       end
     end
 
