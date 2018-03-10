@@ -572,18 +572,22 @@ class InternshipsController < ApplicationController
       Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
         pdf.font_size 11
 
-        pdf.text "\n\n\n\n\n\n\n\nCoordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right ,:valign=>:top
+        pdf.text "\n\n\n\n\n\nCoordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right ,:valign=>:top
 
         pdf.font_size 13
 
-        correspondencia = "\n\nA quien corresponda \n\n <b>Presente.-</b>"
+        correspondencia = "\n\nA quien corresponda \n <b>Presente.-</b>"
         pdf.text correspondencia, :align=>:justify, :valign=>:top, :inline_format=>true
 
         parrafo1 = "\n\nPor medio de la presente hago constar que el alumno <b>#{@nombre}</b>, de la carrera de <b>#{@carrera}</b> perteneciente a <b>#{@institucion}</b> y con número de control <b>#{@numero}</b> realizó <b>#{@internship_type}</b>, dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} de #{@start_year} al #{@end_day} de #{@end_month} de #{@end_year}</b> cubriendo un total de <b>#{@horas}</b> horas en este Centro de Investigación, desarrollando las siguientes actividades:"
         pdf.text parrafo1, :align=>:justify, :valign=>:top, :inline_format=>true
 
+        pdf.font_size 11
+
         actividades = "\n<b>#{@internado}</b>"
         pdf.text actividades, :align=>:justify,:valign=>:top,:inline_format=>true
+
+        pdf.font_size 13
 
         parrafo2 = "\nQue nos reporta con resultados muy satisfactorios el asesor <b>#{@asesor}</b>, una puntuación de <b>#{@puntuacion}</b>, por lo que no tenemos reserva alguna en felicitarlo por su excelente formación."
         pdf.text parrafo2, :align=>:justify,:valign=>:top,:inline_format=>true
@@ -597,10 +601,11 @@ class InternshipsController < ApplicationController
         
         firma_asesor = "\n<b>Vo. Bo \n\n\n\n#{@asesor}\n Asesor Responsable</b>"
 
-        pdf.text "\n\n"
+        pdf.text "\n"
         data  = [[atentamente,firma_asesor]]
         tabla = pdf.make_table(data, :width => 500, :cell_style => {:align=>:center,:size => 11, :padding => 0, :inline_format => true, :border_width => 0}, :position => :center, :column_widths => [250,250])
         tabla.draw
+        
         filename = "carta-liberacion-#{@internship.id}.pdf"
         send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
       end
