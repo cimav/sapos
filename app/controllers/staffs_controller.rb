@@ -841,9 +841,18 @@ class StaffsController < ApplicationController
         as_co_director = Student.where(:co_supervisor=>@staff.id).where("status in (1,6)")
         as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students_co] = as_co_director
-        
+
+        as_external_director = Student.where(:external_supervisor=>@staff.id).where("status in (1,6)")
+        as_external_director = as_external_director + Student.where(:external_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        options[:active_students_external] = as_external_director        
+
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
-        options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1')
+
+        tutors = "(tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id)"
+        ranges = "(advance_date >= :start_date AND advance_date <= end_date)"
+        where  = "#{tutors} AND #{ranges}"
+        options[:advances] = Advance.where(:advance_type=>1).where(where,{:staff_id=>@staff.id,:start_date=>start_date,:end_date=>end_date}).order("advance_date")
+        
         options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'3').order(:advance_date)
         options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where(status:[nil,ExternalCourse::ACTIVE]).where("(start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
@@ -990,6 +999,23 @@ class StaffsController < ApplicationController
           tabla.draw
         end
 
+        # Alumnos como director externo
+        @students = options[:active_students_external]
+        @graduate_students = options[:active_students_external]
+        if @students.size > 0
+          data = []
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
+
+          @students.each do |s|
+            data << [s.full_name, s.program.name, Student::STATUS[s.status]]
+          end
+
+          pdf.text "\n<b>Participación como director externo</b>\n", :align => :center, :inline_format => true
+          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
+          tabla.draw
+        end
+
+
         # tesis como sinodal
         @theses = options[:theses]
 
@@ -1009,16 +1035,16 @@ class StaffsController < ApplicationController
         end
 
         # avances como comité tutoral
-        @advances = options[:advances]
         active_advances = []
-        @advances.each do |advance|
-          if options[:ranges]
-            if advance.student.start_date.between?(options[:start_date],options[:end_date]) # tabien debería checarse la fecha de termino del estudiante pero la base de datos tiene demasiados datos faltantes
-              active_advances << advance
-            end
-          end
+        options[:advances].each do |advance|
+          #if advance.advance_date.month.between?(1,2)
+          #  active_advances << advance
+          #elsif advance.advance_date.month.between?(6,7)
+          #  active_advances << advance
+          #end
+          active_advances << advance
         end
-
+      
         if active_advances.size > 0
           data = []
           get_month_name(time.month)
