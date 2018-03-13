@@ -148,11 +148,6 @@ class CertificatesController < ApplicationController
 
       set_lines(pdf,y - 33, 50)
 
-      if t.student.program.level.to_i.eql? 2
-        tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?",t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(:code)
-      else
-        tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?",t.student.id,TermCourseStudent::ACTIVE,70).order(:code)
-      end
  
       if @template_mode     
         # usualmente se utiliza esta linea y llegan las materias  de forma correcta
@@ -165,6 +160,15 @@ class CertificatesController < ApplicationController
         tcss4 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=4").order("courses.term, courses.id desc")
 
         tcss = tcss1 + tcss2 + tcss3 + tcss4
+      else
+        order = "term_students.term_id desc"
+        if t.student.program.level.to_i.eql? 2
+          where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?"
+          tcss  = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(order)
+        else
+          where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
+          tcss  = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
+        end
       end
 
       #pdf.font "Arial"
