@@ -15,8 +15,10 @@ class CertificatesController < ApplicationController
     @template_mode  = false  ## leer NOTAS
     @r_root    = Rails.root.to_s
     t = Thesis.find(params[:thesis_id])
-    libro = params[:libro]
-    foja  = params[:foja]
+    libro     = params[:libro]
+    foja      = params[:foja]
+    duplicate = params[:duplicate]
+
     dir = t(:directory)
     avg = 0.0
     sum = 0.0
@@ -56,6 +58,12 @@ class CertificatesController < ApplicationController
       size = 12
       text = "Certificado No."
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left
+      
+      
+      if duplicate.to_i.eql? 1
+        text = "Duplicado"
+        pdf.text_box text , :at=>[x+50,y-11], :width => w, :height=> h, :size=>8, :style=> :bold, :align=> :left
+      end
       ## SET FOLIO LINE
       y = y - 9
       pdf.stroke_color= @text_color
