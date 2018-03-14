@@ -169,13 +169,13 @@ class CertificatesController < ApplicationController
 
         tcss = tcss1 + tcss2 + tcss3 + tcss4
       else
-        order = "term_students.term_id desc"
-        if t.student.program.level.to_i.eql? 2
+        order = "terms.end_date"
+        if t.student.program.level.to_i.eql? 2 ## Doctorado
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?"
-          tcss  = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(order)
+          tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(order)
         else
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
-          tcss  = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
+          tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
         end
       end
 
