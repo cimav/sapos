@@ -2079,6 +2079,8 @@ class StudentsController < ApplicationController
     day     = params[:day]
     month   = params[:month]
     year    = params[:year]
+    duplicate = params[:duplicate]
+
     @rectangles = false
 
     pdf = Prawn::Document.new(:page_size=>"LETTER",:page_layout=>:landscape)
@@ -2240,6 +2242,8 @@ class StudentsController < ApplicationController
       anioy = year
     end
 
+
+
     size = 22
     x = 8
     y = 40 #50
@@ -2340,6 +2344,12 @@ class StudentsController < ApplicationController
     text = "Chihuahua, Chih., a #{diay} de #{mesy} de #{anioy}"
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
+
+   ## Duplicado
+   if duplicate.to_i.eql? 1
+     text = "Duplicado"
+     pdf.text_box text, :at=>[x,y-22], :size=>15, :width=>w,:height=>h, :align=>:right, :valign=>:top, :character_spacing => - 0.4
+   end
    
     ## FIRMA
     size = 22
@@ -2350,7 +2360,6 @@ class StudentsController < ApplicationController
     text = "Dr. José Alberto Duarte Moller\nDirector Académico"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
-
     send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{libro}-#{foja}"
   end ## def diploma
 
