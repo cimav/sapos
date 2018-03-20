@@ -858,7 +858,10 @@ class StaffsController < ApplicationController
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where(status:[nil,ExternalCourse::ACTIVE]).where("(start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         
-        options[:internships] = Internship.where(staff_id:@staff.id).where("(start_date between :start_date and :end_date) OR (end_date between :start_date and :end_date)",{:start_date=>start_date,:end_date=>end_date}).order(:internship_type_id)
+        ranges = "(start_date between :start_date and :end_date) OR (end_date between :start_date and :end_date)"
+        order  = "first_name,last_name,internship_type_id"
+        group  = "first_name,last_name,internship_type_id"
+        options[:internships] = Internship.where(staff_id:@staff.id).where(ranges,{:start_date=>start_date,:end_date=>end_date}).order(order)
       else
         options[:ranges]= false
         options[:active_students] = Student.where(:supervisor=>@staff.id).where("status not in (0,4)").order(:status)
@@ -932,7 +935,7 @@ class StaffsController < ApplicationController
         data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center},{:content=>"<b>ESTATUS</b>",:align=>:center}]
 
         @students.each do |s|
-          data << [s.full_name ,s.program.name,s.thesis.title,Student::STATUS[s.status]]
+          data << [s.full_name,s.program.name,s.thesis.title,Student::STATUS[s.status]]
         end
 
         if options[:co_director]
@@ -1150,18 +1153,33 @@ class StaffsController < ApplicationController
 
         # Servicios CIMAV
         @internships= options[:internships]
+        
         if @internships.size > 0
           data = []
           data << [{:content => "<b>Nombre</b>", :align => :center}, {:content => "<b>Tipo de Servicio</b>", :align => :center}]          
 
+          approved = false
+          nombre_anterior = nil
+          i_type_anterior = nil
           @internships.each do |i|
-            data << [i.full_name, i.internship_type.name]
+            if ((i_type_anterior.eql? i.internship_type_id)&&(nombre_anterior.eql? i.full_name_cap))
+              approved = false
+            else
+              approved = true
+            end
+
+            if approved
+              data << [i.full_name_cap, i.internship_type.name]
+            
+              nombre_anterior = i.full_name_cap
+              i_type_anterior = i.internship_type_id
+            end
           end 
 
           pdf.text "\n<b>Servicios CIMAV</b>\n", :align => :center, :inline_format => true
           tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [280, 220])
           tabla.draw
-        end#if
+        end
       end#elsif
 
       pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
