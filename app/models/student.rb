@@ -155,6 +155,14 @@ class Student < ActiveRecord::Base
     "#{card}: #{first_name} #{last_name}" rescue ''
   end
 
+  def full_name_cap
+    new_name = ""
+    self.full_name.split(" ").each do |word|
+      new_name = "#{new_name} #{word.mb_chars.strip.capitalize}"
+    end
+    return new_name
+  end
+
   def time_studies
     if thesis.status.eql? "C"
       today = thesis.defence_date

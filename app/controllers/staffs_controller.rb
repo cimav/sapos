@@ -849,11 +849,18 @@ class StaffsController < ApplicationController
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= defence_date AND defence_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:status=>'C').order(:defence_date)
 
         tutors = "(tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id)"
-        ranges = "(advance_date >= :start_date AND advance_date <= end_date)"
+        ranges = "(advance_date between :start_date and :end_date)"
         where  = "#{tutors} AND #{ranges}"
-        options[:advances] = Advance.where(:advance_type=>1).where(where,{:staff_id=>@staff.id,:start_date=>start_date,:end_date=>end_date}).order("advance_date")
+        dates  = {:staff_id=>@staff.id,:start_date=>start_date,:end_date=>end_date}
+        order  = "first_name,last_name,advance_date desc"
+        options[:advances] = Advance.where(:advance_type=>1).where(where,dates).order(order)
         
-        options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where("(:start_date <= advance_date AND advance_date <= :end_date)",{:start_date=>start_date,:end_date=>end_date}).where(:advance_type=>'3').order(:advance_date)
+        tutors = "tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id"
+        ranges = "(:start_date <= advance_date AND advance_date <= :end_date)"
+        dates  = {:start_date=>start_date,:end_date=>end_date}
+        order  = "first_name,last_name"
+        options[:seminars] = Advance.includes(:student).where(tutors,:staff_id=>@staff.id).where(ranges,dates).where(:advance_type=>3).order(order)
+
         options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where(status:[nil,ExternalCourse::ACTIVE]).where("(start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
@@ -870,8 +877,8 @@ class StaffsController < ApplicationController
         options[:term_courses] = TermCourse.where(staff_id:@staff.id)
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id)
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id)
-        options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1').order(:advance_date)
-        options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'3').order(:advance_date)
+        #options[:advances] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'1').order(:advance_date)
+        #options[:seminars] = Advance.where("tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id",:staff_id=>@staff.id).where(:advance_type=>'3').order(:advance_date)
         options[:theses] = Thesis.where("examiner1=:staff_id OR examiner2=:staff_id OR examiner3=:staff_id OR examiner4=:staff_id OR examiner5=:staff_id",:staff_id=>@staff.id).order(:defence_date)
         options[:internships] = Internship.where(staff_id:@staff.id,status: 1).order(:start_date)
       end
@@ -1037,35 +1044,53 @@ class StaffsController < ApplicationController
           tabla.draw
         end
 
-        # avances como comité tutoral
+        # avances como comité tutoral de Avance Programático
         active_advances = []
-        options[:advances].each do |advance|
-          #if advance.advance_date.month.between?(1,2)
-          #  active_advances << advance
-          #elsif advance.advance_date.month.between?(6,7)
-          #  active_advances << advance
-          #end
-          active_advances << advance
-        end
+        active_advances = options[:advances]
       
         if active_advances.size > 0
           data = []
           get_month_name(time.month)
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE AVANCE</b>", :align => :center}]
 
-          active_advances.uniq { |x| x[:student_id] }.each do |a|
-            advance_month = get_month_name(a.advance_date.month)
-            data << [a.student.full_name, a.student.program.name, a.advance_date.strftime("%-d de #{advance_month} de %Y")]
+
+          approved = false
+          nombre_anterior = nil
+          program_id_anterior = nil
+
+          active_advances.each do |a|
+            if ((nombre_anterior.eql? a.student.full_name_cap)&(program_id_anterior.eql? a.student.program_id))
+              approved = false
+            else
+              approved = true
+            end
+
+            if approved
+              advance_month = get_month_name(a.advance_date.month)
+              data << [a.student.full_name_cap, a.student.program.name, a.advance_date.strftime("%-d de #{advance_month} de %Y"), a.advance_date]
+            
+              nombre_anterior     = a.student.full_name_cap
+              program_id_anterior = a.student.program_id
+            end
+          end 
+
+          ## ordenando por la tercera fila que es la fecha directo de db
+          data.sort!{|x,y|x[3]<=>y[3]}
+          ## eliminando el registro de fecha de cada fila porque sino truena la tabla
+          data.each do |d|
+            d.delete_at(3)
           end
+
+          ## insertando cabecera con unshift
+          data.unshift([{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE AVANCE</b>", :align => :center}])
 
           pdf.text "\n<b>Participación como comité tutoral</b>\n", :align => :center, :inline_format => true
           tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 185, 125])
           tabla.draw
         end
 
-        # Seminaros departamentales como comité tutoral
+        # Seminaros departamentales como comité tutoral         
         @seminars = options[:seminars]
-
+        
         if @seminars.size > 0
           data = []
           get_month_name(time.month)
@@ -1193,9 +1218,14 @@ class StaffsController < ApplicationController
 
 
       filename = options[:filename]
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
-      ## linea para desarrollo (es más productivo actualizar la página que estar descargando archivos):
-      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      if Rails.env.production?
+        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      else
+        ## linea para desarrollo (es más productivo actualizar la página que estar descargando archivos)
+        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      end
+      
+      
     end
   end
 
