@@ -517,9 +517,9 @@ class StudentsController < ApplicationController
 
     if @student.update_attributes(params[:student])
       graduated = 0
-      if (@student.status.to_i==Student::GRADUATED and @student.graduate.nil?)
-	graduated = 1
-      end
+    if (@student.status.to_i==Student::GRADUATED and @student.exstudent.nil?)
+	   graduated = 1
+    end
       flash[:notice] = "Estudiante actualizado."
       ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
       respond_with do |format|
