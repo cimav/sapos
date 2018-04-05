@@ -41,4 +41,12 @@ class User < ActiveRecord::Base
   def delete_permissions
     PermissionUser.delete_all(:user_id => self.id)
   end
+
+  def self.current
+    Thread.current[:user]
+  end
+
+  def self.current=(user)
+    Thread.current[:user] = user
+  end
 end

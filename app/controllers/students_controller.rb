@@ -8,6 +8,7 @@ class StudentsController < ApplicationController
   PASS  = Digest::MD5.hexdigest(["dap",REALM,"53cr3t"].join(":"))
   USERS = {"u1"=>PASS}
   before_filter :auth_required,:except=>[:student_exists]
+  before_filter :set_current_user
   respond_to :html, :xml, :json, :csv
 
   def index
@@ -520,21 +521,24 @@ class StudentsController < ApplicationController
     if (@student.status.to_i==Student::GRADUATED and @student.exstudent.nil?)
 	   graduated = 1
     end
-      flash[:notice] = "Estudiante actualizado."
-      ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
-      respond_with do |format|
-	format.html do
-	  if request.xhr?
-	    json = {}
-	    json[:flash] = flash
-	    json[:graduated] = graduated
-	    json[:thesis_status] = @student.thesis.status
-	    render :json => json
-	  else
-	    redirect_to @student
-	  end
-	end
-      end
+ 
+    flash[:notice] = "Estudiante actualizado."
+    ActivityLog.new({:user_id=>current_user.id,:activity=>"Update Student: #{@student.id},#{@student.first_name} #{@student.last_name}"}).save
+ 
+    respond_with do |format|
+	    format.html do
+	      if request.xhr?
+	        json = {}
+	        json[:flash] = flash
+	        json[:graduated] = graduated
+	        json[:thesis_status] = @student.thesis.status
+	        render :json => json
+	      else
+	        redirect_to @student
+	      end
+	    end   
+    end
+
     else
       flash[:error] = "Error al actualizar al estudiante."
       respond_with do |format|

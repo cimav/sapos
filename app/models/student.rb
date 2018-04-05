@@ -58,6 +58,7 @@ class Student < ActiveRecord::Base
   validates :email, :email => true, :on => :update
   
   after_create :set_card, :add_extra
+  after_save :set_in_log if :status_changed?
 
   mount_uploader :image, StudentImageUploader
   validates      :image, file_content_type: { allow: /^image\/.*/ }
@@ -207,5 +208,12 @@ class Student < ActiveRecord::Base
 
   def get_age
     return (Date.today - self.date_of_birth).to_i/365 rescue nil
+  end
+
+  def set_in_log
+    activity_log = ActivityLog.new
+    activity_log.user_id  = User.current.id.to_i || nil
+    activity_log.activity = "Student changes status: #{self.id},#{STATUS[self.status]}"
+    activity_log.save
   end
 end
