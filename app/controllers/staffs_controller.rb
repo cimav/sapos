@@ -909,10 +909,10 @@ class StaffsController < ApplicationController
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[158,50,85,50] ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[130,50,65,50] ) do |pdf|
       pdf.font_size 10
       x = 232
-      y = 565 #664
+      y = 664 #664
       w = 255
       h = 50
         
@@ -1121,7 +1121,7 @@ class StaffsController < ApplicationController
                 if options[:ranges]
                   if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
                     term_month = get_month_name(term_course.term.start_date.month)
-                    data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
+                    data << ["#{term_course.course.name}", term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
                   end
                 else
                   term_month = get_month_name(term_course.term.start_date.month)
