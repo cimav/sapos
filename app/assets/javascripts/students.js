@@ -107,6 +107,7 @@ $('#diploma-link').live('click', function() {
     var day   = $("#new-advance-dialog #print_date_3i").val();
     var month = $("#new-advance-dialog #print_date_2i").val();
     var year  = $("#new-advance-dialog #print_date_1i").val();
+    var duplicate  = $("#new-advance-dialog #duplicate:checked").length;
 
     var validate_book = parseInt(libro,10);
     var validate_foja = parseInt(foja,10);
@@ -119,7 +120,7 @@ $('#diploma-link').live('click', function() {
       alert("Todos los parametros deben ser numericos");
       return false;}
 
-    var href  = location.pathname + "/diploma/" + $('#diploma-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja + "&day=" +day+ "&month=" + month + "&year=" + year;
+    var href  = location.pathname + "/diploma/" + $('#diploma-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja + "&day=" +day+ "&month=" + month + "&year=" + year + "&duplicate=" + duplicate;
     window.open(href,'newWindow');
     $("#new-advance-dialog").dialog('close');
   });
@@ -131,15 +132,16 @@ $('#total-studies-link').live('click', function() {
   var html = $("#book-page").html();
   $("#new-advance-dialog").remove();
   $('#content-panel').append('<div title="Datos del certificado de estudios" id="new-advance-dialog">'+html+'</div>');
-  $("#new-advance-dialog").dialog({ autoOpen: false, width: 450, height: 215, modal:true });
+  $("#new-advance-dialog").dialog({ autoOpen: false, width: 450, height: 230, modal:true });
   $("#new-advance-dialog").dialog('open');
 
   $("#button_mine").live("click", function(){
-    var libro = $("#new-advance-dialog #book").val();
-    var foja  = $("#new-advance-dialog #page").val();
-    var day   = $("#new-advance-dialog #print_date_3i").val();
-    var month = $("#new-advance-dialog #print_date_2i").val();
-    var year  = $("#new-advance-dialog #print_date_1i").val();
+    var libro      = $("#new-advance-dialog #book").val();
+    var foja       = $("#new-advance-dialog #page").val();
+    var duplicate  = $("#new-advance-dialog #duplicate:checked").length;
+    var day        = $("#new-advance-dialog #print_date_3i").val();
+    var month      = $("#new-advance-dialog #print_date_2i").val();
+    var year       = $("#new-advance-dialog #print_date_1i").val();
     var validate_book = parseInt(libro,10);
     var validate_foja = parseInt(foja,10);
  
@@ -151,7 +153,7 @@ $('#total-studies-link').live('click', function() {
       alert("Todos los parametros deben ser numericos");
       return false;}
 
-    var href  = location.pathname + "/constancia_total/" + $('#diploma-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja + "&day=" +day+ "&month=" + month + "&year=" + year;
+    var href  = location.pathname + "/constancia_total/" + $('#diploma-link').attr("thesis_id") + "/?libro=" + libro + "&foja=" + foja + "&day=" +day+ "&month=" + month + "&year=" + year + "&duplicate=" + duplicate;
     window.open(href,'newWindow');
     $("#new-advance-dialog").dialog('close');
   });

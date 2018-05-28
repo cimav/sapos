@@ -15,8 +15,10 @@ class CertificatesController < ApplicationController
     @template_mode  = false  ## leer NOTAS
     @r_root    = Rails.root.to_s
     t = Thesis.find(params[:thesis_id])
-    libro = params[:libro]
-    foja  = params[:foja]
+    libro     = params[:libro]
+    foja      = params[:foja]
+    duplicate = params[:duplicate]
+
     dir = t(:directory)
     avg = 0.0
     sum = 0.0
@@ -56,6 +58,12 @@ class CertificatesController < ApplicationController
       size = 12
       text = "Certificado No."
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left
+      
+      
+      if duplicate.to_i.eql? 1
+        text = "Duplicado"
+        pdf.text_box text , :at=>[x+50,y-11], :width => w, :height=> h, :size=>8, :style=> :bold, :align=> :left
+      end
       ## SET FOLIO LINE
       y = y - 9
       pdf.stroke_color= @text_color
@@ -148,11 +156,6 @@ class CertificatesController < ApplicationController
 
       set_lines(pdf,y - 33, 50)
 
-      if t.student.program.level.to_i.eql? 2
-        tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?",t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(:code)
-      else
-        tcss = TermCourseStudent.joins(:term_student).joins(:term_course=>:course).where("term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?",t.student.id,TermCourseStudent::ACTIVE,70).order(:code)
-      end
  
       if @template_mode     
         # usualmente se utiliza esta linea y llegan las materias  de forma correcta
@@ -165,6 +168,15 @@ class CertificatesController < ApplicationController
         tcss4 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=4").order("courses.term, courses.id desc")
 
         tcss = tcss1 + tcss2 + tcss3 + tcss4
+      else
+        order = "terms.end_date"
+        if t.student.program.level.to_i.eql? 2 ## Doctorado
+          where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?"
+          tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(order)
+        else
+          where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
+          tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
+        end
       end
 
       #pdf.font "Arial"

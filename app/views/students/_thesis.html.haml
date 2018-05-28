@@ -90,5 +90,8 @@
   %div{:id => "field_print_date", :class => 'field'}
     =label_tag "Fecha de impresión"
     =date_select "print","date", :start_year => 1994
+  %div{:id => "field_duplicate", :class => 'field'}
+    =label_tag "Duplicado"
+    =check_box_tag "duplicate"
   %div{:id => "field_button", :class => 'field'}
     = button_tag "Generar", :id=>"button_mine", :name=>"button_mine", :class=>"my_class", :type=>"button"

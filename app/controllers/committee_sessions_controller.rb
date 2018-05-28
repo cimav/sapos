@@ -571,7 +571,7 @@ class CommitteeSessionsController < ApplicationController
         pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
         pdf.move_down 235
         data = []
-        if student.program.level.eql? 2
+        if student.program.level.to_i.eql? 2
           data << ["Semestre 1","Protocolo de Investigación"]
           data << ["Semestre 2","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa y discusión de los resultados del avance de su investigación"]
           data << ["Semestre 3","Porcentaje de cumplimiento de las actividades de investigación indicadas por su Comité Tutoral en la evaluación semestral previa y discusión de los resultados del avance de su investigación"]

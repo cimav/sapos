@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $('#edit_program_3')
+  $('.edit_program')
     .live("ajax:beforeSend", function(evt, xhr, status) {
     	$('#notice').html("...");
     })

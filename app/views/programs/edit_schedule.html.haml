@@ -1,4 +1,5 @@
 :javascript
+  model_name = 'program'
   $('#inactive-schedule').live('click', function() {
     if (confirm('¿Estas seguro?')) {
       $("#cs_status").val("#{TermCourseSchedule::INACTIVE}");

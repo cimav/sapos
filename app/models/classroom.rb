@@ -6,6 +6,8 @@ class Classroom < ActiveRecord::Base
   validates :name, :presence => true
   validates :code, :presence => true
 
+  after_create :set_status
+
   CLASSROOM   = 1
   OFFICE      = 2
   MEETINGROOM = 3
@@ -32,5 +34,10 @@ class Classroom < ActiveRecord::Base
 
   def full_name
     "#{code}: #{name}" rescue name
+  end
+
+  def set_status
+    self.status=1
+    self.save
   end
 end

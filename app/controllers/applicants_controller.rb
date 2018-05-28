@@ -515,11 +515,11 @@ class ApplicantsController < ApplicationController
     @include_js   = "applicants.register.files.js"
     @register     = true
     @req_docs.delete(5)
-    @req_docs.delete(8)
-    @req_docs.delete(9)
+    #@req_docs.delete(8)
+    #@req_docs.delete(9)
     @req_docs.delete(12)
     @req_docs.delete(13)
-    @req_docs.delete(14)
+    #@req_docs.delete(14)
 
     @applicant = Applicant.find(session[:applicant_user])
     @applicant_files = ApplicantFile.where(:applicant_id=>session[:applicant_user])

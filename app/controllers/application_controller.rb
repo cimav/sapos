@@ -46,6 +46,10 @@ class ApplicationController < ActionController::Base
     redirect_to '/auth/admin' unless authenticated?
   end
 
+  def set_current_user
+    User.current = current_user
+  end
+
   def to_excel(rows, column_order, sheetname, filename, option = 0)
     book = Spreadsheet::Workbook.new
     sheet1 = book.create_worksheet :name => sheetname

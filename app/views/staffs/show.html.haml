@@ -70,8 +70,16 @@
           = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona la institucion"}
       - else
         .field#field_employee_number
-          = f.label :employee_number, 'Número de Empleado'
-          = f.text_field :employee_number
+          = f.label :employee_number, 'Número de Empleado Interno'
+          = @staff.employee_number
+        %br
+        .field#field_uh_number
+          = f.label :employee_number, 'Número de Empleado en UnixHelp'
+          = @staff.uh_number
+        %br
+        %br
+        %br
+        %br
 
 
       .field#field_staff_gender
