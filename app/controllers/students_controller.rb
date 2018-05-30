@@ -269,11 +269,13 @@ class StudentsController < ApplicationController
         'Tutor3' => (Staff.find(last_advance.tutor3).full_name rescue ''),
         'Tutor4' => (Staff.find(last_advance.tutor4).full_name rescue ''),
         'Tutor5' => (Staff.find(last_advance.tutor5).full_name rescue ''),
-
+        'Fecha_baja_definitiva' => (s.definitive_inactive_date rescue ''),
+        'Fecha_baja_temporal' => (s.inactive_date rescue '')
       }
     end#Students
 
-    column_order = ["Matricula", "Nombre", "Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa","Promedio", "Inicio", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+    column_order = ["Matricula", "Nombre", "Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa","Promedio", "Inicio", "Fecha_baja_temporal", "Fecha_baja_definitiva", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+
     @filename = to_excel(rows, column_order, "Estudiantes", "Estudiantes",1)
     render :layout => false
   end
