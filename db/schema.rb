@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180424194250) do
+ActiveRecord::Schema.define(:version => 20180528223112) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -678,7 +678,6 @@ ActiveRecord::Schema.define(:version => 20180424194250) do
     t.datetime "updated_at"
     t.integer  "area_id"
     t.integer  "staff_type"
-    t.integer  "uh_number"
   end
 
   create_table "stances", :force => true do |t|
@@ -734,12 +733,12 @@ ActiveRecord::Schema.define(:version => 20180424194250) do
 
   create_table "students", :force => true do |t|
     t.integer  "program_id"
-    t.string   "card",                 :limit => 20
-    t.string   "previous_card",        :limit => 20
+    t.string   "card",                     :limit => 20
+    t.string   "previous_card",            :limit => 20
     t.integer  "consecutive"
-    t.string   "first_name",           :limit => 50,                :null => false
-    t.string   "last_name",            :limit => 50,                :null => false
-    t.string   "gender",               :limit => 1
+    t.string   "first_name",               :limit => 50,                :null => false
+    t.string   "last_name",                :limit => 50,                :null => false
+    t.string   "gender",                   :limit => 1
     t.date     "date_of_birth"
     t.string   "city"
     t.integer  "state_id"
@@ -767,19 +766,20 @@ ActiveRecord::Schema.define(:version => 20180424194250) do
     t.string   "accident_phone"
     t.string   "passport"
     t.string   "image"
-    t.integer  "status",                             :default => 1
+    t.integer  "status",                                 :default => 1
     t.text     "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "campus_id"
     t.string   "email_cimav"
     t.string   "domain_password"
-    t.integer  "deleted",                            :default => 0
+    t.integer  "deleted",                                :default => 0
     t.datetime "deleted_at"
     t.integer  "studies_plan_id"
     t.integer  "external_supervisor"
     t.integer  "scholarship_type"
     t.integer  "student_time"
+    t.date     "definitive_inactive_date"
   end
 
   add_index "students", ["campus_id"], :name => "index_students_on_campus_id"
