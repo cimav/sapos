@@ -79,7 +79,7 @@ class TermCourseSchedule < ActiveRecord::Base
         days = (t.start_date..t.end_date).to_a.select {|k| [t.day].include?(k.wday)}
         days.each do |d|
           if ndays.include?(d)
-            errors.add(:start_date, "Se empalman horarios para esta Aula con #{t.term_course.course.name}")
+            errors.add(:start_date, "Se empalman horarios para esta Aula con #{t.term_course.course.name} (#{t.term_course.term.program.prefix} #{t.term_course.term.name})<br>")
             break
           end
         end
