@@ -52,7 +52,9 @@ class Student < ActiveRecord::Base
 
   validates :first_name, :presence => true
   validates :last_name, :presence => true
-  validates :campus_id, :presence => true  
+  validates :campus_id, :presence => true
+  validates :curp, :presence => true
+  validates :curp, :format => { :with => /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/, :message => "Formato incorrecto" }
   validates :program_id, :presence => true  
   #validates :email_cimav, :email => true, :on => :update
   validates :email, :email => true, :on => :update

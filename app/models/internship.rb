@@ -22,6 +22,7 @@ class Internship < ActiveRecord::Base
   #validates :state_id, :presence => true
   validates :area_id, :presence => true
   validates :curp, :presence => true
+  validates :curp, :format => { :with => /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/, :message => "Formato incorrecto" }
   validates :phone, :presence => true,:if=>"self.origin.eql? 0"
   validates :health_insurance, :presence => true,:if=>"self.origin.eql? 0"
   validates :health_insurance_number, :presence => true,:if=>"self.origin.eql? 0"
