@@ -118,7 +118,7 @@ class InternshipsController < ApplicationController
                    'Sexo' => s.gender,
                    'Email' => s.email,
                    'Fecha de Nacimiento' => s.date_of_birth,
-                   'Tipo' => s.internship_type.name,
+                   'Tipo' => (s.internship_type.name rescue 'N.D'),
                    'Institucion' => (s.institution.name rescue ''),
                    'Inicio' => s.start_date,
                    'Fin' => s.end_date,
@@ -1143,7 +1143,7 @@ private
 
  
   def security_course(email)
-    @email = email
+    @email   = email
     @hash    = Hash.new
     @row     = Array.new
     @counter = 0 
