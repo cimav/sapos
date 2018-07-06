@@ -72,7 +72,26 @@ class ExstudentsController < ApplicationController
       end
     end
 
-    render :layout => false
+    respond_with do |format|
+      format.html do 
+        render :layout => false
+      end
+      format.xls do 
+        rows = Array.new
+        @students.collect do |s|
+          rows << {'Matricula' => s.card,
+                   'Nombre'    => s.first_name,
+                   'Apellidos' => s.last_name,
+                   'Genero'    => s.gender,
+                   'Programa'  => s.program.name,
+                  }
+        end
+          
+        column_order = ['Matricula','Nombre','Apellidos','Genero','Programa']
+        to_excel(rows, column_order, "Egresados", "Egresados")
+      end
+    end
+
   end#live_search
 
   def analizer
