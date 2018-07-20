@@ -8,10 +8,10 @@ namespace :grades do
     @f        = File.open(filep,'a')
     @env      = Rails.env
     SEND_MAIL         = 0
-    STATUS_CHANGE     = false
+    STATUS_CHANGE     = true
     ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx"
-    CICLO             = "2017-1"
-    NCICLO            = "2017-2"
+    CICLO             = "2018-1 Chihuahua"
+    NCICLO            = "2018-2"
   task :check => :environment do
     ################################################################################################################################
     ###########################################        NOTAS        ################################################################
@@ -111,10 +111,11 @@ namespace :grades do
             set_line("Activando inscripción para #{ts.student.full_name}")
             @counter_si      = @counter_si + 1
             ## Le ponemos al alumno el estatus de p_enrollment(pending enrollment)
-            if STATUS_CHANGE
-              ts.student.status = Student::PENROLLMENT
-              ts.student.save
-            end
+
+#            if STATUS_CHANGE
+#              ts.student.status = Student::PENROLLMENT
+#              ts.student.save
+#            end
             #set_line("Activando inscripción para #{ts.student.full_name}")
             ## Enviamos correo a su asesor
             #staff   = Staff.find(ts.student.supervisor)
@@ -126,7 +127,7 @@ namespace :grades do
               #content = "{:full_name=>\"#{ts.student.full_name}\",:email=>\"#{ts.student.email}\",:view=>1,:avg=>\"#{prom[:avg]}\",:adv_avg=>\"#{prom[:adv_avg]}\"}"
               #send_mail(staff.email,"Alumno preparado para la inscripcion",content)
               content = "{:ciclo=>\"#{NCICLO}\",:view=>8}"
-              send_mail(ts.student.email_cimav,"Inscripción al ciclo #{NCICLO}",content)
+              #send_mail(ts.student.email_cimav,"Inscripción al ciclo #{NCICLO}",content)
             end ## staff.empty
           else
             set_line("No se activa la inscripción para #{ts.student.full_name}")
