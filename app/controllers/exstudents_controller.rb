@@ -82,12 +82,13 @@ class ExstudentsController < ApplicationController
           rows << {'Matricula' => s.card,
                    'Nombre'    => s.first_name,
                    'Apellidos' => s.last_name,
+                   'Email' => s.email,
                    'Genero'    => s.gender,
                    'Programa'  => s.program.name,
                   }
         end
           
-        column_order = ['Matricula','Nombre','Apellidos','Genero','Programa']
+        column_order = ['Matricula','Nombre','Apellidos','Email','Genero','Programa']
         to_excel(rows, column_order, "Egresados", "Egresados")
       end
     end
