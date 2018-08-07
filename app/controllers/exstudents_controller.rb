@@ -49,7 +49,7 @@ class ExstudentsController < ApplicationController
       where_hash[:campus_id] = params[:campus]
     end
     
-    if !(params[:estatus].to_i.eql? 0)  ## busqueda por campus
+    if !(params[:estatus].to_i.eql? 0)  ## busqueda por estatus
       if params[:estatus].to_i.eql? 1
         extra_where = "exstudents.id is not null"
       elsif params[:estatus].to_i.eql? 2
@@ -79,16 +79,27 @@ class ExstudentsController < ApplicationController
       format.xls do 
         rows = Array.new
         @students.collect do |s|
-          rows << {'Matricula' => s.card,
+          hash = {'Matricula' => s.card,
                    'Nombre'    => s.first_name,
                    'Apellidos' => s.last_name,
-                   'Email' => s.email,
+                   'Email'     => s.email,
                    'Genero'    => s.gender,
                    'Programa'  => s.program.name,
-                  }
-        end
-          
-        column_order = ['Matricula','Nombre','Apellidos','Email','Genero','Programa']
+                   }
+
+          hash['Tipo_Trabajo']     = ((Exstudent::JOB_TYPES[s.exstudent.job_type] rescue nil) == nil ? "-" : Exstudent::JOB_TYPES[s.exstudent.job_type])
+          hash['Rol']              = (s.exstudent.job_role.blank? ? "-" : s.exstudent.job_role) rescue ""
+          hash['Regimen_Legal']    = ((Exstudent::JOB_LEGAL_TYPES[s.exstudent.job_legal_regime] rescue nil) == nil ? "-" : Exstudent::JOB_LEGAL_TYPES[s.exstudent.job_legal_regime])
+          hash['Nombre_Empresa']   = (s.exstudent.job_company_name.blank? ? "-" : s.exstudent.job_company_name) rescue ""
+          hash['Salario_Mensual']  = ((Exstudent::SALARY_RANGES[s.exstudent.salary] rescue nil) == nil ? "-" : Exstudent::SALARY_RANGES[s.exstudent.salary])
+          hash['Jefe_Inmediato']   = (s.exstudent.job_chief_name.blank? ? "-" : s.exstudent.job_chief_name) rescue ""
+          hash['Telefono_Oficina'] = (s.exstudent.job_phone.blank? ? "-" : s.exstudent.job_phone) rescue ""
+          hash['Email_Oficina']    = (s.exstudent.job_email.blank? ? "-" : s.exstudent.job_email) rescue ""
+
+          rows << hash
+        end#collect
+
+        column_order = rows[0].keys
         to_excel(rows, column_order, "Egresados", "Egresados")
       end
     end
