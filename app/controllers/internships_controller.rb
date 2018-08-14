@@ -9,7 +9,6 @@ class InternshipsController < ApplicationController
   respond_to :html, :xml, :json
   before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify]
   before_filter :auth_indigest, :only=>[:files_register,:upload_file_register,:finalize]
-  before_filter :allow_iframe_requests, only: [:applicant_form]
 
   def index
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
