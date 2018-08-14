@@ -859,7 +859,7 @@ class StaffsController < ApplicationController
         ranges = "(:start_date <= advance_date AND advance_date <= :end_date)"
         dates  = {:start_date=>start_date,:end_date=>end_date}
         order  = "first_name,last_name"
-        options[:seminars] = Advance.includes(:student).where(tutors,:staff_id=>@staff.id).where(ranges,dates).where(:advance_type=>3).order(order)
+        options[:seminars] = Advance.includes(:student).where(tutors,:staff_id=>@staff.id).where(ranges,dates).where(:advance_type=>3).where("advances.status != 'X'").order(order)
 
         options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where(status:[nil,ExternalCourse::ACTIVE]).where("(start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
