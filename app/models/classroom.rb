@@ -1,6 +1,6 @@
 # coding: utf-8
 class Classroom < ActiveRecord::Base
-  attr_accessible :id,:code,:name,:room_type,:created_at,:updated_at,:status
+  attr_accessible :id,:code,:name,:room_type,:created_at,:updated_at,:status,:campus_id
   has_many :term_course_schedule
 
   validates :name, :presence => true
