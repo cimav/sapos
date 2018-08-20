@@ -4,8 +4,9 @@
     - c += 1
     %li 
       = link_to classroom, :method => :get, :remote => true, :class => 'get-item', :'data-type' => 'html' do
-        .title= classroom.full_name rescue classroom.code
+        .title= "#{classroom.full_name rescue classroom.code} (#{classroom.id})"
         .comment= classroom.room_type_text
+        .comment= classroom.campus.name rescue "N.D."
 #counter
   .inner= "#{c} salones"
 

@@ -68,7 +68,7 @@ class TermCourseSchedule < ActiveRecord::Base
       errors.add(:start_date, "La hora final no debe ser menor o igual a la final")
     end
     
-    tcs = TermCourseSchedule.where(:classroom_id=>self.classroom_id,:day=>self.day).where("(:start_date between start_date AND end_date) OR (:end_date between start_date AND end_date) OR (start_date >= :start_date AND end_date <= :end_date)",{:start_date=>self.start_date,:end_date=>self.end_date})
+    tcs = TermCourseSchedule.where(:classroom_id=>self.classroom_id,:day=>self.day,:status=>1).where("(:start_date between start_date AND end_date) OR (:end_date between start_date AND end_date) OR (start_date >= :start_date AND end_date <= :end_date)",{:start_date=>self.start_date,:end_date=>self.end_date})
     tcs = tcs.where("(:start_hour between start_hour AND end_hour) OR (:end_hour between start_hour AND end_hour) OR (start_hour >= :start_hour AND end_hour <= :end_hour)",{:start_hour=>(self.start_hour+1*60).strftime('%H:%M:%S'),:end_hour=>(self.end_hour-1*60).strftime('%H:%M:%S'),:own_id=>self.term_course_id})
     tcs = tcs.where("id != ?",self.id.to_i)
     

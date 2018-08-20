@@ -8,10 +8,21 @@ class ClassroomsController < ApplicationController
   end
 
   def live_search
-    @classrooms = Classroom.where("status < 98").order('code')
-    if !params[:q].blank?
-      @classrooms = @classrooms.where("(name LIKE :n OR code LIKE :n)", {:n => "%#{params[:q]}%"}) 
+    
+    where = "status < 98 " 
+    hash  = {}
+    
+    if !(current_user.campus_id.eql? 0)
+      where    = where + "AND campus_id=:c"
+      hash[:c] = current_user.campus_id
     end
+
+    if !params[:q].blank?
+      where    = "(name LIKE :n OR code LIKE :n)"
+      hash[:n] = "%#{params[:q]}%"
+    end
+
+    @classrooms = Classroom.where(where, hash).order(:code)
 
     render :layout => false
   end
