@@ -160,11 +160,24 @@ class ProgramsController < ApplicationController
   end
 
   def terms_table
-    @program = Program.find(params[:id])
+    if !(current_user.campus_id.eql? 0)
+      where = "name like '%#{current_user.campus.short_name}%'"
+      @terms   = Term.where(:program_id=>params[:id]).where(where).order("start_date DESC")
+    else
+      @terms   = Term.where(:program_id=>params[:id]).order("start_date DESC")
+    end
+    
+    
     render :layout => false
   end
 
   def terms_dropdown
+    if current_user.campus_id.eql? 0
+      @term = Term.where("program_id = :p", {:p => params[:id]}).order('start_date DESC')
+    else
+      @term = Term.where("program_id = :p AND name like :n", {:p => params[:id],:n => "%#{current_user.campus.short_name}%"}).order('start_date DESC')
+    end
+    
     render :layout => false
   end
 
