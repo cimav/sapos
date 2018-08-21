@@ -24,6 +24,10 @@
       .field#field_applicant_second_last_name
         = f.label :second_last_name, 'Segundo Apellido'
         = f.text_field :second_last_name
+      
+      .field#field_applicant_curp
+        = f.label :curp, 'CURP'
+        = f.text_field :curp, :required=> true
 
       .field#field_applicant_program_id
         = f.label :program_id, 'Programa'
