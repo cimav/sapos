@@ -168,7 +168,7 @@ class StaffsController < ApplicationController
   end ## end reporte
 
   def evaluation
-    @staffs  = Staff.includes(:term_courses=>:term).where(:status=>0).where("terms.name like '%2017-2%'")
+    @staffs  = Staff.includes(:term_courses=>:term).where(:status=>0).where("terms.name like '%2018-1%'")
     numeric = !params[:numeric].to_i.zero?
     
     rows = Array.new

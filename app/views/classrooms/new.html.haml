@@ -24,3 +24,14 @@
       .field#field_classroom_room_type
         = f.label :room_type, 'Tipo'
         = f.select :room_type, Classroom::ROOMS.invert.sort {|a,b| a[1] <=> b[1] }
+
+      .field#field_campus_id
+        = f.label :campus_id, 'Campus'
+        - campus_id = User.find(current_user.id).campus_id
+        - if campus_id.eql? 0
+          - all_campus  = Campus.order(:name)
+          - all_options = {:prompt => "Selecciona un Campus"}
+        - else
+          - all_campus  = Campus.where(:id=>[campus_id]).order(:name)
+          - all_options = {}
+        = f.collection_select :campus_id, all_campus, :id, :name, options = all_options

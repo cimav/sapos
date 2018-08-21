@@ -60,7 +60,7 @@ class Student < ActiveRecord::Base
   validates :email, :email => true, :on => :update
   
   after_create :set_card, :add_extra
-  after_save :set_in_log if :status_changed?
+  #after_save :set_in_log if :status_changed?
 
   mount_uploader :image, StudentImageUploader
   validates      :image, file_content_type: { allow: /^image\/.*/ }

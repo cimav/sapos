@@ -4,6 +4,7 @@ class Campus < ActiveRecord::Base
   has_many :students, :order => "first_name, last_name"
   has_many :laboratories
   has_many :user
+  has_many :classrooms
 
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact

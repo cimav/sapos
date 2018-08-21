@@ -28,7 +28,11 @@
 
       %div{:id => "field_term_course_term_course_schedules_attributes_0_classroom_id", :class => 'field'}
         = fields.label :classroom_id, 'Aula'
-        = fields.select :classroom_id, Classroom.order(:name).collect {|i| [i.full_name, i.id]}
+        - if current_user.campus_id.eql? 0
+          - @classrooms = Classroom.order(:name)
+        - else
+          - @classrooms = Classroom.where(:campus_id=>current_user.campus_id).order(:name)
+        = fields.select :classroom_id, @classrooms.collect {|i| ["#{i.full_name} (#{i.id})", i.id]}, {:include_blank => '- Selecciona el salón -'}
 
       %div{:id => "field_term_course_term_course_schedules_attributes_0_class_type", :class => 'field'}
         = fields.label :class_type, 'Tipo de clase'

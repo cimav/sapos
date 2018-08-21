@@ -4,6 +4,10 @@
   %table#enrollment-filter
     %tbody
       %tr
-        %td#enrollment-terms-dropdown= select "enrollment", "term_id", Term.where("program_id = :p", {:p => @program.id}).order("start_date desc").collect {|i| [i.name, i.id]}, :prompt => 'Selecciona un ciclo escolar'
+        - if current_user.campus_id.eql? 0
+          - @terms = Term.where("program_id = :p", {:p => @program.id}).order("start_date desc")
+        - else
+          - @terms = Term.where("program_id = :p AND name like :n", {:p => @program.id,:n=>"%#{current_user.campus.short_name}%"}).order("start_date desc")
+        %td#enrollment-terms-dropdown= select "enrollment", "term_id", @terms.collect {|i| [i.name, i.id]}, :prompt => 'Selecciona un ciclo escolar'
 
 #enrollment-area

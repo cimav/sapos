@@ -112,10 +112,10 @@ namespace :grades do
             @counter_si      = @counter_si + 1
             ## Le ponemos al alumno el estatus de p_enrollment(pending enrollment)
 
-#            if STATUS_CHANGE
-#              ts.student.status = Student::PENROLLMENT
-#              ts.student.save
-#            end
+            if STATUS_CHANGE
+              ts.student.status = Student::PENROLLMENT
+              ts.student.save
+            end
             #set_line("Activando inscripción para #{ts.student.full_name}")
             ## Enviamos correo a su asesor
             #staff   = Staff.find(ts.student.supervisor)
@@ -242,8 +242,8 @@ end ## namespace
 
     ts.term_course_student.where(:status=>1).each do |tcs|
       #puts "#{tcs.term_course.course.name} #{tcs.grade} #{tcs.grade.nil?}"
-      puts "#{tcs.term_student.student.full_name}"
-      puts "#{tcs.id}"
+      #puts "#{tcs.term_student.student.full_name}"
+      #puts "#{tcs.id}"
       if tcs.term_course.course.notes.eql? "[AI]"
         ai = ai + 1
       end
@@ -560,7 +560,10 @@ end ## namespace
         end ## if counter.nil?
       end # if level.eql? 2
     else ## Si las reprobadas son 2 o mas avisamos de la baja
-      staff   = Staff.find(s.supervisor)
+      staff = Staff.find(890)
+      puts "BAJA: #{s.full_name}"
+      #staff   = Staff.find(s.supervisor) 
+
       set_line("El alumno #{s.full_name} sera dado de baja del programa #{s.program.name}")
       ## Enviar correo asesor y a Sandra y al mismo alumno
       content = "{:full_name=>\"#{s.full_name}\",:email=>\"#{s.email}\",:view=>2}"
