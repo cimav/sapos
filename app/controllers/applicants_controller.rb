@@ -463,6 +463,7 @@ class ApplicantsController < ApplicationController
     @student.supervisor           = applicant.staff_id
     @student.date_of_birth        = applicant.date_of_birth
     @student.email                = applicant.email
+    @student.curp                 = applicant.curp
     @student.start_date           = Time.now
  
     if applicant.status.eql? 5
