@@ -1,91 +1,103 @@
 - @st_js = @states.map{|i| [i.id,i.name]}
-
-= "Todos los campos son obligatorios"
-%br=""
-= form_for @internship, :url=>{action: "applicant_create"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-internship-applicant-form' } do |f|
-  .field#field_internship_first_name
-    = f.label :first_name, 'Nombre'
-    = f.text_field :first_name
-
-  .field#field_internship_last_name
-    = f.label :last_name, 'Apellidos'
-    = f.text_field :last_name
-
-  .field#field_internship_gender
-    = f.label :gender, 'Sexo'
-    = f.select :gender,  [['',''],['Hombre', 'H'], ['Mujer', 'F']]
-
-  .field#field_internship_date_of_birth
-    = f.label :date_of_birth, 'Fecha de nacimiento'
-    = f.date_select :date_of_birth, :start_year => DateTime.now.year - 80
-
-  .field#field_internship_country_id
-    = f.label :country_id, 'País de nacimiento'
-    = f.collection_select :country_id, @countries, :id, :name, options = {:prompt => "Selecciona un país"}
-
-  .field#field_internship_state_id
-    = f.label :state_id, 'Estado de Nacimiento'
-    = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona un estado"}
-
-  .field#field_internship_curp
-    = f.label :curp, 'Curp'
-    = f.text_field :curp, required:true
-
-  .field#field_internship_email
-    = f.label :email, 'Correo Electrónico'
-    = f.email_field :email
-  
-  .field#field_internship_phone
-    = f.label :phone, 'Teléfono de contacto'
-    = f.text_field :phone
-  
-  .field#field_internship_health_insurance
-    = f.label :health_insurance, 'Servicio médico'
-    = f.text_field :health_insurance
-  
-  .field#field_internship_health_insurance_number
-    = f.label :health_insurance_number, 'Número de afiliación o poliza'
-    = f.text_field :health_insurance_number
-  
-  .field#field_internship_accident_contact
-    = f.label :accident_contact, 'Contacto en caso de accidente'
-    = f.text_field :accident_contact
-
-  .field#field_internship_institution_id
-    = f.label :institution_id, 'Institución'
-    = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona tu institucion de procedencia"},:style=>"width: 400px"
-    = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
-
-  .field#field_internship_internship_type_id
-    = f.label :internship_type_id, 'Tipo'
-    = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo de servicio"}
-    = text_field_tag :text_internship_type_id, '', :size=>25, :placeholder=>"¿Cual?"
+%nav.navbar.navbar-dark.bg-white.shadow-lg.p-3.mb-5.rounded.sticky-top
+  %a.navbar-brand{:href => "#"}
+    %img.d-inline-block.align-top{:alt => "", :height => "30", :src => "https://cimav.edu.mx/wp-content/themes/cimav2017/img/logo-top.png"}
 
 
-  - if @option.eql? "monterrey"
-    - f_class = "v-hidden"
-  - else
-    - f_class = "field"
-  .field#field_internship_area_id{:class=>f_class}
-    = f.label :area_id, 'Area'
-    - if @option.eql? "monterrey"
-      = f.collection_select :area_id, @areas, :id, :name
-    - else
-      = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"}
+.container{style:'margin-bottom:2em;'}
+  .row
+    %h1.text-secondary{style:'font-size:1.9em; padding:1em;'} Solicitud de prácticas profesionales
+  .card
+    .card-body
+      = form_for @internship, :url=>{action: "applicant_create"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-internship-applicant-form' } do |f|
 
-  .field#field_internship_submit
-    %table
-      %tr
-        %td= f.submit 'Enviar'
-        %td= "&nbsp;".html_safe
-        %td= image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
+        .row
+          .form-group.col-12.col-sm-12.col-md-6
+            = f.label :first_name, 'Nombre(s)'
+            = f.text_field :first_name, class:'form-control', required:true
+
+          .form-group.col-12.col-sm-12.col-md-6
+            = f.label :last_name, 'Apellidos'
+            = f.text_field :last_name, class:'form-control', required:true
+        .row
+          .form-group.col-12.col-sm-12.col-md-6
+            = f.label :gender, 'Sexo'
+            = f.select :gender,  [['',''],['Hombre', 'H'], ['Mujer', 'F']],{} ,class:'form-control', required:true
+
+          .form-group.col-12.col-sm-12.col-md-6
+            = f.label :date_of_birth, 'Fecha de nacimiento'
+            .aux
+              = f.date_select :date_of_birth, :start_year => DateTime.now.year - 80
+        .row
+          .form-group.col-12.col-sm-12.col-md-6
+            = f.label :country_id, 'País de nacimiento'
+            = f.collection_select :country_id, @countries, :id, :name, {}, {:prompt => "Selecciona un país", class:'form-control'}
+
+          .form-group.col-12.col-sm-12.col-md-6
+            = f.label :state_id, 'Estado de Nacimiento'
+            = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona un estado"}, class:'form-control', required:true
+        .row
+          .form-group.col-12.col-sm-12.col-md-4
+            = f.label :curp, 'Curp'
+            = f.text_field :curp, required:true, class:'form-control'
+
+          .form-group.col-12.col-sm-12.col-md-4
+            = f.label :email, 'Correo Electrónico'
+            = f.email_field :email, class:'form-control', required:true
+
+          .form-group.col-12.col-sm-12.col-md-4
+            = f.label :phone, 'Teléfono de contacto'
+            = f.text_field :phone, class:'form-control', required:true
+        .row
+          .form-group.col-12.col-sm-12.col-md-4
+            = f.label :health_insurance, 'Servicio médico'
+            = f.text_field :health_insurance, class:'form-control', required:true
+
+          .form-group.col-12.col-sm-12.col-md-4
+            = f.label :health_insurance_number, 'Número de afiliación o poliza'
+            = f.text_field :health_insurance_number, class:'form-control', required:true
+
+          .form-group.col-12.col-sm-12.col-md-4
+            = f.label :accident_contact, 'Contacto en caso de accidente'
+            = f.text_field :accident_contact, class:'form-control', required:true
+
+        .row
+          .form-group.col-12
+            = f.label :institution_id, 'Institución'
+            = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona tu institucion de procedencia"} ,class:'form-control', required:true
+            = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
+
+        .row
+          .form-group.col-12.col-sm-12.col-md-6
+            = f.label :internship_type_id, 'Tipo'
+            = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo de servicio"}, class:'form-control', required:true
+            = text_field_tag :text_internship_type_id, '', :size=>25, :placeholder=>"¿Cual?"
+
+
+          - if @option.eql? "monterrey"
+            - f_class = "v-hidden"
+          - else
+            - f_class = "field"
+          .form-group.col-12.col-sm-12.col-md-6{:class=>f_class}
+            = f.label :area_id, 'Area'
+            - if @option.eql? "monterrey"
+              = f.collection_select :area_id, @areas, :id, :name,{}, class:'form-control', required:true
+            - else
+              = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"},class:'form-control', required:true
+
+        .row
+          .form-group.col-12
+            = f.submit 'Enviar', class:'btn btn-success btn-lg float-right'
+        .row
+          .col-12
+            %p.text-secondary Todos los campos son obligatorios
 
 :javascript
   var model_name = 'internship';
-  var states = #{@st_js.to_json}
+  var states = #{raw @st_js.to_json}
 
   function full_states(){
-    var select = $("#internship_state_id")
+    var select = $("#internship_state_id");
     if(select.prop) {
     var options = select.prop('options');
     }

@@ -656,6 +656,7 @@ class InternshipsController < ApplicationController
   end
 
   def applicant_form
+    @page_title = 'Solicitud de prácticas profesionales'
     @option           = params[:option]
     @internship       = Internship.new
     @institutions     = Institution.order('name')
@@ -669,7 +670,7 @@ class InternshipsController < ApplicationController
     else    
       @areas  = Area.where("id not in (1,2)").order('name') 
     end
-    render :layout => 'standalone'
+    render :layout => 'bootstrap_layout'
   end
 
   def applicant_create

@@ -1,0 +1,18 @@
+!!!
+%html
+  %head
+    %title= @page_title || 'CIMAV'
+    = csrf_meta_tag
+    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css", :integrity => "sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm", :rel => "stylesheet"}/
+    = javascript_include_tag "application"
+    - if !@include_js.nil?
+      = javascript_include_tag @include_js
+    - if !@include2_js.nil?
+      = javascript_include_tag @include2_js
+    - if !@include3_js.nil?
+      = javascript_include_tag @include3_js
+    - if !@include4_js.nil?
+      = javascript_include_tag @include4_js
+  %body{style:'background-color: #f9f9f9;'}
+    = yield
+
