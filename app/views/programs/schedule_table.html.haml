@@ -40,7 +40,7 @@
         %td.centered=  l schedule.start_hour, :format => "%H:%M"
         %td.centered=  l schedule.end_hour, :format => "%H:%M"
         %td= schedule.staff.full_name rescue ''
-        %td= "#{schedule.classroom.name rescue ''} (#{schedule.classroom.id})"
+        %td= "#{schedule.classroom.name rescue 'Sin Elegir'} (#{schedule.classroom.id rescue '-'})"
         - comments = ''
         - if schedule.start_date != @tc.term.start_date 
           - comments += "Inicia: #{l schedule.start_date, :format => :long}. "
