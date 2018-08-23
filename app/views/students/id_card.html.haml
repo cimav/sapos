@@ -30,8 +30,20 @@
                 %td
                   - if @student.program.program_type.eql? 4 ## propedeuticos
                     #card_valid= "Vigencia: Febrero 18, 2018"
+
                   - else                                    ## resto de programas
-                    #card_valid= "Vigencia: Agosto 23, 2018"
+                    - vigencia = "N.D."
+                    - if @student.program.level.to_i.eql? 2 ## doctorado
+                      - if @student.program.id.eql? 10 ## doctorado en nanotecnologia 36 meses
+                        - vigencia = @student.start_date+36.months
+                      - else #resto de doctorados 48 meses
+                        - vigencia = @student.start_date+48.months
+                    - if @student.program.level.to_i.eql? 1 # para maestrias 24 meses
+                      - vigencia = @student.start_date+24.months
+                    - dir = t(:date)
+                    - month = dir[:month_names][vigencia.month]
+                    #card_valid= "Vigencia: #{vigencia.strftime("#{month} %-d, %Y")}"  
+
         %tr
           %td{:colspan => 2}
             %br
