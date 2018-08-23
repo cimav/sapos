@@ -74,6 +74,7 @@ Sapos::Application.routes.draw do
 
   match 'docentes/reporte' => 'staffs#report'
   match 'docentes/evaluacion' => 'staffs#evaluation'
+  match 'docentes/reporte/evaluacion' => 'staffs#term_course_evaluation'
   match 'docentes/busqueda' => 'staffs#live_search'
   match 'docentes/:id/cambiar_foto' => 'staffs#change_image'
   match 'docentes/upload_image' => 'staffs#upload_image'
@@ -247,6 +248,9 @@ Sapos::Application.routes.draw do
   match 'planes_estudios/eliminar/disenos/:id' => 'studies_plan_designs#destroy'
   
   match 'reportes' => 'reports#index'
+  match 'reportes/get_term_courses/:staff_id' => 'reports#get_evaluation_term_courses'
+
+
   
   match 'seminarios' => 'seminars#index'
   match 'seminarios/busqueda' => 'seminars#live_search'

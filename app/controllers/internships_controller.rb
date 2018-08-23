@@ -656,6 +656,7 @@ class InternshipsController < ApplicationController
   end
 
   def applicant_form
+    @include_js = "internships.js"
     @page_title = 'Solicitud de prácticas profesionales'
     @option           = params[:option]
     @internship       = Internship.new

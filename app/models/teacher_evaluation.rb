@@ -19,7 +19,7 @@ class TeacherEvaluation < ActiveRecord::Base
     ANSWERS[answer]
   end
 
-  def question_text(number)
+  def self.question_text(number)
     case number
       when 1
         "Muestra tener conocimientos en el área académica de la materia."
