@@ -1314,4 +1314,49 @@ class StaffsController < ApplicationController
     end
   end
 
+  def term_course_evaluation
+    staff = Staff.find(params[:staff_id])
+    term_course = TermCourse.find(params[:term_course_id])
+
+    Prawn::Document.new(background:"#{Rails.root.to_s}/private/prawn_templates/hoja_membretada_reportes.png", :background_scale=>0.26, :margin=>[30,50,65,50] ) do |pdf|
+      #pdf.number_pages "Página <page> de <total>", {:at=>[400, 680],:align=>:right,:size=>8}
+      pdf.bounding_box([120, pdf.cursor - 10], :width => 450, :height => 100) do
+        pdf.text"<b>CENTRO DE INVESTIGACIÓN EN MATERIALES AVANZADOS</b>", inline_format:true, size:13
+        pdf.text"<b>Dirección Académica</b>", align: :left, inline_format:true, size:9
+        pdf.move_down 20
+        pdf.font_size 10
+        pdf.text "<b>Reporte global del docente evaluado para el ciclo escolar: #{term_course.term.code} </b>", inline_format:true
+        pdf.move_down 8
+        pdf.text "<b>Materia: </b> #{term_course.course.name}", inline_format:true
+        pdf.text "<b>Docente: </b> #{staff.full_name}", inline_format:true
+        pdf.transparent(0) { pdf.stroke_bounds }
+      end
+
+      pdf.move_down 20
+      pdf.font_size 9
+      pdf.text "<b>Promedio global de la materia: #{5}</b>", inline_format:true
+      pdf.text "<b>Alumnos encuestados: #{3}</b>", inline_format:true
+      pdf.text "<b>Fecha: </b>#{I18n.l(Date.today, format: '%A, %d de %B del %Y').capitalize}", inline_format:true
+      pdf.move_down 10
+
+      pdf.table [["<b>Preguntas</b>"]], cell_style: { inline_format: true}, width:500
+      table_data = [['<b>Pregunta</b>', '<b>Promedio</b>']]
+      pdf.table table_data, :position => :center, :cell_style => { align: :center, inline_format: true, border_width:0 }, :width => 500, column_widths:[400,100], header:true
+
+
+      comments = []
+      table_data =[[]]
+
+      #se obtienen las evaluaciones para el docente en esa materia
+      table_data.push [Prawn::Table::Cell::Text.new( pdf, [0,0], :content => "#{TeacherEvaluation::question_text(1)}", :inline_format => true),Prawn::Table::Cell::Text.new( pdf, [0,0], :content => "5", align: :center, :inline_format => true)]
+      table_data.push [Prawn::Table::Cell::Text.new( pdf, [0,0], :content => "#{TeacherEvaluation::question_text(1)}", :inline_format => true),Prawn::Table::Cell::Text.new( pdf, [0,0], :content => "5", align: :center, :inline_format => true)]
+      pdf.table(table_data,:width => 500, column_widths:[400,100], cell_style:{border_width:0}, row_colors: ["fdfdfd", "f2f2f2"])
+      pdf.move_down 10
+
+      pdf.table [["<b>Comentarios de los alumnos</b>"]], inline_format:true, size:10
+      TeacherEvaluation.where(staff_id: staff.id).where(term_course_id: term_course.id).each {|evaluation| pdf.text "-#{evaluation.notes}\n\n" if !evaluation.notes.blank?}
+      send_data pdf.render, filename: "Eval-doc-#{staff.full_name.gsub(' ','-')}", type: "application/pdf"#, disposition: "inline"
+    end
+  end
+
 end

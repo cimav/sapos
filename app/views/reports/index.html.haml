@@ -14,8 +14,15 @@
       = check_box_tag "check_numeric_evaluation"
       = " Numérico "
 
+  #teacherEvaluationReport
+    %p Evaluación docente
+    =select_tag "teacher_evaluation_staff_id", options_from_collection_for_select(@staffs, "id", "full_name"), prompt:'Elija un docente'
+    =select_tag "teacher_evaluation_term_course_id", ''
+    %button#teacherEvaluationButton{onclick:"getTeacherEvaluation();", :disabled=> true} Descargar
+
 :javascript
   $(document).ready(function() {
+    $('#teacherEvaluationButton').prop('disabled',true);
     $("#check_numeric_evaluation").live("click",function(){
       var _href = $("#link_evaluation").attr("href");
       if($(this).prop("checked")){
@@ -25,4 +32,27 @@
      }
     });
   });
- 
+
+
+  $('#teacher_evaluation_staff_id').change(function() {
+    $('#teacherEvaluationButton').prop('disabled',true);
+    var term_course_select = $('#teacher_evaluation_term_course_id');
+    $.get( 'reportes/get_term_courses/'+$(this).val(), function( data ) {
+      term_course_select.html('');
+      if (data.length > 0){
+        term_course_select.show();
+        $('#teacherEvaluationButton').prop('disabled',false);
+        $.each(data, function (key, entry) {
+          term_course_select.append($('<option></option>').attr('value', entry.term_course_id).text(entry.term_course_name));
+        })
+      }else{
+        term_course_select.hide();
+      }
+      console.log(data);
+
+    });
+  });
+
+  function getTeacherEvaluation() {
+    window.open("/docentes/reporte/evaluacion?"+$.param({staff_id: $('#teacher_evaluation_staff_id').val(), term_course_id: $('#teacher_evaluation_term_course_id').val()}));
+  }

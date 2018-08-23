@@ -55,8 +55,8 @@ function liveSearch(options) {
     $.get(url, formData, function(html) {
         if(options.json){
             objects = jQuery.parseJSON(html);
-            items       = []
-            items_found = []
+            items       = [];
+            items_found = [];
             $.each(objects, function(key,val){
               items.push(getLi(val));
               items_found.push(val.id);
@@ -245,7 +245,6 @@ function showFormErrors(xhr, status, error) {
         errorText,
         errorMs,
         errorMesg;
-
     try {
         res = $.parseJSON(xhr.responseText);
     } catch(err) {
@@ -451,7 +450,7 @@ $('#item-new-internship-applicant-form')
             var uri = res['uri']
             html = "<h3>Se ha dado de alta su solicitud y se ha enviado un mensaje con instrucciones a su correo, puede descargar e imprimir su formato de registro: <a href="+uri+">Descargar</a></h3>"
           }
-          $('#standalone-content').html(html);
+          $('#applicantFormContent').html(html);
         }
     })
     .live("ajax:error", function(evt, xhr, status, error) {
