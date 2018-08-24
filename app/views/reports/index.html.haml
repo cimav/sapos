@@ -1,5 +1,7 @@
 - @page_title = 'Reportes'
 - @nav_icon = 'applicants'
+- @include2_js = 'select2'
+- @include_css = 'select2/select2'
 #content-panel.main-panel
   %h3="Docentes"
   %ul
@@ -16,12 +18,13 @@
 
   #teacherEvaluationReport
     %p Evaluación docente
-    =select_tag "teacher_evaluation_staff_id", options_from_collection_for_select(@staffs, "id", "full_name"), prompt:'Elija un docente'
+    =select_tag "teacher_evaluation_staff_id", options_from_collection_for_select(@staffs, "id", "full_name"), prompt:'Elija un docente', style:'min-height:200px;'
     =select_tag "teacher_evaluation_term_course_id", ''
     %button#teacherEvaluationButton{onclick:"getTeacherEvaluation();", :disabled=> true} Descargar
 
 :javascript
   $(document).ready(function() {
+    $('#teacher_evaluation_staff_id').select2();
     $('#teacherEvaluationButton').prop('disabled',true);
     $("#check_numeric_evaluation").live("click",function(){
       var _href = $("#link_evaluation").attr("href");
