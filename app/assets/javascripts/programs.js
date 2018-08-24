@@ -226,7 +226,7 @@ function loadSchedule(g) {
     });
     $("#new-schedule-dialog").remove();
     url_dialog = location.pathname + "/" + program_id + "/periodo/" + term_id + "/curso/" + course_id + "/nueva_sesion/" + g;
-    $('#content-panel').append('<div title="Agregar sesión" id="new-schedule-dialog"><iframe width="550" height="340" src="' + url_dialog + '" scrolling="no"></iframe></div>');
+    $('#content-panel').append('<div title="Agregar sesión" id="new-schedule-dialog"><center><iframe width="570" height="380" src="' + url_dialog + '" scrolling="no"></iframe></center></div>');
     $("#new-schedule-dialog").dialog({ autoOpen: false, width: 640, height: 450, modal:true });
     $("#a-new-schedule").live("click", function() {
       $("#new-schedule-dialog").dialog('open');

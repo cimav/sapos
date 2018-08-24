@@ -4,51 +4,52 @@
 - @include3_js = 'programs_new_schedule'
 :javascript
   var new_schedule_term_course_group = "#{params[:group]}";
-    
-#schedule-header
-  %h3= @tc.course.name
-  #schedule-term= "Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
-  #schedule-term-group Grupo: #{@tc.group}: #{(@tc.staff.full_name rescue 'Sin titular')}
-= form_for(@program, :url => {:action => "create_schedule" },:remote=>true) do |f|
-  = hidden_field_tag 'term_course_id', @tc.id
-  = hidden_field_tag 'term_course[term_course_schedules_attributes][0][term_course_id]', @tc.id
-  = hidden_field_tag 'new_schedule_term_course_group', @tc.group
-  = fields_for "term_course[term_course_schedules_attributes][0]" do |fields|
-    #term-new
 
-      %div{:id => "field_term_course_term_course_schedules_attributes_0_staff_id", :class => 'field'}
-        = fields.label :staff_id, 'Docente'
-        = fields.select :staff_id, @staffs.collect{|p| ["#{p.full_name} (#{p.institution.name})",p.id]}, options = {:prompt => "Seleccionar docente"},:style=>"width:385px"
-        
-      %div{:id => "field_term_course_term_course_schedules_attributes_0_day", :class => 'field'}
-        = fields.label :day, 'Horario'
-        = fields.select :day, TermCourseSchedule::DAY.invert.sort {|a,b| a[1] <=> b[1] }
-        = fields.select :start_hour, TermCourseSchedule::HOURS
-        = fields.select :end_hour, TermCourseSchedule::HOURS
+#my-new-schedule-form{:style=>"padding-left: 10px;"}
+  #schedule-header
+    %h3= @tc.course.name
+    #schedule-term= "Ciclo Escolar: #{@tc.term.name} (#{l @tc.term.start_date, :format => :long} – #{l @tc.term.end_date, :format => :long})"
+    #schedule-term-group Grupo: #{@tc.group}: #{(@tc.staff.full_name rescue 'Sin titular')}
+  = form_for(@program, :url => {:action => "create_schedule" },:remote=>true) do |f|
+    = hidden_field_tag 'term_course_id', @tc.id
+    = hidden_field_tag 'term_course[term_course_schedules_attributes][0][term_course_id]', @tc.id
+    = hidden_field_tag 'new_schedule_term_course_group', @tc.group
+    = fields_for "term_course[term_course_schedules_attributes][0]" do |fields|
+      #term-new
 
-      %div{:id => "field_term_course_term_course_schedules_attributes_0_classroom_id", :class => 'field'}
-        = fields.label :classroom_id, 'Aula'
-        - if current_user.campus_id.eql? 0
-          - @classrooms = Classroom.order(:name)
-        - else
-          - @classrooms = Classroom.where(:campus_id=>current_user.campus_id).order(:name)
-        = fields.select :classroom_id, @classrooms.collect {|i| ["#{i.full_name} (#{i.id})", i.id]}, {:include_blank => '- Selecciona el salón -'}
+        %div{:id => "field_term_course_term_course_schedules_attributes_0_staff_id", :class => 'field'}
+          = fields.label :staff_id, 'Docente'
+          = fields.select :staff_id, @staffs.collect{|p| ["#{p.full_name} (#{p.institution.name})",p.id]}, options = {:prompt => "Seleccionar docente"},:style=>"width:385px"
+          
+        %div{:id => "field_term_course_term_course_schedules_attributes_0_day", :class => 'field'}
+          = fields.label :day, 'Horario'
+          = fields.select :day, TermCourseSchedule::DAY.invert.sort {|a,b| a[1] <=> b[1] }
+          = fields.select :start_hour, TermCourseSchedule::HOURS
+          = fields.select :end_hour, TermCourseSchedule::HOURS
 
-      %div{:id => "field_term_course_term_course_schedules_attributes_0_class_type", :class => 'field'}
-        = fields.label :class_type, 'Tipo de clase'
-        = fields.select :class_type, TermCourseSchedule::CLASSTYPE.invert.sort {|a,b| a[1] <=> b[1] }
+        %div{:id => "field_term_course_term_course_schedules_attributes_0_classroom_id", :class => 'field'}
+          = fields.label :classroom_id, 'Aula'
+          - if current_user.campus_id.eql? 0
+            - @classrooms = Classroom.order(:name)
+          - else
+            - @classrooms = Classroom.where(:campus_id=>current_user.campus_id).order(:name)
+          = fields.select :classroom_id, @classrooms.collect {|i| ["#{i.full_name} (#{i.id})", i.id]}, {:include_blank => '- Selecciona el salón -'}
 
-      %div{:id => "field_term_course_term_course_schedules_attributes_0_start_date", :class => 'field'}
-        = fields.label :start_date, 'Fecha Inicio'
-        = fields.date_select :start_date, :default => @tc.term.start_date
+        %div{:id => "field_term_course_term_course_schedules_attributes_0_class_type", :class => 'field'}
+          = fields.label :class_type, 'Tipo de clase'
+          = fields.select :class_type, TermCourseSchedule::CLASSTYPE.invert.sort {|a,b| a[1] <=> b[1] }
+
+        %div{:id => "field_term_course_term_course_schedules_attributes_0_start_date", :class => 'field'}
+          = fields.label :start_date, 'Fecha Inicio'
+          = fields.date_select :start_date, :default => @tc.term.start_date
 
 
-      %div{:id => "field_term_course_term_course_schedules_attributes_0_end_date", :class => 'field'}
-        = fields.label :end_date, 'Fecha Fin'
-        = fields.date_select :end_date, :default => @tc.term.end_date
+        %div{:id => "field_term_course_term_course_schedules_attributes_0_end_date", :class => 'field'}
+          = fields.label :end_date, 'Fecha Fin'
+          = fields.date_select :end_date, :default => @tc.term.end_date
 
-      #dialog-submit-button-area
-        = fields.submit "Agregar sesión al curso"
+        #dialog-submit-button-area
+          = fields.submit "Agregar sesión al curso"
 
 %center
   %br  
