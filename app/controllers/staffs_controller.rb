@@ -1321,7 +1321,7 @@ class StaffsController < ApplicationController
     evaluation_results = []
     Array(0..9).each  {|n| evaluation_results[n] = (staff_evaluations.to_a.sum(&:"question#{n+1}".to_sym).to_f / staff_evaluations.size).round(1) }
 
-    Prawn::Document.new(background:"#{Rails.root.to_s}/private/prawn_templates/hoja_membretada_reportes.png", :background_scale=>0.26, :margin=>[140,50,65,50] ) do |pdf|
+    Prawn::Document.new(background:"#{Rails.root.to_s}/private/prawn_templates/hoja_membretada_reportes.png", :background_scale=>0.26, :margin=>[140,50,75,50] ) do |pdf|
       #pdf.number_pages "Página <page> de <total>", {:at=>[400, 680],:align=>:right,:size=>8}
       pdf.bounding_box([120, pdf.cursor + 80], :width => 450, :height => 100) do
         pdf.text"<b>CENTRO DE INVESTIGACIÓN EN MATERIALES AVANZADOS</b>", inline_format:true, size:13
@@ -1358,7 +1358,7 @@ class StaffsController < ApplicationController
 
       staff_evaluations.each{|evaluation| pdf.text "-#{evaluation.notes}\n\n" if !evaluation.notes.blank?}
 
-
+      pdf.number_pages 'Página <page> de <total>',  at: [pdf.bounds.right - 100, -20], align: :right
 
       send_data pdf.render, filename: "Eval-#{staff.full_name.gsub(' ','-')}", type: "application/pdf", disposition: "inline"
     end
