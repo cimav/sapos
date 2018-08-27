@@ -177,6 +177,16 @@ class SeminarsController < ApplicationController
     parameters = {}
     @advance = Advance.find(params[:id])
     @message = "Seminario actualizado."
+
+    if !params[:advance][:advance_date].empty?
+      date    = params[:advance][:advance_date]
+      hour    = params[:session_hour]
+      minutes = params[:session_minutes]
+ 
+      params[:advance][:advance_date] = "#{date} #{hour}:#{minutes}:00"
+    end
+
+
     if @advance.update_attributes(params[:advance])
       render_message @advance,@message,parameters
     else
