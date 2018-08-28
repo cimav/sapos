@@ -1196,14 +1196,13 @@ class StudentsController < ApplicationController
       @creditos     = get_credits(@student)
       @promedio     = @student.get_average
 
+      @creditos_totales = StudiesPlan.find(@student.studies_plan_id).total_credits.to_s rescue "N.D"
+
       if @student.program.level.eql? "1"
-        @creditos_totales = "75.0"
         @nivel            = "de la Maestría"
       elsif @student.program.level.eql? "2"
-        @creditos_totales = "150.0"
         @nivel            = "del Doctorado"
       else
-        @creditos_totales = "Unknown"
         @nivel            = "Unknown"
       end
 

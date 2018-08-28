@@ -12,9 +12,13 @@
       = f.label :name, 'Descripcion'
       = f.text_field :name, :size=>70
 
-    .field#field_student_campus_id
+    .field#field_studies_plan_status
       = f.label :status, 'Estatus'
       = f.select :status, StudiesPlan::STATUS.invert.sort { |a,b| a[1] <=> b[1] }
+
+    .field#field_studies_plan_total_credits
+      = f.label :total_credits, 'Creditos Totales'
+      = f.select :total_credits, (0..300).step(0.5).to_a
 
   #notas
     %h2 Notas

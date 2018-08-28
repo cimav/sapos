@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180528223112) do
+ActiveRecord::Schema.define(:version => 20180828183028) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -122,6 +122,7 @@ ActiveRecord::Schema.define(:version => 20180528223112) do
     t.integer  "student_id"
     t.integer  "place_id"
     t.string   "password"
+    t.string   "curp"
   end
 
   create_table "areas", :force => true do |t|
@@ -160,6 +161,7 @@ ActiveRecord::Schema.define(:version => 20180528223112) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "status"
+    t.integer  "campus_id"
   end
 
   create_table "committee_agreement_files", :force => true do |t|
@@ -599,6 +601,16 @@ ActiveRecord::Schema.define(:version => 20180528223112) do
     t.datetime "updated_at",    :null => false
   end
 
+  create_table "record_logs", :force => true do |t|
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.datetime "record_date"
+    t.text     "detail"
+    t.string   "record_type"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
   create_table "scholarship_categories", :force => true do |t|
     t.string   "name"
     t.string   "description"
@@ -678,6 +690,7 @@ ActiveRecord::Schema.define(:version => 20180528223112) do
     t.datetime "updated_at"
     t.integer  "area_id"
     t.integer  "staff_type"
+    t.integer  "uh_number"
   end
 
   create_table "stances", :force => true do |t|
@@ -730,6 +743,12 @@ ActiveRecord::Schema.define(:version => 20180528223112) do
   end
 
   add_index "student_files", ["student_id"], :name => "index_student_files_on_student_id"
+
+  create_table "student_teacher_evaluations", :force => true do |t|
+    t.integer "student_id"
+    t.integer "staff_id"
+    t.integer "term_course_id"
+  end
 
   create_table "students", :force => true do |t|
     t.integer  "program_id"
@@ -809,15 +828,21 @@ ActiveRecord::Schema.define(:version => 20180528223112) do
 
   create_table "studies_plans", :force => true do |t|
     t.integer  "program_id"
-    t.string   "code",       :limit => 20,                   :null => false
-    t.string   "name",       :limit => 100
+    t.string   "code",          :limit => 20,                                                 :null => false
+    t.string   "name",          :limit => 100
     t.text     "notes"
-    t.string   "status",     :limit => 20,  :default => "0"
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
+    t.string   "status",        :limit => 20,                                :default => "0"
+    t.datetime "created_at",                                                                  :null => false
+    t.datetime "updated_at",                                                                  :null => false
+    t.decimal  "total_credits",                :precision => 8, :scale => 2
   end
 
   add_index "studies_plans", ["program_id"], :name => "index_studies_plans_on_program_id"
+
+  create_table "system_configs", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "teacher_evaluations", :force => true do |t|
     t.integer  "staff_id"
@@ -836,6 +861,7 @@ ActiveRecord::Schema.define(:version => 20180528223112) do
     t.integer  "question12"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
+    t.text     "notes"
   end
 
   add_index "teacher_evaluations", ["staff_id"], :name => "index_teacher_evaluations_on_staff_id"
