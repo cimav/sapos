@@ -162,7 +162,7 @@ class CertificatesController < ApplicationController
         #tcss  = Course.where(:program_id=>3,:studies_plan_id=>17).where("term not in (99,100,101)").order(:code)
 
         ## estas lineas son para el caso del plan 17 que trae desordenados los codes de las materias (se trae primero los blancos)
-        tcss1  = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=1").order("courses.term")
+        tcss1 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=1").order("courses.term")
         tcss2 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=2").order("courses.term, courses.id desc")
         tcss3 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=3").order("courses.term, courses.id asc")
         tcss4 = Course.where(:program_id=>3,:studies_plan_id=>17).where("term=4").order("courses.term, courses.id desc")
@@ -171,11 +171,37 @@ class CertificatesController < ApplicationController
       else
         order = "terms.end_date"
         if t.student.program.level.to_i.eql? 2 ## Doctorado
-          where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?"
-          tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(order)
+          #where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?"
+          where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
+          #tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(order)
+          tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)
         else
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
           tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
+        end
+      end
+
+      if t.student.studies_plan_id.eql? 15 ## DCM - 2014 Actualizacion del plan de estudios
+        my_select_topics_codes = ["101","201","301","401","501","601"]
+        my_select_topics = [
+            {:code=>"101",:name=>"Temas Selectos de Ciencia de Materiales 1"},
+            {:code=>"201",:name=>"Temas Selectos de Ciencia de Materiales 2"},
+            {:code=>"301",:name=>"Temas Selectos de Ciencia de Materiales 3"},
+            {:code=>"401",:name=>"Temas Selectos de Ciencia de Materiales 4"},
+            {:code=>"501",:name=>"Temas Selectos de Ciencia de Materiales 5"},
+            {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"},
+          ]
+        tcss.each do |tcs|        
+          if tcs.term_course.course.code.in? my_select_topics_codes
+             my_select_topics_codes.shift
+          end 
+
+          if !(tcs.term_course.course.program_id.eql? t.student.program_id)
+            code = my_select_topics_codes.shift
+            msts = my_select_topics.select{|x| x[:code].eql? code}
+            tcs.term_course.course.code = msts[0][:code]
+            tcs.term_course.course.name = msts[0][:name]
+          end
         end
       end
 
