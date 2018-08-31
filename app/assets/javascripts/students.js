@@ -305,3 +305,47 @@ function modifyProgram()
   });
 }
 
+
+$("#a-id-card").live("click", function(e){
+  chk = $("#chk_extension").prop("checked");
+  s_id = $("#student_id").val();
+
+  if(chk==true){
+    html = $("#extension-page").html();
+    $("#new-advance-dialog").remove();
+    $('#content-panel').append('<div title="Fecha" id="new-advance-dialog">'+html+'</div>');
+    $("#new-advance-dialog").dialog({ autoOpen: false, width: 500, height: 280, modal:true });
+    $("#new-advance-dialog").dialog('open');
+  }else{
+    url = '/estudiantes/'+s_id+'/credencial.pdf';
+    location.pathname = url;
+  }
+
+  $("#button_mine").live("click", function(){
+    s_id = $("#student_id").val();
+
+    var notas = $("#new-advance-dialog textarea#notes").val();
+    var day   = $("#new-advance-dialog #print_date_3i").val();
+    var month = $("#new-advance-dialog #print_date_2i").val();
+    var year  = $("#new-advance-dialog #print_date_1i").val();
+
+    var data = 'day=' +day+ '&month=' + month + '&year=' + year +'&notes=' + notas;
+    var url = location.pathname + '/' + s_id + '/1/credencial.pdf'
+
+    location.href = url+'?'+data;
+    /*$.post(url,data)
+      .done(function(data){
+        $("#downloads_iframe").attr("src",url);
+      })
+      .fail(function(data){
+        alert("Hubo un error en la generacion de la credencial");
+      });*/
+
+    $("#new-advance-dialog").dialog('close');
+  });
+
+  return false;
+})
+
+
+

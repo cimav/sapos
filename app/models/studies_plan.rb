@@ -1,5 +1,5 @@
 class StudiesPlan < ActiveRecord::Base
-  attr_accessible :id, :program_id, :code, :name, :notes, :status, :created_at, :updated_at
+  attr_accessible :id, :program_id, :code, :name, :notes, :status, :created_at, :updated_at, :total_credits
 
   belongs_to :program
 

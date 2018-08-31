@@ -77,13 +77,15 @@
         - else  
           = "#{tcs_size} de #{@student.program.terms_qty}"
       .resource-card
-        = link_to 'Credencial', "/estudiantes/#{@student.id}/credencial.pdf", :id=>'a-id-card'
+        =# link_to 'Credencial', "/estudiantes/#{@student.id}/credencial.pdf", :id=>'a-id-card'
+        %a{:id=>"a-id-card"}='Credencial'
+        %span.extension
+          = "Con prórroga"
+          = check_box_tag "chk_extension"
     .resource-save
       - if can? :update, @student
         = f.submit 'Actualizar'
         
-
-
   #resource-tabs
     %ul
       %li.first-tab= link_to "Detalles", "#detalles"
@@ -244,6 +246,16 @@
     #kardex
     #pagos
     #constancias
+
+#extension-page{:style => "display:none;"}
+  %div{:id => "field_extension_date", :class => 'field'}
+    =label_tag "Fecha de prórroga"
+    =date_select "print","date", :start_year => 2017
+  %div{:id => "field_notes", :class => 'field'}
+    =label_tag "Notas"
+    =text_area_tag "notes", nil, :cols=>55, :rows=>5
+  %div{:id => "field_button_extension_page", :class => 'field'}
+    = button_tag "Generar", :id=>"button_mine", :name=>"button_mine", :class=>"my_class", :type=>"button"
 
 %iframe{"name" => "downloads_iframe", "id" => "downloads_iframe", :height=>"100px" ,"src" => "", "scrolling" => "no", :frameborder=>"0"}
 

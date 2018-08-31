@@ -958,20 +958,29 @@ class StudentsController < ApplicationController
 
   def id_card
     @student = Student.find(params[:id])
+
+
     respond_with do |format|
       format.html do
-	render :layout => false
+	      render :layout => false
       end
+
       format.pdf do
-	institution = Institution.find(1)
-	@logo = institution.image_url(:medium).to_s
-	@is_pdf = true
-	html = render_to_string(:layout => false , :template => "students/id_card.html.haml", :formats => [:html], :handlers => [:haml])
-	kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
-	kit.stylesheets << "#{Rails.root}/public/cards.css"
-	filename = "ID-#{@student.card}.pdf"
-	send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-	return # to avoid double render call
+        institution = Institution.find(1)
+        @logo = institution.image_url(:medium).to_s
+        @is_pdf = true
+        if params[:ext].to_i.eql? 1
+          ActivityLog.new({:user_id=>current_user.id,:activity=>"Imprime credencial extemporanea: #{@student.id} notas: #{params[:notes]}"}).save
+        else
+          ActivityLog.new({:user_id=>current_user.id,:activity=>"Imprime credencial: #{@student.id}"}).save
+        end
+        @extension  = Date.new(params[:year].to_i,params[:month].to_i,params[:day].to_i) rescue nil
+        html = render_to_string(:layout => false , :template => "students/id_card.html.haml", :formats => [:html], :handlers => [:haml])
+        kit = PDFKit.new(html, :page_size => 'Legal', :orientation => 'Landscape', :margin_top    => '0',:margin_right  => '0', :margin_bottom => '0', :margin_left   => '0')
+        kit.stylesheets << "#{Rails.root}/public/cards.css"
+        filename = "ID-#{@student.card}.pdf"
+        send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
+        return # to avoid double render call
       end
     end
   end
