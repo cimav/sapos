@@ -17,6 +17,15 @@ $(document).ready(function() {
       }
     }
   });
+  
+  $("#applicant_country_id").live("change", function(){
+    country_id = $(this).val();
+    if(country_id==146){
+      $("#field_applicant_curp").show();
+    }else{
+      $("#field_applicant_curp").hide();
+    }
+  });
 
   $("#applicant_program_id").live("change", function(){
     program_id  = $(this).val();
@@ -188,7 +197,6 @@ function get_form(program_id){
    $("#field_applicant_staff_id").show();
  }
  
- $("")
  $("#my_fields").show();
  $("#img_load").hide();
 }

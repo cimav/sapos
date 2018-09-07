@@ -30,9 +30,13 @@
         = f.label :second_last_name, @t[:second_last_name]
         = f.text_field :second_last_name
 
-      .field#field_applicant_curp
+      .field#field_applicant_country_id
+        = f.label :country_id,'País de nacimiento'
+        = f.select :country_id, options_for_select(@countries_ordered), options = {:prompt => "---Selecciona un País---"}
+
+      .field#field_applicant_curp{:style=>"display:none;"}
         = f.label :curp, 'CURP'
-        = f.text_field :curp, :required=> true
+        = f.text_field :curp
 
       .field#field_applicant_email
         = f.label :email, 'Email'

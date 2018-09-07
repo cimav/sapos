@@ -145,6 +145,16 @@ class ApplicantsController < ApplicationController
     @places       = Applicant::PLACES.invert.sort {|a,b| a[1] <=> b[1] }
     @config       = User.where(:email=>'SYSTEM').first.config rescue nil
     @active       = @config[:applicants][:form_status] rescue nil
+    @countries    = Country.order('name')
+
+
+    @countries_ordered = Array.new 
+    @countries_ordered.push(["México",146])
+
+    @countries.each_with_index do |c,index|
+      @countries_ordered.push([c.name,c.id])
+    end
+
     render :layout => 'standalone'
   end
   
@@ -156,6 +166,8 @@ class ApplicantsController < ApplicationController
     @institutions = Institution.order('name')
     @staffs       = Staff.select("id,first_name,last_name").where(:institution_id=>1,:status=>0).order("first_name")
     @applicant    = Applicant.find(session[:applicant_user])
+    @countries    = Country.order('name')
+
     
     program_id = @applicant.program_id
     if program_id.to_i.eql? 1  ##MCM
