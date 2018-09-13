@@ -143,7 +143,7 @@ class Student < ActiveRecord::Base
   end
 
   def full_name
-    "#{first_name} #{last_name}" rescue ''
+    "#{first_name} #{last_name} #{last_name2}" rescue ''
   end
   
   def full_name_upcase
@@ -151,11 +151,11 @@ class Student < ActiveRecord::Base
   end
 
   def full_name_by_last
-    "#{last_name} #{first_name}" rescue ''
+    "#{last_name} #{last_name2} #{first_name}" rescue ''
   end
 
   def full_name_with_card
-    "#{card}: #{first_name} #{last_name}" rescue ''
+    "#{card}: #{first_name} #{last_name} #{last_name2}" rescue ''
   end
 
   def full_name_cap
