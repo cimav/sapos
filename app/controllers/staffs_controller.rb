@@ -168,86 +168,66 @@ class StaffsController < ApplicationController
   end ## end reporte
 
   def evaluation
-    @staffs  = Staff.includes(:term_courses=>:term).where(:status=>0).where("terms.name like '%2018-1%'")
+    @tcsch = TermCourseSchedule.select("distinct term_course_schedules.staff_id, term_course_schedules.term_course_id").joins(:term_course=>:term).where("terms.name like '%2018-1%'")
+    
     numeric = !params[:numeric].to_i.zero?
     
     rows = Array.new
+    
+    @tcsch.each do |tcs|
+      averages= get_teacher_evaluation_averages(tcs.term_course_id,tcs.staff_id)
 
-    @staffs.each do |s|
-      s.term_courses.each do |tc|
-        averages= get_teacher_evaluation_averages(tc,numeric)
-        if !(averages["question1"].nil?)
-          logger.info "################################# averages: #{averages["question1"]}"
+      if !(averages["question1"].nil?)
+        f_hash = Hash.new
+        f_hash["Nombre"]        = tcs.staff.full_name
+        f_hash["Curso"]         = tcs.term_course.course.name
+        f_hash["Ciclo Escolar"] = tcs.term_course.term.name
+        f_hash["Alumnos Encuestados"] = averages["total_evaluations"]        
 
-          if numeric
-            rows << {
-              "Nombre"=>s.full_name,
-              "Curso"=>tc.course.name,
-              "Grupo"=>tc.group,
-              "Ciclo Escolar"=>tc.term.name,
-              "Pregunta1" => averages["question1"],
-              "Pregunta2" => averages["question2"],
-              "Pregunta3" => averages["question3"],
-              "Pregunta4" => averages["question4"],
-              "Pregunta5" => averages["question5"],
-              "Pregunta6" => averages["question6"],
-              "Pregunta7" => averages["question7"],
-              "Pregunta8" => averages["question8"],
-              "Pregunta9" => averages["question9"],
-              "Pregunta10" => averages["question10"],
-              "Pregunta11" => averages["question11"],
-              "Pregunta12" => averages["question12"],
-            } 
-          else
-            rows << {
-              "Nombre"=>s.full_name,
-              "Curso"=>tc.course.name,
-              "Grupo"=>tc.group,
-              "Ciclo Escolar"=>tc.term.name,
-              "Pregunta1" => TeacherEvaluation::ANSWERS[averages["question1"]],
-              "Pregunta2" => TeacherEvaluation::ANSWERS[averages["question2"]],
-              "Pregunta3" => TeacherEvaluation::ANSWERS[averages["question3"]],
-              "Pregunta4" => TeacherEvaluation::ANSWERS[averages["question4"]],
-              "Pregunta5" => TeacherEvaluation::ANSWERS[averages["question5"]],
-              "Pregunta6" => TeacherEvaluation::ANSWERS[averages["question6"]],
-              "Pregunta7" => TeacherEvaluation::ANSWERS[averages["question7"]],
-              "Pregunta8" => TeacherEvaluation::ANSWERS[averages["question8"]],
-              "Pregunta9" => TeacherEvaluation::ANSWERS[averages["question9"]],
-              "Pregunta10" => TeacherEvaluation::ANSWERS[averages["question10"]],
-              "Pregunta11" => TeacherEvaluation::ANSWERS[averages["question11"]],
-              "Pregunta12" => TeacherEvaluation::ANSWERS[averages["question12"]],
-            } 
-          end
+        (1..12).each do |i|
+          f_hash["#{TeacherEvaluation.question_text(i)}"] = averages["question#{i}"]
         end
-      end
+
+        f_hash["Comentarios"] = averages["comments"]   
+
+        rows << f_hash
+      end#if question
+    end#tcsch each
+
+    column_order=["Nombre","Curso","Ciclo Escolar","Alumnos Encuestados"]
+    (1..12).each do |i|
+      column_order.push("#{TeacherEvaluation.question_text(i)}")
     end
-
-    column_order=["Nombre","Curso","Grupo","Ciclo Escolar","Pregunta1","Pregunta2","Pregunta3","Pregunta4","Pregunta5","Pregunta6","Pregunta7","Pregunta8","Pregunta9","Pregunta10","Pregunta11","Pregunta12"]
+    column_order.push("Comentarios")
     to_excel(rows,column_order,"Evaluacion","Evaluacion")
-  end#end evaluation
+  end#def evaluation
 
-  def get_teacher_evaluation_averages(tc,numeric)
+  def get_teacher_evaluation_averages(tc_id,s_id)
     averages = Hash.new
-    tc.teacher_evaluations.each do |te|
+    teacher_evaluations = TeacherEvaluation.where(:term_course_id=>tc_id,:staff_id=>s_id)
+    counter  = 0
+
+    averages["comments"] = ""
+
+    teacher_evaluations.each do |te|
       (1..12).each do |n|
         averages["sum#{n}"] = averages["sum#{n}"].to_f + te["question#{n}"].to_f
       end
-    end
-    
-    if !(averages["sum1"].nil?)
-      (1..12).each do |n|
-        if numeric
-          averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round(2)
-        else
-          averages["question#{n}"] = (averages["sum#{n}"]/tc.teacher_evaluations.size).to_f.round
-        end
-        averages.delete("sum#{n}")
+      if !te.notes.blank?
+        averages["comments"] = averages["comments"] + "\n*" + te.notes
       end
     end
-   
+
+    if !(averages["sum1"].nil?)
+      (1..12).each do |n|
+        averages["question#{n}"] = (averages["sum#{n}"]/teacher_evaluations.size).to_f.round(2)
+        averages.delete("sum#{n}")
+      end
+    end   
+  
+    averages["total_evaluations"] = teacher_evaluations.size
     return averages
   end
-  #def get_teacher_evaluation_averages(tc)
 
   def show
     @aareas       = get_areas(current_user)

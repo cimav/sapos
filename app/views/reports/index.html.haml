@@ -12,9 +12,9 @@
       %br
       = link_to 'Evaluación docente al momento', {:controller=>"staffs", :action=>"evaluation",:format=>:xls}, :id=>"link_evaluation"
       = "[XLS]"
-      ="&nbsp;".html_safe
-      = check_box_tag "check_numeric_evaluation"
-      = " Numérico "
+      =#{}"&nbsp;".html_safe
+      =# check_box_tag "check_numeric_evaluation"
+      =# " Numérico "
 
   #teacherEvaluationReport
     %p Evaluación docente
