@@ -217,6 +217,9 @@ function accent_finder(s)
 
 function getLi(val){
   var full_name = val.first_name+" "+val.last_name;
+  if (val.last_name2 != null) {
+      full_name = full_name + " " + val.last_name2;
+  }
   var program   = "N.D";
 
   $.each(programs, function(k, v) {

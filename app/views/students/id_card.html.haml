@@ -16,7 +16,7 @@
                   #card_name= @student.first_name
               %tr
                 %td
-                  #card_last_name= @student.last_name
+                  #card_last_name= "#{@student.last_name} #{@student.last_name2}"
               %tr
                 %td
                   #card_program= @student.program.name
