@@ -468,7 +468,8 @@ class ApplicantsController < ApplicationController
   def accepted_applicant_register (applicant)
     @student                      = Student.new()
     @student.first_name           = applicant.first_name
-    @student.last_name            = "#{applicant.primary_last_name} #{applicant.second_last_name}"
+    @student.last_name            = applicant.primary_last_name
+    @student.last_name2           = applicant.second_last_name
     @student.campus_id            = applicant.campus_id
     @student.previous_institution = applicant.previous_institution
     @student.previous_degree_desc = applicant.previous_degree_type
