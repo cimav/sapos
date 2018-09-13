@@ -109,12 +109,19 @@
         = f.text_field :first_name 
 
       .field#field_student_last_name
-        = f.label :last_name, mark_required(@student, :last_name) + 'Apellidos'
+        = f.label :last_name, mark_required(@student, :last_name) + 'Apellido paterno'
         = f.text_field :last_name
 
+      .field#field_student_last_name2
+        = f.label :last_name2, 'Apellido materno'
+        = f.text_field :last_name2
+
       .field#field_student_email
-        = f.label :email, 'Correo Electrónico'
+        = f.label :email, 'Email personal'
         = f.text_field :email
+      .field#field_student_email_cimav
+        = f.label :email_cimav, 'Email CIMAV'
+        = f.text_field :email_cimav
 
       %h3 Datos Academicos
       .field#field_student_status
@@ -222,15 +229,8 @@
       .field#field_student_passport
         = f.label :passport, 'Pasaporte'
         = f.text_field :passport
-    
-      %h3 Información de acceso
-      .field#field_student_email_cimav
-        = f.label :email_cimav, 'Email CIMAV'
-        = f.text_field :email_cimav
 
-      .field#field_student_domain_password
-        = f.label :domain_password, 'Domain Pass'
-        = f.text_field :domain_password
+
 
     #contacto
     #avances

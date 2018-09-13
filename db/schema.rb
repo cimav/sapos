@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180828183028) do
+ActiveRecord::Schema.define(:version => 20180913215848) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -123,6 +123,8 @@ ActiveRecord::Schema.define(:version => 20180828183028) do
     t.integer  "place_id"
     t.string   "password"
     t.string   "curp"
+    t.integer  "country_id"
+    t.integer  "state_id"
   end
 
   create_table "areas", :force => true do |t|
@@ -601,16 +603,6 @@ ActiveRecord::Schema.define(:version => 20180828183028) do
     t.datetime "updated_at",    :null => false
   end
 
-  create_table "record_logs", :force => true do |t|
-    t.integer  "attachable_id"
-    t.string   "attachable_type"
-    t.datetime "record_date"
-    t.text     "detail"
-    t.string   "record_type"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
-  end
-
   create_table "scholarship_categories", :force => true do |t|
     t.string   "name"
     t.string   "description"
@@ -799,6 +791,7 @@ ActiveRecord::Schema.define(:version => 20180828183028) do
     t.integer  "scholarship_type"
     t.integer  "student_time"
     t.date     "definitive_inactive_date"
+    t.string   "last_name2"
   end
 
   add_index "students", ["campus_id"], :name => "index_students_on_campus_id"
@@ -838,11 +831,6 @@ ActiveRecord::Schema.define(:version => 20180828183028) do
   end
 
   add_index "studies_plans", ["program_id"], :name => "index_studies_plans_on_program_id"
-
-  create_table "system_configs", :force => true do |t|
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
 
   create_table "teacher_evaluations", :force => true do |t|
     t.integer  "staff_id"

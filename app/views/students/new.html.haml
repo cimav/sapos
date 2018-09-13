@@ -21,8 +21,12 @@
         = f.text_field :first_name 
         
       .field#field_student_last_name
-        = f.label :last_name, mark_required(@student, :last_name) + 'Apellidos'
+        = f.label :last_name, mark_required(@student, :last_name) + 'Apellido paterno'
         = f.text_field :last_name
+
+      .field#field_student_last_name2
+        = f.label :last_name2, 'Apellido materno'
+        = f.text_field :last_name2
 
       .field#field_student_gender 
         = f.label :gender, 'Sexo'
