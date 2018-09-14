@@ -13,9 +13,8 @@ namespace :students do
         student.last_name2 = applicant.second_last_name
         if student.save
           students_count += 1
+          puts "#{student.id} #{student.full_name}"
         end
-
-        puts "#{student.id} #{student.full_name}"
       end
     end
     puts "Se actualizaron #{students_count} estudiantes"
