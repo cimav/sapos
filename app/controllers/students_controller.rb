@@ -143,7 +143,7 @@ class StudentsController < ApplicationController
 
     respond_with do |format|
       format.html do
-         render json: @students.select("id,first_name,last_name,program_id,card,image")
+         render json: @students.select("id,first_name,last_name,last_name2,program_id,card,image")
       end
       format.xls do
         rows = Array.new

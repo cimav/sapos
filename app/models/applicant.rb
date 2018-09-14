@@ -12,6 +12,7 @@ class Applicant < ActiveRecord::Base
   belongs_to :program
   belongs_to :campus
   belongs_to :country
+  belongs_to :student
 
   after_create :set_folio
   #before_create :register
