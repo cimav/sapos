@@ -36,10 +36,9 @@ namespace :students do
           student.email = ""
           if student.save
             students_count += 1
+            puts "#{student.id} #{student.full_name}"
           end
         end
-
-        puts "#{student.id} #{student.full_name}"
       end
     end
     puts "Se actualizaron #{students_count} estudiantes"
