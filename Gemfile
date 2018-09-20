@@ -1,4 +1,4 @@
-#ruby=ruby-2.1.10
+#ruby=ruby-2.0.0-p643
 
 source 'http://rubygems.org'
 
