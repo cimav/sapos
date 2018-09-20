@@ -528,7 +528,7 @@ class ApplicantsController < ApplicationController
  
     @include_js   = "applicants.register.files.js"
     @register     = true
-    @req_docs.delete(5)
+    #@req_docs.delete(5)
     #@req_docs.delete(8)
     #@req_docs.delete(9)
     @req_docs.delete(12)
