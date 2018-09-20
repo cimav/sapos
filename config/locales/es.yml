@@ -117,8 +117,8 @@ es:
       job: "Coordinador Académico Unidad Monterrey"
       gender: "M"
     academic_coordinator_durango:
-      title: "Dr."
-      name: "Fernando Sosa Montemayor"
+      title: "M.C."
+      name: "Mario Nájera Trejo"
       job: "Coordinador Académico Unidad Durango"
       gender: "M"
   activerecord:
