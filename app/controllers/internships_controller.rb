@@ -465,9 +465,6 @@ class InternshipsController < ApplicationController
       @horario     = @internship.schedule
       @proyecto    = @internship.thesis_title
       ######################################################################
-      if ( @year.to_i == @start_year.to_i ) && ( @year.to_i == @end_year.to_i )
-        @selector = 1
-      end
 
       if @internship.gender == 'F'
         @genero  = "a"
@@ -505,7 +502,7 @@ class InternshipsController < ApplicationController
         y -= 60
         w = 300
 
-        @parrafo1 = "Por medio de la presente hago constar que #{@genero2} alumn#{@genero} <b>#{@nombre}</b>, perteneciente a <b>#{@institucion}</b>, de la carrera de <b>#{@carrera}</b> y con No. de control <b>#{@numero}</b> está aceptad#{@genero} en este Centro de Investigación para realizar <b>#{@internado}</b>, en el departamento de <b>#{@departamento}</b>, bajo la supervisión de <b>#{@asesor}</b>, cubriendo un total de <b>#{@horas}</b> Hrs., dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} al #{@end_day} de #{@end_month}</b> del presente año en el siguiente horario de <b>#{@horario}</b>, en este Centro de Investigación, desarrollando el siguiente proyecto: "
+        @parrafo1 = "Por medio de la presente hago constar que #{@genero2} alumn#{@genero} <b>#{@nombre}</b>, perteneciente a <b>#{@institucion}</b>, de la carrera de <b>#{@carrera}</b> y con No. de control <b>#{@numero}</b> está aceptad#{@genero} en este Centro de Investigación para realizar <b>#{@internado}</b>, en el departamento de <b>#{@departamento}</b>, bajo la supervisión de <b>#{@asesor}</b>, cubriendo un total de <b>#{@horas}</b> Hrs., dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} del #{@start_year} al #{@end_day} de #{@end_month} del #{@end_year}</b> del presente año en el siguiente horario de <b>#{@horario}</b>, en este Centro de Investigación, desarrollando el siguiente proyecto: "
 
         pdf.text_box @parrafo1, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
 
