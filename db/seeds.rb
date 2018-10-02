@@ -9,7 +9,8 @@
 
 # Countries
 puts "Populating Countries..."
-Country.delete_all
+Country.destroy_all
+ActiveRecord::Base.connection.execute('ALTER TABLE countries AUTO_INCREMENT = 1')
 open("db/seeds/countries.txt") do |countries|
     countries.read.each_line do |country|
         code, name = country.chomp.split("|")
@@ -19,11 +20,12 @@ end
 
 # Populate Mexico States
 puts "Populating States..."
-State.delete_all
+State.destroy_all
+ActiveRecord::Base.connection.execute('ALTER TABLE states AUTO_INCREMENT = 1')
 open("db/seeds/states.txt") do |states|
     states.read.each_line do |state|
-        code, name = state.chomp.split("|")
-        State.create!(:name => name, :code => code)
+        code, name, federal_entity = state.chomp.split("|")
+        State.create!(:name => name, :code => code, :federal_entity => federal_entity)
     end
 end
 

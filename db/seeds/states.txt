@@ -1,33 +1,33 @@
-0000|- Otro -
-AGS|Aguascalientes
-BC|Baja California
-BCS|Baja California Sur
-CAMP|Campeche
-CHIH|Chihuahua
-CHIS|Chiapas
-COAH|Coahuila
-COL|Colima
-DF|Distrito Federal
-DGO|Durango
-GRO|Guerrero
-GTO|Guanajuato
-HGO|Hidalgo
-JAL|Jalisco
-MEX|M??xico
-MICH|Michoac??n
-MOR|Morelos
-NAY|Nayarit
-NL|Nuevo Le??n
-OAX|Oaxaca
-PUE|Puebla
-QRO|Quer??taro
-QROO|Quintana Roo
-SIN|Sinaloa
-SLP|San Luis Potos??
-SON|Sonora
-TAB|Tabasco
-TAMPS|Tamaulipas
-TLAX|Tlaxcala
-VER|Veracruz
-YUC|Yucat??n
-ZAC|Zacatecas
+0000|- Otro -|00
+AGS|Aguascalientes|01
+BC|Baja California|02
+BCS|Baja California Sur|03
+CAMP|Campeche|04
+CHIH|Chihuahua|08
+CHIS|Chiapas|07
+COAH|Coahuila de Zaragoza|05
+COL|Colima|06
+CDMX|Ciudad de México|09
+DGO|Durango|10
+GRO|Guerrero|12
+GTO|Guanajuato|11
+HGO|Hidalgo|13
+JAL|Jalisco|14
+MEX|México|15
+MICH|Michoacán de Ocampo|16
+MOR|Morelos|17
+NAY|Nayarit|18
+NL|Nuevo León|19
+OAX|Oaxaca|20
+PUE|Puebla|21
+QRO|Querétaro|22
+QROO|Quintana Roo|23
+SIN|Sinaloa|25
+SLP|San Luis Potosí|24
+SON|Sonora|26
+TAB|Tabasco|27
+TAMPS|Tamaulipas|28
+TLAX|Tlaxcala|29
+VER|Veracruz de Ignacio de la Llave|30
+YUC|Yucatán|31
+ZAC|Zacatecas|32
