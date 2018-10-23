@@ -16,7 +16,6 @@
   .card
     .card-body
       = form_for @internship, :url=>{action: "applicant_create"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-internship-applicant-form' } do |f|
-
         .row
           .form-group.col-12.col-sm-12.col-md-6#field_internship_first_name
             = f.label :first_name, 'Nombre(s)'
@@ -25,6 +24,18 @@
           .form-group.col-12.col-sm-12.col-md-6#field_internship_last_name
             = f.label :last_name, 'Apellidos'
             = f.text_field :last_name, class:'form-control', required:true
+        .row
+          .form-group.col-12.col-sm-12.col-md-4#field_internship_career
+            = f.label :career, 'Carrera'
+            = f.text_field :career, class:'form-control', required:true
+
+          .form-group.col-12.col-sm-12.col-md-4#field_internship_control_number
+            = f.label :control_number, 'Número de control'
+            = f.text_field :control_number, class:'form-control', required:true
+
+          .form-group.col-12.col-sm-12.col-md-4#field_internship_total_hours
+            = f.label :total_hours, 'Total de horas'
+            = f.number_field :total_hours, class:'form-control', required:true
         .row
           .form-group.col-12.col-sm-12.col-md-6#field_internship_gender
             = f.label :gender, 'Sexo'
