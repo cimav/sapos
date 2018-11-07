@@ -71,16 +71,10 @@
       - else
         .field#field_employee_number
           = f.label :employee_number, 'Número de Empleado Interno'
-          = @staff.employee_number
-        %br
+          = f.text_field :employee_number
         .field#field_uh_number
-          = f.label :employee_number, 'Número de Empleado en UnixHelp'
-          = @staff.uh_number
-        %br
-        %br
-        %br
-        %br
-
+          = f.label :uh_number, 'Número de Empleado en UnixHelp'
+          = f.text_field :uh_number
 
       .field#field_staff_gender
         = f.label :gender, 'Sexo'
