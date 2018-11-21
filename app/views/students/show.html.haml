@@ -65,7 +65,7 @@
       = link_to 'Cambiar foto', '#', :id=>'a-change-image'
     .resource-title
       %h1
-        = "#{@student.first_name} #{@student.last_name}" 
+        = "#{@student.full_name}" 
         - if can? :destroy, @student
           = link_to 'Eliminar',"/estudiantes/#{@student.id}/borrar", :remote=>true, :id=>'a-id-destroy',:confirm=>'Esto borrara todos los registros del estudiante ¿Seguro que deseas eliminarlo?'
       .comment= "Matrícula: #{@student.card} (#{@student.program.name})"
