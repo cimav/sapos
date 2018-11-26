@@ -32,7 +32,8 @@
                     - vigencia = @extension
                   - else
                     - if @student.program.program_type.eql? 4 ## propedeuticos
-                      #card_valid= "Vigencia: Febrero 18, 2018"
+                      -# Vigencia: Febrero 8, 2019"
+                      - vigencia = Date.new(2019,2,8)
                     - else                                    ## resto de programas
                       - vigencia = "N.D."
                       - if @student.program.level.to_i.eql? 2 ## doctorado
