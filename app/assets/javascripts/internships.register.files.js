@@ -28,7 +28,7 @@ $(document).ready(function() {
   }
 
   $(".logout-button").live("click", function(){
-    window.location="/internados/aspirantes/applicant_logout";
+    window.location="/internados/applicant_logout";
   });
 });//document.ready
 /********************* FUNCIONS ****************************/

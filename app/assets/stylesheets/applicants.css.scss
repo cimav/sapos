@@ -4,6 +4,36 @@
 
 .fields_requested {
   padding-left: 50px;
+
+}
+
+.field_requested_document label {
+  font-size: 19px;
+  color: $black;
+  width: 600px;
+  float: left;
+  display: block;
+}
+
+.field_requested_document img {
+  float: left;
+  width: 30px;
+  padding-right: 50px;
+  display: inline-block;
+}
+
+.field_requested_document input[type=file] {
+  float:left;
+  display: inline-block;
+}
+
+.reqdoc_button .reqdoc_button_download .reqdoc_button_delete {
+  float:left;
+  display: inline-block;
+}
+
+/*.fields_requested {
+  padding-left: 50px;
   width:1000px;
   height: 40px;
 }
@@ -55,4 +85,4 @@
   float:left;
   margin: 0px 1px 10px 1px;
 }
-
+*/

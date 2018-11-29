@@ -129,11 +129,18 @@ Sapos::Application.routes.draw do
   match 'internados/aspirantes/cita/:id/:staff_id'        => 'internships#applicant_interview'
   match 'internados/aspirantes/calificar/:token'          => 'internships#applicant_interview_qualify'
   match 'internados/aspirantes/:id/archivos'              => 'internships#applicant_files'
+  
   match 'internados/aspirantes/:id/upload_applicant_file' => 'internships#upload_applicant_file'
   match 'internados/aspirantes/documentos'                => 'internships#files_register'
   match 'internados/aspirantes/upload_file_register'      => 'internships#upload_file_register'
   match 'internados/aspirantes/applicant_logout'          => 'internships#applicant_logout'
   match 'internados/aspirantes/finalizar/:id'             => 'internships#finalize'
+  
+  match 'internados/:id/upload_applicant_file' => 'internships#upload_applicant_file'
+  match 'internados/documentos'                => 'internships#files_register'
+  match 'internados/upload_file_register'      => 'internships#upload_file_register'
+  match 'internados/applicant_logout'          => 'internships#applicant_logout'
+  match 'internados/finalizar/:id'             => 'internships#finalize'
 
   match 'internados/aspirantes/file/:id'         => 'internship_files#download'
   match 'internados/aspirantes/destroy_file/:id' => 'internship_files#applicant_destroy'

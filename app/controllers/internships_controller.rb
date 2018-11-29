@@ -302,6 +302,21 @@ class InternshipsController < ApplicationController
     @req_docs.delete(1)
 
     @internship       = Internship.find(session[:internship_user])
+
+    if @internship.status.to_i.eql? Internship::APPLICANT
+      @req_docs.delete(7)
+      @req_docs.delete(8)
+    elsif ((@internship.status.to_i.eql? Internship::ACTIVE) and (@internship.end_date <= Date.today))
+      @req_docs.delete(2)
+      @req_docs.delete(3)
+      @req_docs.delete(4)
+      @req_docs.delete(5)
+      @req_docs.delete(6)
+    else
+      render :text=> "Usted no es aspirante"
+      return
+    end
+
     @internship_files = InternshipFile.where(:internship_id=>session[:internship_user])
 
     @i_file = InternshipFile.where(:internship_id=>session[:internship_user].to_i,:file_type=>6)
@@ -365,7 +380,7 @@ class InternshipsController < ApplicationController
     @req_docs.delete(1)
  
     @internship = Internship.find(params[:id])
-    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5,6])
+    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5,6,7,8])
     render :layout=> "standalone"
   rescue ActiveRecord::RecordNotFound
     @error = 1
@@ -774,13 +789,16 @@ class InternshipsController < ApplicationController
   def finalize
     @t    = t(:internships)
     @access = true
-    if session[:internship_user].to_i.eql? params[:id].to_i
-      if @internship.applicant_status.eql? 3
-        @internship = Internship.find(params[:id])
+    @internship = Internship.find(params[:id])
+
+    if session[:internship_user].to_i.eql? params[:id].to_i ## comprobando permisos
+      if ((@internship.status.to_i.eql? Internship::APPLICANT) and (@internship.applicant_status.eql? 3))  ## Autorizado    
         @internship.status=0
         @internship.applicant_status=0
         @internship.save
         send_mail(@internship,"",6,"")
+      elsif @internship.status.to_i.eql? Internship::ACTIVE
+        send_mail(@internship,"",9,"")
       else
         @access = false
       end
@@ -992,6 +1010,10 @@ class InternshipsController < ApplicationController
         @u_email = user.email
         subject  = "Alguien ha realizado una solicitud para el Verano CIMAV"
         content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'27',:reply_to=>'#{i.email}'}"
+      elsif opc.eql? 9
+        @u_email = user.email
+        subject  = "Solicitud para carta de liberacion"
+        content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'29',:reply_to=>'#{i.email}'}"
       end
   
       email         = Email.new
@@ -1060,7 +1082,7 @@ class InternshipsController < ApplicationController
     session[:internship_user] = nil
     session[:locale] = nil
     @message = "Out of session"
-    @url = "/internados/aspirantes/documentos"
+    @url = session[:fullpath]
     render :template => "internships/applicants_login",:layout=>false
   end
 
@@ -1087,7 +1109,8 @@ private
     if session_authenticated?
       return true
     else
-      @url = "/internados/aspirantes/documentos"
+      @url = request.original_fullpath
+      session[:fullpath] = @url.to_s
       render :template => "internships/applicants_login",:layout=>false
     end
   end ## auth_indigest

@@ -66,8 +66,8 @@
           display_status("ok",my_id);
           $("#internship_file_file_"+my_id).css("display","none");
           $("#reqdoc_button_"+my_id).css("display","none");
-          $("#reqdoc_button_download_"+my_id).css("display","block");
-          $("#reqdoc_button_delete_"+my_id).css("display","block");
+          $("#reqdoc_button_download_"+my_id).css("display","inline-block");
+          $("#reqdoc_button_delete_"+my_id).css("display","inline-block");
           
           $("#reqdoc_button_"+my_id).attr("my_file_id",new_id);
           $("#reqdoc_button_download_"+my_id).attr("my_file_id",new_id);
@@ -128,7 +128,10 @@
             = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
             = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center',:class=>"img-ok"
 
-            - if !(my_id.eql? 6)
+            - if my_id.eql? 6
+              = f.file_field :file,:id=>"internship_file_file_#{my_id}", :style=>"visibility: hidden;"
+              = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}", :style=>"visibility: hidden;"
+            - else
               = f.file_field :file,:id=>"internship_file_file_#{my_id}", :style=>"display: none;"
               = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}", :style=>"display:none;"
               - if !@register
@@ -145,7 +148,10 @@
           = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
           = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
           = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none',:class=>"img-ok"
-          - if !my_id.eql? 6
+          - if my_id.eql? 6
+            = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'visibility: hidden;', :my_file_id=>0
+            = button_tag "Eliminar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'visibility: hidden;', :my_file_id=> 0
+          - else
             = f.file_field :file,:id=>"internship_file_file_#{my_id}";
             = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
             - if !@register
