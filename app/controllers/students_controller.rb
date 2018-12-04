@@ -2376,7 +2376,7 @@ class StudentsController < ApplicationController
     y    = 212
     h    = 45
     x    = x_right_top - w - 2
-    text = "Dr. Alejandro Lopez Ortiz\nDirector Académico"
+    text = "Dr. Alejandro López Ortiz\nDirector Académico"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
     send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{libro}-#{foja}"
