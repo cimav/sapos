@@ -1108,62 +1108,9 @@ class CommitteeSessionsController < ApplicationController
         texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
         pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
-
       ############################### ASUNTOS GENERALES ###################################
-      elsif @type.eql? 20
-        @render_pdf = true
-        cap         = @c_a.committee_agreement_person.first
-        #El destinatario es nulo?
-        if cap.nil?
-          destiny_name  =  "A quién corresponda."
-
-        else
-          if cap.attachable_type == "Staff"
-            destiny_name  = Staff.find(cap.attachable_id).full_name  rescue "A quién corresponda."
-            destiny_title = Staff.find(cap.attachable_id).title rescue "C."
-          elsif cap.attachable_type == "Student"
-            destiny_name  = Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
-            destiny_title = "C."
-          end
-        end
-        notes       = @c_a.committee_agreement_note[0].notes rescue nil
-        ## PRESENTACION
-        x = 0
-        y = 505
-        w = 300
-        h = 15
-
-        y = y - 15
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        if destiny_name == "A quién corresponda."
-          pdf.text_box destiny_name, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        else
-        pdf.text_box "#{destiny_title} #{destiny_name}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        end
-        y = y - 25
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
-        # CONTENIDO
-        x = 0
-        y = y - 60
-        w = 510
-        h = 170
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
-        text = "#{text} ha resuelto lo siguiente:"
-        if !notes.blank?
-          text = "#{text} \n\n#{notes}"
-        end
-        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        #  FIRMA
-        x = x + 110
-        y = y - 240
-        w = 300
-        h = 80
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+      #    Se ha movido a la parte de abajo con adecuaciones para imprimir en varias páginas
+      #####################################################################################
 
       ############################### DESIGNACION DE COMITÉ DE PARES ###################################
       elsif @type.eql? 21
@@ -1248,8 +1195,72 @@ class CommitteeSessionsController < ApplicationController
       if @render_pdf
         send_data pdf.render, type: "application/pdf", disposition: "inline"
       else
-         render :text=>"Documento no disponible o no autorizado"
-      end
+        ## sin text_box, solo text infinito # [arriba, izquierda, abajo, derecha]
+        Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[120,60,75,55] ) do |pdf|
+          ## CABECERA
+          if !(@type.in? 6,21)
+            size = 10
+            s_date           = @c_s.date
+            last_change      = @c_s.updated_at
+            today            = Date.today
+            @session_type    = @c_s.get_type
+
+            pdf.text "<b>Coordinación de Posgrado</b>\n", :inline_format=>true, :align=>:right, :size=>size
+            pdf.text "<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\n", :inline_format=>true, :align=>:right, :size=>size
+            pdf.text "Chihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, :size=>size
+          end
+          ############################### ASUNTOS GENERALES ###################################
+          if @type.eql? 20
+            @render_pdf = true
+            cap         = @c_a.committee_agreement_person.first
+            #El destinatario es nulo?
+            if cap.nil?
+              destiny_name  =  "A quién corresponda."
+            else
+              if cap.attachable_type == "Staff"
+                destiny_name  = Staff.find(cap.attachable_id).full_name  rescue "A quién corresponda."
+                destiny_title = Staff.find(cap.attachable_id).title rescue "C."
+              elsif cap.attachable_type == "Student"
+                destiny_name  = Student.find(cap.attachable_id).full_name rescue "A quién corresponda."
+                destiny_title = "C."
+              end
+            end
+
+            notes       = @c_a.committee_agreement_note[0].notes rescue nil
+            ## PRESENTACION
+            presente = "\n\n<b>Presente.</b>\n\n"
+            if destiny_name == "A quién corresponda."
+              pdf.text "#{destiny_name} #{presente}", :align=>:justify,:valign=>:top, :inline_format=>true
+            else
+              pdf.text "#{destiny_title} #{destiny_name} #{presente}", :align=>:justify,:valign=>:top, :inline_format=>true
+            end
+
+            # CONTENIDO
+            text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
+            text = "#{text} ha resuelto lo siguiente:"
+
+            if !notes.blank?
+              text = "#{text} \n\n#{notes}"
+            end
+
+            #IMPRIMIENDO 
+            pdf.text text, :align=>:justify,:valign=>:top, :inline_format=>true
+            #  FIRMA
+            text = "\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+            pdf.text text, :align=>:center,:valign=>:top,:inline_format=>true
+            # FOOTER
+            pdf.number_pages "<b>Página <page> de <total></b>", :at=>[pdf.bounds.left ,0], :align=>:center, :size=>10,:inline_format=>true
+          else
+            @render_pdf = false
+          end
+
+          if @render_pdf
+            send_data pdf.render, type: "application/pdf", disposition: "inline"
+          else
+           render :text=>"Documento no disponible o no autorizado"
+          end
+        end#end Prawn
+      end#end Else
     end
 
     #send_data pdf.render, type: "application/pdf", disposition: "inline"
