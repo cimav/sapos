@@ -9,10 +9,12 @@ class StudiesPlanDesign < ActiveRecord::Base
   PLAN_DESIGN = 1
   PROGRAM_DESIGN = 2
   REDESIGN = 3
+  PNPC     = 4
 
   MODIFICATION_TYPE = {
     PLAN_DESIGN=>"Diseño de plan de estudios",
     PROGRAM_DESIGN=>"Diseño de plan de programa de estudios",
     REDESIGN=>"Rediseño",
+    PNPC    =>"PNPC",
   }
 end
