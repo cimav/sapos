@@ -882,6 +882,7 @@ class StaffsController < ApplicationController
     year = time.year.to_s
 
     background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+
     @consecutivo = get_consecutive(@staff, time, options[:cert_type])
     @rails_root  = "#{Rails.root}"
     @year_s      = year[2,4]
@@ -889,7 +890,13 @@ class StaffsController < ApplicationController
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[130,50,65,50] ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,50,65,50] ) do |pdf|
+      pdf.font_families.update(
+          "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                            :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                            :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                            :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+      pdf.font "Montserrat"
       pdf.font_size 10
       x = 232
       y = 664 #664

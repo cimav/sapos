@@ -2497,16 +2497,23 @@ private
     @month       = get_month_name(time.month)
 
     Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
-      pdf.font_size 13
+      pdf.font_families.update(
+          "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                                  :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                                  :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                                  :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+      pdf.font "Montserrat"
+      pdf.font_size 11
       x = 190 #232
       y = 565 #565
       w = 300
       h = 50
         
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
+      pdf.text_box "<b>Coordinación de estudios de Posgrado</b>\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
 
-      y = y - 100
+      pdf.font_size 12
+      y = y - 80
       x = 10
       h = 50
 

@@ -375,6 +375,7 @@ class CommitteeSessionsController < ApplicationController
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>60 ) do |pdf|
+
       if !(@type.in? 6,21)
         ############# CABECERA
         x = 250

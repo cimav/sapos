@@ -479,6 +479,12 @@ class InternshipsController < ApplicationController
 
 
       Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
+        pdf.font_families.update(
+            "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                              :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                              :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                              :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+        pdf.font "Montserrat"
         pdf.font_size 11
         x = 20
         y = 565 #664
@@ -492,7 +498,7 @@ class InternshipsController < ApplicationController
         x = 20
         y -= 70
         w = 300
-        pdf.font_size 13
+        pdf.font_size 12
 
         @a_quien_corr = "A quien corresponda \n\n <b>Presente.-</b>"
 
