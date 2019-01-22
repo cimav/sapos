@@ -583,7 +583,7 @@ class InternshipsController < ApplicationController
 
         pdf.text "\n\n\n\n\n\nCoordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right ,:valign=>:top
 
-        pdf.font_size 13
+        pdf.font_size 12
 
         correspondencia = "\n\nA quien corresponda \n <b>Presente.-</b>"
         pdf.text correspondencia, :align=>:justify, :valign=>:top, :inline_format=>true
@@ -596,7 +596,7 @@ class InternshipsController < ApplicationController
         actividades = "\n<b>#{@internado}</b>"
         pdf.text actividades, :align=>:justify,:valign=>:top,:inline_format=>true
 
-        pdf.font_size 13
+        pdf.font_size 12
 
         parrafo2 = "\nQue nos reporta con resultados muy satisfactorios el asesor <b>#{@asesor}</b>, una puntuación de <b>#{@puntuacion}</b>, por lo que no tenemos reserva alguna en felicitarlo por su excelente formación."
         pdf.text parrafo2, :align=>:justify,:valign=>:top,:inline_format=>true
