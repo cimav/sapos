@@ -573,6 +573,12 @@ class InternshipsController < ApplicationController
       end
 
       Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
+        pdf.font_families.update(
+            "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                              :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                              :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                              :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+        pdf.font "Montserrat"
         pdf.font_size 11
 
         pdf.text "\n\n\n\n\n\nCoordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right ,:valign=>:top
@@ -903,6 +909,13 @@ class InternshipsController < ApplicationController
     FileUtils.mkdir_p(filename) unless File.directory?(filename)
     template = "#{@r_root}/private/prawn_templates/form_reg_estudiantes_externos.png"
     pdf = Prawn::Document.new(:background => template, :background_scale=>0.36, :right_margin=>20)
+    pdf.font_families.update(
+        "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                          :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                          :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                          :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+    pdf.font "Montserrat"
+    pdf.font_size 11
     pdf.draw_text i.full_name,  :at=>[60,567], :size=>10
     pdf.draw_text @genero,      :at=>[49,554], :size=>10
     pdf.draw_text @birth,       :at=>[117,541], :size=>10
