@@ -375,14 +375,22 @@ class CommitteeSessionsController < ApplicationController
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>60 ) do |pdf|
+      pdf.font_families.update(
+          "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                            :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                            :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                            :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+      pdf.font "Montserrat"
+      pdf.font_size 11
 
       if !(@type.in? 6,21)
         ############# CABECERA
         x = 250
-        y = 590 #657
+        #y = 590 #657
+        y = 600
         w = 260
         h = 43
-        size = 10
+        size = pdf.font_size - 1
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         s_date           = @c_s.date
         last_change      = @c_s.updated_at
@@ -1198,15 +1206,22 @@ class CommitteeSessionsController < ApplicationController
       else
         ## sin text_box, solo text infinito # [arriba, izquierda, abajo, derecha]
         Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[120,60,75,55] ) do |pdf|
+          pdf.font_families.update(
+              "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                                :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                                :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                                :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+          pdf.font "Montserrat"
+          pdf.font_size 11
           ## CABECERA
           if !(@type.in? 6,21)
-            size = 10
+            size = pdf.font_size - 1
             s_date           = @c_s.date
             last_change      = @c_s.updated_at
             today            = Date.today
             @session_type    = @c_s.get_type
 
-            pdf.text "<b>Coordinación de Posgrado</b>\n", :inline_format=>true, :align=>:right, :size=>size
+            pdf.text "\n<b>Coordinación de Posgrado</b>\n", :inline_format=>true, :align=>:right, :size=>size
             pdf.text "<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\n", :inline_format=>true, :align=>:right, :size=>size
             pdf.text "Chihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, :size=>size
           end
@@ -1278,9 +1293,17 @@ class CommitteeSessionsController < ApplicationController
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[150,60,80,60] ) do |pdf|
+      pdf.font_families.update(
+          "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                            :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                            :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                            :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+      pdf.font "Montserrat"
+      pdf.font_size 11
+
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
       texto = "<b>Comité de Estudios de Posgrado</b>"
-      pdf.text texto, :align=>:center, :inline_format=>true, :size=>13
+      pdf.text texto, :align=>:center, :inline_format=>true, :size=>12
 
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
       texto = "Reunidos en la Sala de Posgrado planta alta el día <b>#{s_date.day} de #{get_month_name(s_date.month)} del año #{s_date.year},</b> a las #{s_date.hour.to_s.rjust(2,"0")}:#{s_date.min.to_s.rjust(2,"0")} h. con la asistencia de las siguientes personas: </b>"
