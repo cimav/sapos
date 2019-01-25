@@ -168,7 +168,7 @@
 
       .field#field_student_gender 
         = f.label :gender, 'Sexo'
-        = f.select :gender,  [['Hombre', 'H'], ['Mujer', 'F']]
+        = f.select :gender,  [['Hombre', 'H'], ['Mujer', 'F']], :prompt=>"--Selecciona Sexo--"
 
       .field#field_student_date_of_birth
         = f.label :date_of_birth, 'Fecha de nacimiento'
