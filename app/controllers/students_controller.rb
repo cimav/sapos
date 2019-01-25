@@ -1322,8 +1322,9 @@ class StudentsController < ApplicationController
 
     time = Time.new
     year = time.year.to_s
-    head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
-    base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
+    background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+    #head = File.read("#{Rails.root}/app/views/students/certificates/head.html")
+    #base = File.read("#{Rails.root}/app/views/students/certificates/base.html")
     dir  = t(:directory)
 
     if current_user.campus_id == 2
@@ -1368,11 +1369,52 @@ class StudentsController < ApplicationController
 
     @scholarship = @student.scholarship.joins(:scholarship_type=>[:scholarship_category]).where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE() AND scholarship_categories.id=1")
 
-    html = render_to_string(:layout => 'certificate' , :template=> 'students/certificates/constancia_sinodal_externo')
-    kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-    filename = "constancia-sinodal-externo-#{@student.id}.pdf"
-    send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-    return # to avoid double render call
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
+      pdf.font_families.update(
+          "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                            :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                            :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                            :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+      pdf.font "Montserrat"
+      pdf.font_size 11
+      x = 20
+      y = 565 #664
+      w = 300
+      h = 50
+
+      pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :height=>h
+
+      x = 20
+      y -= 70
+      w = 300
+      pdf.font_size 12
+      
+      @a_quien_corr = "A quien corresponda \n\n <b>Presente.-</b>"
+
+      pdf.text_box @a_quien_corr, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
+
+      x = 20
+      y -= 160
+      w = 300
+
+      @parrafo1 = "Por medio de la presente tengo el agrado de extender la constancia a <b>#{@asesor}</b> de <b>#{@institution}</b> quien fungio como sinodal externo del examen de Grado presentado el día de hoy, por #{@genero2} alumn#{@genero2} <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> de nuestro programa de <b>#{@programa}</b> con la tesis titulada: <b>#{@thsis_title}</b>"
+
+        pdf.text_box @parrafo1, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
+      @parrafo2 = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
+      y -= 40
+      x = 20
+      pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+      
+      y = y - 100 #202
+      h = 155
+      x = 98
+
+      @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
+      pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+      filename = "constancia-sinodal-externo-#{@student.id}.pdf"
+       
+      send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
+    end
   end
 
   def grade_certificates

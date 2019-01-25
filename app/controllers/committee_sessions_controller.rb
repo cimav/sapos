@@ -374,7 +374,8 @@ class CommitteeSessionsController < ApplicationController
     @nbsp = Prawn::Text::NBSP
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
-    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>60 ) do |pdf|
+    #Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>60 ) do |pdf|
+    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[60,60,60,60] ) do |pdf|
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                             :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -386,8 +387,7 @@ class CommitteeSessionsController < ApplicationController
       if !(@type.in? 6,21)
         ############# CABECERA
         x = 250
-        #y = 590 #657
-        y = 600
+        y = 560
         w = 260
         h = 43
         size = pdf.font_size - 1
@@ -397,9 +397,10 @@ class CommitteeSessionsController < ApplicationController
         today            = Date.today
         @session_type    = @c_s.get_type
 
-        pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h, size: size
+        pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right, :size=> size
       end
   
+      y = y - 10
       ## corpo segun tipo
       ############################### NUEVO INGRESO ###################################
       if @type.eql? 1
@@ -423,10 +424,10 @@ class CommitteeSessionsController < ApplicationController
 
         if @c_a.auth.to_i.eql? 1 ####### Si
           ############ PRORROGA ############
-          pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+          pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:inline_format=>true
           y = y - 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :character_spacing=>4,:inline_format=>true
           # CONTENIDO
           y = y - 60
           w = 510
@@ -441,7 +442,7 @@ class CommitteeSessionsController < ApplicationController
 
           texto = "#{texto}Es importante señalar que de no cumplir con los compromisos en las fechas indicadas, sera dado de baja del programa al que pertenece."
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          pdf.text_box texto, :at=>[x,y], :align=>:justify, :inline_format=>true
           #  FIRMA
           x = x + 90
           y = y - 200
@@ -642,19 +643,19 @@ class CommitteeSessionsController < ApplicationController
           h = 45
         end
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "</b>#{comma_tutors.chop.chop}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "</b>#{comma_tutors.chop.chop}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :inline_format=>true
         y = y - h
         w = 200
         h = 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:justify, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
-        y = y - 60
+        y = y - 30
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado sinodal de <b>#{student.full_name}</b> adscrito al programa de <b>#{student.program.name}</b>.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado sinodal de <b>#{student.full_name}</b> adscrito al programa de <b>#{student.program.name}</b>.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
@@ -1205,7 +1206,8 @@ class CommitteeSessionsController < ApplicationController
         send_data pdf.render, type: "application/pdf", disposition: "inline"
       else
         ## sin text_box, solo text infinito # [arriba, izquierda, abajo, derecha]
-        Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[120,60,75,55] ) do |pdf|
+        #Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[120,60,80,60] ) do |pdf|
+        Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[60,60,60,60] ) do |pdf|
           pdf.font_families.update(
               "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                                 :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -1221,7 +1223,7 @@ class CommitteeSessionsController < ApplicationController
             today            = Date.today
             @session_type    = @c_s.get_type
 
-            pdf.text "\n<b>Coordinación de Posgrado</b>\n", :inline_format=>true, :align=>:right, :size=>size
+            pdf.text "\n\n\n\n\n\n\n\n\n<b>Coordinación de Posgrado</b>\n", :inline_format=>true, :align=>:right, :size=>size
             pdf.text "<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\n", :inline_format=>true, :align=>:right, :size=>size
             pdf.text "Chihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, :size=>size
           end
@@ -1292,7 +1294,8 @@ class CommitteeSessionsController < ApplicationController
     today            = Date.today
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
-    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[150,60,80,60] ) do |pdf|
+    #Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[150,60,80,60] ) do |pdf|
+      Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>60 ) do |pdf|
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                             :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
