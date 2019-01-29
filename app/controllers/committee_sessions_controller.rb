@@ -568,18 +568,19 @@ class CommitteeSessionsController < ApplicationController
         w = 300
         h = 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text "#{new_supervisor.title} #{new_supervisor.full_name_cap}", :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true, size: size
+        pdf.text "#{new_supervisor.title} #{new_supervisor.full_name_cap}", :align=>:left,:inline_format=>true, size: size
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         y = y - 35
         w = 510
         h = 100
-        texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado como director de tesis de #{student.full_name} del Programa de #{student.program.name}.\n\n A continuación le informo los avances que deberá tener el estudiante durante su trayectoria académica: \n\n"
+        texto = "\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado como director de tesis de #{student.full_name} del Programa de #{student.program.name}.\n\n A continuación le informo los avances que deberá tener el estudiante durante su trayectoria académica: \n\n"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text texto, :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=> size
-        pdf.move_down 235
+        pdf.text texto, :align=>:justify, :inline_format=>true, :size=> size
+
+        #pdf.move_down 235
         data = []
         if student.program.level.to_i.eql? 2
           data << ["Semestre 1","Protocolo de Investigación"]
@@ -598,15 +599,15 @@ class CommitteeSessionsController < ApplicationController
 
         tabla = pdf.make_table(data,:width=>492,:cell_style=>{:size=>9,:padding=>3,:inline_format => true},:position=>:center,:column_widths=>{1 => 410}) #solo s especifica la columna 2
         tabla.draw
-        pdf.move_down 20
-        texto= "Me encuentro a sus ordenes para cualquier duda al respecto. \n"
+        #pdf.move_down 20
+        texto= "\nMe encuentro a sus ordenes para cualquier duda al respecto. \n"
         pdf.text texto, :align=>:justify, :valign=>:top, :inline_format=>true, size: size
         #  FIRMA
         x = x + 100
         y = y - h - 0
         w = 300
         h = 80
-        pdf.move_down 50
+        #pdf.move_down 50
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "\n\n\n\nAtentamente,\n\n\n\n\n<b>#{@signer}</b>"
         pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
