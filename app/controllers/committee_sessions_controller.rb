@@ -397,10 +397,10 @@ class CommitteeSessionsController < ApplicationController
         today            = Date.today
         @session_type    = @c_s.get_type
 
-        pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right, :size=> size
+        pdf.text "\n\n\n\n\n\n\n\n\n\n<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, :size=> size
       end
   
-      y = y - 10
+      #y = y - 10
       ## corpo segun tipo
       ############################### NUEVO INGRESO ###################################
       if @type.eql? 1
@@ -424,10 +424,10 @@ class CommitteeSessionsController < ApplicationController
 
         if @c_a.auth.to_i.eql? 1 ####### Si
           ############ PRORROGA ############
-          pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:inline_format=>true
+          pdf.text "</b>C. #{student.full_name}</b>", :align=>:left,:inline_format=>true
           y = y - 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :character_spacing=>4,:inline_format=>true
+          pdf.text "<b>Presente.</b>", :align=>:left, :character_spacing=>4,:inline_format=>true
           # CONTENIDO
           y = y - 60
           w = 510
@@ -442,15 +442,15 @@ class CommitteeSessionsController < ApplicationController
 
           texto = "#{texto}Es importante señalar que de no cumplir con los compromisos en las fechas indicadas, sera dado de baja del programa al que pertenece."
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box texto, :at=>[x,y], :align=>:justify, :inline_format=>true
+          pdf.text texto, :align=>:justify, :inline_format=>true
           #  FIRMA
           x = x + 90
           y = y - 200
           w = 300
           h = 80
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-          pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+          pdf.text texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
         elsif @c_a.auth.to_i.eql? 2 ####### No
           ############ CONSTANCIA DE BAJA ############
@@ -472,7 +472,7 @@ class CommitteeSessionsController < ApplicationController
           h = 60
           texto = "a) No presentar la propuesta de titulación en los plazos establecidos\nb) Exceder el tiempo de permanencia en el Programa"
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          pdf.text texto, :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           #  FIRMA
           x = x + 20
           y = y - 70
@@ -480,7 +480,7 @@ class CommitteeSessionsController < ApplicationController
           h = 80
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-          pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
           # CCP
           x = 0
@@ -489,29 +489,29 @@ class CommitteeSessionsController < ApplicationController
           h = 25
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-          pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
         elsif @c_a.auth.to_i.eql? 3 
           ############ RENUNCIA EXPLICITA #############
-          pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+          pdf.text "</b>C. #{student.full_name}</b>", :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
           y = y - 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+          pdf.text "\n<b>Presente.</b>\n", :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
           # CONTENIDO
           y = y - 60
           w = 510
           h = 180
           texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado ha determinado su baja definitiva al programa de posgrado al que se encuentra adscrito por renuncia explícita."
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          pdf.text texto, :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           #  FIRMA
           x = x + 100
           y = y - 130
           w = 300
           h = 80
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-          pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-          pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+          texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+          pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
           # CCP
           x = 0
           y = y - 150
@@ -519,7 +519,7 @@ class CommitteeSessionsController < ApplicationController
           h = 25
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-          pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
       end
       ############################### CAMBIO DE PROGRAMA ###################################
       elsif @type.eql? 3
@@ -534,25 +534,25 @@ class CommitteeSessionsController < ApplicationController
         student = Student.find(s[0].attachable_id)
         program = Program.find(@c_a.auth)
         ## PRESENTACION
-        pdf.text_box "</b>C. #{student.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "<b>C. #{student.full_name}</b>", :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         y = y - 60
         w = 510
         h = 80
         texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado le ha autorizado el cambio de programa de #{student.program.name} al de #{program.name},\n\n Por lo anterior, deberá cumplir con la carga académica de acuerdo al plan de estudios aplicable en el Programa de posgrado que fue autorizado.\n\n Me encuentro a sus ordenes cualquier duda al respecto\n\n"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        pdf.text texto, :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         # FIRMA
         x = x + 90
         y = y - 80
         w = 300
         h = 80
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
       ############################### CAMBIO DE DIRECTOR DE TESIS ###################################
       elsif @type.eql? 4
         #@rectangles  = true
@@ -568,17 +568,17 @@ class CommitteeSessionsController < ApplicationController
         w = 300
         h = 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "</b>#{new_supervisor.title} #{new_supervisor.full_name_cap}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true, size: size
+        pdf.text "#{new_supervisor.title} #{new_supervisor.full_name_cap}", :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true, size: size
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         y = y - 35
         w = 510
         h = 100
         texto = " #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado como director de tesis de #{student.full_name} del Programa de #{student.program.name}.\n\n A continuación le informo los avances que deberá tener el estudiante durante su trayectoria académica: \n\n"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box texto, :at=>[x,y], :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
+        pdf.text texto, :align=>:justify, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=> size
         pdf.move_down 235
         data = []
         if student.program.level.to_i.eql? 2
@@ -608,8 +608,8 @@ class CommitteeSessionsController < ApplicationController
         h = 80
         pdf.move_down 50
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y-230], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
+        texto = "\n\n\n\nAtentamente,\n\n\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
 
         # CCP
         x = 0
@@ -618,7 +618,7 @@ class CommitteeSessionsController < ApplicationController
         h = 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "c.c.p #{student.full_name}\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-        pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
+        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=> size-2
       ############################### DESIGNACION DE SINODALES ###################################
       elsif @type.eql? 5
         @render_pdf  = true
@@ -643,27 +643,27 @@ class CommitteeSessionsController < ApplicationController
           h = 45
         end
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "</b>#{comma_tutors.chop.chop}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :inline_format=>true
+        pdf.text "#{comma_tutors.chop.chop}", :align=>:justify, :inline_format=>true
         y = y - h
         w = 200
         h = 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:justify, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n\n", :align=>:justify, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 30
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado sinodal de <b>#{student.full_name}</b> adscrito al programa de <b>#{student.program.name}</b>.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:inline_format=>true
+        pdf.text "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado sinodal de <b>#{student.full_name}</b> adscrito al programa de <b>#{student.program.name}</b>.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :align=>:justify,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
         # CCP
         x = 0
@@ -671,8 +671,10 @@ class CommitteeSessionsController < ApplicationController
         w = 350
         h = 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-        pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+        texto = "c.c.p #{supervisor.title} #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
+        #pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+        #pdf.number_pages texto, [pdf.bounds.right - 50, 0 ]
       ############################### DESIGNACION DE COMITE TUTORAL ###################################
       elsif @type.eql? 6
         @render_pdf  = true
@@ -696,7 +698,7 @@ class CommitteeSessionsController < ApplicationController
           last_change      = @c_s.updated_at
           today            = Date.today
           @session_type    = @c_s.get_type
-          pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}.#{counter}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h, size: size
+          pdf.text "\n\n\n\n\n\n\n\n\n\n<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}.#{counter}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, :size=>size
           ############ CABECERA
           tutor = Staff.find(t.attachable_id)
           comma_tutors = "#{tutor.title} #{tutor.full_name_cap}"
@@ -713,28 +715,28 @@ class CommitteeSessionsController < ApplicationController
             h = 45
           end
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "</b>#{comma_tutors}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          pdf.text "#{comma_tutors}", :align=>:justify,:inline_format=>true
           y = y - h
           w = 200
           h = 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+          pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
           # CONTENIDO
           x = 0
           y = y - 60
           w = 510
           h = 100
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité Tutoral de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          pdf.text "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité Tutoral de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.",  :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
           #  FIRMA
           x = x + 110
           y = y - 180
           w = 300
           h = 80
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-          pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-          pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+          texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+          pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
           # CCP
           x = 0
           y = y - 150
@@ -742,7 +744,7 @@ class CommitteeSessionsController < ApplicationController
           h = 25
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-          pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
           if !(tutors.size.eql? counter)
             pdf.start_new_page
           end
@@ -768,26 +770,26 @@ class CommitteeSessionsController < ApplicationController
         y = 555
         w = 300
         h = 15
-        pdf.text_box "</b>C. #{staff.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "</b>C. #{staff.full_name}</b>", :align=>:left,:inline_format=>true
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
         w = 510
         h = 100
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado #{mtype rescue "N.D"} del alumno #{student.full_name rescue "N.D"} adscrito al programa de #{student.program.name rescue "N.D"}.\n\n Lo anterior con base en la normatividad aplicable, articulo 11 del Reglamento de Estudios de Posgrado.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado #{mtype rescue "N.D"} del alumno #{student.full_name rescue "N.D"} adscrito al programa de #{student.program.name rescue "N.D"}.\n\n Lo anterior con base en la normatividad aplicable, articulo 11 del Reglamento de Estudios de Posgrado.", :align=>:justify,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 180
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center, :width=>w, :height=>h, :inline_format=>true
+        #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
       ############################### DESIGNACION DE DOCENTES PARA CURSOS ###################################
       elsif @type.eql? 8
         @render_pdf = true
@@ -803,32 +805,32 @@ class CommitteeSessionsController < ApplicationController
         y = 505
         w = 300
         h = 15
-        pdf.text_box "</b>C. #{staff.full_name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "</b>C. #{staff.full_name}</b>", :at=>[x,y], :align=>:left,:inline_format=>true
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
+        text = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
         text = "#{text} lo ha nombrado docente responsable del curso #{course.name} correspondiente al ciclo escolar #{term.code} que se llevará a cabo del #{term.start_date.day} de #{get_month_name(term.start_date.month)} de #{term.start_date.year} al #{term.end_date.day} de #{get_month_name(term.end_date.month)} de #{term.end_date.year}."
         text = "#{text} \n\nEn caso de ser un curso coordinado, le pido nos haga llegar la distribución de docentes por fechas con el fin de que sean cargados en el sistema administrativo de posgrado."
         if !notes.blank?
           text = "#{text} \n\n#{notes}"
         end
         text = "#{text}\n\n Agradecemos de antemano su apoyo en la formación de recursos humanos y quedamos a sus órdenes para cualquier duda al respecto."
-        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text text, :align=>:justify,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 240
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center,  :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
 
       ############################### EVALUACION DE TEMARIOS PROPUESTOS ###################################
@@ -858,10 +860,10 @@ class CommitteeSessionsController < ApplicationController
         if evals_text.chop.chop.size > 170
           h = 45
         end
-        pdf.text_box "<b>#{evals_text.chop.chop}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w+200, :height=>h,:inline_format=>true
+        pdf.text "<b>#{evals_text.chop.chop}</b>", :align=>:left, :inline_format=>true
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
@@ -886,9 +888,9 @@ class CommitteeSessionsController < ApplicationController
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto,  :align=>:center, :width=>w, :height=>h, :inline_format=>true
+        #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
       ############################### CUOTAS ###################################
       elsif @type.eql? 10
         @render_pdf = false
@@ -909,29 +911,29 @@ class CommitteeSessionsController < ApplicationController
           y = 555
           w = 300
           h = 15
-          pdf.text_box "</b>C. #{student.full_name}\n Estudiante del programa de #{student.program.name}</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+          pdf.text "</b>C. #{student.full_name}\n Estudiante del programa de #{student.program.name}</b>", :align=>:left, :inline_format=>true
           y = y - 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+          pdf.text_box "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
           # CONTENIDO
           x = 0
           y = y - 60
           w = 510
           h = 170
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
+          text = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
           text = "#{text} autorizó su solicitud de ausencia #{notes}."
           text = "#{text} \n\n Me encuentro a sus ordenes para cualquier duda al respecto."
-          pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          pdf.text text, :align=>:justify, :inline_format=>true
           #  FIRMA
           x = x + 110
           y = y - 200
           w = 300
           h = 80
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-          pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-          pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+          texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+          pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
         else
           @render_pdf = false
         end
@@ -947,7 +949,7 @@ class CommitteeSessionsController < ApplicationController
         y = 555
         w = 300
         h = 30
-        pdf.text_box "</b>#{area.leader}\n Jefe de #{area.name}\n CIMAV</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "<b>#{area.leader}\n Jefe de #{area.name}\n CIMAV</b>", :align=>:left,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
@@ -963,15 +965,15 @@ class CommitteeSessionsController < ApplicationController
 
         text = "#{text} \n\n Es importante destacar que deberá presentarse un informe mensual del ejercicio de este presupuesto al Comité de Estudios de Posgrado en su sesión ordinaria"
         text = "#{text} \n\n Sin otro particular de momento me despido."
-        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text text, :align=>:justify,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 200
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
         pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
       ###############################  POSDOCTORADO ###################################
       elsif @type.eql? 14
@@ -987,10 +989,10 @@ class CommitteeSessionsController < ApplicationController
         y = 555
         w = 300
         h = 15
-        pdf.text_box "</b>#{internship.full_name}\n #{internship.institution.name}\n</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "#{internship.full_name}\n #{internship.institution.name}\n", :align=>:left,:inline_format=>true
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         y = y - 15
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
@@ -1000,16 +1002,16 @@ class CommitteeSessionsController < ApplicationController
         text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
         text = "#{text} le ha autorizado realizar estancia posdoctoral en este Centro en el area de #{area.name}, bajo la asesoria de #{internship.staff.full_name} durante el periodo #{notes}."
         text = "#{text} \n\n Anexo formato y requisitos para el registro correspondiente y quedo a sus ordenes para cualquier duda al respecto."
-        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text text, :align=>:justify,:inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 200
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center,  :width=>w, :height=>h, :inline_format=>true
+        #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
       ############################### ACTUALIZACION DE NORMATIVIDAD ###################################
       elsif @type.eql? 15
         @render_pdf = false
@@ -1027,18 +1029,18 @@ class CommitteeSessionsController < ApplicationController
         y = 505
         w = 300
         h = 15
-        pdf.text_box "</b>#{student.full_name}\n\n</b>", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "#{student.full_name}\n\n", :align=>:left,:inline_format=>true
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         y = y - 15
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 35
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado autorizó la revalidación de los siguientes cursos:"
-        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        text = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado autorizó la revalidación de los siguientes cursos:"
+        pdf.text text, :align=>:justify,:inline_format=>true
         
         pdf.move_down 280
         data = []
@@ -1059,9 +1061,9 @@ class CommitteeSessionsController < ApplicationController
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
        
       ###############################  ###################################
       elsif @type.eql? 17
@@ -1090,17 +1092,17 @@ class CommitteeSessionsController < ApplicationController
         y = 505
         w = 300
         h = 15
-        pdf.text_box "#{staff.title} #{staff.full_name}", :at=>[x,y], :align=>:left,:valign=>:center, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "#{staff.title} #{staff.full_name}", :align=>:left,:inline_format=>true
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         y = y - 15
-        pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+        pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
         x = 0
         y = y - 60
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
+        text = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
         if auth.to_i.eql? 1
           auth = "lo ha nombrado"
         elsif auth.to_i.eql? 2
@@ -1108,16 +1110,16 @@ class CommitteeSessionsController < ApplicationController
         end
         text = "#{text} #{auth} <b>#{director}</b> de <b>#{student.full_name}</b> del programa de <b>#{student.program.name}</b>."
         text = "#{text} \n\n Me encuentro a sus ordenes para cualquier duda al respecto."
-        pdf.text_box text, :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text text, :align=>:justify, :inline_format=>true
         #  FIRMA
         x = x + 110
         y = y - 200
         w = 300
         h = 80
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-        pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-        pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+        texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+        pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+        #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
       ############################### ASUNTOS GENERALES ###################################
       #    Se ha movido a la parte de abajo con adecuaciones para imprimir en varias páginas
       #####################################################################################
@@ -1145,7 +1147,7 @@ class CommitteeSessionsController < ApplicationController
           last_change      = @c_s.updated_at
           today            = Date.today
           @session_type    = @c_s.get_type
-          pdf.text_box "<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}.#{counter}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}", :inline_format=>true, :at=>[x,y], :align=>:right,:valign=>:center, :width=>w, :height=>h, size: size
+          pdf.text "\n\n\n\n\n\n\n\n\n\n<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}.#{counter}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, size: size
           ############ CABECERA
           tutor = Staff.find(t.attachable_id)
           comma_tutors = "#{tutor.title} #{tutor.full_name_cap}"
@@ -1162,28 +1164,28 @@ class CommitteeSessionsController < ApplicationController
             h = 45
           end
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "</b>#{comma_tutors}</b>", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          pdf.text "#{comma_tutors}", :align=>:justify, :inline_format=>true
           y = y - h
           w = 200
           h = 15
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "<b>Presente.</b>", :at=>[x,y], :align=>:left, :valign=>:center, :width=>w, :height=>h, :character_spacing=>4,:inline_format=>true
+          pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
           # CONTENIDO
           x = 0
           y = y - 60
           w = 510
           h = 100
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          pdf.text_box "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité de Pares de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          pdf.text "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité de Pares de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :align=>:justify,:inline_format=>true
           #  FIRMA
           x = x + 110
           y = y - 180
           w = 300
           h = 80
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-          texto = "Atentamente,\n\n\n<b>#{@signer}</b>"
-          pdf.text_box texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
-          pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
+          texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
+          pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          #pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
           # CCP
           x = 0
           y = y - 150
@@ -1191,7 +1193,7 @@ class CommitteeSessionsController < ApplicationController
           h = 25
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-          pdf.text_box texto, :at=>[x,y], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>10
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
           if !(tutors.size.eql? counter)
             pdf.start_new_page
           end
@@ -1223,7 +1225,7 @@ class CommitteeSessionsController < ApplicationController
             today            = Date.today
             @session_type    = @c_s.get_type
 
-            pdf.text "\n\n\n\n\n\n\n\n\n<b>Coordinación de Posgrado</b>\n", :inline_format=>true, :align=>:right, :size=>size
+            pdf.text "\n\n\n\n\n\n\n\n\n\n<b>Coordinación de Posgrado</b>\n", :inline_format=>true, :align=>:right, :size=>size
             pdf.text "<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\n", :inline_format=>true, :align=>:right, :size=>size
             pdf.text "Chihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, :size=>size
           end
