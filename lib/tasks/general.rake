@@ -1,6 +1,6 @@
 # coding: utf-8
-namespace :grades do
-  desc "Grades Close at end of term"
+namespace :general do
+  desc "General Variables and Methods"
   ##################################################################################################################################
   #####                                           TASK CHECK                                                                   #####
   ##################################################################################################################################
@@ -10,8 +10,8 @@ namespace :grades do
     SEND_MAIL         = 0
     STATUS_CHANGE     = true
     ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx"
-    CICLO             = "2018-1 Chihuahua"
-    NCICLO            = "2018-2"
+    CICLO             = "2018-2 Chihuahua"
+    NCICLO            = "2019-1"
   task :check => :environment do
     ################################################################################################################################
     ###########################################        NOTAS        ################################################################
@@ -328,7 +328,7 @@ end ## namespace
         return nil
       else ## else advances.size.eql
         a      = advances[0]
-        set_line("Procedemos a analizar el avance de investigacion de #{s.full_name} ... ")
+        set_line("Procedemos a analizar el avance de investigacion ")
 
         t_g = get_tutors_and_grades(a,term)
         tutors = t_g[0]
@@ -411,67 +411,77 @@ end ## namespace
     grades = 0
     sum    = 0
     quorum = false
-
+    text   = ""
 
     if !a.tutor1.nil?
-      set_line("Tutor 1 activo")
+      text = "Tutor 1 "
       tutors = tutors + 1
       if !a.grade1.nil?
          sum = sum + a.grade1
          grades = grades + 1
-         set_line("Tutor 1 ha calificado #{a.grade1}")
+         text += "ha calificado #{a.grade1} "
       else
-         set_line("Tutor 1 no ha calificado")
+         text += "no ha calificado "
       end
     end
+
+    set_line(text)
     
     if !a.tutor2.nil?
-      set_line("Tutor 2 activo")
+      text = "Tutor 2 "
       tutors = tutors + 1
       if !a.grade2.nil?
          sum = sum + a.grade2
          grades = grades + 1
-         set_line("Tutor 2 ha calificado #{a.grade2}")
+         text += "ha calificado #{a.grade2} "
       else
-         set_line("Tutor 2 no ha calificado")
+         text += "no ha calificado"
       end
     end
     
+    set_line(text)
+
     if !a.tutor3.nil?
-      set_line("Tutor 3 activo")
+      text = "Tutor 3 "
       tutors = tutors + 1
       if !a.grade3.nil?
          sum = sum + a.grade3
          grades = grades + 1
-         set_line("Tutor 3 ha calificado #{a.grade3}")
+         text += "ha calificado #{a.grade3} "
       else
-         set_line("Tutor 3 no ha calificado")
+         text += "no ha calificado "
       end
     end
     
+    set_line(text)
+    
     if !a.tutor4.nil?
-      set_line("Tutor 4 activo")
+      text = "Tutor 4 "
       tutors = tutors + 1
       if !a.grade4.nil?
          sum = sum + a.grade4
          grades = grades + 1
-         set_line("Tutor 4 ha calificado #{a.grade4}")
+         text += "ha calificado #{a.grade4} "
       else
-         set_line("Tutor 4 no ha calificado")
+         text += "no ha calificado "
       end
     end
     
+    set_line(text)
+    
     if !a.tutor5.nil?
-      set_line("Tutor 5 activo")
+     text = "Tutor 5 "
       tutors = tutors + 1
       if !a.grade5.nil?
          sum = sum + a.grade5
          grades = grades + 1
-         set_line("Tutor 5 ha calificado #{a.grade5}")
+         text += "ha calificado #{a.grade5} "
       else
-         set_line("Tutor 5 no ha calificado")
+         text += "no ha calificado "
       end
     end
+    
+    set_line(text)
           
     if grades.eql? 1 and tutors.eql? 1
       quorum = true
@@ -490,12 +500,12 @@ end ## namespace
     range = t.start_date
     range = t.grade_start_date..t.grade_end_date
     ## si estamos en fechas de calificaciones nos brincamos la evaluacion a menos que ya hayan calificado todos los tutores
-    if !grades.eql? tutors
-      if range===today
-        set_line("Todavia estamos en calificaciones de evaluaciones no se hace el analisis")
-        return [tutors,grades,0,false]
-      end
-    end
+ #   if !grades.eql? tutors
+ #     if range===today
+ #       set_line("Todavia estamos en calificaciones de evaluaciones no se hace el analisis")
+ #       return [tutors,grades,0,false]
+ #     end
+#    end
 
     return [tutors,grades,sum,quorum]
   end
