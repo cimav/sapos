@@ -1,30 +1,20 @@
 # coding: utf-8
 namespace :general do
   desc "General Variables and Methods"
+  ############################################### GLOBAL VARIABLES #################################################################
   ##################################################################################################################################
-  #####                                           TASK CHECK                                                                   #####
+  filep     = "#{Rails.root}/log/inscripciones.log"  ## log file route
+  @f        = File.open(filep,'a')               
+  @env      = Rails.env
+  SEND_MAIL         = 0                              ## Posible values: Nobody(0), All(1), Only Admin(2), All&Admin(3) 
+  STATUS_CHANGE     = true                           ## False for disable any update
+  ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx" ## Administrator Email
+  CICLO             = "2018-2 Chihuahua"             ## PREVIOUS TERM
+  NCICLO            = "2019-1"                       ## NEW TERM
+  
+  ############################################## TASK CHECK ########################################################################
   ##################################################################################################################################
-    filep     = "#{Rails.root}/log/inscripciones.log"
-    @f        = File.open(filep,'a')
-    @env      = Rails.env
-    SEND_MAIL         = 0
-    STATUS_CHANGE     = true
-    ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx"
-    CICLO             = "2018-2 Chihuahua"
-    NCICLO            = "2019-1"
   task :check => :environment do
-    ################################################################################################################################
-    ###########################################        NOTAS        ################################################################
-    #  CONFIGURACION
-    #  SEND_MAIL possible values: Nobody(0), All (1) , Only_Admin(2), All&Admin(3)
-    #  STATUS_CHANGE possible values: false, true
-    #
-    # Los valores default para produccion deberian ser:
-    #  SEND_MAIL = 1 
-    #  STATUS_CHANGE = true
-    ################################################################################################################################
-    ################################################################################################################################
-
     @yaenciclo= false
     #### Descomentar las 2 lineas siguientes para ver la salida de sql del task
     #Rails.logger.level = Logger::DEBUG
@@ -423,10 +413,9 @@ end ## namespace
       else
          text += "no ha calificado "
       end
+      set_line(text)
     end
 
-    set_line(text)
-    
     if !a.tutor2.nil?
       text = "Tutor 2 "
       tutors = tutors + 1
@@ -437,10 +426,9 @@ end ## namespace
       else
          text += "no ha calificado"
       end
+      set_line(text)
     end
     
-    set_line(text)
-
     if !a.tutor3.nil?
       text = "Tutor 3 "
       tutors = tutors + 1
@@ -451,9 +439,8 @@ end ## namespace
       else
          text += "no ha calificado "
       end
+      set_line(text)
     end
-    
-    set_line(text)
     
     if !a.tutor4.nil?
       text = "Tutor 4 "
@@ -465,9 +452,8 @@ end ## namespace
       else
          text += "no ha calificado "
       end
+      set_line(text)
     end
-    
-    set_line(text)
     
     if !a.tutor5.nil?
      text = "Tutor 5 "
@@ -479,9 +465,8 @@ end ## namespace
       else
          text += "no ha calificado "
       end
+      set_line(text)
     end
-    
-    set_line(text)
           
     if grades.eql? 1 and tutors.eql? 1
       quorum = true
