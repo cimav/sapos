@@ -16,8 +16,8 @@
             %table#data
               %tr
                 %td
-                  - if @internship.full_name.size.to_i > 33
-                    #card_name{:style=>"font-size: 40px;"}= @internship.full_name
+                  - if @internship.full_name.size.to_i > 30
+                    #card_name{:style=>"font-size: 40px;"}= @internship.full_name 
                   - else
                     #card_name= "#{@internship.first_name} #{@internship.last_name}"
               %tr
