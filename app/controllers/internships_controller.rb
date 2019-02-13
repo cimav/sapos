@@ -670,7 +670,7 @@ class InternshipsController < ApplicationController
     @option           = params[:option]
     @internship       = Internship.new
     @institutions     = Institution.order('name')
-    @internship_types = InternshipType.order('name')
+    @internship_types = InternshipType.where("id!=8").order('name')
     @countries        = Country.order('name')
 
     @states           = State.order('name')
