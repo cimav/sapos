@@ -89,7 +89,7 @@ namespace :csh do
 
   def analize(line,vars)
     if vars[:counter]>0
-      if line.include? vars[:email]
+      if line.upcase.include? vars[:email].upcase
       	vars[:row] << line
       	vars[:counter] = vars[:counter] + 1
       elsif line.include? "Quiz title"
