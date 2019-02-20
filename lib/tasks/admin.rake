@@ -138,4 +138,15 @@ namespace :admin do
     puts "Matches: #{counter_b}"
     puts "Ids: #{ids}"
   end## end task get_applicants_id
+
+  task :get_reprobated => :environment do 
+     reprobated = TermCourseStudent.select("distinct students.id as id, count(*) as counter").joins(:term_student=>:student).where("grade < 70 AND students.status in (?)",[1,6]).group("students.id").order("counter desc").having("counter > 1").map {|i| [i.id,i.counter] }
+
+     reprobated.each do |r|
+       s = Student.find(r[0])
+       puts "#{r[1]} #{s.full_name} [#{s.id}] #{Student::STATUS[s.status]}"
+     end
+
+     puts "Total: #{reprobated.size}"
+  end #task get_reprobated
 end ## namespace
