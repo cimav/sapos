@@ -129,7 +129,7 @@ def check_enrollment_courses(ts,alumnos)
       set_line("#{i2} | #{tcs.term_course.course.name} | #{tcs.grade} ")
       if tcs.grade.nil?
         alumnos[:errors] << {:code=>1,:desc=>"Materia sin calificar"}
-      elsif tcs_grade<= 70
+      elsif tcs_grade < 70
         alumnos[:errors] << {:code=>2,:desc=>"Materia reprobada"}
       else
         acumulador = acumulador + tcs_grade.to_i
