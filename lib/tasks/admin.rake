@@ -84,21 +84,23 @@ namespace :admin do
 =begin
   Hace una busqueda por nombres y apellidos de una lista ubicada en un archivo para aspirantes
   El archivo debe estar en la forma: 
-      Apellido|Nombre
-      Apellido|Nombre
-      Apellido|Nombre
+      Nombre|Apellido
+      Nombre|Apellido
          ...  |  ...
          etc  |  etc
+
+  El objetivo es obtener los ids para poner los student_id en nulo porque no los dejan pasar de propedeutico a maestria
 =end
-    archivo = ""
+    archivo = "/home/enrique/sapos/lib/tasks/master_applicants_file"
     counter = 0
     counter_b = 0
+    ids = Array.new
     File.open(archivo,'r') do |s|
       while line = s.gets
         #puts line
         full_name = line.split("|")
-        first_name = full_name[1].chomp
-        last_name  = full_name[0].chomp
+        first_name = full_name[0].chomp
+        last_name  = full_name[1].chomp
 
         first_name = first_name.gsub(/^\s+/,"")
         first_name = first_name.gsub(/\s+$/,"")
@@ -106,19 +108,34 @@ namespace :admin do
         last_name = last_name.gsub(/^\s+/,"")
         last_name = last_name.gsub(/\s+$/,"")
         
-        puts "#{first_name.chomp}|#{last_name.chomp}"
-        
+        puts "Linea #{counter+1}: #{first_name.chomp}|#{last_name.chomp}"
+
+ 
+=begin       
+        student =  Student.where("concat(TRIM(last_name),' ',TRIM(last_name2)) LIKE :a AND first_name LIKE :b",  {:a => "%#{last_name}%", :b => "%#{first_name}%"}).order(:id).last
+
+        if !student.nil?
+          program = Program.find(student.program_id).prefix rescue "N.D."
+          puts "Busqueda Estudiantes #{counter}: #{student.full_name} [#{student.id},#{program},\"#{student.status}\"]"
+          counter_b = counter_b + 1 
+        end
+=end
+
         app =  Applicant.where("concat(TRIM(primary_last_name),' ',TRIM(second_last_name)) LIKE :a AND first_name LIKE :b",  {:a => "%#{last_name}%", :b => "%#{first_name}%"}).order(:id).last
         
         if !app.nil?
-          puts "-- #{app.full_name} [#{app.id}]" 
+          puts "Busqueda #{counter}: #{app.full_name} [#{app.id}][#{app.program_id},\"#{Applicant::STATUS[app.status]}\"]" 
           counter_b = counter_b + 1 
+          ids<< app.id
         end
 
+      
         counter = counter + 1
       end # while line
     end #File
     
-    puts counter.to_s+" "+counter_b.to_s
+    puts "Lineas totales: #{counter}"
+    puts "Matches: #{counter_b}"
+    puts "Ids: #{ids}"
   end## end task get_applicants_id
 end ## namespace

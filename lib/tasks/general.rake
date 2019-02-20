@@ -6,10 +6,10 @@ namespace :general do
   filep     = "#{Rails.root}/log/inscripciones.log"  ## log file route
   @f        = File.open(filep,'a')               
   @env      = Rails.env
-  SEND_MAIL         = 0                              ## Posible values: Nobody(0), All(1), Only Admin(2), All&Admin(3) 
+  SEND_MAIL         = 2                              ## Posible values: Nobody(0), All(1), Only Admin(2), All&Admin(3) 
   STATUS_CHANGE     = true                           ## False for disable any update
   ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx" ## Administrator Email
-  CICLO             = "2018-2 Chihuahua"             ## PREVIOUS TERM
+  CICLO             = "2018-2"                       ## PREVIOUS TERM
   NCICLO            = "2019-1"                       ## NEW TERM
   
   ############################################## TASK CHECK ########################################################################
