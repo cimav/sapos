@@ -41,13 +41,18 @@ def set_enrollment(terms)
   alumnos[:errors]     = Array.new
   alumnos[:avg]        = 0
 
+  s_nciclo = TermStudent.select("students.id as id").joins(:student).joins(:term).where(:students=>{:status=>1}).where("terms.name like '%#{NCICLO}%'").map {|ts| ts.id}
+
   terms.each do |t|
      set_line("====== PROGRAMA ==========")
      set_line("====== #{t.program.name}")
      set_line("====== #{t.name}")
+     
+     ## estudiantes inscritos en el nuevo ciclo, metemos los ids en un array
+     s_nciclo = TermStudent.select("students.id as id").joins(:student).joins(:term).joins(:term=>:program).where(:students=>{:status=>1}).where("terms.name like '%2019-1%'").where("programs.level in (?)",[1,2]).map {|i| i.id}
 
-     ## Alumnos activos en ese ciclo
-     tss = TermStudent.joins(:student).where(:term_id=>t.id,:students=>{:status=>1})
+     ## Alumnos activos en ese ciclo y que no esten activos en el otro
+     tss = TermStudent.joins(:student).where(:term_id=>t.id,:students=>{:status=>1}).where("students.id not in (?)",s_nciclo)
      ## Vamos revisando alumno por alumno (i1)
      tss.each_with_index do |ts,i1|
        @full_name = ts.student.full_name
