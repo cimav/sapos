@@ -10,22 +10,23 @@ class User < ActiveRecord::Base
 
   before_save :delete_permissions
 
-  ADMINISTRATOR = 1
-  OPERATOR      = 2
-  STAFF         = 3
-  STUDENT       = 4
-  MANAGER       = 5
+  ADMINISTRATOR   = 1
+  OPERATOR        = 2
+  STAFF           = 3
+  STUDENT         = 4
+  MANAGER         = 5
+  OPERATOR_READER = 6
 
   STATUS_SYSTEM   = 0
   STATUS_ACTIVE   = 1
   STATUS_INACTIVE = 2
 
-  ACCESS_TYPE = {STUDENT       => 'Estudiante',
-                 STAFF         => 'Docente',
-                 OPERATOR      => 'Operador',
-                 ADMINISTRATOR => 'Administrador',
-                 MANAGER       => 'Jefe de Posgrado'}
-
+  ACCESS_TYPE = {STUDENT         => 'Estudiante',
+                 STAFF           => 'Docente',
+                 OPERATOR        => 'Operador',
+                 ADMINISTRATOR   => 'Administrador',
+                 MANAGER         => 'Jefe de Posgrado',
+                 OPERATOR_READER => 'Operador/Lectura'}
 
   STATUS = {STATUS_SYSTEM   => 'Sistema',
             STATUS_INACTIVE => 'Inactivo',

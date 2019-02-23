@@ -12,7 +12,7 @@ class Ability
     end 
 
     if user.access == User::ADMINISTRATOR
-        can :manage, [Student ,Staff, Program, Internship, Institution, Classroom, Laboratory, Department, Graduate, Scholarship]
+        can :manage, [Student ,Staff, Program, Internship, Institution, Classroom, Laboratory, Department, Graduate, Scholarship, CommitteeSession, CommitteeAgreement, Seminar]
         can :manage, User
         cannot [:create,:destroy,:update], User
         cannot [:create,:destroy], Student
@@ -21,10 +21,13 @@ class Ability
       if user.access == User::OPERATOR
         can :manage, Internship
         cannot [:create], Internship
-      end
-
-      if user.access == User::STUDENT
+      elsif user.access == User::STUDENT
         can :manage, Internship
+      elsif user.access == User::OPERATOR_READER
+        can :manage, Internship
+        cannot [:create], Internship
+
+        can :read, [Student ,Staff, Program, Internship, Institution, Classroom, Laboratory, Department, Graduate, Scholarship,User, CommitteeSession, CommitteeAgreement, Seminar]
       end
     end
   end
