@@ -1,22 +1,31 @@
 = form_for @c_session, :remote => true, :html => { :'data-type' => 'html', :id => 'item-edit-form' } do |f|
-  - if @c_session.status.eql? 3
+
+  - if @c_session.status.eql? 3 ## bloqueamos todo
     - readonly     = true
     - display_type = "none"
     - display_memo = "block"
+
   - else
     - readonly     = false 
     - display_type = "inline-block"
     - display_memo = "none"
+
+    - if cannot? :update, CommitteeSession # bloqueamos todo si no tiene permisos de actualizar datos
+      - readonly     = true
+      - display_type = "none"
+      - display_memo = "none" ## quitamos minuta y firmantes
+
  
   = hidden_field :c_session, :id
   .resource-header
     .resource-picture
     .resource-title
-      %h1= "Sesión"
-      - if @c_session.status.eql? 3
+      %h1
+        = "Sesión"
+      - if @c_session.status.eql? 3 and can? :create, CommitteeSession
         .comment{:id=>"my_unlock_#{@c_session.id}",:class=>"unlocker",:style=>"cursor: pointer;"}
+          %i.material-icons.md-18="lock"
           = "Desbloquear"
-          = image_tag "/images/unlock.png", :id=> "img_unblock",:style=>'display: inline-block;',:width=>10
     -if !readonly
       .resource-save
         %button{'type' => 'submit'}= 'Finalizar'

@@ -34,14 +34,19 @@
   - ca_type = ca.committee_agreement_type_id.to_i
   - my_id= ca.id
 
-  - if @committee_session.status.eql? 3
+  - if @committee_session.status.eql? 3 #estatus cerrada, bloqueamos
     - readonly       = true
     - display_delete = "none"
     - display_button = "inline-block"
   - else
-    - readonly       = false
-    - display_delete = "inline-block"
-    - display_button = "none"
+    - if cannot? :update, CommitteeSession # bloqueamos todo si no tiene permisos de actualizar datos
+      - readonly       = true
+      - display_delete = "none"
+      - display_button = "none" ## quitamos botones de imprimir respuesta
+    - else  ## dejamos pasar
+      - readonly       = false
+      - display_delete = "inline-block"
+      - display_button = "none"
 
   - my_id_text = "#{(@page.to_i*10)+index-9} [#{my_id}]"
   - if ca_type.eql? 1
