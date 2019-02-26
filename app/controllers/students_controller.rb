@@ -589,9 +589,11 @@ class StudentsController < ApplicationController
   def upload_image
     flash = {}
     @student = Student.find(params[:id])
-    if @student.update_attributes(params[:student])
+    if @student.update_attribute(:image, params[:student][:image])
       flash[:notice] = "Imagen actualizada."
     else
+      logger.debug "######################## AQUI"
+      @student.errors.each{|attr,message| logger.debug "######### #{attr} #{message}"}
       flash[:error] = "Error al actualizar la imagen."
     end
 
