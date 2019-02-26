@@ -5,8 +5,9 @@
   - items = items.sort
   - items += [['Crear Plan de Estudios',0]]
   = select "studies-plans-combo", "id", items, :prompt => 'Selecciona un plan de estudios'
-  %a#sp-edit-text{:style=>'display:none;cursor:pointer'}
-    = " Editar Plan"
+  - if can? :update, Program
+    %a#sp-edit-text{:style=>'display:none;cursor:pointer'}
+      = " Editar Plan"
 
 #planes-sub-area
   

@@ -1,6 +1,6 @@
 # coding: utf-8
 class ProgramsController < ApplicationController
-  load_and_authorize_resource
+  #load_and_authorize_resource
   before_filter :auth_required
   respond_to :html, :xml, :json, :pdf
 

@@ -85,4 +85,5 @@
         - coreq << Course.find(course.coreq3).code rescue 'Error'
       %td= coreq.join(',')
 
-= link_to 'Agregar curso', '#', :id=>'a-new-course'
+- if can? :update, Program
+  = link_to 'Agregar curso', '#', :id=>'a-new-course'

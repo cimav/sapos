@@ -74,4 +74,5 @@
       = fields.text_area :notes
 
     #dialog-submit-button-area
-      = fields.submit "Actualizar curso"
+      - if can? :update, Program
+        = fields.submit "Actualizar curso"
