@@ -1324,7 +1324,7 @@ class StaffsController < ApplicationController
 
       pdf.move_down 20
       pdf.font_size 9
-      pdf.text "<b>Promedio global de la materia: #{(evaluation_results.inject(0.0) {|sum, val|sum + val } / evaluation_results.size).round(1)} de 5</b>", inline_format:true
+      pdf.text "<b>Promedio global de la materia: #{(evaluation_results.inject(0.0) {|sum, val|sum + val } / evaluation_results.size).round(1)} de 4</b>", inline_format:true
       pdf.text "<b>Alumnos encuestados: #{staff_evaluations.size}</b>", inline_format:true
       pdf.text "<b>Fecha: </b>#{I18n.l(Date.today, format: '%A, %d de %B del %Y').capitalize}", inline_format:true
       pdf.move_down 20
