@@ -450,7 +450,7 @@ class CommitteeSessionsController < ApplicationController
           h = 80
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "\n\n\n\nAtentamente,\n\n\n<b>#{@signer}</b>"
-          pdf.text texto, :at=>[x,y], :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
+          pdf.text texto, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true
           pdf.image @sign,:at=>[x+@x_sign,y+@y_sign],:width=>@w_sign
         elsif @c_a.auth.to_i.eql? 2 ####### No
           ############ CONSTANCIA DE BAJA ############
@@ -806,7 +806,8 @@ class CommitteeSessionsController < ApplicationController
         y = 505
         w = 300
         h = 15
-        pdf.text "</b>C. #{staff.full_name}</b>", :at=>[x,y], :align=>:left,:inline_format=>true
+
+        pdf.text "</b>C. #{staff.full_name}</b>", :align=>:left,:inline_format=>true
         y = y - 15
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
