@@ -21,12 +21,12 @@
     %th Miercoles
     %th Jueves
     %th Viernes
-    %th Sabado
-    %th Domingo
+    -#%th Sabado
+    -#%th Domingo
   - (@min_hour..@max_hour).each do |i|
     %tr
       %td.hora= "#{i}:00"
-      - (1..7).each do |j|
+      - (1..5).each do |j|
         %td.dia
           - @schedule[i][j].each do |k|
             .session_block(class="session_style_#{k['n']}")
