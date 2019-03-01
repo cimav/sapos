@@ -363,11 +363,10 @@ class InternshipsController < ApplicationController
   def applicant_files
     @req_docs = InternshipFile::REQUESTED_DOCUMENTS.clone
    
- 
     @internship = Internship.find(params[:id])
    
-    if @internship.internship_type_id=8 #Verano CIMAV
-      @req_docs.keep_if {|a| a.in? [4,7,8,9,10]}
+    if @internship.internship_type_id.eql? 8 #Verano CIMAV
+      @req_docs.keep_if {|a| a.in? [4,7,8,9,10]}  
     else
       @req_docs.keep_if {|a| a.in? [2,3,4,5,6]}
     end
