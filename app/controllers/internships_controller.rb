@@ -674,12 +674,13 @@ class InternshipsController < ApplicationController
   def applicant_form
     if request.url.include? "verano"
       @summer= true
+      @page_title = 'Solicitud de Verano CIMAV'
     else
       @summer= false
+      @page_title = 'Solicitud de prácticas profesionales'
     end
     
     @include_js = "internships.js"
-    @page_title = 'Solicitud de prácticas profesionales'
     @option           = params[:option]
     @internship       = Internship.new
     @institutions     = Institution.order('name')

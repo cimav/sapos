@@ -9,10 +9,9 @@
   %a.navbar-brand{:href => "#"}
     %img.d-inline-block.align-top{:alt => "", :height => "30", :src => "https://cimav.edu.mx/wp-content/themes/cimav2017/img/logo-top.png"}
 
-
 .container#applicantFormContent{style:'margin-bottom:2em;'}
   .row
-    %h1.text-secondary{style:'font-size:1.9em; padding:1em;'} Solicitud de prácticas profesionales
+    %h1.text-secondary{style:'font-size:1.9em; padding:1em;'}= @page_title
   .card
     .card-body
       = form_for @internship, :url=>{action: "applicant_create"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-internship-applicant-form' } do |f|
