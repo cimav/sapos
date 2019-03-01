@@ -446,7 +446,10 @@ $('#item-new-internship-applicant-form')
         if(res['uniq']!=0){
           if(res['internship_type_id']==8)
           {
-            html = "<h3>Se ha dado de alta su solicitud y se ha enviado un mensaje con instrucciones al correo que ha registrado.</h3>"
+            var uri = "/internados/aspirantes/verano/"+res['token']+"/"+res['uniq'];
+            
+            window.location.replace(uri);
+            return false;
           }
           else
           {

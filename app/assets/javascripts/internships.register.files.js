@@ -19,6 +19,50 @@ $(document).ready(function() {
     $('.fields_requested').hide();
     $(this).hide();
   });
+ 
+ $("#finalize_button").live("click",function(){
+   var i_id      = $('#internship_id').val();
+   var token     = $('#itoken').val();
+   var data      = ""
+   var url       = "/internados/aspirantes/finalizar/verano/"+token+"/"+i_id;
+   
+   $.ajax({
+      type: 'POST',
+      url: url,
+      data: data,
+      beforeSend: function( xhr ) {
+        $('#iapplicant_button').hide();
+        $('#img_load').show();
+      },
+     success: function(data){
+        //var jq  =  jQuery.parseJSON(data);
+        //alert(data);
+        //return false;
+        //alert("Mensaje Enviado");
+        /*alert("success")*/      
+        $('.terms').show();
+        $('.header').hide();
+        $('.fields_requested').hide();
+        $(this).hide();
+      },
+      error: function(xhr, textStatus, error){
+         var text = xhr.responseText;
+         try{
+           var jq   = jQuery.parseJSON(xhr.responseText);
+           alert(jq.flash.errors);
+         }
+         catch(e){
+           alert("Error desconocido: "+e.message)
+         }
+      },
+      complete: function(){
+        $('#iapplicant_button').show();
+        $('#img_load').hide();
+      }
+    });
+   
+
+ });
 
   var files_req_missing  =  $(".fields_requested .field_requested_document[required=1] .img-ok:hidden")
   if(files_req_missing.length==0){

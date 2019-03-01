@@ -82,25 +82,31 @@
           .form-group.col-12#field_internship_institution_id
             = f.label :institution_id, 'Institución'
             = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona tu institucion de procedencia"} ,class:'form-control', required:true
-            = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
+            .text-institution-id{:style=>"visibility:none"}
+              = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
 
         .row
-          .form-group.col-12.col-sm-12.col-md-6#field_internship_internship_type_id
-            = f.label :internship_type_id, 'Tipo'
-            = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo de servicio"}, class:'form-control', required:true
-            = text_field_tag :text_internship_type_id, '', :size=>25, :placeholder=>"¿Cual?"
+          - if @summer
+            = f.hidden_field :internship_type_id, :value=>8 ## verano CIMAV
+          -else
+            .form-group.col-12.col-sm-12.col-md-6#field_internship_internship_type_id
+              = f.label :internship_type_id, 'Tipo'
+              = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo de servicio"}, class:'form-control', required:true
+              = text_field_tag :text_internship_type_id, '', :size=>25, :placeholder=>"¿Cual?"
 
-
-          - if @option.eql? "monterrey"
-            - f_class = "v-hidden"
+          - if @summer
+            = f.hidden_field :area_id, :value=>3 ## Posgrado
           - else
-            - f_class = "field"
-          .form-group.col-12.col-sm-12.col-md-6#field_internship_area_id{:class=>f_class}
-            = f.label :area_id, 'Area'
             - if @option.eql? "monterrey"
-              = f.collection_select :area_id, @areas, :id, :name,{}, class:'form-control', required:true
+              - f_class = "v-hidden"
             - else
-              = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"},class:'form-control', required:true
+              - f_class = "field"
+            .form-group.col-12.col-sm-12.col-md-6#field_internship_area_id{:class=>f_class}
+              = f.label :area_id, 'Area'
+              - if @option.eql? "monterrey"
+                = f.collection_select :area_id, @areas, :id, :name,{}, class:'form-control', required:true
+              - else
+                = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"},class:'form-control', required:true
 
         .row
           .form-group.col-12#field_internship_submit
@@ -178,15 +184,15 @@
 
     $("#internship_institution_id").change(function(){
         if($(this).val()==0){
-          $("#text_institution_id").show();
+          $(".text-institution-id").show();
         }else{
-          $("#text_institution_id").hide();
+          $(".text-institution-id").hide();
         }
     });
 
     $("#internship_state_id").empty().append('<option value="'+states[0][0]+'">'+states[0][1]+'</option>');
     add_options($("#internship_institution_id"),[[0,"Otra institucion"]]);
-    add_options($("#internship_internship_type_id"),[[0,"Otro tipo de servicio"]]);
+    //add_options($("#internship_internship_type_id"),[[0,"Otro tipo de servicio"]]);
     $("#text_internship_type_id").hide();
     $("#text_institution_id").hide();
   });

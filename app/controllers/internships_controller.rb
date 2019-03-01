@@ -7,7 +7,7 @@ require 'json'
 class InternshipsController < ApplicationController
   load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify]
+  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify,:summer]
   before_filter :auth_indigest, :only=>[:files_register,:upload_file_register,:finalize]
 
   def index
@@ -100,7 +100,7 @@ class InternshipsController < ApplicationController
     end
 
     if !s.empty?
-      @internships = @internships.where("status IN (#{s.join(',')})")
+      @internships = @internships.where("status IN (#{s.join(',')}) AND applicant_status<>99")
     end
 
     respond_with do |format|
@@ -299,7 +299,7 @@ class InternshipsController < ApplicationController
     @include_js = "internships.register.files.js"
     @register   = true
 
-    @req_docs.delete(1)
+    @req_docs.keep_if {|a| a.in? [2,3,4,5,6]}
 
     @internship       = Internship.find(session[:internship_user])
     @internship_files = InternshipFile.where(:internship_id=>session[:internship_user])
@@ -362,10 +362,17 @@ class InternshipsController < ApplicationController
 
   def applicant_files
     @req_docs = InternshipFile::REQUESTED_DOCUMENTS.clone
-    @req_docs.delete(1)
+   
  
     @internship = Internship.find(params[:id])
-    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5,6])
+   
+    if @internship.internship_type_id=8 #Verano CIMAV
+      @req_docs.keep_if {|a| a.in? [4,7,8,9,10]}
+    else
+      @req_docs.keep_if {|a| a.in? [2,3,4,5,6]}
+    end
+
+    @internship_files = InternshipFile.where(:internship_id=>params[:id],:file_type=>[2,3,4,5,6,7,8,9,10])
     render :layout=> "standalone"
   rescue ActiveRecord::RecordNotFound
     @error = 1
@@ -665,12 +672,20 @@ class InternshipsController < ApplicationController
   end
 
   def applicant_form
+    if request.url.include? "verano"
+      @summer= true
+    else
+      @summer= false
+    end
+    
     @include_js = "internships.js"
     @page_title = 'Solicitud de prácticas profesionales'
     @option           = params[:option]
     @internship       = Internship.new
     @institutions     = Institution.order('name')
-    @internship_types = InternshipType.where("id!=8").order('name')
+    #@internship_types = InternshipType.where("id!=8").order('name')
+    @internship_types = InternshipType.order('name')
+
     @countries        = Country.order('name')
 
     @states           = State.order('name')
@@ -683,6 +698,7 @@ class InternshipsController < ApplicationController
     render :layout => 'bootstrap_layout'
   end
 
+###########################################################################
   def applicant_create
     flash = {}
     @internship = Internship.new(params[:internship])
@@ -709,10 +725,28 @@ class InternshipsController < ApplicationController
     if @internship.save
       flash[:notice] = "Servicio creado para applicant."
 
-      if @internship.internship_type_id.eql? 8
+      if @internship.internship_type_id.eql? 8  ## para Verano CIMAV
         ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud de Verano CIMAV por internet'}"}).save
-        send_mail(@internship,@uri,7,nil)
-        send_mail(@internship,@uri,8,nil)
+       
+        @internship.applicant_status= 99; ## estatus de pendiente, faltan los documentos
+        @internship.save
+          
+        token = Token.new
+        token.attachable_id     = @internship.id
+        token.attachable_type   = @internship.class.to_s
+        token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
+        token.status            = 1
+        token.expires           = Date.today + 1
+        token.save
+
+        json = {}
+        json[:flash] = flash
+        json[:uniq]  = @internship.id
+        json[:internship_type_id] = @internship.internship_type_id
+        json[:uri]   = @uri
+        json[:token] = token.token
+        render :json => json
+        return
       else
         ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud por internet'}"}).save
         @uri = generate_applicant_document(@internship)
@@ -753,6 +787,63 @@ class InternshipsController < ApplicationController
     end
   end#applicant_create
 
+###########################################################################
+  def summer
+    @t    = t(:internships)
+
+    @req_docs   = InternshipFile::REQUESTED_DOCUMENTS.clone
+    @include_js = "internships.register.files.js"
+      
+    @internship       = Internship.find(params[:id])
+    where = {:attachable_id=>@internship.id,:attachable_type=>@internship.class,:token=>params[:token],:status=>1}
+    token = Token.where(where).where("expires>=?",Date.today)
+   
+    if token.size<=0
+      render file: "#{Rails.root}/public/404.html", layout: false, status: 404
+      return
+    end
+     
+    @internship_files = InternshipFile.where(:internship_id=>params[:id])
+      
+    @req_docs.keep_if {|a| a.in? [4,7,8,9,10]}
+
+    render :layout => 'bootstrap_layout'
+  end
+
+###########################################################################
+  def finalize_summer
+      @internship = Internship.find(params[:id])
+      @internship.applicant_status= 3; ## autorizado
+      @internship.save
+   
+      @token = Token.where(:token=>params[:token])
+   
+      if @token.size>0
+        @token[0].status = 2
+        @token[0].save
+       
+        send_mail(@internship,'',7,'') ## correo al solicitante
+        send_mail(@internship,'',8,'') ## correo al contacto posgrado
+        
+        
+        json = {}
+        json[:flash] = flash
+        json[:uniq]  = @internship.id
+        json[:internship_type_id] = @internship.internship_type_id
+        json[:uri]   = @uri
+        render :json => json
+      else
+        json = {}
+        json[:flash] = flash
+        json[:errors] = @internship.errors.full_messages
+        logger.info "################## #{@internship.errors.full_messages}"
+        render :json => json, :status => :unprocessable_entity
+      end 
+      
+  end
+
+###########################################################################
+
   def applicant_file
     @internship = Internship.find(params[:id])
     @token      = params[:token]
@@ -769,7 +860,7 @@ class InternshipsController < ApplicationController
     f = params[:internship_file]['file']
 
     @internship_file = InternshipFile.new
-    @internship_file.internship_id = session[:internship_user].to_i
+    @internship_file.internship_id = params[:internship_id] || session[:internship_user].to_i
     @internship_file.file_type = params[:file_type]
     @internship_file.file = f
     @internship_file.description = f.original_filename

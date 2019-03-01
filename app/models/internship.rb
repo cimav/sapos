@@ -48,12 +48,15 @@ class Internship < ActiveRecord::Base
   REJECTED   = 2
   AUTHORIZED = 3
   INTERVIEW  = 4
+  PENDING    = 99
 
-  APPLICANT_STATUS = { ACTIVE    => 'Activo',
+  APPLICANT_STATUS = { 
+                       ACTIVE    => 'Activo',
                        REJECTED  => 'Rechazado',
                        ACCEPTED  => 'Aceptado',
                        AUTHORIZED => 'Autorizado',
-                       INTERVIEW  => 'Entrevista'
+                       INTERVIEW  => 'Entrevista',
+                       PENDING    => 'Pendiente'      
                       }
 
   def full_name

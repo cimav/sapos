@@ -1,0 +1,223 @@
+:css
+  .error-message{
+    color: red;
+  }
+
+:javascript
+  var my_id;
+  function display_status(type,my_id){
+    if(type=="ok"){
+      $("#img_ok_"+my_id).css("display","inline-block");
+      $("#img_load_"+my_id).css("display","none");
+      $("#img_fail_"+my_id).css("display","none");
+    }
+    else if(type=="load"){
+      $(".reqdoc_button").prop("disabled","disabled");
+      $(".reqdoc_button_delete").prop("disabled","disabled");
+      $("#img_ok_"+my_id).css("display","none");
+      $("#img_load_"+my_id).css("display","inline-block");
+      $("#img_fail_"+my_id).css("display","none");
+      $("#img_load_"+my_id).css("display","inline-block");
+
+    }
+    else if(type=="fail"){
+      $("#img_ok_"+my_id).css("display","none");
+      $("#img_load_"+my_id).css("display","none");
+      $("#img_fail_"+my_id).css("display","inline-block");
+    }
+  }
+
+  $(document).ready(function() {
+    $(".reqdoc_button_download").click(function(){
+      my_id       = $(this).attr("my_id");
+      var my_file_id  = $(this).attr("my_file_id");
+      $("#files_iframe2").attr("src","/internados/aspirantes/file/"+my_file_id);
+    });
+
+    $(".reqdoc_button_delete").click(function(){
+      my_id       = $(this).attr("my_id");
+      var my_file_id  = $(this).attr("my_file_id");
+      display_status("load",my_id);
+      $("#files_iframe2").attr("src","/internados/aspirantes/destroy_file/"+my_file_id);
+    });
+
+    $(".reqdoc_button").click(function(){
+      my_id   = $(this).attr("my_id");
+      var form_id = "#internship_file_file_"+my_id;
+      var valor = $(form_id).val();
+
+      p      = $(this).parent();
+      f_type = p.find("#file_type").val();
+
+      if(f_type==5)
+      {
+        var myRe = /\dfsdfsadsda$/i;
+      }
+      else
+      {
+        var myRe = /(\.pdf$)|(\.jpg)|(\.jpeg)|(\.png)/i;
+      }
+
+      if(myRe.test(valor))
+      {
+        display_status("load",my_id);
+        var form_id = "#reqdoc-form-"+my_id;
+        $(form_id).submit();
+      }else{
+        if(f_type==5){
+          var myRe = /\.pdf$/i;
+          if(myRe.test(valor)){
+            alert("Debe ser forzosamente imagen");
+          }
+          else
+          {
+            display_status("load",my_id);
+            var form_id = "#reqdoc-form-"+my_id;
+            $(form_id).submit();
+          }
+        }
+        else
+        {
+          alert("Solo puedes subir archivos pdf, jpeg, jpg, png");
+        }
+      }
+
+    });
+
+    $("#files_iframe2").load(function(){
+      var sts = $('#files_iframe2').contents().find("status").html();
+      var ref = $('#files_iframe2').contents().find("reference").html();
+
+      if(sts=="0")
+      {
+        errors  = $('#files_iframe2').contents().find("errors").html();
+        alert(errors);
+
+        if(ref=="upload"){
+          display_status("fail",my_id);
+        }
+        else if(ref=='destroy')
+        {
+          display_status("ok",my_id);
+        }
+      }
+      else if(sts=="1")
+      {
+        if(ref=="upload")
+        {
+          var new_id = $('#files_iframe2').contents().find("id").html();
+          display_status("ok",my_id);
+          $("#internship_file_file_"+my_id).css("display","none");
+          $("#reqdoc_button_"+my_id).css("display","none");
+          $("#reqdoc_button_download_"+my_id).css("display","inline-block");
+          $("#reqdoc_button_delete_"+my_id).css("display","inline-block");
+
+          $("#reqdoc_button_"+my_id).attr("my_file_id",new_id);
+          $("#reqdoc_button_download_"+my_id).attr("my_file_id",new_id);
+          $("#reqdoc_button_delete_"+my_id).attr("my_file_id",new_id);
+        }
+        else if(ref=="destroy")
+        {
+          display_status("fail",my_id);
+          $("#internship_file_file_"+my_id).css("display","inline-block");
+          $("#reqdoc_button_"+my_id).css("display","inline-block");
+          $("#reqdoc_button_download_"+my_id).css("display","none");
+          $("#reqdoc_button_delete_"+my_id).css("display","none");
+        }
+
+
+        $(".reqdoc_button").removeAttr("disabled");
+        $(".reqdoc_button_delete").removeAttr("disabled");
+
+       var files_req_missing  =  $(".fields_requested .field_requested_document[required=1] .img-ok:hidden")
+    
+       if(files_req_missing.length==0){
+         $("#finalize_button").show();
+       }else{
+         $("#finalize_button").hide();
+       }
+
+      }
+    });
+  });
+
+
+%nav.navbar.navbar-dark.bg-white.shadow-lg.p-3.mb-5.rounded.sticky-top
+  %a.navbar-brand{:href => "#"}
+    %img.d-inline-block.align-top{:alt => "", :height => "30", :src => "https://cimav.edu.mx/wp-content/themes/cimav2017/img/logo-top.png"}
+    
+    
+.container#applicantFormContent{style:'margin-bottom:2em;'}
+  .row
+    %h1.text-secondary{style:'font-size:1.9em; padding:1em;'} Solicitud de Verano CIMAV
+  .card
+    .card-body.terms{:style=>"display:none;"}
+      = "El registro se ha realizado correctamente, espere instrucciones por correo."
+  .card
+    .fields_requested.card-body        
+      - @req_docs.each do |key, value|
+        - if  @internship_files.where(:file_type=>key).size > 0
+          - @internship_files.where(:file_type=>key).each do |af|
+            - required= 1
+
+            .field_requested_document.card-group{:required=>required}
+              - my_id = key
+              = form_for(InternshipFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
+                = hidden_field_tag :internship_id, @internship.id
+                = hidden_field_tag :file_type, my_id
+                .form-group.card.border-light
+                  .card-body
+                    %b.card-title
+                      = label_tag value
+                      = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center', :style=>'display: none;', :class=>"class-img-top"
+                      = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;',:class=>"class-img-top"
+                      = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center',:class=>"img-ok"
+
+                    .card-text
+                      = f.file_field :file,:id=>"internship_file_file_#{my_id}",:style=>"display:none;"
+                      = button_tag @t[:upload_file], :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}",:style=>"display:none;"
+                      - if !@register
+                        = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}",:my_file_id=> af.id
+                        = button_tag @t[:delete_file], :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}",:my_file_id=> af.id
+
+        - else
+          - required= 1
+          .field_requested_document.card-group{:required=>required}
+            - my_id = key
+            = form_for(InternshipFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
+              = hidden_field_tag :internship_id, @internship.id
+              = hidden_field_tag :file_type, my_id
+              = hidden_field_tag :my_file_id, 0
+              .form-group.card.border-light
+                .card-body
+                  %b.card-title
+                    = label_tag value
+                    = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
+                    = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
+                    = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none',:class=>"img-ok"
+                  .cart-text
+                    - if !(my_id.eql? 6)
+                      = f.file_field :file,:id=>"internship_file_file_#{my_id}";
+                      = button_tag @t[:upload_file], :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
+                    - if !@register  
+                      = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
+                      = button_tag @t[:delete_file], :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'display:none;', :my_file_id=> 0
+
+      .card.border-light
+        .card-title.text-center
+          = hidden_field_tag "itoken",params[:token]
+          = button_tag "Finalizar Registro", :type=>'button',:id=>"finalize_button"
+                    
+  %iframe{"name" => "files_iframe2", "id" => "files_iframe2" ,:style=> "display: none;"}
+  
+    
+:javascript
+  $(document).ready(function() {
+    var files_req_missing  =  $(".fields_requested .field_requested_document[required=1] .img-ok:hidden")
+    
+    if(files_req_missing.length==0){
+      $("#finalize_button").show();
+    }else{
+      $("#finalize_button").hide();
+    }
+  });
