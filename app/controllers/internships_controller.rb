@@ -5,10 +5,10 @@ require 'open-uri'
 require 'json'
 
 class InternshipsController < ApplicationController
-  load_and_authorize_resource
+  #load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:files_register,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify,:summer,:finalize_summer]
-  before_filter :auth_indigest, :only=>[:finalize]
+  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify,:summer,:finalize_summer,:files_register,:finalize]
+  before_filter :auth_indigest, :only=>[:finalize,:files_register]
 
   def index
     @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
@@ -32,57 +32,53 @@ class InternshipsController < ApplicationController
   end
 
   def live_search
-    @aareas           = get_areas(current_user)
-    if current_user.access == User::OPERATOR
-      campuses = current_user.campus_id
-
-      if !params[:status_order].blank?
-        if campuses.eql? 0
-          @internships = Internship.order("created_at desc").where(:area_id=>@aareas)
-        else
-          @internships = Internship.order("created_at desc").where(:campus_id => campuses,:area_id=>@aareas)
-        end
-      else 
-        if campuses.eql? 0
-          @internships = Internship.order("first_name").where(:area_id=>@aareas)
-        else
-          @internships = Internship.order("first_name").where(:campus_id => campuses,:area_id=>@aareas)
-        end
-      end
-    else
-      if !params[:status_order].blank?
-        @internships = Internship.order("created_at desc")
-      else
-        @internships = Internship.order("first_name")
-      end
-    end
-    
+   limit       = 10000
+   @aareas     = get_areas(current_user)
+   
+   campuses = current_user.campus_id
+   
+   extra_where = "applicant_status<>99"
+   order       = "first_name" ## valor default de ordenacion, no debe estar nulo o vacio
+   where_hash  = Hash.new
+   
+   if @aareas.size>0
+    where_hash[:area_id]= @aareas
+   end
+   
+   if campuses.size>0
+     where_hash[:campus_id=> campuses]
+   end #campuses
+   
+   if !params[:status_order].blank?
+     order = "created_at desc"
+   end
+   
+   
     if params[:area_s] != '0' then
-      @internships = @internships.where(:area_id => params[:area_s])
+      where_hash[:area_id] = params[:area_s]
     end
 
     if params[:institution] != '0' then
-      @internships = @internships.where(:institution_id => params[:institution])
+      where_hash[:institution_id] = params[:institution]
     end
 
     if params[:staff] != '0' then
-      @internships = @internships.where(:staff_id => params[:staff])
+      where_hash[:staff_id] = params[:staff]
     end
 
     if params[:internship_type] != '0' then
-      @internships = @internships.where(:internship_type_id => params[:internship_type])
+      where_hash[:internship_type_id] = params[:internship_type]
     end
 
     if params[:campus] != '0' then
-      @internships = @internships.where(:campus_id => params[:campus])
+      where_hash[:campus_id] = params[:campus]
     end
-
+     
     if !params[:q].blank?
-      @internships = @internships.where("(CONCAT(first_name,' ',last_name) LIKE :n OR id LIKE :n)", {:n => "%#{params[:q]}%"})
+      extra_where << " AND (CONCAT(first_name,' ',last_name) LIKE '%#{params[:q]}%' OR id LIKE '%#{params[:q]}%')"
     end
-
+   
     s = []
-
     if !params[:status_activos].blank?
       s << params[:status_activos].to_i
     end
@@ -97,20 +93,30 @@ class InternshipsController < ApplicationController
 
     if !params[:status_solicitudes].blank?
       s << params[:status_solicitudes].to_i
+      extra_where << " AND created_at>=DATE_SUB(NOW(),INTERVAL 1 YEAR)"
     end
-
-    if !s.empty?
-      @internships = @internships.where("status IN (#{s.join(',')}) AND applicant_status<>99")
-    end
-
-    respond_with do |format|
-      format.html do
-        render :layout => false
-      end
-      format.xls do
+     
+   if !s.empty?
+      where_hash[:status]= s
+   end
+     
+   if !extra_where.empty? && !where_hash.empty?
+     @internships = Internship.where(where_hash).where(extra_where).order(order).limit(limit)
+   elsif !extra_where.empty? && where_hash.empty?
+     @internships = Internship.where(extra_where).order(order).limit(limit)
+   elsif extra_where.empty? && !where_hash.empty?
+     @internships = Internship.where(where_hash).order(order).limit(limit)
+   else
+     @internships = Internship.order(order).limit(limit)
+   end  
+   
+   
+   respond_with do |format|
+     format.html do
+       render :layout => false
+     end #format.html
+     format.xls do
         rows = Array.new
-
-        @internships.order("created_at")
 
         @internships.collect do |s|
           rows << {'Nombre' => s.first_name,
@@ -130,10 +136,11 @@ class InternshipsController < ApplicationController
         end
         column_order = ["Nombre", "Apellidos", "Sexo","Email", "Fecha de Nacimiento", "Tipo", "Institucion", "Inicio", "Fin", "Asesor", "Tesis", "Actividades","Fecha registro"]
         to_excel(rows, column_order, "ServiciosCIMAV", "ServiciosCIMAV")
-      end
-    end
+      end #format.xls
+   end #respond_with
 
-  end
+  end#live_search
+ 
 
   def show
     @internship   = Internship.find(params[:id])

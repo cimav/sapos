@@ -79,9 +79,17 @@ class ApplicationController < ActionController::Base
   end
 
   helper_method :current_user
+  helper_method :get_month_name
 
   def get_month_name(number)
     months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
+    name = months[number - 1]
+    return name
+  end
+ 
+  helper_method :get_month_name_abbreviated
+  def get_month_name_abbreviated(number)
+    months = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]
     name = months[number - 1]
     return name
   end
