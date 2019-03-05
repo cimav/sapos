@@ -139,6 +139,9 @@ namespace :admin do
     puts "Ids: #{ids}"
   end## end task get_applicants_id
 
+  ############################################################################################################################
+  #  get_reprobated: obtiene alos alumnos que tengan mas de una materia reprobada de todos los tiempos en orden descendente
+  ############################################################################################################################
   task :get_reprobated => :environment do 
      reprobated = TermCourseStudent.select("distinct students.id as id, count(*) as counter").joins(:term_student=>:student).where("grade < 70 AND students.status in (?)",[1,6]).group("students.id").order("counter desc").having("counter > 1").map {|i| [i.id,i.counter] }
 
@@ -149,4 +152,6 @@ namespace :admin do
 
      puts "Total: #{reprobated.size}"
   end #task get_reprobated
+
+
 end ## namespace
