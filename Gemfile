@@ -18,6 +18,7 @@ gem 'therubyracer'
 gem 'haml'
 
 gem 'omniauth-google-oauth2'
+gem 'google-api-client'
 
 gem 'metainspector'
 

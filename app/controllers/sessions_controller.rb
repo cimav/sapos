@@ -1,3 +1,5 @@
+require 'google/apis/drive_v2'
+require 'google/api_client/client_secrets'
 class SessionsController < ApplicationController
   #def authenticate
   #  auth_hash = request.env['omniauth.auth']
@@ -12,7 +14,11 @@ class SessionsController < ApplicationController
   #end
 
   def create
-    session[:user_email] = auth_hash['info']['email']
+    if auth_hash['info']['email']
+      session[:user_email] = auth_hash['info']['email']
+    else
+      session[:user_email] = auth_hash['extra']['id_info']['email']
+    end
 
     if authenticated?
       redirect_to '/'
