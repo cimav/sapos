@@ -35,11 +35,11 @@
             
           - if @summer
             .form-group.col-12.col-sm-12.col-md-6#field_internship_control_number
-              = f.label :control_number, 'Número de control'
+              = f.label :control_number, 'Matrícula'
               = f.text_field :control_number, class:'form-control', required:true
           - else
             .form-group.col-12.col-sm-12.col-md-4#field_internship_control_number
-              = f.label :control_number, 'Número de control'
+              = f.label :control_number, 'Matrícula'
               = f.text_field :control_number, class:'form-control', required:true
 
           - if !@summer
