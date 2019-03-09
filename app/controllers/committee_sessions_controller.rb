@@ -1032,7 +1032,6 @@ class CommitteeSessionsController < ApplicationController
         w = 300
         h = 15
         pdf.text "#{student.full_name}\n\n", :align=>:left,:inline_format=>true
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         y = y - 15
         pdf.text "\n<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
         # CONTENIDO
@@ -1041,10 +1040,10 @@ class CommitteeSessionsController < ApplicationController
         w = 510
         h = 170
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        text = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado autorizó la revalidación de los siguientes cursos:"
+        text = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado autorizó la revalidación de los siguientes cursos:\n\n"
         pdf.text text, :align=>:justify,:inline_format=>true
         
-        pdf.move_down 280
+        #pdf.move_down 280
         data = []
         data << ["<b>Curso Externo</b>","<b>Equivalente en CIMAV</b>","<b>Créditos</b>"]
         
