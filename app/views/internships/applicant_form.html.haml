@@ -2,6 +2,20 @@
   .error-message{
     color: red;
   }
+  
+  .row-centered{
+    text-align: center;
+  }
+  
+  .col-centered{
+    display: inline-block;
+    float: none;
+    text-align: left;
+    
+    margin-left: -6px;
+    text-align: center;
+  
+  }
 
 
 - @st_js = @states.map{|i| [i.id,i.name]}
@@ -12,6 +26,12 @@
 .container#applicantFormContent{style:'margin-bottom:2em;'}
   .row
     %h1.text-secondary{style:'font-size:1.9em; padding:1em;'}= @page_title
+  - if @summer
+    .row.justify-content-center
+      .alert.alert-primary.col-12.col-sm-12-col-md-12.alert-dismissible.fade.show{:role=>"alert"}
+        = @page_note
+        %button.close{"data-dismiss"=>"alert","aria-label"=>"Close"}
+          %span{"aria-hidden"=>"true"}="&times;".html_safe
   .card
     .card-body
       = form_for @internship, :url=>{action: "applicant_create"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-internship-applicant-form' } do |f|
@@ -120,7 +140,10 @@
 
         .row
           .form-group.col-12#field_internship_submit
-            = f.submit 'Enviar', class:'btn btn-success btn-lg float-right'
+            - submit_text = 'Enviar'
+            - if @summer
+              - submit_text = 'Continuar'
+            = f.submit submit_text, class:'btn btn-success btn-lg float-right'
             =image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
         .row
           .col-12
@@ -206,3 +229,6 @@
     $("#text_internship_type_id").hide();
     $("#text_institution_id").hide();
   });
+  
+  $('.alert').alert()
+

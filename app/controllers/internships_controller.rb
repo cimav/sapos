@@ -681,6 +681,7 @@ class InternshipsController < ApplicationController
     if request.url.include? "verano"
       @summer= true
       @page_title = 'Solicitud de Verano CIMAV'
+      @page_note  = 'Una vez llena la solicitud de solicitará la carga de documentos'
     else
       @summer= false
       @page_title = 'Solicitud de prácticas profesionales'
