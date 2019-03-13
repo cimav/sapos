@@ -3,8 +3,10 @@
   %head
     %title= @page_title || 'CIMAV'
     = csrf_meta_tag
-    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css", :integrity => "sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm", :rel => "stylesheet"}/
-    /= stylesheet_link_tag @include_css
+    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css", :integrity => "sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm", :rel => "stylesheet"}
+    = javascript_include_tag "https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    = javascript_include_tag "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    //= stylesheet_link_tag @include_css
     = javascript_include_tag "application"
     - if !@include_js.nil?
       = javascript_include_tag @include_js
