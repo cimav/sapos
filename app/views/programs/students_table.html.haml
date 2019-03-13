@@ -78,7 +78,8 @@
 
 -if !@is_pdf
   - if @tc.term.status == Term::OPEN
-    = link_to 'Agregar estudiante', '#', :id => 'add-student-to-course'
+    -if can? :create, TermCourseStudent
+      = link_to 'Agregar estudiante', '#', :id => 'add-student-to-course'
   - else 
     - if @remaining > 0
       %span.disabled

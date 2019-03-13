@@ -4,42 +4,46 @@
   = hidden_field_tag 'program[terms_attributes][0][program_id]', @program.id
 
   = fields.hidden_field :id
+  - readonly = true
+  - if can? :edit, Term
+    - readonly = false
 
   %div{:id => "field_program_terms_0_code", :class => 'field'}
     = fields.label :code, 'Clave'
-    = fields.text_field :code
+    = fields.text_field :code, :readonly=>readonly
 
   %div{:id => "field_program_terms_0_name", :class => 'field'}
     = fields.label :name, 'Nombre'
-    = fields.text_field :name
+    = fields.text_field :name, :readonly=>readonly
 
   %div{:id => "field_program_terms_0_start_date", :class => 'field'}
     = fields.label :start_date, 'Inicio'
-    = fields.date_select :start_date
+    = fields.date_select :start_date, :disabled=>readonly
 
   %div{:id => "field_program_terms_0_end_date", :class => 'field'}
     = fields.label :end_date, 'Fin'
-    = fields.date_select :end_date
+    = fields.date_select :end_date, :disabled=>readonly
  
   %div{:id => "field_program_terms_0_advance_start_date", :class => 'field'}
     = fields.label :advance_start_date, 'Entrega avances inicio'
-    = fields.date_select :advance_start_date,:start_year=>2001
+    = fields.date_select :advance_start_date,:start_year=>2001, :disabled=>readonly
       
   %div{:id => "field_program_terms_0_advance_end_date", :class => 'field'}
     = fields.label :advance_end_date, 'Entrega avances fin'
-    = fields.date_select :advance_end_date,:start_year=>2001
+    = fields.date_select :advance_end_date,:start_year=>2001, :disabled=>readonly
   
   %div{:id => "field_program_terms_0_grade_start_date", :class => 'field'}
     = fields.label :grade_start_date, 'Calificaciones inicio'
-    = fields.date_select :grade_start_date,:start_year=>2001
+    = fields.date_select :grade_start_date,:start_year=>2001, :disabled=>readonly
       
   %div{:id => "field_program_terms_0_grade_end_date", :class => 'field'}
     = fields.label :grade_end_date, 'Calificaciones fin'
-    = fields.date_select :grade_end_date,:start_year=>2001
+    = fields.date_select :grade_end_date,:start_year=>2001, :disabled=>readonly
 
   %div{:id => "field_program_terms_0_status", :class => 'field'}
     = fields.label :status, 'Estado'
-    = fields.select :status, Term::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+    = fields.select :status, Term::STATUS.invert.sort {|a,b| a[1] <=> b[1] }, {}, {:disabled=>readonly}
 
   #dialog-submit-button-area
-    = fields.submit "Actualizar ciclo escolar"
+    - if can? :update, Term
+      = fields.submit "Actualizar ciclo escolar"

@@ -1,6 +1,7 @@
 %h2 Ciclos Escolares
 #terms-area
-= link_to 'Agregar ciclo escolar', '#', :id=>'a-new-term'
+- if can? :create, Term
+  = link_to 'Agregar ciclo escolar', '#', :id=>'a-new-term'
 :javascript
   $(function() {
     loadTermsTable()

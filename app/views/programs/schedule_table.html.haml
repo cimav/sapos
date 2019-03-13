@@ -48,4 +48,5 @@
           - comments += "Finaliza: #{l schedule.end_date, :format => :long}"
         %td.small-note= comments
 
-= link_to 'Agregar sesión', '#', :id=>'a-new-schedule'
+- if can? :create, TermCourseSchedule
+  = link_to 'Agregar sesión', '#', :id=>'a-new-schedule'

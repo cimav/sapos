@@ -20,7 +20,8 @@
         %td= ts.status_type
         %td.small-note= ts.notes
 
-- if @term.status == Term::OPEN
-  = link_to 'Inscribir estudiante', '#', :id=>'a-new-enrollment'
-- else
-  #enrollment-status-note= @term.status_type
+- if can? :create, TermStudent
+  - if @term.status == Term::OPEN
+    = link_to 'Inscribir estudiante', '#', :id=>'a-new-enrollment'
+  - else
+    #enrollment-status-note= @term.status_type

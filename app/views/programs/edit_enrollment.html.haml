@@ -23,6 +23,9 @@
     $("#new-payment-dialog").dialog('open');
   });
 
+- readonly = true
+- if can? :edit, TermStudent
+  - readonly = false
 
 = form_for @program, :remote => true, :url => {:action => 'update_enrollment' }, :html => {:'data-type' => 'html', :id => 'item-edit-enrollment', :class => 'edit-course-student'} do |f|
   = fields_for "ts", @ts do |fields|
@@ -34,11 +37,11 @@
 
     %div{:id => "ts_status", :class => 'field'}
       = fields.label :status, 'Estado'
-      = fields.select :status, TermStudent::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
+      = fields.select :status, TermStudent::STATUS.invert.sort {|a,b| a[1] <=> b[1] }, {}, {:disabled=>readonly}
 
     %div{:id => "ts_notes", :class => 'field'}
       = fields.label :notes, 'Comentarios'
-      = fields.text_field :notes
+      = fields.text_field :notes, :readonly=>readonly
     %h3= "Pagos"    
     
     - if @ts.term_student_payment.size > 0
@@ -62,15 +65,15 @@
         = tps_fields.hidden_field :id
         %div{:id => "tps_amount", :class => 'field'}
           = tps_fields.label :amount, 'Cantidad'
-          = tps_fields.text_field :amount
+          = tps_fields.text_field :amount, :readonly=>readonly
    
         %div{:id => "tsp_status" , :class  =>'field'}
           = tps_fields.label :status, 'Tipo de pago'
           - status_hash =  TermStudentPayment::STATUS.invert.sort {|a,b| a[1] <=> b[1] }
           - if @ts.term_student_payment.size > 0
             - status_hash =  status_hash.reject {|a,b| b == 1 }
-          = tps_fields.select :status, status_hash
-    
-    .iframe-submit-button-area
-      = fields.submit "Actualizar inscripción"
+          = tps_fields.select :status, status_hash, {}, {:disabled=>readonly}
+    - if can? :edit, TermStudent
+      .iframe-submit-button-area
+        = fields.submit "Actualizar inscripción"
 

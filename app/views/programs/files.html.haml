@@ -47,10 +47,11 @@
 = form_for(@documentation_file, :url => { :action => "upload_file" }, :html => {:id => 'item-upload-file-form', :multipart => true}) do |f|
   = hidden_field_tag :id, @program.id
   = f.hidden_field :program_id, {:value => @program.id }
-  #upload-box
-    = f.file_field :file, {"multiple" => "multiple"}
-    .upload Subir archivos
-    .upload-msg Puedes seleccionar varios archivos a la vez para subir.
+  - if can? :create, DocumentationFile
+    #upload-box
+      = f.file_field :file, {"multiple" => "multiple"}
+      .upload Subir archivos
+      .upload-msg Puedes seleccionar varios archivos a la vez para subir.
 #files-area
   %table{'class' => 'files-table'}
     - @program.documentation_file.each do |doc_file|
@@ -66,7 +67,8 @@
             %a{'href' => "/programas/#{@program.id}/documentos/#{doc_file.id}"}= doc_file.description
           %br
           %span.file-details= ext.upcase + ", " + number_to_human_size(File.size(doc_file.file.to_s))
-          %span.file-edit
-            = link_to_function 'Editar descripción', "edit_description(#{doc_file.id})"
-            |
-            = link_to 'Eliminar archivo', doc_file, :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
+          - if can? :edit, DocumentationFile
+            %span.file-edit
+              = link_to_function 'Editar descripción', "edit_description(#{doc_file.id})"
+              |
+              = link_to 'Eliminar archivo', doc_file, :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
