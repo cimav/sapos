@@ -12,12 +12,17 @@
       });
     });
 
+  - enabled = false
+  - if can? :create || :update, Staff
+    - enabled = true
+
 
   .resource-header
     .resource-picture
       = image_tag @staff.image_url(:medium).to_s, :id => "img-medium-#{@staff.id}"
-      %br
-      = link_to 'Cambiar foto', '#', :id=>'a-change-image'
+      - if enabled
+        %br
+        = link_to 'Cambiar foto', '#', :id=>'a-change-image'
     .resource-title
       %h1= "#{@staff.first_name} #{@staff.last_name}"
       .comment= @staff.institution.name
@@ -25,7 +30,7 @@
       .resource-card
         = link_to 'Credencial', "/docentes/#{@staff.id}/credencial.pdf", :id=>'a-id-card'
     .resource-save
-      - if can? :create || :update, @staff
+      - if enabled
         = f.submit 'Actualizar'
 
   #resource-tabs

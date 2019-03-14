@@ -13,4 +13,6 @@
         %td= exam.make ? "Sí":"No"
         %td= exam.apply ? "Sí":"No"
         %td= exam.review ? "Sí":"No"
-        %td= link_to 'Eliminar',"docentes/#{@staff.id}/delete_admission_exam/#{exam.id}",:confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
+        %td
+        -if can? :delete, AdmissionExam
+          = link_to 'Eliminar',"docentes/#{@staff.id}/delete_admission_exam/#{exam.id}",:confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'

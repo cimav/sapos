@@ -13,5 +13,7 @@
         %td.centered= l external_course.start_date, :format => :long
         %td= external_course.location
         %td= external_course.get_type
-        %td= link_to 'Eliminar',"docentes/#{@staff.id}/delete_external_course/#{external_course.id}",:confirm => '¿Estás seguro?', :method => 'post', :remote => true, :class => 'delete-file-ec'
+        %td
+          - if can? :delete, ExternalCourse
+            = link_to 'Eliminar',"docentes/#{@staff.id}/delete_external_course/#{external_course.id}",:confirm => '¿Estás seguro?', :method => 'post', :remote => true, :class => 'delete-file-ec'
 

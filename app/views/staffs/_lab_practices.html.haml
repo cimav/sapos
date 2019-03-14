@@ -1,6 +1,7 @@
 %h2 Practicas de laboratorio
 #lab-practices-area
-= link_to 'Agregar practica de laboratorio', '#', :id=>'a-new-lab-practice'
+- if can? :create, LabPractice
+  = link_to 'Agregar practica de laboratorio', '#', :id=>'a-new-lab-practice'
 :javascript
   $(function() {
     loadLabPracticesTable()

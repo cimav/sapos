@@ -1,6 +1,7 @@
 %h2 Cursos / Talleres
 #external-courses-area
-= link_to 'Agregar curso o taller', '#', :id=>'a-new-external-course'
+- if can? :create, ExternalCourse
+  = link_to 'Agregar curso o taller', '#', :id=>'a-new-external-course'
 :javascript
   $(function() {
     loadExternalCoursesTable()

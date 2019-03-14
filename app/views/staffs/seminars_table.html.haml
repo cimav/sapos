@@ -11,4 +11,8 @@
         %td= seminar.title
         %td.centered= l seminar.start_date, :format => :long
         %td= seminar.location
-        %td= link_to 'Eliminar',"docentes/#{@staff.id}/delete_seminar/#{seminar.id}",:confirm => '¿Estás seguro?', :method => 'post', :remote => true, :class => 'delete-file'
+        %td
+          - if can? :delete, Seminar
+            = link_to 'Eliminar',"docentes/#{@staff.id}/delete_seminar/#{seminar.id}",:confirm => '¿Estás seguro?', :method => 'post', :remote => true, :class => 'delete-file'
+
+

@@ -1,5 +1,6 @@
 #admission-exams-area
-= link_to 'Agregar examen de admisión', '#', :id=>'a-new-admission-exam'
+- if can? :create, AdmissionExam
+  = link_to 'Agregar examen de admisión', '#', :id=>'a-new-admission-exam'
 
 :javascript
   $(function() {

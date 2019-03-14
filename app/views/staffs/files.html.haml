@@ -48,9 +48,10 @@
   = hidden_field_tag :id, @staff.id
   = f.hidden_field :staff_id, {:value => @staff.id }
   #upload-box
-    = f.file_field :file, {"multiple" => "multiple"}
-    .upload Subir archivos
-    .upload-msg Puedes seleccionar varios archivos a la vez para subir.
+    -if can? :upload_file, Staff
+      = f.file_field :file, {"multiple" => "multiple"}
+      .upload Subir archivos
+      .upload-msg Puedes seleccionar varios archivos a la vez para subir.
 #files-area
   %table{'class' => 'files-table'}
     - @staff.staff_file.each do |staff_file|
@@ -68,6 +69,8 @@
           %br
           %span.file-details= ext.upcase + ", " + number_to_human_size(File.size(staff_file.file.to_s))
           %span.file-edit
+          - if can? :edit, StaffFile
             = link_to_function 'Editar descripción', "edit_description(#{staff_file.id})"
             |
+          - if can? :delete, StaffFile
             = link_to 'Eliminar archivo', staff_file, :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
