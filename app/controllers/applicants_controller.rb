@@ -534,9 +534,16 @@ class ApplicantsController < ApplicationController
     @req_docs.delete(12)
     @req_docs.delete(13)
     #@req_docs.delete(14)
+   
 
     @applicant = Applicant.find(session[:applicant_user])
     @applicant_files = ApplicantFile.where(:applicant_id=>session[:applicant_user])
+   
+   
+    if @applicant.program.level.to_i.eql? 1 #maestria
+      @req_docs.delete(11)
+      @req_docs.delete(14)
+    end
     render :layout=> "standalone"
   rescue ActiveRecord::RecordNotFound
     @error = 1

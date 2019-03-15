@@ -24,41 +24,44 @@ class ApplicantFile < ActiveRecord::Base
   OTHER       = 13
   PRELIMINARY_RESEARCH = 14
   ACADEMIC_RECOMENDATION_LETTER = 15
+  REASONS = 16
 
   REQUESTED_DOCUMENTS = {
-    BIRTH_CERTIFICATE => 'Acta de Nacimiento',
-    CURP              => 'C.U.R.P',
-    PROOF_OF_ADDRESS  => 'Comprobante de Domicilio',
-    VOTING_CARD       => 'Credencial para votar',
+    BIRTH_CERTIFICATE                   => 'Acta de Nacimiento',
+    CURP                                => 'C.U.R.P',
+    PROOF_OF_ADDRESS                    => 'Comprobante de Domicilio',
+    VOTING_CARD                         => 'Credencial para votar',
     PREVIOUS_DEGREE_CERTIFICATE         => 'Titulo del grado anterior',
     PREVIOUS_DEGREE_TEST_CERTIFICATE    => 'Acta de examen del grado anterior',
     PREVIOUS_DEGREE_STUDIES_CERTIFICATE => 'Certificado de estudios del grado anterior',
-    CENEVAL => 'Resultados del Examen Ceneval Exani III',
-    TOEFL    => 'Resultados del Examen TOEFL',
-    ACADEMIC_CURRICULUM => 'Curriculum Academico',
+    CENEVAL                             => 'Resultados del Examen Ceneval Exani III',
+    TOEFL                               => 'Resultados del Examen TOEFL',
+    ACADEMIC_CURRICULUM                 => 'Curriculum Academico',
     CONACYT_ENDED_SCHOLARSHIP_CERTIFICATE => 'Carta de finiquito de becario CONACyT',
-    APPLICATION => 'Solicitud',
-    PRELIMINARY_RESEARCH => "Anteproyecto de investigacion",
-    ACADEMIC_RECOMENDATION_LETTER => "Carta de recomendación académica", 
-    OTHER => 'Otro',
+    APPLICATION                         => 'Solicitud',
+    PRELIMINARY_RESEARCH                => "Anteproyecto de investigacion",
+    ACADEMIC_RECOMENDATION_LETTER       => "Carta de recomendación académica", 
+    OTHER                               => 'Otro',
+    REASONS                             => 'Carta de exposición de motivos',
  }
   
   REQUESTED_DOCUMENTS_EN = {
-    BIRTH_CERTIFICATE => 'Birth Certificate',
-    CURP              => 'C.U.R.P',
-    PROOF_OF_ADDRESS  => 'Proof of address',
-    VOTING_CARD       => 'Id',
+    BIRTH_CERTIFICATE                   => 'Birth Certificate',
+    CURP                                => 'C.U.R.P',
+    PROOF_OF_ADDRESS                    => 'Proof of address',
+    VOTING_CARD                         => 'Id',
     PREVIOUS_DEGREE_CERTIFICATE         => 'Titulo del grado anterior',
     PREVIOUS_DEGREE_TEST_CERTIFICATE    => 'Degree',
     PREVIOUS_DEGREE_STUDIES_CERTIFICATE => 'Official transcript',
-    CENEVAL => 'Resultados del Examen Ceneval Exani III',
-    TOEFL    => 'Resultados del Examen TOEFL',
-    ACADEMIC_CURRICULUM => 'Curriculum Vitae',
+    CENEVAL                             => 'Resultados del Examen Ceneval Exani III',
+    TOEFL                               => 'Resultados del Examen TOEFL',
+    ACADEMIC_CURRICULUM                 => 'Curriculum Vitae',
     CONACYT_ENDED_SCHOLARSHIP_CERTIFICATE => 'Carta de finiquito de becario CONACyT',
-    APPLICATION => 'Solicitud',
-    PRELIMINARY_RESEARCH => "Anteproyecto de investigacion",
-    ACADEMIC_RECOMENDATION_LETTER => "Recomendation letter", 
-    OTHER => 'Otro',
+    APPLICATION                         => 'Solicitud',
+    PRELIMINARY_RESEARCH                => "Anteproyecto de investigacion",
+    ACADEMIC_RECOMENDATION_LETTER       => "Recomendation letter", 
+    OTHER                               => 'Otro',
+    REASONS                             => 'Statement of reasons letter',
  }
 
 
