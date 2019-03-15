@@ -20,6 +20,7 @@ class Ability
       can :live_search, :all  ## for default read all live_search
       if user.access == User::OPERATOR
         can :manage, Internship
+        can :manage, Seminar
         cannot [:create], Internship
       elsif user.access == User::STUDENT
         can :manage, Internship
