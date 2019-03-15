@@ -2,7 +2,61 @@
   .error-message{
     color: red;
   }
-
+  
+  .inputfile{
+    width: 0.1px;
+    height:0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+  }
+  
+  .inputfile + label{
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background-color: #336699;
+    display: inline-block;
+    transition: all .5s;
+    cursor: pointer;
+    padding: 8px 25px !important;
+    //width: fit-content;
+    border-radius: 8px;
+    text-align: center;
+  }  
+  
+  .inputfile:focus + label,
+  .inputfile + label:hover {
+    background-color: #003366;
+  }
+  
+  .tooltiptext{
+    font-size: 12px;
+    visibility: hidden;
+    background-color: #d8e5f3;
+    color: black;
+    text-align:center;
+    border-radius: 6px;   
+    padding: 8px 25px !important;
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .reqdoc_button, .reqdoc_button_download, .reqdoc_button_delete{
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background-color: #336699;
+    display: inline-block;
+    transition: all .5s;
+    cursor: pointer;
+    padding: 8px 25px !important;
+    //width: fit-content;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
 :javascript
   var my_id;
   function display_status(type,my_id){
@@ -82,6 +136,7 @@
         }
       }
 
+
     });
 
     $("#files_iframe2").load(function(){
@@ -108,6 +163,8 @@
           var new_id = $('#files_iframe2').contents().find("id").html();
           display_status("ok",my_id);
           $("#internship_file_file_"+my_id).css("display","none");
+          $("#internship_file_file_label_"+my_id).css("display","none");
+
           $("#reqdoc_button_"+my_id).css("display","none");
           $("#reqdoc_button_download_"+my_id).css("display","inline-block");
           $("#reqdoc_button_delete_"+my_id).css("display","inline-block");
@@ -119,7 +176,12 @@
         else if(ref=="destroy")
         {
           display_status("fail",my_id);
+          $("#internship_file_file_"+my_id).val("");
           $("#internship_file_file_"+my_id).css("display","inline-block");
+          
+          $("#internship_file_file_label_"+my_id).html("Seleccionar archivo");
+          $("#internship_file_file_label_"+my_id).css("display","inline-block");
+
           $("#reqdoc_button_"+my_id).css("display","inline-block");
           $("#reqdoc_button_download_"+my_id).css("display","none");
           $("#reqdoc_button_delete_"+my_id).css("display","none");
@@ -139,6 +201,29 @@
 
       }
     });
+
+      $('.inputfile').change(function(){
+        var filename = $(this).val().split('\\').pop();
+        var idname   = $(this).attr('id'); 
+                
+        $('#tooltip_'+idname.split('_').pop()).html(filename);
+        $('#'+idname).next().html(filename.slice(0,17));
+      });
+      
+      $('.inputfile+label').mouseover(function(){
+        var idname   = $(this).attr('id');
+        var tooltip = '#tooltip_'+idname.split('_').pop()
+        console.log('|'+tooltip+'|');
+        $(tooltip).css("visibility","visible");
+      });
+      
+      $('.inputfile+label').mouseout(function(){
+        var idname   = $(this).attr('id');
+        var tooltip = '#tooltip_'+idname.split('_').pop()
+        console.log(tooltip);
+        $(tooltip).css("visibility","hidden");
+      });
+        
   });
 
 
@@ -146,65 +231,82 @@
   %a.navbar-brand{:href => "#"}
     %img.d-inline-block.align-top{:alt => "", :height => "30", :src => "https://cimav.edu.mx/wp-content/themes/cimav2017/img/logo-top.png"}
     
-    
 .container#applicantFormContent{style:'margin-bottom:2em;'}
   .row
     %h1.text-secondary{style:'font-size:1.9em; padding:1em;'} Solicitud de Verano CIMAV
-  .card
+  .card.border-light
     .card-body.terms{:style=>"display:none;"}
       = "El registro se ha realizado correctamente, espere instrucciones por correo."
-  .card
-    .fields_requested.card-body        
-      - @req_docs.each do |key, value|
-        - if  @internship_files.where(:file_type=>key).size > 0
-          - @internship_files.where(:file_type=>key).each do |af|
-            - required= 1
+  .row.text-center
+    .alert.alert-primary.col-sm{:role=>"alert"}
+      = "Se recomienda utilizar archivos menores de 20MB"
+  .row
+    .fields_requested.table-responsive
+      %table.table
+        %thead
+          %tr
+            %th="#"
+            %th="Descripción"
+            %th="Controles"
+            %th="Estatus"
+        %tbody     
+          - counter = 1
+          - @req_docs.each do |key, value|
+            - if  @internship_files.where(:file_type=>key).size > 0
+              - @internship_files.where(:file_type=>key).each do |af|
+                - required= 1
 
-            .field_requested_document.card-group{:required=>required}
-              - my_id = key
-              = form_for(InternshipFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
-                = hidden_field_tag :internship_id, @internship.id
-                = hidden_field_tag :file_type, my_id
-                .form-group.card.border-light
-                  .card-body
-                    %b.card-title
-                      = label_tag value
-                      = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center', :style=>'display: none;', :class=>"class-img-top"
-                      = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;',:class=>"class-img-top"
-                      = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center',:class=>"img-ok"
+                %tr.field_requested_document{:required=>required}
+                  - my_id = key
+                  = form_for(InternshipFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
+                    = hidden_field_tag :internship_id, @internship.id
+                    = hidden_field_tag :file_type, my_id
+                    %td= counter
+                    - counter = counter + 1
+                    %td
+                      %b= label_tag value
 
-                    .card-text
-                      = f.file_field :file,:id=>"internship_file_file_#{my_id}",:style=>"display:none;"
+                    %td
+                      = f.file_field :file,:id=>"internship_file_file_#{my_id}",:class=>"inputfile"
+                      = label_tag "internship_file_file_#{my_id}", "Seleccionar archivo",:id=>"internship_file_file_label_#{my_id}", :style=>"display: none;"
+                      .tooltiptext{:id=>"tooltip_#{my_id}"}= "Seleccionar archivo"
                       = button_tag @t[:upload_file], :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}",:style=>"display:none;"
                       - if !@register
                         = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}",:my_file_id=> af.id
                         = button_tag @t[:delete_file], :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}",:my_file_id=> af.id
 
-        - else
-          - required= 1
-          .field_requested_document.card-group{:required=>required}
-            - my_id = key
-            = form_for(InternshipFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
-              = hidden_field_tag :internship_id, @internship.id
-              = hidden_field_tag :file_type, my_id
-              = hidden_field_tag :my_file_id, 0
-              .form-group.card.border-light
-                .card-body
-                  %b.card-title
-                    = label_tag value
-                    = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
-                    = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
-                    = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none',:class=>"img-ok"
-                  .cart-text
+                    %td              
+                      = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" , :style=>'display: none;', :class=>"class-img-top"
+                      = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :style=>'display: none;',:class=>"class-img-top"
+                      = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :class=>"img-ok"
+
+            - else
+              - required= 1
+              %tr.field_requested_document{:required=>required}
+                - my_id = key
+                = form_for(InternshipFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-#{my_id}", :multipart=> true,:target=>'files_iframe2'}) do |f|
+                  = hidden_field_tag :internship_id, @internship.id
+                  = hidden_field_tag :file_type, my_id
+                  = hidden_field_tag :my_file_id, 0
+                  %td= counter
+                  - counter = counter + 1
+                  %td
+                    %b= label_tag value
+                  %td
                     - if !(my_id.eql? 6)
-                      = f.file_field :file,:id=>"internship_file_file_#{my_id}";
+                      = f.file_field :file,:id=>"internship_file_file_#{my_id}",:class=>"inputfile"
+                      = label_tag "internship_file_file_#{my_id}","Seleccionar archivo",:id=>"internship_file_file_label_#{my_id}"
+                      .tooltiptext{:id=>"tooltip_#{my_id}"}= "Seleccionar archivo"
                       = button_tag @t[:upload_file], :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
                     - if !@register  
                       = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>'display: none;', :my_file_id=>0
                       = button_tag @t[:delete_file], :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>'display:none;', :my_file_id=> 0
-
-      .card.border-light
-        .card-title.text-center
+                  %td
+                    = image_tag "fail_40px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center'
+                    = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
+                    = image_tag "ok_40px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none',:class=>"img-ok"
+      .row
+        .col.text-center
           = hidden_field_tag "itoken",params[:token]
           = button_tag "Finalizar Registro", :type=>'button',:id=>"finalize_button"
                     
