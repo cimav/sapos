@@ -159,6 +159,25 @@
                 %input{:type=>'text',:id=>'aux_end_date',:readonly=>true}     
             %tr
               %td{:colspan=>2}= "&nbsp;".html_safe
+            %tr{:style=>"display: none;"}
+              %td{:colspan=>2}
+                %table
+                  %tr
+                    %td{:align=>"right"}=check_box_tag "chk_director"
+                    %td{:align=>"left"}="&nbsp;Director de Tesis".html_safe
+                    %td{:align=>"right"}
+                      = "&nbsp; &nbsp; &nbsp;".html_safe
+                      = check_box_tag "chk_co_director"
+                    %td{:align=>"left"}="&nbsp;Co-Director de Tesis".html_safe
+                  %tr
+                    %td{:align=>"right"}=check_box_tag "chk_cursos"
+                    %td{:align=>"left"}="&nbsp;Participacion de Cursos".html_safe
+                    %td{:align=>"right"}
+                      = "&nbsp; &nbsp; &nbsp;".html_safe
+                      = check_box_tag "chk_all"
+                    %td{:align=>"left"}="&nbsp;Seleccionar Todo".html_safe
+            %tr
+              %td{:colspan=>2}= "&nbsp;".html_safe
             %tr
               %td{:colspan=>2}= "*Dejar en blanco para traer todos los registros existentes"
             %tr
@@ -173,21 +192,26 @@
         = label_tag '',label
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"dir_tesis",:staff_id=>@staff.id, :desc=>label
       
-      .field_requested_document#field_requested_document_0{:style=>"width:600px; height:40px;"}
+      .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
         - label = 'Constancia como co-director de tesis'
         = label_tag '',label
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"co_dir_tesis",:staff_id=>@staff.id, :desc=>label
 
-      .field_requested_document#field_requested_document_1{:style=>"width:600px; height:40px;"}
+      .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
         - label = 'Constancia como sinodal'
         = label_tag '', label
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"sinodal",:staff_id=>@staff.id, :desc=>label
 
-      .field_requested_document#field_requested_document_2{:style=>"width:600px; height:40px;"}
+      .field_requested_document#field_requested_document_3{:style=>"width:600px; height:40px;"}
         - label = 'Constancia formación de RH'
         = label_tag '', label
         = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"RH",:staff_id=>@staff.id, :desc=>label
-
+        
+      .field_requested_document#field_requested_document_4{:style=>"width:600px; height:40px;"}
+        - label = 'Constancias individuales'
+        = label_tag '', label
+        = button_tag "Generar", :type=>"button", :class=>'reqdoc_button', :c_type=>"individual",:staff_id=>@staff.id, :desc=>label
+        
       .radioDiv
         - dir = t(:directory)
         - checked = false
@@ -237,9 +261,6 @@
           %br
           = select_tag 'city', options_for_select(["Chihuahua, Chih.","Apodaca, N.L.", "Durango, Dgo."])        
 
--# %div{:id => "aux-page", :style => "display:none;"}
-
-
 :javascript
   $( "#aux_start_date" ).datepicker(config);
   $( "#aux_end_date" ).datepicker(config);
@@ -276,9 +297,22 @@
       }
     }
 
-    href = "docentes/constancias/"+c_type+"/"+sid+"/"+siid+"?city="+
-    city+"&start_date="+start_date+"&end_date="+end_date;  
+    options = 0
+    if($("input[name='chk_director']:checked").val()){
+      options = 1
+    }
     
+    if($("input[name='chk_co_director']:checked").val()){
+      options = options + 2
+    }
+    
+    if($("input[name='chk_cursos']:checked").val()){
+      options = options + 4
+    }
+    
+    href = "docentes/constancias/"+c_type+"/"+sid+"/"+siid+"?city="+
+    city+"&start_date="+start_date+"&end_date="+end_date+"&options="+options;  
+        
     window.location.href=href
 
 
