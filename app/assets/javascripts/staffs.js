@@ -6,7 +6,8 @@ var config = {
   changeYear: true,
   dateFormat: 'yy-mm-dd',
   showButtonPanel: true,
-  minDate: '-80Y',
+  yearRange: '1910:2040',
+  minDate: '-40Y',
   maxDate: '+2Y',
 };
 
