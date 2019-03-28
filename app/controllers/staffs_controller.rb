@@ -1401,7 +1401,7 @@ class StaffsController < ApplicationController
                    if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
                     term_month = get_month_name(@tcs2_sd.month)
                     
-                    course_name = "#{term_course.course.name} #{term_course.course.program.prefix}"
+                    course_name = "#{term_course.course.name}"
                     start_date  = {:content=>@tcs2_sd.strftime("%-d de #{term_month} de %Y"), :align=>:center}
                     
 
@@ -1429,7 +1429,7 @@ class StaffsController < ApplicationController
 
            end # @term_course_schedules.size
 
-           tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [185, 130,130,55])
+           tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 127,127,56])
            tabla.draw
            pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
            ############################## FIRMA ##############################
@@ -1437,7 +1437,7 @@ class StaffsController < ApplicationController
            pdf.text @atentamente, :align=>:center,:inline_format=>true
            ############################## ###### ##############################
 
-           pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
+           #pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
          end
  
            
