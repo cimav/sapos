@@ -1322,7 +1322,6 @@ class StaffsController < ApplicationController
                   texto = "\n\n<font size='20'><b>El sistema no encuentra la fecha de defensa de tesis del alumno: #{s.full_name.lstrip.rstrip}</b></font>"
                 end              
               end
-             
                                   
               y = y - 60
               h = 220
@@ -1358,7 +1357,7 @@ class StaffsController < ApplicationController
         x = 10
         h = 50
 
-        pdf.text "\n\n\nA quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "\nA quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
 
         docente =  "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
         
@@ -1377,8 +1376,6 @@ class StaffsController < ApplicationController
          if @term_course_schedules.size > 0
            data = []
            data << [{:content => "<b>Curso</b>", :align => :center}, {:content => "<b>Inicio</b>", :align => :center}, {:content => "<b>Fin</b>", :align => :center}, {:content => "<b>Horas Impartidas</b>", :align => :center}]
-          
-            
     
            @term_course_schedules.each do |tcs|
              term_course = tcs.term_course
@@ -1389,7 +1386,13 @@ class StaffsController < ApplicationController
                 hours_per_day = tcs2.end_hour.strftime("%H").to_i - tcs2.start_hour.strftime("%H").to_i 
                 @tcs2_sd = tcs2.start_date
                 @tcs2_ed = tcs2.end_date
-                days = (tcs2.start_date..tcs2.end_date).to_a.select {|k| [tcs2.day].include?(k.wday)}.size
+
+                @opt_ed = options[:end_date]
+                if @tcs2_ed>@opt_ed
+                  @tcs2_ed = @opt_ed
+                end
+
+                days = (tcs2.start_date..@tcs2_ed).to_a.select {|k| [tcs2.day].include?(k.wday)}.size
                 staff_hours[@staff.id] += hours_per_day * days
              end
 
@@ -1397,10 +1400,13 @@ class StaffsController < ApplicationController
                if !tcs.nil?
                  if options[:ranges]
                    if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
-                    term_month = get_month_name(term_course.term.start_date.month)
+                    term_month = get_month_name(@tcs2_sd.month)
                     
                     course_name = "#{term_course.course.name} #{term_course.course.program.prefix}"
                     start_date  = {:content=>@tcs2_sd.strftime("%-d de #{term_month} de %Y"), :align=>:center}
+                    
+
+                    term_month = get_month_name(@tcs2_ed.month)
                     end_date    = {:content=>@tcs2_ed.strftime("%-d de #{term_month} de %Y"), :align=>:center}
 
                     hours       = {:content=>staff_hours[@staff.id].to_s, :align=>:center}
@@ -1426,6 +1432,13 @@ class StaffsController < ApplicationController
 
            tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [185, 130,130,55])
            tabla.draw
+           pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
+           ############################## FIRMA ##############################
+           @atentamente = "\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
+           pdf.text @atentamente, :align=>:center,:inline_format=>true
+           ############################## ###### ##############################
+
+           pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
          end
  
            
