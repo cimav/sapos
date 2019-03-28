@@ -153,5 +153,45 @@ namespace :admin do
      puts "Total: #{reprobated.size}"
   end #task get_reprobated
 
+  task :get_advances_files => :environment do 
+    archivo= "/home/rails/sapos/tmp/students_codes"
+    counter = 1
+    host    = "10.0.5.107"
+    user    = ""
+    password = ""
+   Net::SCP.start(host,user,:password=>password) do |scp|
+    File.open(archivo,'r') do |s|
+        while line = s.gets
+          if (counter%2)==1
+            student = Student.where(:card=>line.chomp)
+            if student.size==0
+              salida = "No existe ese estudiante"
+            elsif student.size==1
+              student = student[0] 
+              salida  = "#{student.id} #{student.full_name}"
+            
+              safs = StudentAdvancesFile.joins(:term_student).where(:term_students=>{:student_id=>student.id}).order("student_advances_files.created_at desc").first
+     
+              saf_splitted = safs.file.to_s.split("/")
+              file_name    = saf_splitted[saf_splitted.size-1]
+              ext_splitted = file_name.split(".")
+              extension    = ext_splitted[ext_splitted.size-1]
+              
+              new_file_name= "#{student.first_name.lstrip.rstrip} #{student.last_name.lstrip.rstrip} #{student.last_name2.lstrip.rstrip}.#{extension}"
+           
+              new_file_name = "#{I18n.transliterate(new_file_name.gsub("\s","_"))}"
+              scp.upload!(safs.file.to_s,"/home/enrique/Avances/#{new_file_name}")
+  
+            else
+              salida = "Existe mas de un registro"
+            end
+            puts "|#{line.chomp}|#{salida}"
+          end # if %
+          counter = counter + 1
+        end # while
+    end # File
+    end # Net::SCP
+
+  end #task get_advances_files
 
 end ## namespace
