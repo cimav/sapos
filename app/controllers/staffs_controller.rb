@@ -1384,13 +1384,12 @@ class StaffsController < ApplicationController
              
              TermCourseSchedule.where(:staff_id=>@staff.id,:term_course_id=>tcs.term_course_id,:status=>1).each do |tcs2|
                 hours_per_day = tcs2.end_hour.strftime("%H").to_i - tcs2.start_hour.strftime("%H").to_i 
-                @tcs2_sd = tcs2.start_date
-                @tcs2_ed = tcs2.end_date
 
-                @opt_ed = options[:end_date]
-                if @tcs2_ed>@opt_ed
-                  @tcs2_ed = @opt_ed
-                end
+                if staff_hours[@staff.id].eql? 0
+                  @tcs2_sd = tcs2.start_date
+                end 
+
+                @tcs2_ed = tcs2.end_date
 
                 days = (tcs2.start_date..@tcs2_ed).to_a.select {|k| [tcs2.day].include?(k.wday)}.size
                 staff_hours[@staff.id] += hours_per_day * days
