@@ -81,6 +81,7 @@ namespace :admin do
   end ## task desist
 
   task :get_applicants_id => :environment do 
+
 =begin
   Hace una busqueda por nombres y apellidos de una lista ubicada en un archivo para aspirantes
   El archivo debe estar en la forma: 
@@ -153,6 +154,10 @@ namespace :admin do
      puts "Total: #{reprobated.size}"
   end #task get_reprobated
 
+  ############################################################################################################################
+  #  get_advances_files: Busca por matricula los alumnos especificados en el archivo y manda al destino remoto el ultimo archivo
+  #   registrado como avance de investigacion
+  ############################################################################################################################
   task :get_advances_files => :environment do 
     archivo= "/home/rails/sapos/tmp/students_codes"
     counter = 1
@@ -194,4 +199,32 @@ namespace :admin do
 
   end #task get_advances_files
 
+  ############################################################################################################################
+  #  search_end_date_null : Busca los alumnos que tienen el campo end_date en nulo
+  ############################################################################################################################
+  task :search_end_date_null => :environment do 
+    students = Student.where(:status=>[2,5]).where("end_date is NULL")
+    students.each do |s|
+      p "#{s.full_name} #{s.status} #{s.start_date}"
+    end
+    p "#{students.size}"
+  end #task search_end_date_null
+  
+  ############################################################################################################################
+  # fill_end_date : rellena los campos en null con la fecha de tesis si es que existe
+  ############################################################################################################################
+  task :fill_end_date => :environment do 
+    students = Student.where(:status=>[2,5]).where("end_date is NULL")
+    counter = 0
+    students.each do |s|
+      if !s.thesis.defence_date.nil?
+        
+        p "#{s.id} #{s.full_name} #{s.thesis.defence_date}"
+        s.end_date = s.thesis.defence_date
+        s.save
+        counter = counter + 1
+      end
+    end
+    p "#{counter} registros cambiados"
+  end #task fill_end_date
 end ## namespace
