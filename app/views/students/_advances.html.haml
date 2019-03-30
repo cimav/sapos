@@ -17,8 +17,10 @@
     - student.advance.each_with_index do |adv, index|
       - if adv.advance_type.eql? 2
         - advance_type = "(Protocolo)"
-      - if adv.advance_type.eql? 3
+      - elsif adv.advance_type.eql? 3
         - advance_type = "(Seminario)"
+      - else
+        - advance_type = "(Avance)"
       - adv_options += "<option value=\"#{index}\">#{Date::MONTHNAMES[adv.advance_date.month]} #{adv.advance_date.year} #{advance_type}</option>"
     - if adv_options != ""
       = select_tag "select_advance", adv_options.html_safe, :id => 'advance-select'
@@ -36,8 +38,7 @@
       = fields.hidden_field :id
       %div{:id => "field_student_advance_#{index}_advance_type", :class => 'field'}
         = fields.label :advance_type, 'Tipo'
-        = fields.select :advance_type, Advance::TYPE.invert.sort {|a,b| a[1] <=> b[1] }
-
+        = fields.select :advance_type, Advance::TYPE.invert.sort {|a,b| a[1] <=> b[1] }, {}, {:disabled=>true}
       %div{:id => "field_student_advance_#{index}_title", :class => 'field'}
         = fields.label :title, 'Titulo'
         = fields.text_field :title
