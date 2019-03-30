@@ -37,7 +37,7 @@ class InternshipsController < ApplicationController
    
    campuses = current_user.campus_id
    
-   extra_where = "applicant_status<>99"
+   extra_where = "(applicant_status<>99 OR applicant_status is NULL)"
    order       = "first_name" ## valor default de ordenacion, no debe estar nulo o vacio
    where_hash  = Hash.new
    
@@ -93,7 +93,7 @@ class InternshipsController < ApplicationController
 
     if !params[:status_solicitudes].blank?
       s << params[:status_solicitudes].to_i
-      extra_where << " AND created_at>=DATE_SUB(NOW(),INTERVAL 1 YEAR)"
+      #extra_where << " AND created_at>=DATE_SUB(NOW(),INTERVAL 1 YEAR)"
     end
      
    if !s.empty?
