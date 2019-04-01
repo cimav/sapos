@@ -1306,7 +1306,7 @@ class StaffsController < ApplicationController
                      texto = "#{docente} #{periodo} #{description} #{alumno_tesis}"
                    else
                      periodo      =  "quien desde el <b> #{s.start_date.day} de #{get_month_name(s.start_date.month)} del #{s.start_date.year}</b> funge como"
-                     alumno_tesis = "#{stgenero4} alumn#{stgenero} <b>#{s.id} #{s.full_name.lstrip.rstrip}</b> matricula #{s.card} de nuestro programa de #{s.program.name}, con la Tesis: \"#{s.thesis.title.lstrip.rstrip rescue ""}\"."
+                     alumno_tesis = "#{stgenero4} alumn#{stgenero} <b>#{s.full_name.lstrip.rstrip}</b> matricula #{s.card} de nuestro programa de #{s.program.name}, con la Tesis: \"#{s.thesis.title.lstrip.rstrip rescue ""}\"."
                      texto = "#{docente} #{periodo} #{description} #{alumno_tesis}"
                    end
                 end # level
