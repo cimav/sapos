@@ -881,14 +881,14 @@ class StaffsController < ApplicationController
       if !start_date.blank?
         options[:ranges]=true  
         # director
-        as_director = Student.where(:supervisor=>@staff.id).where("status in (1,6)")
-        as_director = as_director + Student.where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        as_director = Student.includes(:program).where(:supervisor=>@staff.id).where("status in (1,6) AND programs.level !=3")
+        as_director = as_director + Student.includes(:program).where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5) AND programs.level !=3",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students] = as_director
         options[:staff_id] = @staff.id
             
         # co-director
-        as_co_director = Student.where(:co_supervisor=>@staff.id).where("status in (1,6)")
-        as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        as_co_director = Student.includes(:program).where(:co_supervisor=>@staff.id).where("status in (1,6)  AND programs.level !=3")
+        as_co_director = as_co_director + Student.includes(:program).where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5) AND programs.level !=3",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students_co] = as_co_director
  
         # cursos impartidos
@@ -1378,12 +1378,18 @@ class StaffsController < ApplicationController
            data = []
            data << [{:content => "<b>Curso</b>", :align => :center}, {:content => "<b>Inicio</b>", :align => :center}, {:content => "<b>Fin</b>", :align => :center}, {:content => "<b>Horas Impartidas</b>", :align => :center}]
     
-           @term_course_schedules.each do |tcs|
-             term_course = tcs.term_course
+           @term_course_schedules.each_with_index do |tcsch,index|
+             if tcsch.term_course.nil?
+               ## si el term_course ya no existe es que hay registros colgados
+               ## simplemente los ignoramos y pasamos al siguiente
+               next
+             end
+            
+             term_course = tcsch.term_course
              # El conteo se hace en un hash {k,v} donde k es el docente y v son las horas impartidas
              staff_hours = Hash.new(0)
              
-             TermCourseSchedule.where(:staff_id=>@staff.id,:term_course_id=>tcs.term_course_id,:status=>1).each do |tcs2|
+             TermCourseSchedule.where(:staff_id=>@staff.id,:term_course_id=>tcsch.term_course_id,:status=>1).each do |tcs2|
                 hours_per_day = tcs2.end_hour.strftime("%H").to_i - tcs2.start_hour.strftime("%H").to_i 
 
                 if staff_hours[@staff.id].eql? 0
@@ -1396,8 +1402,8 @@ class StaffsController < ApplicationController
                 staff_hours[@staff.id] += hours_per_day * days
              end
 
-             if !tcs.nil?
-               if !tcs.nil?
+             if !tcsch.nil?
+               if !tcsch.nil?
                  if options[:ranges]
                    if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
                     term_month = get_month_name(@tcs2_sd.month)
