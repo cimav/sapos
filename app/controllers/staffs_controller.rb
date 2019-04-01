@@ -881,13 +881,14 @@ class StaffsController < ApplicationController
       if !start_date.blank?
         options[:ranges]=true  
         # director
-        as_director = Student.select("*, 1 as subtype").where(:supervisor=>@staff.id).where("status in (1,6)")
-        as_director = as_director + Student.select("*, 1 as subtype").where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        as_director = Student.where(:supervisor=>@staff.id).where("status in (1,6)")
+        as_director = as_director + Student.where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students] = as_director
+        options[:staff_id] = @staff.id
             
         # co-director
-        as_co_director = Student.select("*, 2 as subtype").where(:co_supervisor=>@staff.id).where("status in (1,6)")
-        as_co_director = as_co_director + Student.select("*, 2 as subtype").where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        as_co_director = Student.where(:co_supervisor=>@staff.id).where("status in (1,6)")
+        as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students_co] = as_co_director
  
         # cursos impartidos
@@ -1243,7 +1244,8 @@ class StaffsController < ApplicationController
       
         # Alumnos como director de tesis
         @students  = options[:active_students]
-        @students = @students + options[:active_students_co]
+        @students  = @students + options[:active_students_co]
+        staff_id  = options[:staff_id]
 
         
         if @students.size > 0
@@ -1280,15 +1282,14 @@ class StaffsController < ApplicationController
 
             docente =  "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
       
-
-              if s.subtype.eql? 1 ## director
-                description = "<b>Director de Tesis</b>"
-              elsif s.subtype.eql? 2 ## co-director
-                description = "<b>Co-Director de Tesis</b>"
-              else
-                description = "<b>INDEFINIDO</b>"
-              end
-             
+            if staff_id.eql? s.supervisor
+              description = "<b>Director de Tesis</b>"
+            elsif staff_id.eql? s.co_supervisor
+              description = "<b>Co-Director de Tesis</b>"
+            else
+              description = "<b>INDEFINITUM</b>"
+            end         
+            
               if s.status.eql? 1 #activo
                 if s.program.level.to_i.eql? 2 #doctorado
                   if s.thesis.title.blank?
@@ -1305,7 +1306,7 @@ class StaffsController < ApplicationController
                      texto = "#{docente} #{periodo} #{description} #{alumno_tesis}"
                    else
                      periodo      =  "quien desde el <b> #{s.start_date.day} de #{get_month_name(s.start_date.month)} del #{s.start_date.year}</b> funge como"
-                     alumno_tesis = "#{stgenero4} alumn#{stgenero} <b>#{s.full_name.lstrip.rstrip}</b> matricula #{s.card} de nuestro programa de #{s.program.name}, con la Tesis: \"#{s.thesis.title.lstrip.rstrip rescue ""}\"."
+                     alumno_tesis = "#{stgenero4} alumn#{stgenero} <b>#{s.id} #{s.full_name.lstrip.rstrip}</b> matricula #{s.card} de nuestro programa de #{s.program.name}, con la Tesis: \"#{s.thesis.title.lstrip.rstrip rescue ""}\"."
                      texto = "#{docente} #{periodo} #{description} #{alumno_tesis}"
                    end
                 end # level
