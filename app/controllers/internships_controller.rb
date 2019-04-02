@@ -11,10 +11,13 @@ class InternshipsController < ApplicationController
   before_filter :auth_indigest, :only=>[:finalize,:files_register]
 
   def index
-    @institutions = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
-    @staffs       = Staff.order('first_name').where("id IN (SELECT DISTINCT staff_id FROM internships)")
-    campuses      = current_user.campus_id
+    @institutions     = Institution.order('name').where("id IN (SELECT DISTINCT institution_id FROM internships)")
+    @staffs           = Staff.order('first_name').where("id IN (SELECT DISTINCT staff_id FROM internships)")
+    campuses          = current_user.campus_id
     @internship_types = InternshipType.order('name')
+    min               = Internship.minimum(:created_at)
+    max               = Internship.maximum(:created_at)
+    @years            = (min.year..max.year).to_a
 
     if current_user.access == User::OPERATOR
       if campuses.eql? 0
@@ -93,7 +96,17 @@ class InternshipsController < ApplicationController
 
     if !params[:status_solicitudes].blank?
       s << params[:status_solicitudes].to_i
-      #extra_where << " AND created_at>=DATE_SUB(NOW(),INTERVAL 1 YEAR)"
+    end
+     
+    if params[:year].to_i !=0
+      if params[:year].to_i == 1
+        max = Internship.maximum(:created_at)
+        extra_where << "AND YEAR(created_at) in (#{max.year},#{max.year-1})"
+      else
+        extra_where << "AND YEAR(created_at)=#{params[:year]}"
+      end
+     
+      
     end
      
    if !s.empty?

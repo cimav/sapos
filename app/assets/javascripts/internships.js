@@ -30,6 +30,12 @@ $('.status-cbs').live("click", function() {
   liveSearch();
 });
 
+// ** On change Status
+$('#year').live("click", function() {
+  liveSearch();
+});
+
+
 // ** Xls
 $('#to_excel').live('click', function() {
   window.location = location.pathname + "/busqueda.xls?" + $("#live-search").serialize();
