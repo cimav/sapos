@@ -7,7 +7,7 @@
 - @include_css = 'select2/select2'
 
 #items-panel.side-panel
-  .panel-search{:style=>'height: 200px;'}
+  .panel-search{:style=>'height: 230px;'}
     = form_tag internships_path, :id => 'live-search', :method => 'get', :remote => true do
       - area_options = "<option value=\"0\">Todas las areas</option>"
       - @areas.each do |area|
@@ -65,7 +65,7 @@
           = check_box_tag 'status_order', '4', false, :class => 'status-cbs'
           = label_tag 'status_order', 'Ordenar por fecha de registro'
 
-  #items-list.panel-items{:style=>'top:222px'}
+  #items-list.panel-items{:style=>'top:250px'}
 
   .panel-add
     - if can? :create, Internship
