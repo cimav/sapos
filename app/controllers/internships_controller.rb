@@ -692,9 +692,25 @@ class InternshipsController < ApplicationController
 
   def applicant_form
     if request.url.include? "verano"
+      
       @summer= true
-      @page_title = 'Solicitud de Verano CIMAV'
-      @page_note  = 'Una vez llena la solicitud de solicitará la carga de documentos'
+      @page_title  = 'Solicitud de Verano CIMAV'
+      @page_note   = 'Una vez llena la solicitud de solicitará la carga de documentos'
+      now          = Time.now
+      limit        = Time.new(2019,4,10,14,5,0,"-06:00")
+      @closed      = false
+      @warning     = false
+      
+      diff = limit - now
+     
+      if diff < 0  ## cuando la diferencia devuelve números negativos es porque ya nos pasamos
+        @warning    = true
+        @closed     = true
+        @page_note2 = "La convocatoria ha cerrado!"
+      elsif diff <= (24*60*60)  ## advertencia con 1 dia de anticipacion, en segundos 24 horas*60 minutos*60 segundos
+        @warning = true
+        @page_note2  = "La convocatoria cierra el día #{limit.day} de #{t(:date)[:month_names][limit.month]} de #{limit.year} a media noche(#{limit.hour}:#{limit.min}) hora de las montañas (GMT-6) donde son las #{now.strftime('%H')}:#{now.strftime('%M')} del #{now.day} de #{t(:date)[:month_names][now.month]} del #{now.year}."
+      end
     else
       @summer= false
       @page_title = 'Solicitud de prácticas profesionales'

@@ -27,127 +27,134 @@
   .row
     %h1.text-secondary{style:'font-size:1.9em; padding:1em;'}= @page_title
   - if @summer
-    .row.justify-content-center
-      .alert.alert-primary.col-12.col-sm-12-col-md-12.alert-dismissible.fade.show{:role=>"alert"}
-        = @page_note
-        %button.close{"data-dismiss"=>"alert","aria-label"=>"Close"}
-          %span{"aria-hidden"=>"true"}="&times;".html_safe
-  .card
-    .card-body
-      = form_for @internship, :url=>{action: "applicant_create"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-internship-applicant-form' } do |f|
-        .row
-          .form-group.col-12.col-sm-12.col-md-6#field_internship_first_name
-            = f.label :first_name, 'Nombre(s)'
-            = f.text_field :first_name, class:'form-control', required:true
+    - unless @closed
+      .row.justify-content-center
+        .alert.alert-primary.col-12.col-sm-12-col-md-12.alert-dismissible.fade.show{:role=>"alert"}
+          = @page_note
+          %button.close{"data-dismiss"=>"alert","aria-label"=>"Close"}
+            %span{"aria-hidden"=>"true"}="&times;".html_safe
+    - if @warning
+      .row.justify-content-center
+        .alert.alert-warning.col-12.col-sm-12-col-md-12.fade.show{:role=>"alert"}
+          %b= @page_note2
+          
+  - unless @closed
+    .card
+      .card-body
+        = form_for @internship, :url=>{action: "applicant_create"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-internship-applicant-form' } do |f|
+          .row
+            .form-group.col-12.col-sm-12.col-md-6#field_internship_first_name
+              = f.label :first_name, 'Nombre(s)'
+              = f.text_field :first_name, class:'form-control', required:true
 
-          .form-group.col-12.col-sm-12.col-md-6#field_internship_last_name
-            = f.label :last_name, 'Apellidos'
-            = f.text_field :last_name, class:'form-control', required:true
-        .row
-          -if @summer
-            .form-group.col-12.col-sm-12.col-md-6#field_internship_career
-              = f.label :career, 'Carrera'
-              = f.text_field :career, class:'form-control', required:true
-          -else
-            .form-group.col-12.col-sm-12.col-md-4#field_internship_career
-              = f.label :career, 'Carrera'
-              = f.text_field :career, class:'form-control', required:true
-            
-          - if @summer
-            .form-group.col-12.col-sm-12.col-md-6#field_internship_control_number
-              = f.label :control_number, 'Matrícula'
-              = f.text_field :control_number, class:'form-control', required:true
-          - else
-            .form-group.col-12.col-sm-12.col-md-4#field_internship_control_number
-              = f.label :control_number, 'Matrícula'
-              = f.text_field :control_number, class:'form-control', required:true
+            .form-group.col-12.col-sm-12.col-md-6#field_internship_last_name
+              = f.label :last_name, 'Apellidos'
+              = f.text_field :last_name, class:'form-control', required:true
+          .row
+            -if @summer
+              .form-group.col-12.col-sm-12.col-md-6#field_internship_career
+                = f.label :career, 'Carrera'
+                = f.text_field :career, class:'form-control', required:true
+            -else
+              .form-group.col-12.col-sm-12.col-md-4#field_internship_career
+                = f.label :career, 'Carrera'
+                = f.text_field :career, class:'form-control', required:true
 
-          - if !@summer
-            .form-group.col-12.col-sm-12.col-md-4#field_internship_total_hours
-              = f.label :total_hours, 'Total de horas'
-              = f.number_field :total_hours, class:'form-control', required:true
-        .row
-          .form-group.col-12.col-sm-12.col-md-6#field_internship_gender
-            = f.label :gender, 'Sexo'
-            = f.select :gender,  [['',''],['Hombre', 'H'], ['Mujer', 'F']],{} ,class:'form-control', required:true
-
-          .form-group.col-12.col-sm-12.col-md-6#field_internship_date_of_birth
-            = f.label :date_of_birth, 'Fecha de nacimiento'
-            .aux
-              = f.date_select :date_of_birth, :start_year => DateTime.now.year - 80
-        .row
-          .form-group.col-12.col-sm-12.col-md-6#field_internship_country_id
-            = f.label :country_id, 'País de nacimiento'
-            = f.collection_select :country_id, @countries, :id, :name, {}, {:prompt => "Selecciona un país", class:'form-control'}
-
-          .form-group.col-12.col-sm-12.col-md-6#field_internship_state_id
-            = f.label :state_id, 'Estado de Nacimiento'
-            = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona un estado"}, class:'form-control'
-        .row
-          .form-group.col-12.col-sm-12.col-md-4#field_internship_curp
-            = f.label :curp, 'Curp'
-            = f.text_field :curp, required:true, class:'form-control'
-
-          .form-group.col-12.col-sm-12.col-md-4#field_internship_email
-            = f.label :email, 'Correo Electrónico'
-            = f.email_field :email, class:'form-control', required:true
-
-          .form-group.col-12.col-sm-12.col-md-4#field_internship_phone
-            = f.label :phone, 'Teléfono de contacto'
-            = f.text_field :phone, class:'form-control', required:true
-        .row
-          .form-group.col-12.col-sm-12.col-md-4#field_internship_health_insurance
-            = f.label :health_insurance, 'Servicio médico'
-            = f.text_field :health_insurance, class:'form-control', required:true
-
-          .form-group.col-12.col-sm-12.col-md-4#field_internship_health_insurance_number
-            = f.label :health_insurance_number, 'Número de afiliación o poliza'
-            = f.text_field :health_insurance_number, class:'form-control', required:true
-
-          .form-group.col-12.col-sm-12.col-md-4#field_internship_accident_contact
-            = f.label :accident_contact, 'Contacto en caso de accidente'
-            = f.text_field :accident_contact, class:'form-control', required:true
-
-        .row
-          .form-group.col-12#field_internship_institution_id
-            = f.label :institution_id, 'Institución'
-            = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona tu institucion de procedencia"} ,class:'form-control', required:true
-            .text-institution-id{:style=>"visibility:none"}
-              = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
-
-        .row
-          - if @summer
-            = f.hidden_field :internship_type_id, :value=>8 ## verano CIMAV
-          -else
-            .form-group.col-12.col-sm-12.col-md-6#field_internship_internship_type_id
-              = f.label :internship_type_id, 'Tipo'
-              = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo de servicio"}, class:'form-control', required:true
-              = text_field_tag :text_internship_type_id, '', :size=>25, :placeholder=>"¿Cual?"
-
-          - if @summer
-            = f.hidden_field :area_id, :value=>3 ## Posgrado
-          - else
-            - if @option.eql? "monterrey"
-              - f_class = "v-hidden"
-            - else
-              - f_class = "field"
-            .form-group.col-12.col-sm-12.col-md-6#field_internship_area_id{:class=>f_class}
-              = f.label :area_id, 'Area'
-              - if @option.eql? "monterrey"
-                = f.collection_select :area_id, @areas, :id, :name,{}, class:'form-control', required:true
-              - else
-                = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"},class:'form-control', required:true
-
-        .row
-          .form-group.col-12#field_internship_submit
-            - submit_text = 'Enviar'
             - if @summer
-              - submit_text = 'Continuar'
-            = f.submit submit_text, class:'btn btn-success btn-lg float-right'
-            =image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
-        .row
-          .col-12
-            %p.text-secondary Todos los campos son obligatorios
+              .form-group.col-12.col-sm-12.col-md-6#field_internship_control_number
+                = f.label :control_number, 'Matrícula'
+                = f.text_field :control_number, class:'form-control', required:true
+            - else
+              .form-group.col-12.col-sm-12.col-md-4#field_internship_control_number
+                = f.label :control_number, 'Matrícula'
+                = f.text_field :control_number, class:'form-control', required:true
+
+            - if !@summer
+              .form-group.col-12.col-sm-12.col-md-4#field_internship_total_hours
+                = f.label :total_hours, 'Total de horas'
+                = f.number_field :total_hours, class:'form-control', required:true
+          .row
+            .form-group.col-12.col-sm-12.col-md-6#field_internship_gender
+              = f.label :gender, 'Sexo'
+              = f.select :gender,  [['',''],['Hombre', 'H'], ['Mujer', 'F']],{} ,class:'form-control', required:true
+
+            .form-group.col-12.col-sm-12.col-md-6#field_internship_date_of_birth
+              = f.label :date_of_birth, 'Fecha de nacimiento'
+              .aux
+                = f.date_select :date_of_birth, :start_year => DateTime.now.year - 80
+          .row
+            .form-group.col-12.col-sm-12.col-md-6#field_internship_country_id
+              = f.label :country_id, 'País de nacimiento'
+              = f.collection_select :country_id, @countries, :id, :name, {}, {:prompt => "Selecciona un país", class:'form-control'}
+
+            .form-group.col-12.col-sm-12.col-md-6#field_internship_state_id
+              = f.label :state_id, 'Estado de Nacimiento'
+              = f.collection_select :state_id, @states, :id, :name, options = {:prompt => "Selecciona un estado"}, class:'form-control'
+          .row
+            .form-group.col-12.col-sm-12.col-md-4#field_internship_curp
+              = f.label :curp, 'Curp'
+              = f.text_field :curp, required:true, class:'form-control'
+
+            .form-group.col-12.col-sm-12.col-md-4#field_internship_email
+              = f.label :email, 'Correo Electrónico'
+              = f.email_field :email, class:'form-control', required:true
+
+            .form-group.col-12.col-sm-12.col-md-4#field_internship_phone
+              = f.label :phone, 'Teléfono de contacto'
+              = f.text_field :phone, class:'form-control', required:true
+          .row
+            .form-group.col-12.col-sm-12.col-md-4#field_internship_health_insurance
+              = f.label :health_insurance, 'Servicio médico'
+              = f.text_field :health_insurance, class:'form-control', required:true
+
+            .form-group.col-12.col-sm-12.col-md-4#field_internship_health_insurance_number
+              = f.label :health_insurance_number, 'Número de afiliación o poliza'
+              = f.text_field :health_insurance_number, class:'form-control', required:true
+
+            .form-group.col-12.col-sm-12.col-md-4#field_internship_accident_contact
+              = f.label :accident_contact, 'Contacto en caso de accidente'
+              = f.text_field :accident_contact, class:'form-control', required:true
+
+          .row
+            .form-group.col-12#field_internship_institution_id
+              = f.label :institution_id, 'Institución'
+              = f.collection_select :institution_id, @institutions, :id, :name, options = {:prompt => "Selecciona tu institucion de procedencia"} ,class:'form-control', required:true
+              .text-institution-id{:style=>"visibility:none"}
+                = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
+
+          .row
+            - if @summer
+              = f.hidden_field :internship_type_id, :value=>8 ## verano CIMAV
+            -else
+              .form-group.col-12.col-sm-12.col-md-6#field_internship_internship_type_id
+                = f.label :internship_type_id, 'Tipo'
+                = f.collection_select :internship_type_id, @internship_types, :id, :name, options = {:prompt => "Selecciona el tipo de servicio"}, class:'form-control', required:true
+                = text_field_tag :text_internship_type_id, '', :size=>25, :placeholder=>"¿Cual?"
+
+            - if @summer
+              = f.hidden_field :area_id, :value=>3 ## Posgrado
+            - else
+              - if @option.eql? "monterrey"
+                - f_class = "v-hidden"
+              - else
+                - f_class = "field"
+              .form-group.col-12.col-sm-12.col-md-6#field_internship_area_id{:class=>f_class}
+                = f.label :area_id, 'Area'
+                - if @option.eql? "monterrey"
+                  = f.collection_select :area_id, @areas, :id, :name,{}, class:'form-control', required:true
+                - else
+                  = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"},class:'form-control', required:true
+
+          .row
+            .form-group.col-12#field_internship_submit
+              - submit_text = 'Enviar'
+              - if @summer
+                - submit_text = 'Continuar'
+              = f.submit submit_text, class:'btn btn-success btn-lg float-right'
+              =image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
+          .row
+            .col-12
+              %p.text-secondary Todos los campos son obligatorios
 
 :javascript
   var model_name = 'internship';
