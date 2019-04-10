@@ -31,7 +31,7 @@ $('.status-cbs').live("click", function() {
 });
 
 // ** On change Status
-$('#year').live("click", function() {
+$('#year').live("change", function() {
   liveSearch();
 });
 
