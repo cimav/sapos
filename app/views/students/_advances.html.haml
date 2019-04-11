@@ -39,6 +39,7 @@
       %div{:id => "field_student_advance_#{index}_advance_type", :class => 'field'}
         = fields.label :advance_type, 'Tipo'
         = fields.select :advance_type, Advance::TYPE.invert.sort {|a,b| a[1] <=> b[1] }, {}, {:disabled=>true}
+        = link_to "imprimir", '/estudiantes/avance/'+adv.id.to_s+'/imprimir', :target=> "_blank"
       %div{:id => "field_student_advance_#{index}_title", :class => 'field'}
         = fields.label :title, 'Titulo'
         = fields.text_field :title
@@ -117,6 +118,7 @@
     $(".link-format-selecter").toggle("fast");
     return false;
   });
+
 
   $(".dropbtn").click(function(){
       $("#myDropdown").toggle("fast");

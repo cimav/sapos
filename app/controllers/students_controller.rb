@@ -2510,7 +2510,65 @@ class StudentsController < ApplicationController
   def payments
     render :layout => 'standalone'
   end
+  
+  def advance_print
+    advance = Advance.find(params[:id])
+    #background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+    #Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[150,60,60,60] ) do |pdf|
+    estatus = {'C'=>'Concluida','P'=>'Programada','X'=>'Cancelada'}
+    Prawn::Document.new(:margin=>[60,60,60,60] ) do |pdf|
+      pdf.font_families.update(
+          "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                            :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                            :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                            :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+      pdf.font "Montserrat"
+      pdf.font_size 12
+      text = "<b>#{Advance::TYPE[advance.advance_type]}</b>\n\n"
+      pdf.text text, :inline_format=>true
+      pdf.font_size 11
+      pdf.text "<b>Alumno:</b> #{advance.student.full_name}\n\n", :inline_format=>true
+      pdf.text "<b>Título:</b> #{advance.title}\n\n", :inline_format=>true
+      pdf.text "<b>Fecha:</b> #{advance.advance_date.day} de #{get_month_name(advance.advance_date.month)} del #{advance.advance_date.year}\n\n", :inline_format=>true
+      pdf.text "<b>Estatus:</b> #{estatus[advance.status]}\n\n", :inline_format=>true
+      pdf.text "<b>Comité Tutoral [calificación]:</b>\n", :inline_format=>true
+      
+      unless advance.tutor1.nil?
+        tutor = Staff.find(advance.tutor1)
+        pdf.text "#{tutor.full_name rescue "N.D."} #{advance.grade1.blank? ? '[n.d.]': '['+advance.grade1.to_s+']'}", :inline_format=>true
+      end
+     
+      unless advance.tutor2.nil?
+        tutor = Staff.find(advance.tutor2)
+        pdf.text "#{tutor.full_name rescue "N.D."} #{advance.grade2.blank? ? '[n.d.]': '['+advance.grade2.to_s+']'}", :inline_format=>true
+      end
+     
+      unless advance.tutor3.nil?
+        tutor = Staff.find(advance.tutor3)
+        pdf.text "#{tutor.full_name rescue "N.D."} #{advance.grade3.blank? ? '[n.d.]': '['+advance.grade3.to_s+']'}", :inline_format=>true
+      end
+     
+      unless advance.tutor4.nil?
+        tutor = Staff.find(advance.tutor4)
+        pdf.text "#{tutor.full_name rescue "N.D."} #{advance.grade4.blank? ? '[n.d.]': '['+advance.grade4.to_s+']'}", :inline_format=>true
+      end
+     
+      unless advance.tutor5.nil?
+        tutor = Staff.find(advance.tutor5)
+        pdf.text "#{tutor.full_name rescue "N.D."} #{advance.grade5.blank? ? '[n.d.]': '['+advance.grade5.to_s+']'}", :inline_format=>true
+      end
+     
+      pdf.text "\n\n<b>Notas:</b>", :inline_format=>true
+      pdf.text advance.notes, :inline_format=>true
 
+     
+      pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
+      filename = "avance-#{advance.id}.pdf"
+      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+    end #Prawn
+  end
+     
+     
 private
   def auth_digest
     authenticate_or_request_with_http_digest(REALM) do |username|
@@ -2634,4 +2692,6 @@ private
    # El símbolo ¬ es el unicode AC
    text.gsub(/\¬([\u{0000}-\u{00AB}\u{00AD}-\u{FFFF}]+)\¬/) {"<sub>#{$1}</sub>"}
   end
+       
+  
 end

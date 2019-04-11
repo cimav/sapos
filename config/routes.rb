@@ -41,6 +41,7 @@ Sapos::Application.routes.draw do
   match 'estudiantes/:id/boleta/:term_id' => 'students#term_grades'
   match 'estudiantes/lista' => 'students#term_grades_list'
   match 'estudiantes/avances' => 'students#advances_list'
+  match 'estudiantes/avance/:id/imprimir' => 'students#advance_print'
   match 'estudiantes/constancias/:type/:id/:sign_id' => 'students#certificates'
   match 'estudiantes/constancias_grado/:thesis_id' => 'students#grade_certificates'
   match 'estudiantes/constancias_sinodales/:student_id/:staff_id' => 'students#sinodal_certificates'
