@@ -1,14 +1,14 @@
 = form_for Applicant.new, :url=>{action: "new_register"} , :remote => true, :html => { :'data-type' => 'html', :id => 'item-new-form' } do |f|
   #first_screen
-    .header{:style=>"width:800px;height:90px;margin:2px;"} 
+    .header{:style=>"width:800px;height:90px;margin:2px;"}
       .title{:style=>"width: 400px; display: block-inline;position:absolute"}
         %h2=@t[:title]
-      .language{:style=>"width:180px;height:15px;text-align:left;display:block-inline;position:relative;margin-left:500px;top:7px;font-weight:bold;"} 
+      .language{:style=>"width:180px;height:15px;text-align:left;display:block-inline;position:relative;margin-left:500px;top:7px;font-weight:bold;"}
         - if I18n.locale.eql? :es
-          =" Change language to " 
+          =" Change language to "
           = link_to "English","?locale=en"
         - elsif I18n.locale.eql? :en
-          ="Cambiar idioma a " 
+          ="Cambiar idioma a "
           = link_to "Español","?locale=es"
       .message{:style=>"text-align:justify;position:relative;"}
         %br
@@ -20,7 +20,7 @@
     - if @active.to_i.eql? 1
       .field#field_applicant_first_name
         = f.label :first_name, @t[:name]
-        = f.text_field :first_name 
+        = f.text_field :first_name
         = "*"
       .field#field_applicant_primary_last_name
         = f.label :primary_last_name, @t[:primary_last_name]
@@ -63,6 +63,6 @@
       .field#buttons
         = f.submit @t[:accept], :id=>"ok_button", :style=>"display:none",:class=>"button"
     = image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
-    #info{:style=>"display:none;"}
-      .header{:style=>"width:780px;height:100px;text-align:justify;margin:0px;"} 
-        %h3= @t[:message1]
+#info{:style=>"display:none;"}
+  .header{:style=>"width:780px;height:100px;text-align:justify;margin:0px;"}
+    %h3= @t[:message1]
