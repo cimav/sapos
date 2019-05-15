@@ -451,6 +451,12 @@ $('#item-new-internship-applicant-form')
             window.location.replace(uri);
             return false;
           }
+          else if(res['internship_type_id']==11){
+            var uri = "/internados/documentos/grupo/"+res['token']+"/"+res['uniq'];
+           
+            window.location.replace(uri);
+            return false;
+          }
           else
           {
             var uri = res['uri']

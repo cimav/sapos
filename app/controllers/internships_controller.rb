@@ -7,7 +7,7 @@ require 'json'
 class InternshipsController < ApplicationController
   #load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify,:summer,:finalize_summer,:files_register,:finalize]
+  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify,:summer,:finalize_register,:files_register,:finalize,:check_csh]
   before_filter :auth_indigest, :only=>[:finalize,:files_register]
 
   def index
@@ -290,19 +290,32 @@ class InternshipsController < ApplicationController
 
   def change_image
     @internship = Internship.find(params[:id])
+    @number     = params[:number]
     render :layout => 'standalone'
   end
 
   def upload_image
     flash = {}
     @internship = Internship.find(params[:id])
-    if @internship.update_attributes(params[:internship])
+    
+    if @internship.internship_type_id.eql? 11
+      @internship.origin = 2
+    end
+   
+    
+   if @internship.update_attributes(params[:internship])
       flash[:notice] = "Imagen actualizada."
+      #logger.info "######################## IMAGEN ACTUALIZADA"
     else
       flash[:error] = "Error al actualizar la imagen."
+      
+      #logger.info "######################## ERROR AL ACTUALIZAR LA IMAGEN"
+      #@internship.errors.each do |e|
+      #  logger.info e
+      #end
     end
 
-    redirect_to :action => 'change_image', :id => params[:id]
+    redirect_to :action => 'change_image', :id => params[:id], :number=>params[:number]
   end
 
   def files
@@ -697,12 +710,12 @@ class InternshipsController < ApplicationController
       @page_title  = 'Solicitud de Verano CIMAV'
       @page_note   = 'Una vez llena la solicitud de solicitará la carga de documentos'
       now          = Time.now
-      limit        = Time.new(2019,4,10,14,5,0,"-06:00")
+      limit        = Time.new(2020,4,10,14,5,0,"-06:00")
       @closed      = false
       @warning     = false
       
       diff = limit - now
-     
+      
       if diff < 0  ## cuando la diferencia devuelve números negativos es porque ya nos pasamos
         @warning    = true
         @closed     = true
@@ -711,19 +724,27 @@ class InternshipsController < ApplicationController
         @warning = true
         @page_note2  = "La convocatoria cierra el día #{limit.day} de #{t(:date)[:month_names][limit.month]} de #{limit.year} a media noche(#{limit.hour}:#{limit.min}) hora de las montañas (GMT-6) donde son las #{now.strftime('%H')}:#{now.strftime('%M')} del #{now.day} de #{t(:date)[:month_names][now.month]} del #{now.year}."
       end
+    elsif request.url.include? "/registro/grupo"   ## grupo academico
+      @academic = true  ## esta variable se debe mantener nula en otras opciones para el correcto funcionamiento
+      @summer   = true  ## vamos a utilizar casi los mismos campos que summer
+      @page_title  = 'Registro a Grupo Académico'
+      @page_note   = 'Una vez llena la solicitud de solicitará la carga de documentos'
     else
+      @include_js  = "general.js"
+      @include2_js = "application.js"
+      @include3_js = "internships.js"
       @summer= false
       @page_title = 'Solicitud de prácticas profesionales'
     end
     
-    @include_js = "internships.js"
     @option           = params[:option]
     @internship       = Internship.new
     @institutions     = Institution.order('name')
     #@internship_types = InternshipType.where("id!=8").order('name')
     @internship_types = InternshipType.order('name')
 
-    @countries        = Country.order('name')
+    @countries        = Country.order('name').to_a
+    @countries.insert(0, Country.find(146))
 
     @states           = State.order('name')
 
@@ -734,12 +755,87 @@ class InternshipsController < ApplicationController
     end
     render :layout => 'bootstrap_layout'
   end
+###########################################################################
+  def check_csh
+    vars                = Hash.new
+    vars[:email]        = params[:email]
+    vars[:hash]         = Hash.new
+    vars[:row]          = Array.new
+    vars[:counter]      = 0
+    vars[:exam1]        = false
+    vars[:exam2]        = false
+    vars[:exam3]        = false
+    vars[:counter_hash] = 0 
 
+    open("http://csh.cimav.edu.mx/resultados/resultados1.txt") {|f|
+      f.each_line {|line|
+        vars = analize_line(line, vars)
+      }
+    }
+   
+    if !(vars[:hash].size.eql? 0)
+      if vars[:hash]["#{vars[:counter_hash]}"][6].include? "User passes"
+        vars[:exam1] = true
+      end
+    end
+   
+   
+    vars[:hash].clear
+    vars[:counter_hash] = 0
+    
+    open("http://csh.cimav.edu.mx/resultados/resultados2.txt") {|f|
+      f.each_line {|line|
+        vars = analize_line(line, vars)
+      }
+    }
+    
+    if !(vars[:hash].size.eql? 0)
+      if vars[:hash]["#{vars[:counter_hash]}"][6].include? "User passes"
+        vars[:exam2] = true
+      end
+    end
+   
+   
+    vars[:hash].clear
+    vars[:counter_hash] = 0
+    
+    open("http://csh.cimav.edu.mx/resultados/resultados3.txt") {|f|
+      f.each_line {|line|
+        vars = analize_line(line, vars)
+      }
+    }
+    
+    if !(vars[:hash].size.eql? 0)
+      if vars[:hash]["#{vars[:counter_hash]}"][6].include? "User passes"
+        vars[:exam3] = true
+      end
+    end
+   
+    if vars[:exam1] && vars[:exam2] && vars[:exam3]
+      i = Internship.where(:email=>vars[:email],:internship_type_id=>11) ## grupo academico
+      
+      if i.size>0
+        json = Hash.new
+        json[:exams]= {:exam1=>vars[:exam1],:exam2=>vars[:exam2],:exam3=>vars[:exam3]}     
+        json[:errors]= "Ya se encuentra un registro con este email"
+        render :json => json, :status => :unprocessable_entity
+        return
+      end
+    
+    end
+    
+    render :json=> {:exam1=>vars[:exam1],:exam2=>vars[:exam2],:exam3=>vars[:exam3]}
+  end
 ###########################################################################
   def applicant_create
     flash = {}
     @internship = Internship.new(params[:internship])
     @internship.status=3
+   
+   
+    if @internship.internship_type_id.eql? 11
+      @internship.origin = 2
+    end
 
     if @internship.area_id.eql? 14
       @internship.campus_id = 2 #Monterrey
@@ -762,7 +858,7 @@ class InternshipsController < ApplicationController
     if @internship.save
       flash[:notice] = "Servicio creado para applicant."
 
-      if @internship.internship_type_id.eql? 8  ## para Verano CIMAV
+      if @internship.internship_type_id.in? [8,11]  ## para Verano CIMAV y Grupos Academicos
         ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud de Verano CIMAV por internet'}"}).save
        
         @internship.applicant_status= 99; ## estatus de pendiente, faltan los documentos
@@ -825,7 +921,7 @@ class InternshipsController < ApplicationController
   end#applicant_create
 
 ###########################################################################
-  def summer
+  def documents
     @t    = t(:internships)
 
     @req_docs   = InternshipFile::REQUESTED_DOCUMENTS.clone
@@ -835,23 +931,43 @@ class InternshipsController < ApplicationController
     where = {:attachable_id=>@internship.id,:attachable_type=>@internship.class,:token=>params[:token],:status=>1}
     token = Token.where(where).where("expires>=?",Date.today)
    
+
     if token.size<=0
       render file: "#{Rails.root}/public/404.html", layout: false, status: 404
       return
     end
-     
+   
     @internship_files = InternshipFile.where(:internship_id=>params[:id])
-      
-    @req_docs.keep_if {|a| a.in? [4,7,8,9,10]}
-
+   
+    if @internship.internship_type_id.eql? 8
+      @title = "Solicitud de Verano CIMAV"
+      @req_docs.keep_if {|a| a.in? [4,7,8,9,10]}
+    elsif @internship.internship_type_id.eql? 11
+      @title = "Registro a Grupo Académico"
+      @req_docs.keep_if {|a| a.in? [4,7,11]}
+    end
+   
     render :layout => 'bootstrap_layout'
   end
 
 ###########################################################################
-  def finalize_summer
+  def finalize_register
       @internship = Internship.find(params[:id])
-      @internship.applicant_status= 3; ## autorizado
-      @internship.save
+      
+      if @internship.internship_type_id.eql? 11 #Grupo Academico
+       @internship.origin= 2
+       @internship.status= 0
+       @internship.applicant_status= 3
+       @internship.save
+       
+       @internship.errors.each do |e|
+         logger.info "1 ############# #{e}"
+       end
+      else
+        @internship.applicant_status= 3; ## autorizado
+        @internship.save
+      end
+   
    
       @token = Token.where(:token=>params[:token])
    
@@ -859,8 +975,12 @@ class InternshipsController < ApplicationController
         @token[0].status = 2
         @token[0].save
        
-        send_mail(@internship,'',7,'') ## correo al solicitante
-        send_mail(@internship,'',8,'') ## correo al contacto posgrado
+       if @internship.internship_type_id.to_i.eql? 11 #Grupo Academico
+         send_mail(@internship,'',9,'') ## correo al contacto posgrado
+       else
+         send_mail(@internship,'',7,'') ## correo al solicitante
+         send_mail(@internship,'',8,'') ## correo al contacto posgrado
+       end
         
         
         json = {}
@@ -915,7 +1035,8 @@ class InternshipsController < ApplicationController
     @t    = t(:internships)
     @access = true
     if session[:internship_user].to_i.eql? params[:id].to_i
-      if @internship.applicant_status.eql? 3
+      @internship= Internship.find(params[:id])
+      if @internship.applicant_status.eql? 3 
         @internship = Internship.find(params[:id])
         @internship.status=0
         @internship.applicant_status=0
@@ -1085,6 +1206,8 @@ class InternshipsController < ApplicationController
   def send_mail(i,uri,opc,text)
     if opc.in? [7,8] ## solo Verano CIMAV
       user    = User.find(15)  ## <- Marcos López, esto en un futuro debe quedar en configuraciones
+    elsif opc.eql? 9 ## Grupos Academicos
+      user    = User.find(5)  ## <- Ariane PAz, esto en un futuro debe quedar en configuraciones
     else
       user    = get_user(i.area_id)
     end
@@ -1103,7 +1226,9 @@ class InternshipsController < ApplicationController
       elsif opc.eql? 7 # Verano CIMAV
         ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda correo al solicitante'}"}).save
       elsif opc.eql? 8 # Verano CIMAV
-        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda correo al contacto de Posgrado'}"}).save
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda correo al contacto de Posgrado [Verano CIMAV]'}"}).save
+      elsif opc.eql? 9 # Grupo Académico
+        ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{i.id},:activity=>'Se manda correo al contacto de Posgrado [Grupo Academico]'}"}).save
       end
   
       if opc.eql? 1
@@ -1139,6 +1264,10 @@ class InternshipsController < ApplicationController
         @u_email = user.email
         subject  = "Alguien ha realizado una solicitud para el Verano CIMAV"
         content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'27',:reply_to=>'#{i.email}'}"
+       elsif opc.eql? 9
+        @u_email = user.email
+        subject  = "Alguien se ha dado de alta para un grupo académico"
+        content  = "{:full_name=>'#{i.full_name}',:email=>'#{i.email}',:view=>'28',:reply_to=>'#{i.email}'}"
       end
   
       email         = Email.new
@@ -1243,6 +1372,54 @@ private
     session[:internship_user] rescue nil
   end
 
+  def analize_line(line,vars)
+    if vars[:counter]>0
+      if line.upcase.include? vars[:email].upcase
+      	vars[:row] << line
+      	vars[:counter] = vars[:counter] + 1
+      elsif line.include? "Quiz title"
+      	vars[:row] << line
+      	vars[:counter] = vars[:counter] + 1
+      elsif line.include? "Points awarded"
+      	vars[:row] << line
+      	vars[:counter] = vars[:counter] + 1
+      elsif line.include? "Total score"
+      	vars[:row] << line
+      	vars[:counter] = vars[:counter] + 1
+      elsif line.include? "Passing score"
+      	vars[:row] << line
+      	vars[:counter] = vars[:counter] + 1
+      elsif line.include? "User fails"
+      	vars[:row] << line
+      	vars[:counter] = vars[:counter] + 1
+      elsif line.include? "User passes"
+      	vars[:row] << line
+      	vars[:counter] = vars[:counter] + 1
+      else
+      	vars[:counter] = 0
+      	vars[:row].pop
+      end
+
+    end# if vars[:counter]
+
+    if vars[:counter].eql? 7
+      vars[:counter_hash] = vars[:counter_hash] + 1
+  
+      vars[:hash]["#{vars[:counter_hash]}"] = vars[:row].clone
+  
+      vars[:counter] = 0
+      vars[:row].clear
+    end
+
+    if line.include? "User name"
+      vars[:row] << line
+      vars[:counter] = 1
+    end
+
+    return vars
+  end# def analize_line
+         
+     
   def analize(line)
     if @counter>0
       if line.include? @email

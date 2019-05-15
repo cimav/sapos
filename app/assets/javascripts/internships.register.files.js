@@ -24,7 +24,7 @@ $(document).ready(function() {
    var i_id      = $('#internship_id').val();
    var token     = $('#itoken').val();
    var data      = ""
-   var url       = "/internados/aspirantes/finalizar/verano/"+token+"/"+i_id;
+   var url       = "/internados/aspirantes/registro/finalizar/"+token+"/"+i_id;
    
    $.ajax({
       type: 'POST',
@@ -35,13 +35,22 @@ $(document).ready(function() {
         $('#img_load').show();
       },
      success: function(data){
-        //var jq  =  jQuery.parseJSON(data);
-        //alert(data);
-        //return false;
+        var jq  =  jQuery.parseJSON(data);
+        
         //alert("Mensaje Enviado");
         /*alert("success")*/      
-        $('.terms').show();
+        if (data.internship_type_id==11)
+        {
+          $('.terms-groups').show();
+
+         
+        }else
+        {
+          $('.terms').show();
+        }
+        
         $('.header').hide();
+        $('.recomm').hide();
         $('.fields_requested').hide();
         $(this).hide();
       },

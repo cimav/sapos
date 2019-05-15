@@ -15,17 +15,20 @@ class InternshipFile < ActiveRecord::Base
   PHOTO_ID            = 8
   RECOMMENDATION      = 9
   REASONS             = 10
+  PHOTO               = 11
+  
     
   REQUESTED_DOCUMENTS = {
     NORMAL              => 'Documento genérico',
     SIGN_REQUEST        => 'Solicitud con firmas',
     INSTITUTION_REQUEST => 'Solicitud oficial de la institución de procedencia',
-    REGISTRATION_PROOF  => 'Constancia de inscripción de institución de procedencia',
+    REGISTRATION_PROOF  => 'Constancia de la institución de procedencia',
     COURSE              => 'Curso de seguridad e higiene aprobado',
     MEDICAL_PROOF       => 'Comprobante de Servicio Médico',
     PHOTO_ID            => 'Identificación Oficial con Fotografía',
     RECOMMENDATION      => 'Carta de recomendación',
     REASONS             => 'Carta de exposición de motivos',
+    PHOTO               => 'Fotografía para la credencial'
   }
 
 

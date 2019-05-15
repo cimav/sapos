@@ -114,14 +114,14 @@ Sapos::Application.routes.draw do
 
   resources :staff_files
 
-  match 'internados/busqueda'               => 'internships#live_search'
-  match 'internados/:id/cambiar_foto'       => 'internships#change_image'
-  match 'internados/upload_image'           => 'internships#upload_image'
-  match 'internados/:id/archivos'           => 'internships#files'
-  match 'internados/:id/archivo/:file_id'   => 'internships#file'
-  match 'internados/upload_file'            => 'internships#upload_file'
-  match 'internados/delete_file'            => 'internships#delete_file'
-  match 'internados/:id/credencial'         => 'internships#id_card'
+  match 'internados/busqueda'                 => 'internships#live_search'
+  match 'internados/:id/cambiar_foto'         => 'internships#change_image'
+  match 'internados/upload_image'             => 'internships#upload_image'
+  match 'internados/:id/archivos'             => 'internships#files'
+  match 'internados/:id/archivo/:file_id'     => 'internships#file'
+  match 'internados/upload_file'              => 'internships#upload_file'
+  match 'internados/delete_file'              => 'internships#delete_file'
+  match 'internados/:id/credencial'           => 'internships#id_card'
   match 'internados/constancias/:type/:id/:sign_id'         => 'internships#certificates'
   match 'internados/aspirante/'                             => 'internships#applicant_form'
   match 'internados/aspirante/area/:option'                 => 'internships#applicant_form'
@@ -136,9 +136,14 @@ Sapos::Application.routes.draw do
   match 'internados/aspirantes/applicant_logout'            => 'internships#applicant_logout'
   match 'internados/aspirantes/finalizar/:id'               => 'internships#finalize'
  
+  match 'internados/documentos/grupo/:token/:id' => 'internships#documents'
+  match 'internados/aspirantes/registro/finalizar/:token/:id'  => 'internships#finalize_register'
+ 
   match 'internados/aspirante/verano/'                      => 'internships#applicant_form'
-  match 'internados/aspirantes/verano/:token/:id'           => 'internships#summer'
-  match 'internados/aspirantes/finalizar/verano/:token/:id' => 'internships#finalize_summer'
+  match 'internados/aspirantes/verano/:token/:id'           => 'internships#documents'
+ 
+  match 'internados/registro/grupo/'                      => 'internships#applicant_form'
+  match 'internados/revisar/csh/'                         => 'internships#check_csh'
 
 
   match 'internados/aspirantes/file/:id'         => 'internship_files#download'

@@ -17,11 +17,61 @@
   
   }
 
+  .ui-dialog{
+    position: absolute;
+    background: white;
+    text: black;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 0px;
+  }
+
+  .ui-dialog .ui-dialog-titlebar{
+      background: #cce5ff;
+      text: lightgray;
+      font-weight: bold;
+      padding: 5px;
+   }
+   
+   .ui-dialog .ui-dialog-title{
+      text: red;
+   }
+   
+  .ui-dialog .ui-dialog-content{
+      padding: 20px;
+   }
+   
+   .ui-dialog .ui-dialog-titlebar-close {
+     display: none;
+   }
+   
+   .ui-widget-overlay{
+      opacity: .1;
+      z-index: 999;
+   }
+   
+
+
 
 - @st_js = @states.map{|i| [i.id,i.name]}
 %nav.navbar.navbar-dark.bg-white.shadow-lg.p-3.mb-5.rounded.sticky-top
   %a.navbar-brand{:href => "#"}
     %img.d-inline-block.align-top{:alt => "", :height => "30", :src => "https://cimav.edu.mx/wp-content/themes/cimav2017/img/logo-top.png"}
+
+
+
+#cshDialogCenter
+  .form-group
+    %label.col-form-label{:for=>"csh-email"}= "Introduzca el correo con el que accedió al curso de Seguridad e Higiene: "
+    %input#csh-email.form-control{:type=>"text"}
+    
+  .alert.alert-warning.d-none#csh-warning{:role=>"alert"}
+  .alert.alert-danger.d-none#csh-danger{:role=>"alert"}
+  .alert.alert-success.d-none#csh-success{:role=>"alert"}
+  
+  .form-button.text-right
+    %button#csh-btn-submit.btn.btn-primary{:type=>"button"}="Confirmar"
+
 
 .container#applicantFormContent{style:'margin-bottom:2em;'}
   .row
@@ -85,7 +135,7 @@
           .row
             .form-group.col-12.col-sm-12.col-md-6#field_internship_country_id
               = f.label :country_id, 'País de nacimiento'
-              = f.collection_select :country_id, @countries, :id, :name, {}, {:prompt => "Selecciona un país", class:'form-control'}
+              = f.collection_select :country_id, @countries, :id, :name, options = {:prompt => "Selecciona un país"} , class:'form-control'
 
             .form-group.col-12.col-sm-12.col-md-6#field_internship_state_id
               = f.label :state_id, 'Estado de Nacimiento'
@@ -96,24 +146,34 @@
               = f.text_field :curp, required:true, class:'form-control'
 
             .form-group.col-12.col-sm-12.col-md-4#field_internship_email
-              = f.label :email, 'Correo Electrónico'
-              = f.email_field :email, class:'form-control', required:true
+              - if @academic
+                = f.label :email, 'Correo Electrónico'
+                = f.text_field :email, :disabled=>true
+                = f.hidden_field :email, required:true, :id=>"email_hidden_field"
+              - else
+                = f.label :email, 'Correo Electrónico'
+                = f.email_field :email, class:'form-control', required:true
 
             .form-group.col-12.col-sm-12.col-md-4#field_internship_phone
               = f.label :phone, 'Teléfono de contacto'
               = f.text_field :phone, class:'form-control', required:true
           .row
-            .form-group.col-12.col-sm-12.col-md-4#field_internship_health_insurance
-              = f.label :health_insurance, 'Servicio médico'
-              = f.text_field :health_insurance, class:'form-control', required:true
+            - if @academic
+              .form-group.col-12#field_internship_accident_contact
+                = f.label :accident_contact, 'Contacto en caso de accidente (nombre y teléfono)'
+                = f.text_field :accident_contact, class:'form-control', required:true
+            - else
+              .form-group.col-12.col-sm-12.col-md-4#field_internship_health_insurance
+                = f.label :health_insurance, 'Servicio médico'
+                = f.text_field :health_insurance, class:'form-control', required:true
 
-            .form-group.col-12.col-sm-12.col-md-4#field_internship_health_insurance_number
-              = f.label :health_insurance_number, 'Número de afiliación o poliza'
-              = f.text_field :health_insurance_number, class:'form-control', required:true
+              .form-group.col-12.col-sm-12.col-md-4#field_internship_health_insurance_number
+                = f.label :health_insurance_number, 'Número de afiliación o poliza'
+                = f.text_field :health_insurance_number, class:'form-control', required:true
 
-            .form-group.col-12.col-sm-12.col-md-4#field_internship_accident_contact
-              = f.label :accident_contact, 'Contacto en caso de accidente'
-              = f.text_field :accident_contact, class:'form-control', required:true
+              .form-group.col-12.col-sm-12.col-md-4#field_internship_accident_contact
+                = f.label :accident_contact, 'Contacto en caso de accidente'
+                = f.text_field :accident_contact, class:'form-control', required:true
 
           .row
             .form-group.col-12#field_internship_institution_id
@@ -123,8 +183,10 @@
                 = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
 
           .row
-            - if @summer
+            - if @summer && @academic.nil?
               = f.hidden_field :internship_type_id, :value=>8 ## verano CIMAV
+            - elsif @summer && @academic
+              = f.hidden_field :internship_type_id, :value=>11 ## Grupos Académicos
             -else
               .form-group.col-12.col-sm-12.col-md-6#field_internship_internship_type_id
                 = f.label :internship_type_id, 'Tipo'
@@ -133,6 +195,7 @@
 
             - if @summer
               = f.hidden_field :area_id, :value=>3 ## Posgrado
+            
             - else
               - if @option.eql? "monterrey"
                 - f_class = "v-hidden"
@@ -151,6 +214,7 @@
               - if @summer
                 - submit_text = 'Continuar'
               = f.submit submit_text, class:'btn btn-success btn-lg float-right'
+              =# button_tag submit_text, type: 'button', class:'btn btn-success btn-lg float-right', id: 'button-submit'
               =image_tag "/images/ajax-load2.gif", :id=> "img_load" , :align=> 'center',:style=>'display: none;'
           .row
             .col-12
@@ -159,6 +223,7 @@
 :javascript
   var model_name = 'internship';
   var states = #{raw @st_js.to_json}
+  var groups = #{@academic ? true : false}
 
   function full_states(){
     var select = $("#internship_state_id");
@@ -195,7 +260,26 @@
   }
 
   $(document).ready(function() {
+    if(groups==true){
+      $("#cshDialogCenter").dialog({
+        resizable:false,
+        width: "auto",
+        height: "auto",
+        modal: true,      
+      });
+      
+      
+      $("#cshDialogCenter").dialog('open');
+      $(".ui-dialog-title").html("Autorización de Registro");
+      
+    }else{
+      $("#cshDialogCenter").hide();
+      $("#my-widget").removeClass("ui-widget-overlay") ;
+    }
+    
+  
     $("#internship_country_id").change(function(){
+    
       if($(this).val()==146){
         full_states();
         return false;
@@ -229,7 +313,72 @@
           $(".text-institution-id").hide();
         }
     });
+    
 
+    $("#csh-btn-submit").click(function(){
+      var email = $("#csh-email").val();
+      var regex = /^(.+)@(.+)\.(.+)$/;
+      
+      $("#csh-warning").addClass("d-none");
+      $("#csh-danger").addClass("d-none");
+      $("#csh-success").addClass("d-none");
+      
+      if(email==''){
+        $("#csh-warning").removeClass("d-none");
+        $("#csh-warning").html("¡El campo esta vacio!");
+        $("#csh-email").focus();
+        return false;
+      }
+      
+      
+      if(regex.test(String(email).toLowerCase())){
+        $("#csh-btn-submit").attr("disabled","disabled");
+        $.get('/internados/revisar/csh/',{'email': email})
+          .done(function(data){
+            if(data.exam1 && data.exam2 && data.exam3)
+            {
+              $("#csh-success").removeClass("d-none");
+              $("#csh-success").html("Curso aprobado!");
+              
+              $('#internship_email').val(email);
+              $('#email_hidden_field').val(email);
+              
+              $("#cshDialogCenter").dialog('close');
+              $("#my-widget").removeClass('ui-widget-overlay');
+
+            }
+            else
+            {
+              var text = "Examen 1: "+((data.exam1) ? 'Ok!' : 'Fallo' )+"<br>";
+              text += "Examen 2: "+((data.exam2) ? 'Ok!' : 'Fallo' )+"<br>";
+              text += "Examen 3: "+((data.exam3) ? 'Ok!' : 'Fallo' )+"<br>";
+              text += "<br>Curso no aprobado!!";
+              
+              $("#csh-danger").removeClass("d-none");    
+              $("#csh-danger").html(text);
+            }
+            
+           
+          })
+          .fail(function(jqXHR,textStatus){
+            $("#csh-danger").removeClass("d-none");   
+            
+            t = $.parseJSON(jqXHR.responseText)
+            $("#csh-danger").html("Error!<br>"+t.errors);
+          })
+          .always(function(){
+            $("#csh-btn-submit").removeAttr("disabled");
+          });
+
+      }else{
+        $("#csh-warning").removeClass("d-none");
+        $("#csh-warning").html("El texto no es un email valido!");
+        $("#csh-email").focus();
+      }
+
+    });
+   
+    
     $("#internship_state_id").empty().append('<option value="'+states[0][0]+'">'+states[0][1]+'</option>');
     add_options($("#internship_institution_id"),[[0,"Otra institucion"]]);
     //add_options($("#internship_internship_type_id"),[[0,"Otro tipo de servicio"]]);
