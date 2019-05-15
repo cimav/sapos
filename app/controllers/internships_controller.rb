@@ -1035,13 +1035,8 @@ class InternshipsController < ApplicationController
     @t    = t(:internships)
     @access = true
     if session[:internship_user].to_i.eql? params[:id].to_i
-<<<<<<< HEAD
-      @internship= Internship.find(params[:id])
-      if @internship.applicant_status.eql? 3 
-=======
       @internship = Internship.find(params[:id])
       if @internship.applicant_status.eql? 3
->>>>>>> d53acfb8640f7dfb1b8e13f9bcae3e25f731fa86
         @internship = Internship.find(params[:id])
         @internship.status=0
         @internship.applicant_status=0
