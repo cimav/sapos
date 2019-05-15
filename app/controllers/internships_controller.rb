@@ -7,7 +7,7 @@ require 'json'
 class InternshipsController < ApplicationController
   #load_and_authorize_resource
   respond_to :html, :xml, :json
-  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify,:summer,:finalize_register,:files_register,:finalize,:check_csh]
+  before_filter :auth_required, :except=>[:upload_image,:change_image,:applicant_form,:applicant_create,:applicant_file,:upload_file_register,:finalize,:applicant_logout,:applicant_interview_qualify,:summer,:finalize_register,:files_register,:finalize,:check_csh,:documents]
   before_filter :auth_indigest, :only=>[:finalize,:files_register]
 
   def index
