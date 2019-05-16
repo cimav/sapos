@@ -355,8 +355,11 @@
     
 .container#applicantFormContent{style:'margin-bottom:2em;'}
   .row
-    %h1.text-secondary{style:'font-size:1.9em; padding:1em;'}= @title
-  
+    %h1.text-secondary{style:'font-size:1.9em; padding:1em;'}
+      = @title
+      %br
+      = "[#{@internship.full_name.rstrip.lstrip}]"
+ 
   .alert.alert-success.terms-groups.text-center{:role=>"alert",:style=>"display:none;"}
     %strong= "El registro se ha realizado correctamente!"
   
