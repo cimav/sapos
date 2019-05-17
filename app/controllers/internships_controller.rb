@@ -401,7 +401,7 @@ class InternshipsController < ApplicationController
     if @internship.internship_type_id.eql? 8 #Verano CIMAV
       @req_docs.keep_if {|a| a.in? [4,7,8,9,10]}  
     elsif@internship.internship_type_id.eql? 11 #GRupos Academicos
-      @req_docs.keep_if {|a| a.in? [4,5,7]}
+      @req_docs.keep_if {|a| a.in? [4,5,6,7]}
     else
       @req_docs.keep_if {|a| a.in? [2,3,4,5,6]}
     end
