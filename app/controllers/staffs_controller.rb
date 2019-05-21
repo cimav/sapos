@@ -935,7 +935,7 @@ class StaffsController < ApplicationController
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,50,65,50] ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[110,60,65,60] ) do |pdf|
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                             :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -949,7 +949,7 @@ class StaffsController < ApplicationController
       h = 50
  
       if !(options[:cert_type].eql? Certificate::STAFF_INDIVIDUAL)
-        pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  <b>PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
+        pdf.text "<b>Coordinación de estudios de Posgrado</b>\nNo° de Oficio PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
 
         pdf.font_size 11
         y = y - 70

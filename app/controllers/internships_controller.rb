@@ -528,7 +528,7 @@ class InternshipsController < ApplicationController
         pdf.font "Montserrat"
         pdf.font_size 11
         x = 20
-        y = 565 #664
+        y = 620 #664
         w = 300
         h = 50
 

@@ -2607,7 +2607,7 @@ private
       pdf.font "Montserrat"
       pdf.font_size 11
       x = 190 #232
-      y = 565 #565
+      y = 620 #565
       w = 300
       h = 50
         

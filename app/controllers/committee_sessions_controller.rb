@@ -387,7 +387,7 @@ class CommitteeSessionsController < ApplicationController
       if !(@type.in? 6,21)
         ############# CABECERA
         x = 250
-        y = 560
+        y = 620
         w = 260
         h = 43
         size = pdf.font_size - 1
@@ -397,7 +397,7 @@ class CommitteeSessionsController < ApplicationController
         today            = Date.today
         @session_type    = @c_s.get_type
 
-        pdf.text "\n\n\n\n\n\n\n\n\n\n<b>Coordinación de Posgrado</b>\n<b>A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}</b>\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, :size=> size
+        pdf.text "\n\n\n\n<b>Coordinación de estudios de Posgrado</b>\nNo° de Oficio - A#{@c_a.get_agreement_number}.#{last_change.month}<sup>#{@c_s.folio_sup}</sup>.#{last_change.year}\nChihuahua, Chih., a #{s_date.day} de #{get_month_name(s_date.month)} de #{s_date.year}\n\n\n", :inline_format=>true, :align=>:right, :size=> size
       end
 
       #y = y - 10
@@ -1298,7 +1298,7 @@ class CommitteeSessionsController < ApplicationController
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     #Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[150,60,80,60] ) do |pdf|
-    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[135,60,60,60] ) do |pdf|
+    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[90,60,60,60] ) do |pdf|
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                             :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -1312,7 +1312,7 @@ class CommitteeSessionsController < ApplicationController
       pdf.text texto, :align=>:center, :inline_format=>true, :size=>12
 
       if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      texto = "Reunidos en la Sala de Posgrado planta alta el día <b>#{s_date.day} de #{get_month_name(s_date.month)} del año #{s_date.year},</b> a las #{s_date.hour.to_s.rjust(2,"0")}:#{s_date.min.to_s.rjust(2,"0")} h. con la asistencia de las siguientes personas: </b>"
+      texto = "\nReunidos en la Sala de Posgrado planta alta el día <b>#{s_date.day} de #{get_month_name(s_date.month)} del año #{s_date.year},</b> a las #{s_date.hour.to_s.rjust(2,"0")}:#{s_date.min.to_s.rjust(2,"0")} h. con la asistencia de las siguientes personas: </b>"
       pdf.text texto, :align=>:justify, :valign=>:top, :inline_format=>true, :size=>10
 
       pdf.move_down 10
