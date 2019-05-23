@@ -624,22 +624,58 @@ class ApplicantsController < ApplicationController
       if !@staff.nil? 
         @supervisor         = "#{@staff.title} #{@staff.full_name}"
       end
+     
+      background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+      atentamente = "\n\n\n\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
 
-      html = "Error"
-      if @applicant.status==3 # ACEPTADO
-        html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_aceptacion')
-      elsif @applicant.status==5 #PROPEDEUTICO
-        html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_aceptacion_prop')
-      elsif @applicant.status==2 # RECHAZADO
-        html = render_to_string(:layout => 'certificate' , :template=> 'applicants/certificates/constancia_rechazo')
-      end
 
-      kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
-      filename = "carta-aspirante-#{@applicant.id}.pdf"
-      send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
-      return
-    end
-  end
+      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,60,60,60] ) do |pdf|
+        pdf.font_families.update(
+          "Montserrat" => {       :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                                  :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                                  :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                                  :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+        pdf.font "Montserrat"
+        pdf.font_size 11
+       
+        city = "Chihuahua, Chih."
+     
+        pdf.text "<b>Coordinación de estudios de Posgrado\nOficio  PO - #{@consecutivo}/#{@year}</b>\n#{city}, a #{@days} de #{@month} de #{@year}", :inline_format=>true, :align=>:right ,:valign=>:top
+       
+       
+        pdf.text "\n\n\n\nC. #{@nombre}\n", :align=>:left,:inline_format=>true
+        pdf.text "<b>Presente.</b>\n\n", :align=>:left, :character_spacing=>4,:inline_format=>true
+        
+        if @applicant.status==3 # ACEPTADO
+          text = "Por este conducto me es grato notificarle que ha sido aceptado como alumno de nuevo ingreso al programa <b>#{@programa}</b> para el ciclo <b>#{@ciclo}</b>. Le informo que la fecha establecida para la  inscripción de nuevo ingreso será el próximo <b>#{@fecha_inscripcion}</b>, para lo cual deberá presentarse en el área de Control Escolar de este Departamento.\n\n"
+         
+          text = text + "Así mismo, le informo que para el trámite de su beca nacional CONACYT deberá contar con CVU actualizado antes de la inscripción. Para mayor información ingresar a la página: <b>http://www.conacyt.gob.mx/Becas</b>\n\n"
+         
+          text = text + "Le envío una felicitación por este logro académico. Para cualquier duda o comentario al respecto, estoy a sus órdenes."
+        elsif @applicant.status==5 #PROPEDEUTICO
+          text = "Por este conducto me es grato notificarle que ha sido aceptado como alumno al curso propedeutico de <b>#{@programa}</b> para el ciclo <b>#{@ciclo}</b>, que inicia el próximo <b>#{@fecha_inicio}</b> y concluye el <b>#{@fecha_fin}</b>. Le informo que las fechas establecidas para la  inscripción son el próximo <b>#{@fecha_inscripcion}</b>.\n\n"
+          
+          text = text + "Así mismo le informo que los cursos propedéuticos son aquellos destinados a preparar a los estudiantes aspirantes para ingresar a un Programa de Maestría. El objetivo de estos cursos será uniformar y nivelar  los conocimientos de los aspirantes a un Programa. Estos cursos podrán servir como evaluación para la admisión al Programa correspondiente, siempre y cuando se aprueben todas las materias con calificación mínima de 80 puntos. En caso de reprobar el curso propedéutico, los estudiantes podrán realizar por segunda ocasión el examen de admisión. Sin embargo, el curso propedéutico se podrá cursar sólo por una ocasión.\n\n"
+          
+          text = text + "Le envío una felicitación por este logro académico. Para cualquier duda o comentario al respecto, estoy a sus órdenes."
+         
+        elsif @applicant.status==2 # RECHAZADO
+          text = "Por medio del presente me permito informar a usted que el Comité de Estudios de Posgrado en su reunión del pasado <b>#{@fecha_revision}</b> ha decidido el ingreso de aspirantes a los programas académicos de este Centro. Después de ser analizada su solicitud se ha determinado no aceptarlo.\n\n"
+          text = text + "El Comité de Ingreso le recomienda, de ser de su interés, realizar de nueva cuenta la solicitud en la próxima convocatoria y atender a las siguientes recomendaciones en su anteproyecto de investigación:\n\n"
+          text = text + "\"#{@recomendacion}\"\n\n"
+          text = text + "A sus órdenes para cualquier duda o comentario al respecto."
+        end
+      
+       
+        pdf.text text, :align=>:justify,:inline_format=>true
+        pdf.text atentamente, :align=>:center, :inline_format=>true
+       
+        filename = "carta-aspirante-#{@applicant.id}.pdf"
+      
+        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      end #Prawn::Document
+    end # if params[:type]
+  end # def certificates
 
   def  download_file
     af = ApplicantFile.find(params[:id]).file
