@@ -935,28 +935,30 @@ class StaffsController < ApplicationController
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[110,60,65,60] ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,55,60,55] ) do |pdf|
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                             :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
                             :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
                             :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
       pdf.font "Montserrat"
-      pdf.font_size 10
+      pdf.font_size 11
       x = 232
-      y = 664 #664
+      y = 590 #664
       w = 255
       h = 50
  
       if !(options[:cert_type].eql? Certificate::STAFF_INDIVIDUAL)
-        pdf.text "<b>Coordinación de estudios de Posgrado</b>\nNo° de Oficio PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
+        pdf.text "<b>Coordinación de estudios de Posgrado\nOficio PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
 
         pdf.font_size 11
         y = y - 70
         x = 10
         h = 50
 
-        pdf.text "A quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "\n\n\n\nA quien corresponda\n", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text "<b>Presente.</b>", :align=>:left, :character_spacing=>4,:inline_format=>true
+
 
         y = y - 60
         h = 220

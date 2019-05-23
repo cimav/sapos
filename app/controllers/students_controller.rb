@@ -2598,7 +2598,7 @@ private
     @days        = time.day.to_s
     @month       = get_month_name(time.month)
 
-    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
+    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,60,60,60] ) do |pdf|
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                                   :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -2607,26 +2607,23 @@ private
       pdf.font "Montserrat"
       pdf.font_size 11
       x = 190 #232
-      y = 620 #565
+      y = 593 #565
       w = 300
       h = 50
         
-      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      pdf.text_box "<b>Coordinación de estudios de Posgrado</b>\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n#{options[:city]}, a #{@days} de #{@month} de #{@year}", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :width=>w, :height=>h
+      pdf.text "<b>Coordinación de estudios de Posgrado\nOficio  PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}", :inline_format=>true, :align=>:right ,:valign=>:top
 
-      pdf.font_size 12
+      pdf.font_size 11
       y = y - 80
       x = 10
       h = 50
 
-      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      pdf.text_box "A quien corresponda\nPresente:", :at=>[x,y], :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+      pdf.text "\n\n\n\nA quien corresponda\n", :align=>:left,:valign=>:top,:inline_format=>true
+      pdf.text "<b>Presente.</b>\n\n", :align=>:left, :character_spacing=>4,:inline_format=>true
 
       y = y - 60
       h = 220
       w = 480
-
-      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
 
       if !(options[:cert_type].in? [Certificate::SOCIAL_WELFARE, Certificate::CREDITS])
         if @op_asesor.eql? 1
@@ -2650,8 +2647,7 @@ private
 
       @extension   = "\n\nSe extiende la presente constancia a petición del interesado para los fines legales a que haya lugar."
 
-      if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-      pdf.text_box "#{options[:text]}#{@point}#{@extension}", :at=>[x,y], :align=>:justify,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+      pdf.text "#{options[:text]}#{@point}#{@extension}", :align=>:justify,:valign=>:top,:inline_format=>true
 
       if options[:cert_type] == Certificate::VISA 
         @student_image_uri = @student.image_url.to_s
@@ -2661,22 +2657,28 @@ private
         w = w - 150
         h = 155
         @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
-        if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        
+        #pdf.text @atentamente, :align=>:right,:valign=>:top,:inline_format=>true
  
         x = x -150
+        y = y + 20
         w = 150
         h = 155
-        if @rectangles then pdf.stroke_rectangle [x,y+20], w, h end
-        pdf.bounding_box [x,y+20],:width=>w,:height=>h do
-          pdf.image "#{@rails_root}/public#{@student_image_uri}", :position=>:left,:width=>w,:height=>h
+
+        pdf.text "\n\n",:inline_format=>true
+        pdf.image "#{@rails_root}/public#{@student_image_uri}", :position=>:left,:width=>w,:height=>h
+       
+        pdf.bounding_box [pdf.cursor,280],:width=>350,:height=>100 do
+          #pdf.stroke_bounds
+          pdf.text @atentamente,:align=>:center,:valign=>:center, :inline_format=>true        
         end
+  
       else
-        y = y - 222 #202
+        y = y - 200 #222
         h = 155
-        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        @atentamente = "\n\n\n\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text @atentamente, :align=>:center,:valign=>:top,:inline_format=>true
       end
 
       filename = options[:filename]
