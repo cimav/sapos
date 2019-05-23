@@ -481,6 +481,8 @@ class InternshipsController < ApplicationController
       @firma   = "#{@area.leader}"
       @puesto  = "#{@area.name}"
     end
+ 
+    atentamente = "\n\n\n\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
 
     if params[:type] == "aceptacion"
       @consecutivo = get_consecutive(@internship, time, Certificate::ACCEPTANCE)
@@ -519,7 +521,7 @@ class InternshipsController < ApplicationController
       end
 
 
-      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
+      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,60,60,60] ) do |pdf|
         pdf.font_families.update(
             "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                               :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -532,43 +534,32 @@ class InternshipsController < ApplicationController
         w = 300
         h = 50
 
+        pdf.text "<b>Coordinación de estudios de Posgrado\nOficio  PO - #{@consecutivo}/#{@year}</b>\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right
 
 
-        pdf.text_box "Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :at=>[x,y], :align=>:right ,:valign=>:top, :height=>h
+        pdf.text "\n\n\n\nA quien corresponda", :align=>:left, :inline_format=>true
+        pdf.text "<b>Presente.</b>\n\n", :align=>:left, :character_spacing=>4,:inline_format=>true
 
-        x = 20
-        y -= 70
-        w = 300
-        pdf.font_size 12
-
-        @a_quien_corr = "A quien corresponda \n\n <b>Presente.-</b>"
-
-        pdf.text_box @a_quien_corr, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
-
-        x = 20
-        y -= 60
-        w = 300
 
         @parrafo1 = "Por medio de la presente hago constar que #{@genero2} alumn#{@genero} <b>#{@nombre}</b>, perteneciente a <b>#{@institucion}</b>, de la carrera de <b>#{@carrera}</b> y con No. de control <b>#{@numero}</b> está aceptad#{@genero} en este Centro de Investigación para realizar <b>#{@internado}</b>, en el departamento de <b>#{@departamento}</b>, bajo la supervisión de <b>#{@asesor}</b>, cubriendo un total de <b>#{@horas}</b> Hrs., dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} del #{@start_year} al #{@end_day} de #{@end_month} del #{@end_year}</b> del presente año en el siguiente horario de <b>#{@horario}</b>, en este Centro de Investigación, desarrollando el siguiente proyecto: "
 
-        pdf.text_box @parrafo1, :at=>[x, y], :align=>:justify, :valign=>:top, :inline_format=>true
+        pdf.text @parrafo1, :align=>:justify, :inline_format=>true
 
         x= 40
         y -= 150
 
-        pdf.text_box "<b>#{@proyecto}</b>", :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+        pdf.text "\n<b>#{@proyecto}</b>\n\n", :align=>:center,:inline_format=>true
 
         @parrafo2 = "Se extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
         y -= 40
         x = 20
-        pdf.text_box @parrafo2, :at=>[x,y], :align=>:justify,:valign=>:top,:inline_format=>true
+        pdf.text @parrafo2, :align=>:justify,:inline_format=>true
 
         y = y - 100 #202
         h = 155
         x = 98
 
-        @atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
-        pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+        pdf.text atentamente, :align=>:center,:inline_format=>true
         filename = "carta-aceptacion-#{@internship.id}.pdf"
 
         send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
@@ -613,7 +604,7 @@ class InternshipsController < ApplicationController
         @genero2 = "x"
       end
 
-      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>60 ) do |pdf|
+      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,60,60,60] ) do |pdf|
         pdf.font_families.update(
             "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                               :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -622,30 +613,22 @@ class InternshipsController < ApplicationController
         pdf.font "Montserrat"
         pdf.font_size 11
 
-        pdf.text "\n\n\n\n\n\nCoordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right ,:valign=>:top
+        pdf.text "<b>Coordinación de estudios de Posgrado\nOficio  PO - #{@consecutivo}/#{@year}</b>\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right
 
-        pdf.font_size 12
+        pdf.text "\n\n\n\nA quien corresponda", :align=>:left, :inline_format=>true
+        pdf.text "<b>Presente.</b>\n\n", :align=>:left, :character_spacing=>4,:inline_format=>true
 
-        correspondencia = "\n\nA quien corresponda \n <b>Presente.-</b>"
-        pdf.text correspondencia, :align=>:justify, :valign=>:top, :inline_format=>true
-
-        parrafo1 = "\n\nPor medio de la presente hago constar que el alumno <b>#{@nombre}</b>, de la carrera de <b>#{@carrera}</b> perteneciente a <b>#{@institucion}</b> y con número de control <b>#{@numero}</b> realizó <b>#{@internship_type}</b>, dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} de #{@start_year} al #{@end_day} de #{@end_month} de #{@end_year}</b> cubriendo un total de <b>#{@horas}</b> horas en este Centro de Investigación, desarrollando las siguientes actividades:"
+        parrafo1 = "Por medio de la presente hago constar que el alumno <b>#{@nombre}</b>, de la carrera de <b>#{@carrera}</b> perteneciente a <b>#{@institucion}</b> y con número de control <b>#{@numero}</b> realizó <b>#{@internship_type}</b>, dentro del periodo comprendido del <b>#{@start_day} de #{@start_month} de #{@start_year} al #{@end_day} de #{@end_month} de #{@end_year}</b> cubriendo un total de <b>#{@horas}</b> horas en este Centro de Investigación, desarrollando las siguientes actividades:"
         pdf.text parrafo1, :align=>:justify, :valign=>:top, :inline_format=>true
-
-        pdf.font_size 11
 
         actividades = "\n<b>#{@internado}</b>"
         pdf.text actividades, :align=>:justify,:valign=>:top,:inline_format=>true
-
-        pdf.font_size 12
 
         parrafo2 = "\nQue nos reporta con resultados muy satisfactorios el asesor <b>#{@asesor}</b>, una puntuación de <b>#{@puntuacion}</b>, por lo que no tenemos reserva alguna en felicitarlo por su excelente formación."
         pdf.text parrafo2, :align=>:justify,:valign=>:top,:inline_format=>true
 
         parrafo3 = "\nSe extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
         pdf.text parrafo3, :align=>:justify,:valign=>:top,:inline_format=>true
-
-        pdf.font_size 11
 
         atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
         
@@ -697,11 +680,56 @@ class InternshipsController < ApplicationController
         @genero2 = "x"
       end
 
+      Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,60,60,60] ) do |pdf|
+        pdf.font_families.update(
+            "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
+                              :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
+                              :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
+                              :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
+        pdf.font "Montserrat"
+        pdf.font_size 11
+
+        pdf.text "<b>Coordinación de estudios de Posgrado\nOficio  PO - #{@consecutivo}/#{@year}</b>\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right
+
+        pdf.text "\n\n\n\nA quien corresponda", :align=>:left, :inline_format=>true
+        pdf.text "<b>Presente.</b>\n\n", :align=>:left, :character_spacing=>4,:inline_format=>true
+       
+        text =  "Por medio de la presente hago constar que #{@genero2} alumn#{@genero} <b>#{@nombre},</b> perteneciente a <b>#{@institucion}</b>, de la carrera de <b>#{@carrera}</b> y con No. de control, <b>#{@numero}</b> realizó sus <b>#{@internado}</b>, durante del periodo comprendido del <b>#{@start_day} de #{@start_month} del #{@start_year}</b> al <b>#{@end_day} de #{@end_month} del #{@end_year}</b> en este Centro de Investigación, desarrollando el siguiente proyecto: \n\n "
+    
+        pdf.text text, :align=>:justify,:inline_format=>true
+       
+        text = "<b>#{@proyecto}</b>\n\n"
+
+        pdf.text text, :align=>:center,:inline_format=>true
+       
+        text = " Asimismo se autoriza al C.<b> #{@nombre}</b> el uso de la información generada en dicho proyecto para efecto de su titulación en esta Institución Educativa.\n\n"
+       
+        pdf.text text, :align=>:justify,:inline_format=>true
+        
+        text = "Se extiende la presente constancia a petición del interesado para los fines a que haya lugar."   
+        pdf.text text, :align=>:justify,:inline_format=>true
+       
+        atentamente = "\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
+        
+        firma_asesor = "\n<b>Vo. Bo \n\n\n\n#{@asesor}\n Asesor Responsable</b>"
+
+        pdf.text "\n"
+        data  = [[atentamente,firma_asesor]]
+        tabla = pdf.make_table(data, :width => 500, :cell_style => {:align=>:center,:size => 11, :padding => 0, :inline_format => true, :border_width => 0}, :position => :center, :column_widths => [250,250])
+        tabla.draw
+       
+       
+       
+        filename = "carta-uso-informacion-#{@internship.id}.pdf"
+        send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
+      end #Prawn::Document
+=begin
       html = render_to_string(:layout => 'certificate' , :template=> 'internships/certificates/constancia_uso_informacion')
       kit = PDFKit.new(html, :page_size => 'Letter', :margin_top => '0.1in', :margin_right => '0.1in', :margin_left => '0.1in', :margin_bottom => '0.1in')
       filename = "carta-uso-informacion-#{@internship.id}.pdf"
       send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
       return
+=end
     end
   end
 
