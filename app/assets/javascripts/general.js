@@ -185,9 +185,9 @@ function searchByCommand(command,searchField){
       $.each(objects,function(key,val){
         var my_search_text = ""
         if($("#accent_check").prop("checked")){
-          my_search_text = val.first_name+" "+val.last_name
+          my_search_text = val.first_name+" "+val.last_name+" "+val.last_name2
         }else{
-          my_search_text = accent_finder(val.first_name+" "+val.last_name);
+          my_search_text = accent_finder(val.first_name+" "+val.last_name+" "+val.last_name2);
         }
 
         if(my_search_text.search(regex) != -1){
