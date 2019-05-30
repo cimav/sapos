@@ -20,7 +20,7 @@ class InternshipFile < ActiveRecord::Base
     
   REQUESTED_DOCUMENTS = {
     NORMAL              => 'Documento genérico',
-    SIGN_REQUEST        => 'Formato de registro con firmas',
+    SIGN_REQUEST        => 'Formato de registro CIMAV escaneado con firmas',
     INSTITUTION_REQUEST => 'Solicitud oficial de la institución de procedencia',
     REGISTRATION_PROOF  => 'Solicitud de la institución de procedencia',
     COURSE              => 'Curso de seguridad e higiene aprobado',
