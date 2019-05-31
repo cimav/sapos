@@ -22,7 +22,7 @@ class InternshipFile < ActiveRecord::Base
     NORMAL              => 'Documento genérico',
     SIGN_REQUEST        => 'Formato de registro CIMAV escaneado con firmas',
     INSTITUTION_REQUEST => 'Solicitud oficial de la institución de procedencia',
-    REGISTRATION_PROOF  => 'Solicitud de la institución de procedencia',
+    REGISTRATION_PROOF  => 'Constancia de estudios vigente',
     COURSE              => 'Curso de seguridad e higiene aprobado',
     MEDICAL_PROOF       => 'Comprobante de Servicio Médico',
     PHOTO_ID            => 'Identificación Oficial con Fotografía',
