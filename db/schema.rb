@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20181002184405) do
+ActiveRecord::Schema.define(:version => 20190605152403) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -741,6 +741,7 @@ ActiveRecord::Schema.define(:version => 20181002184405) do
     t.integer "student_id"
     t.integer "staff_id"
     t.integer "term_course_id"
+    t.integer "teacher_evaluation_type"
   end
 
   create_table "students", :force => true do |t|
@@ -848,9 +849,10 @@ ActiveRecord::Schema.define(:version => 20181002184405) do
     t.integer  "question10"
     t.integer  "question11"
     t.integer  "question12"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
     t.text     "notes"
+    t.integer  "teacher_evaluation_type"
   end
 
   add_index "teacher_evaluations", ["staff_id"], :name => "index_teacher_evaluations_on_staff_id"
