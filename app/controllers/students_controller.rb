@@ -35,21 +35,28 @@ class StudentsController < ApplicationController
   end
 
   def live_search
-    @order_by = params[:order_by] || "last_name"
+    order_by = params[:order_by] || "last_name"
+    my_select = "student.id as id, first_name,last_name,last_name2,program_id,card,gender"
 
-    my_select = "id,first_name,last_name,last_name2,program_id,card,gender"
+    includers  = nil
+    joiners    = nil
+    where      = nil
+    where_text = nil
+   
     if current_user.program_type==Program::ALL
-      @students = Student.select(my_select).order(@order_by).includes(:program)
+      (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
+      (joiners.nil?)   ? (joiners = nil) : (joiners = nil)
+      (where.nil?)     ? (where = nil) : (where = nil)
     else
-      @students = Student.select(my_select).joins(:program => :permission_user).where(:permission_users=>{:user_id=>current_user.id}).order(@order_by).includes(:program)
+      (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
+      (joiners.nil?)   ? (joiners = {:program=> permission_user}) : (joiners[:program]= premission_user)
+      (where.nil?)     ? (where = {:permission_users=>{:user_id=>current_user.id}}) : (where[:permission_users]={:user=>current_user.id})
     end
 
     if params[:program_type] != '0' then
-      @students = @students.select(my_select).joins(:program).where(:programs=>{:program_type=>params[:program_type]})
-    end
-
-    if params[:program] != '0' then
-      @students = @students.select(my_select).where(:program_id => params[:program])
+      (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
+      (joiners.nil?)   ? (joiners = {:program=> :permission_user}) : (joiners[:program]= :permission_user)
+      (where.nil?)     ? (where = {:programs=>{:program_type=>params[:program_type]}}) : (where[:programs]= {:program_type=>params[:program_type]})
     end
 
     if current_user.campus_id != 0
@@ -57,59 +64,64 @@ class StudentsController < ApplicationController
     end
 
     if params[:campus] != '0' then
-      @students = @students.select(my_select).where(:campus_id => params[:campus])
+      (where.nil?) ? (where = {:campus_id => params[:campus]}) : (where[:campus_id] = params[:campus])
     end
 
     if params[:supervisor] != '0' then
-      @students = @students.select(my_select).where("(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]})
+      (where.nil?) ? (where = ["(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]}]) : (where)
     end
 
     if params[:status] == 'todos_activos' then
-      @students = @students.select(my_select).where("status = #{Student::ACTIVE}")
+      (where.nil?) ? (where = {:status => Student::ACTIVE}) : (where[:status] = Student::ACTIVE)
     end
 
     if params[:status] == 'activos_inscritos' then
-      @students = @students.select(my_select).where("status = #{Student::ACTIVE} AND students.id IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
+      (where.nil?) ? (where = {:status => Student::ACTIVE}) : (where[:status] = Student::ACTIVE)
+      query = "students.id IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))"
+      (where_text.nil?) ? (where = query):(where << " AND ("+query+")")
     end
-
+    
     if params[:status] == 'activos_no_inscritos' then
-      @students = @students.select(my_select).where("status = #{Student::ACTIVE} AND students.id NOT IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))")
+      (where.nil?) ? (where = {:status => Student::ACTIVE}) : (where[:status] = Student::ACTIVE)
+      query = "students.id NOT IN (SELECT student_id FROM terms INNER JOIN term_students ON terms.id = term_id WHERE terms.status IN (#{Term::OPEN}, #{Term::PROGRESS}, #{Term::GRADING}))"
+      (where_text.nil?) ? (where = query):(where << " AND ("+query+")")
     end
 
     if params[:status] == 'todos_egresados' then
-      @students = @students.select(my_select).where("status IN (#{Student::GRADUATED}, #{Student::FINISH})")
+      (where.nil?) ? (where = {:status => [Student::GRADUATED,Student::FINISH]}) : (where[:status] = [Student::GRADUATED,Student::FINISH])
     end
 
     if params[:status] == 'egresados_graduados' then
-      @students = @students.select(my_select).where("status = #{Student::GRADUATED}")
+      (where.nil?) ? (where = {:status => Student::GRADUATED}) : (where[:status] = Student::GRADUATED)
     end
-
+    
     if params[:status] == 'egresados_no_graduados' then
-      @students = @students.select(my_select).where("status = #{Student::FINISH}")
+      (where.nil?) ? (where = {:status => Student::FINISH}) : (where[:status] = Student::FINISH)
     end
 
     if params[:status] == 'baja_temporal' then
-      @students = @students.select(my_select).where("status = #{Student::INACTIVE}")
+      (where.nil?) ? (where = {:status => Student::INACTIVE}) : (where[:status] = Student::INACTIVE)
     end
 
     if params[:status] == 'baja_definitiva' then
-      @students = @students.select(my_select).where("status = #{Student::UNREGISTERED}")
+      (where.nil?) ? (where = {:status => Student::UNREGISTERED}) : (where[:status] = Student::UNREGISTERED)
     end
 
     if params[:status] == 'preinscritos' then
-      @students = @students.select(my_select).where("status = #{Student::PENROLLMENT}")
+      (where.nil?) ? (where = {:status => Student::PENROLLMENT}) : (where[:status] = Student::PENROLLMENT)
     end
 
     # filtrar por beca
     if params[:scholarship_type] != "10" then
-      @students = @students.select(my_select).where("scholarship_type = #{params[:scholarship_type]}")
+      (where.nil?) ? (where = {:scholarship_type => params[:scholarship_type]}) : (where[:scholarship_type] = params[:scholarship_type])
     end
 
     # filtrar por tiempo de estudio
     if params[:student_time] != "10" then
-      @students = @students.select(my_select).where("student_time = #{params[:student_time]}")
+      (where.nil?) ? (where = {:student_time => params[:student_time]}) : (where[:student_time] = params[:student_time])
     end
 
+   s = []
 
 =begin
     if !params[:q].blank?
@@ -120,9 +132,6 @@ class StudentsController < ApplicationController
       end
     end
 =end
-
-
-    s = []
 
     if !params[:status_activos].blank?
       s << params[:status_activos].to_i
@@ -137,8 +146,10 @@ class StudentsController < ApplicationController
     end
 
     if !s.empty?
-      @students = @students.select(my_select).where("status IN (#{s.join(',')})")
+      (where.nil?) ? (where = {:status => s}) : (where[:status] = s)
     end
+
+    @students = Student.select(my_select).joins(joiners).where(where).where(where_text).order(order_by).includes(includers)
 
     # Descartamos los que tienen status de borrado
     #@students = @students.where("status<>0")
