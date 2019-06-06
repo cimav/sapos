@@ -103,8 +103,9 @@
                 %li= link_to "Servicios CIMAV", internships_path
               - if can? :read, Seminar
                 %li= link_to "Seminarios Departamentales","/seminarios"
-              
-
+      - if Rails.env.development?
+        #announce
+          %span= "Sitio de pruebas"
       #account
         = current_user.email
         = link_to "[salir]", "/logout"
