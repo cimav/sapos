@@ -59,6 +59,13 @@ class StudentsController < ApplicationController
       (where.nil?)     ? (where = {:programs=>{:program_type=>params[:program_type]}}) : (where[:programs]= {:program_type=>params[:program_type]})
     end
 
+    if params[:program] != '0' then
+      (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
+      (joiners.nil?)   ? (joiners = {:program=> :permission_user}) : (joiners[:program]= :permission_user)
+      (where.nil?)     ? (where = {:programs=>{:id=>params[:program]}}) : (where[:programs]= {:id=>params[:program]})
+    end
+
+
     if current_user.campus_id != 0
       params[:campus] = current_user.campus_id
     end
@@ -68,7 +75,19 @@ class StudentsController < ApplicationController
     end
 
     if params[:supervisor] != '0' then
-      (where.nil?) ? (where = ["(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]}]) : (where)
+      (where.nil?) ? (where = {:supervisor=>params[:supervisor]}) : (where[:supervisor]= params[:supervisor])
+    end
+
+    if params[:scholarship_type] != '10' then
+      (where.nil?) ? (where = {:scholarship_type=>params[:scholarship_type]}) : (where[:scholarship_type]= params[:scholarship_type])
+    end
+
+    if params[:student_time] != '10' then
+      (where.nil?) ? (where = {:student_time => params[:student_time]}) : (where[:student_time] = params[:student_time])
+    end
+    
+    if params[:genero] != '0' then
+      (where.nil?) ? (where = {:gender => params[:genero]}) : (where[:gender] = params[:genero])
     end
 
     if params[:status] == 'todos_activos' then
@@ -111,15 +130,6 @@ class StudentsController < ApplicationController
       (where.nil?) ? (where = {:status => Student::PENROLLMENT}) : (where[:status] = Student::PENROLLMENT)
     end
 
-    # filtrar por beca
-    if params[:scholarship_type] != "10" then
-      (where.nil?) ? (where = {:scholarship_type => params[:scholarship_type]}) : (where[:scholarship_type] = params[:scholarship_type])
-    end
-
-    # filtrar por tiempo de estudio
-    if params[:student_time] != "10" then
-      (where.nil?) ? (where = {:student_time => params[:student_time]}) : (where[:student_time] = params[:student_time])
-    end
 
    s = []
 

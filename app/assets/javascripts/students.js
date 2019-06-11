@@ -45,14 +45,7 @@ $('#order_by').live("change", function() {
 });
 
 $('#genero').live("change", function() {
-  $("#items-list").html("<img src=\"\/images\/ajax-load2.gif\">");
-  
-  valor = $(this).val();
-  h = {"command": null, "data": null};
-  if(valor!=0){h = {"command": "gender", "data": valor}}
-  
-  searchByCommand(h);  
-  setItems(items);
+    liveSearch({json: true});
 });
 
 $('.div-config').live({
