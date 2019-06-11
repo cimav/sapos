@@ -1,4 +1,4 @@
-# coding: utf-8
+#[6~ coding: utf-8
 namespace :admin do
   desc "System Administrator Scripts"
   ADMIN_MAIL        = ""
@@ -227,4 +227,67 @@ namespace :admin do
     end
     p "#{counter} registros cambiados"
   end #task fill_end_date
+
+  ############################################################################################################################
+  # search_and_purify: busca los espacios en blanco sobrantes de los registros y los purifica
+  ############################################################################################################################
+  task :search_and_purify => :environment do
+    students  = Student.all
+    counter = 0
+    
+    students.each do |s|
+      puts "##### ID: #{s.id}"
+      full_name = String.new
+  
+      first_name = purifier(s.first_name) if !s.first_name.blank?
+      last_name  = purifier(s.last_name) if !s.last_name.blank?
+      last_name2 = purifier(s.last_name2) if !s.last_name2.blank?
+
+      s.first_name = first_name if !first_name.nil?
+      s.last_name = last_name if !last_name.nil?
+      s.last_name2 = last_name2 if !last_name2.nil?
+
+
+      full_name = "#{first_name.to_s.gsub(" ","")}#{last_name.to_s.gsub(" ","")}#{last_name2.to_s.gsub(" ","")}"
+
+      if full_name.size>0
+        puts "|#{first_name}|#{last_name}|#{last_name2}|"
+        counter = counter + 1
+      
+        if s.save(validate: false)
+          puts "Save!!"
+        else
+          puts "Errors: #{s.errors.full_messages}"
+        end
+      end
+    end # students.each
+    
+    puts "Estudiantes: #{students.size} Blancos: #{counter}"
+  end ## task search_and_purify
 end ## namespace
+
+################################################################### METODOS #################################################
+def purifier(string)
+  flag = false
+  
+  if string.match(/^\s+.*/)
+    flag = true
+  end
+
+  if string.match(/.*\s+$/)
+    flag = true
+  end
+
+  if string.match(/\s\s+/)
+    flag = true
+  end
+
+  if flag
+    string          = string.strip
+    string_array    = string.split(" ")
+    string_purified = string_array.join(" ")
+    return string_purified
+  else
+    return nil
+  end
+end
