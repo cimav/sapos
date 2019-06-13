@@ -43,28 +43,24 @@ class StudentsController < ApplicationController
     where      = nil
     where_text = nil
    
-    if current_user.program_type==Program::ALL
+    logger.info "######################## PROGRAM TYPE ####################### #{current_user.program_type}"
+    if current_user.program_type.to_i.eql? Program::ALL
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
-      (joiners.nil?)   ? (joiners = nil) : (joiners = nil)
-      (where.nil?)     ? (where = nil) : (where = nil)
     else
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
-      (joiners.nil?)   ? (joiners = {:program=> permission_user}) : (joiners[:program]= premission_user)
+      (joiners.nil?)   ? (joiners = {:program=> :permission_user}) : (joiners[:program]= :permission_user)
       (where.nil?)     ? (where = {:permission_users=>{:user_id=>current_user.id}}) : (where[:permission_users]={:user=>current_user.id})
     end
 
     if params[:program_type] != '0' then
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
-      (joiners.nil?)   ? (joiners = {:program=> :permission_user}) : (joiners[:program]= :permission_user)
       (where.nil?)     ? (where = {:programs=>{:program_type=>params[:program_type]}}) : (where[:programs]= {:program_type=>params[:program_type]})
     end
 
     if params[:program] != '0' then
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
-      (joiners.nil?)   ? (joiners = {:program=> :permission_user}) : (joiners[:program]= :permission_user)
       (where.nil?)     ? (where = {:programs=>{:id=>params[:program]}}) : (where[:programs]= {:id=>params[:program]})
     end
-
 
     if current_user.campus_id != 0
       params[:campus] = current_user.campus_id
@@ -210,7 +206,7 @@ class StudentsController < ApplicationController
 		   'Meses' => months,
 		   'Asesor' => (Staff.find(s.supervisor).full_name rescue ''),
 		   'Coasesor' => (Staff.find(s.co_supervisor).full_name rescue ''),
-       'Ubicacion' => s.location,
+                   'Ubicacion' => s.location,
 		   'Tesis' => s.thesis.title,
 		   'Sinodal1' => (Staff.find(s.thesis.examiner1).full_name rescue ''),
 		   'Sinodal2' => (Staff.find(s.thesis.examiner2).full_name rescue ''),
