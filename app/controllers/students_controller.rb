@@ -36,7 +36,7 @@ class StudentsController < ApplicationController
 
   def live_search
     order_by = params[:order_by] || "last_name"
-    my_select = "student.id as id, first_name,last_name,last_name2,program_id,card,gender"
+    my_select = "student.id as id, first_name,last_name,last_name2,program_id,card,gender,image"
 
     includers  = nil
     joiners    = nil
@@ -162,7 +162,7 @@ class StudentsController < ApplicationController
 
     respond_with do |format|
       format.html do
-         render json: @students.select("id,first_name,last_name,last_name2,program_id,card,image")
+         render json: @students
       end
       format.xls do
         rows = Array.new
@@ -188,9 +188,8 @@ class StudentsController < ApplicationController
           last_advance = s.advance.where(:status=>["P","C"],).order(:advance_date).first
 
 	  rows << {'Matricula' => s.card,
-		   'Nombre' => s.first_name,
-                   'Apellidos' => "#{s.last_name} #{s.last_name2}",
-                   'Correo'  => s.email,
+		   'Nombre' => "#{s.full_name}",
+                   'Correo' =>(s.email_cimav.blank? ? s.email : s.email_cimav),
                    'Sexo' => s.gender,
 		   'Estado' => s.status_type,
 		   "Fecha_Nac" => s.date_of_birth,
@@ -201,6 +200,7 @@ class StudentsController < ApplicationController
 		   "Institucion_Anterior" => (Institution.find(s.previous_institution).full_name rescue ''),
 		   "Campus" => (s.campus.name rescue ''),
 		   'Programa' => s.program.name,
+                   'Promedio'   => (s.get_average rescue ''),
 		   'Inicio' => s.start_date,
 		   'Fin' => end_date,
 		   'Meses' => months,
@@ -219,14 +219,17 @@ class StudentsController < ApplicationController
                    'Tutor3' => (Staff.find(last_advance.tutor3).full_name rescue ''),
                    'Tutor4' => (Staff.find(last_advance.tutor4).full_name rescue ''),
                    'Tutor5' => (Staff.find(last_advance.tutor5).full_name rescue ''),
+                   'Fecha_baja_definitiva' => (s.definitive_inactive_date rescue ''),
+                   'Fecha_baja_temporal'   => (s.inactive_date rescue '')
 		   }
              
 	end
-	column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
+        column_order = ["Matricula", "Nombre", "Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa","Promedio", "Inicio", "Fecha_baja_temporal", "Fecha_baja_definitiva", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
 	to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
   end
+
 
   def set_xls
     rows = Array.new
