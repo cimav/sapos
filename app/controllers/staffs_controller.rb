@@ -168,20 +168,21 @@ class StaffsController < ApplicationController
   end ## end reporte
 
   def evaluation
-    @tcsch = TermCourseSchedule.select("distinct term_course_schedules.staff_id, term_course_schedules.term_course_id").joins(:term_course=>:term).where("terms.name like '%2018-1%'")
-    
-    numeric = !params[:numeric].to_i.zero?
+    evaluation_type = params[:evaluation_type]
+
+    @tcsch = TermCourseSchedule.select("distinct term_course_schedules.staff_id, term_course_schedules.term_course_id").joins(:term_course=>:term).where("terms.name like '%2019-1%'")
     
     rows = Array.new
     
     @tcsch.each do |tcs|
-      averages= get_teacher_evaluation_averages(tcs.term_course_id,tcs.staff_id)
+      averages= get_teacher_evaluation_averages(tcs.term_course_id,tcs.staff_id,evaluation_type)
 
       if !(averages["question1"].nil?)
         f_hash = Hash.new
         f_hash["Nombre"]        = tcs.staff.full_name
         f_hash["Curso"]         = tcs.term_course.course.name
         f_hash["Ciclo Escolar"] = tcs.term_course.term.name
+        f_hash["Tipo de Eval"]    = TeacherEvaluation::TEACHER_EVALUATION_TYPE[evaluation_type.to_i]
         f_hash["Alumnos Encuestados"] = averages["total_evaluations"]        
 
         (1..12).each do |i|
@@ -194,7 +195,7 @@ class StaffsController < ApplicationController
       end#if question
     end#tcsch each
 
-    column_order=["Nombre","Curso","Ciclo Escolar","Alumnos Encuestados"]
+    column_order=["Nombre","Curso","Ciclo Escolar","Tipo de Eval","Alumnos Encuestados"]
     (1..12).each do |i|
       column_order.push("#{TeacherEvaluation.question_text(i)}")
     end
@@ -202,9 +203,10 @@ class StaffsController < ApplicationController
     to_excel(rows,column_order,"Evaluacion","Evaluacion")
   end#def evaluation
 
-  def get_teacher_evaluation_averages(tc_id,s_id)
+  def get_teacher_evaluation_averages(tc_id,s_id,evaluation_type)
     averages = Hash.new
-    teacher_evaluations = TeacherEvaluation.where(:term_course_id=>tc_id,:staff_id=>s_id)
+    teacher_evaluations = TeacherEvaluation.where(:term_course_id=>tc_id,:staff_id=>s_id,:teacher_evaluation_type=>evaluation_type)
+
     counter  = 0
 
     averages["comments"] = ""

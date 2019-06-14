@@ -15,6 +15,14 @@ class TeacherEvaluation < ActiveRecord::Base
       RARELY => "Casi nunca",
       NEVER => "Nunca"}
 
+  INTERMEDIATE = 1
+  FINAL        = 99
+
+  TEACHER_EVALUATION_TYPE = {
+    INTERMEDIATE => "Intermedio",
+    FINAL => "Final"
+  }
+
   def get_answer(answer)
     ANSWERS[answer]
   end
