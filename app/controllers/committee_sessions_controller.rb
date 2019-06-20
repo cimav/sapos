@@ -427,7 +427,7 @@ class CommitteeSessionsController < ApplicationController
         if @c_a.auth.to_i.eql? 1 ####### Si ############ PRORROGA ############
           # CABECERA
           people = "C. #{student.full_name}"
-          cabecera(pdf,people)
+          cabecera(pdf,people,@type)
 
           # CONTENIDO
           texto = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado le ha autorizado una prórroga para presentar sus requisitos de titulación ante este comité a mas tardar el #{l_date.day} de #{get_month_name(l_date.month)} de #{l_date.year}."
@@ -446,7 +446,7 @@ class CommitteeSessionsController < ApplicationController
         elsif @c_a.auth.to_i.eql? 2 ####### No ############ CONSTANCIA DE BAJA ############
           # CABECERA
           people = "C. #{student.full_name}"
-          cabecera(pdf,people)
+          cabecera(pdf,people,@type)
           
           # CONTENIDO
           texto = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado ha determinado su baja definitiva por incumplimiento del Programa de <b>#{student.program.name}</b>, con base en el artículo 30 del Reglamento de Estudios de Posgrado vigente que establece que el estudiante podrá ser dado de baja por:\n\n"
@@ -464,7 +464,7 @@ class CommitteeSessionsController < ApplicationController
         elsif @c_a.auth.to_i.eql? 3 ############ RENUNCIA EXPLICITA #############
           # CABECERA
           people = "C. #{student.full_name}"
-          cabecera(pdf,people)
+          cabecera(pdf,people,@type)
 
           # CONTENIDO
           texto = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado ha determinado su baja definitiva al programa de posgrado al que se encuentra adscrito por renuncia explícita."
@@ -491,7 +491,7 @@ class CommitteeSessionsController < ApplicationController
         program = Program.find(@c_a.auth)
         # CABECERA
         people = "C. #{student.full_name}"
-        cabecera(pdf,people)
+        cabecera(pdf,people,@type)
         texto = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado le ha autorizado el cambio de programa de #{student.program.name} al de #{program.name},\n\n Por lo anterior, deberá cumplir con la carga académica de acuerdo al plan de estudios aplicable en el Programa de posgrado que fue autorizado.\n\n Me encuentro a sus ordenes cualquier duda al respecto\n\n"
         pdf.text texto, :align=>:justify, :inline_format=>true
         # FIRMA
@@ -506,7 +506,7 @@ class CommitteeSessionsController < ApplicationController
         new_supervisor = Staff.find(tutor[0].attachable_id)
         # CABECERA
         people = "#{new_supervisor.title} #{new_supervisor.full_name_cap}"
-        cabecera(pdf,people)
+        cabecera(pdf,people,@type)
         # CONTENIDO
         texto = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado como director de tesis de #{student.full_name} del Programa de #{student.program.name}.\n\n A continuación le informo los avances que deberá tener el estudiante durante su trayectoria académica: \n\n"
         pdf.text texto, :align=>:justify, :inline_format=>true, :size=> size
@@ -532,6 +532,11 @@ class CommitteeSessionsController < ApplicationController
         texto= "\nMe encuentro a sus ordenes para cualquier duda al respecto. \n"
         pdf.text texto, :align=>:justify, :inline_format=>true
         #  FIRMA
+        #
+        if student.program.level.to_i.eql? 2
+          atentamente = atentamente.sub(/\n\n\n\n/,"\n").sub(/\n\n\n\n/,"\n\n")
+        end
+  
         pdf.text atentamente, :align=>:center, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, size: size
 
         # CCP
@@ -563,7 +568,7 @@ class CommitteeSessionsController < ApplicationController
         end
         
         people =  "#{comma_tutors.chop.chop}"
-        cabecera(pdf,people)
+        cabecera(pdf,people,@type)
         # CONTENIDO
         pdf.text "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado sinodal de <b>#{student.full_name}</b> adscrito al programa de <b>#{student.program.name}</b>.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :align=>:justify,:inline_format=>true
         #  FIRMA
@@ -608,7 +613,7 @@ class CommitteeSessionsController < ApplicationController
           end
           
           people = "#{comma_tutors}"
-          cabecera(pdf,people)
+          cabecera(pdf,people,@type)
          
           # CONTENIDO
           pdf.text "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité Tutoral de <b>#{student.full_name}</b> adscrito al programa de <b>#{student.program.name}</b>.\n\n Quedo a sus ordenes para cualquier duda al respecto.",  :align=>:justify,:inline_format=>true
@@ -702,7 +707,7 @@ class CommitteeSessionsController < ApplicationController
           h = 45
         end
         people =  "#{evals_text.chop.chop}"
-        cabecera(pdf,people)
+        cabecera(pdf,people,@type)
 
         # CONTENIDO
         text = "Por este conducto me permito solicitar a ustedes su amable apoyo con la finalidad de evaluar el programa"
@@ -736,7 +741,7 @@ class CommitteeSessionsController < ApplicationController
           @render_pdf = true
           ## PRESENTACION
           people = "C. #{student.full_name}\n Estudiante del programa de #{student.program.name}"
-          cabecera(pdf,people)
+          cabecera(pdf,people,@type)
 
           # CONTENIDO
           text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
@@ -757,7 +762,7 @@ class CommitteeSessionsController < ApplicationController
         notes  = @c_a.committee_agreement_note[0].notes rescue ""
         ## PRESENTACION
         people = "#{area.leader}\n Jefe de #{area.name}\n CIMAV"
-        cabecera(pdf,people)
+        cabecera(pdf,people,@type)
         # CONTENIDO
         text = "En seguimiento al acuerdo tomado por el Comité de Estudios de Posgrado"
         text = "#{text} para la distribución de becas de posgrado me permito informar a Usted que el monto total asignado a su departamento es por la cantidad de $#{amount}."
@@ -783,7 +788,7 @@ class CommitteeSessionsController < ApplicationController
 
         ## PRESENTACION
         people = "#{internship.full_name}\n #{internship.institution.name}\n"
-        cabecera(pdf,people)
+        cabecera(pdf,people,@type)
 
         # CONTENIDO
         text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
@@ -807,7 +812,7 @@ class CommitteeSessionsController < ApplicationController
         materias    = @c_a.committee_agreement_object.where(:attachable_type=>"Course")
         ## PRESENTACION
         people = "#{student.full_name}"
-        cabecera(pdf,people)
+        cabecera(pdf,people,@type)
         # CONTENIDO
         text = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado autorizó la revalidación de los siguientes cursos:\n\n"
         pdf.text text, :align=>:justify,:inline_format=>true
@@ -850,7 +855,7 @@ class CommitteeSessionsController < ApplicationController
         end
         ## PRESENTACION
         people =  "#{staff.title} #{staff.full_name}"
-        cabecera(pdf,people)
+        cabecera(pdf,people,@type)
         # CONTENIDO
         text = "\nPor este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
         if auth.to_i.eql? 1
@@ -888,7 +893,7 @@ class CommitteeSessionsController < ApplicationController
           # PRESENTE
           tutor = Staff.find(t.attachable_id)
           comma_tutors = "#{tutor.title} #{tutor.full_name_cap}"
-          cabecera(pdf,comma_tutors)
+          cabecera(pdf,comma_tutors,@type)
           # CONTENIDO
           pdf.text "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado integrante del Comité de Pares de #{student.full_name} adscrito al programa de #{student.program.name}.\n\n Quedo a sus ordenes para cualquier duda al respecto.", :align=>:justify,:inline_format=>true
           #  FIRMA
@@ -959,7 +964,7 @@ class CommitteeSessionsController < ApplicationController
             else
               people =  "#{destiny_title} #{destiny_name}"
             end
-            cabecera(pdf,people)
+            cabecera(pdf,people,@type)
 
             # CONTENIDO
             text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
@@ -988,9 +993,14 @@ class CommitteeSessionsController < ApplicationController
     end
   end
 
-  def cabecera(pdf, people)
-    pdf.text "\n\n\n\n</b>#{people}</b>", :align=>:left,:inline_format=>true
-    pdf.text "<b>Presente.</b>\n\n", :align=>:left, :character_spacing=>4,:inline_format=>true
+  def cabecera(pdf, people, type)
+    if type.eql? 4
+      pdf.text "\n\n\n</b>#{people}</b>", :align=>:left,:inline_format=>true
+      pdf.text "<b>Presente.</b>\n", :align=>:left, :character_spacing=>4,:inline_format=>true
+    else
+      pdf.text "\n\n\n\n</b>#{people}</b>", :align=>:left,:inline_format=>true
+      pdf.text "<b>Presente.</b>\n\n", :align=>:left, :character_spacing=>4,:inline_format=>true
+    end
   end
 
   def memorandum
