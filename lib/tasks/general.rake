@@ -1,4 +1,5 @@
 # coding: utf-8
+require 'optparse'
 namespace :general do
   desc "General Variables and Methods"
   ############################################### GLOBAL VARIABLES #################################################################
@@ -217,6 +218,68 @@ namespace :general do
 
   end ## task alarm
 
+  ##################################################################################################################################
+  #####                                              TASK EXTERNALS                                                            #####
+  ##################################################################################################################################
+  task :externals_alarm => :environment do 
+    set_line("Iniciando script en externals alarm")
+  access      = "default"
+  only_check  = false
+
+  ARGV.each { |a| task a.to_sym do ; end }
+
+  ARGV.each_with_index do |a,index|
+    if index>0
+      if a.eql? "check"
+        access = "check"
+        only_check  = true
+      elsif a.eql? ""
+        access = "default"
+      else
+        puts "Opción desconocida"
+        exit
+      end
+    end#if index>0
+  end
+
+  advances_status = ['P']  
+  advance_type    = [1] 
+  terms_status    = [3]
+  programs_level  = [1,2]
+    
+  advances = Advance.select("advances.*,terms.id as terms_id").joins(:student=>[:term_students=>:term]).joins(:student=>:program).where(:status=>advances_status,:advance_type=>advance_type).where("terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date",terms_status,programs_level)
+  puts advances.size
+  #advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.title !=''",['P'],[3],[1,2],[1]).select("advances.*,terms.id as terms_id")
+  advances.each do |a|
+    t1 = Staff.find(a.tutor1) rescue nil
+    t2 = Staff.find(a.tutor2) rescue nil
+    t3 = Staff.find(a.tutor3) rescue nil
+    t4 = Staff.find(a.tutor4) rescue nil
+    t5 = Staff.find(a.tutor5) rescue nil
+
+    t_array = [t1,t2,t3,t4,t5]
+    
+    t_array.each do |t|
+      unless t.nil?
+        unless t.institution_id.eql? 1
+          puts "#{a.id} #{t.full_name}"
+          unless only_check
+            token = Token.new
+            token.attachable_id     = t.id
+            token.attachable_type   = t.class.to_s
+            token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
+            token.status            = 1
+            token.expires           = Term.find(a.terms_id).grade_end_date
+            token.save
+            content = "{:advance=>\"#{a.id}\",:staff=>\"#{t.id}\",:token=>\"#{token.token}\",:view=>4}"
+            send_mail(t.email,"Alerta Calificaciones",content)
+          end
+        end
+      end
+    end
+  end
+
+  end ## task externals_alarm
 end ## namespace
 
   ####################################################### METODOS ##############################################################
