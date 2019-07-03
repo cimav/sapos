@@ -27,7 +27,7 @@ class Internship < ActiveRecord::Base
   validates :health_insurance, :presence => true,:if=>"self.origin.eql? 0"
   validates :health_insurance_number, :presence => true,:if=>"self.origin.eql? 0"
   validates :accident_contact, :presence => true,:if=>"self.origin.eql? 0"
-  validate :start_date_vs_created_at, :if=>"self.origin.eql? 0"
+  validate :start_date_vs_created_at, :if=>"self.origin.eql? 0", :on=>:update
 
   after_create :add_extra
 
