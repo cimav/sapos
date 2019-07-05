@@ -229,9 +229,9 @@ namespace :admin do
   end #task fill_end_date
 
   ############################################################################################################################
-  # search_and_purify: busca los espacios en blanco sobrantes de los registros y los purifica
+  # search_and_purify_students: busca los espacios en blanco sobrantes de los registros y los purifica de tabla estudiantes
   ############################################################################################################################
-  task :search_and_purify => :environment do
+  task :search_and_purify_students => :environment do
     students  = Student.all
     counter = 0
     
@@ -261,9 +261,40 @@ namespace :admin do
         end
       end
     end # students.each
-    
     puts "Estudiantes: #{students.size} Blancos: #{counter}"
   end ## task search_and_purify
+
+  ##################################################################################################################################
+  # search_and_purify_internships: busca los espacios en blanco sobrantes de los registros y los purifica de tabla servicios CIMAV
+  ##################################################################################################################################
+  task :search_and_purify_internships => :environment do
+    internships  = Internship.all
+    counter = 0
+    internships.each do |i|
+      puts "##### ID: #{i.id}"
+      full_name = String.new
+ 
+      first_name = purifier(i.first_name) if !i.first_name.blank?
+      last_name  = purifier(i.last_name) if !i.last_name.blank?
+   
+      i.first_name = first_name if !first_name.nil?
+      i.last_name = last_name if !last_name.nil?
+
+      full_name = "#{first_name.to_s.gsub(" ","")}#{last_name.to_s.gsub(" ","")}"
+
+      if full_name.size>0
+        puts "|#{first_name}|#{last_name}"
+        counter = counter + 1
+
+        if i.save(validate: false)
+          puts "Save!!"
+        else
+          puts "Errors: #{i.errors.full_messages}"
+        end
+      end
+    end #internships.each
+    puts "Servicios: #{internships.size} Blancos: #{counter}"
+  end ## task search_and_purify_internships
 end ## namespace
 
 ################################################################### METODOS #################################################
