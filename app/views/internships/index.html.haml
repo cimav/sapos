@@ -34,14 +34,11 @@
         - campus_options += "<option value=\"#{camp.id}\">#{camp.name}</option>"
       = select_tag "campus", campus_options.html_safe
       
-      - year_options = "<option value=\"0\">Todos los años</option>"
+      - year_options = "<option value=\"0\" selected=\"selected\">Todos los años</option>"
       - year_options += "<option value=\"1\">Los últimos 2 años</option>"
 
       - @years.reverse.each_with_index do |y,index|
-        - if index.eql? 0
-          - year_options += "<option value=\"#{y}\" selected=\"selected\">#{y}</option>"
-        - else
-          - year_options += "<option value=\"#{y}\">#{y}</option>"
+        - year_options += "<option value=\"#{y}\">#{y}</option>"
           
       = select_tag "year", year_options.html_safe
 
