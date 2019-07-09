@@ -295,6 +295,66 @@ namespace :admin do
     end #internships.each
     puts "Servicios: #{internships.size} Blancos: #{counter}"
   end ## task search_and_purify_internships
+
+  ##################################################################################################################################
+  # search_and_finalize_internships: finaliza los servicios que por alguna razón se quedaron abiertos
+  ##################################################################################################################################
+  task :search_and_finalize_internships => :environment do
+    internships = Internship.where(:status=>0)
+    c_num   = 0
+    c_date  = 0
+    c_nulls = 0 
+
+    internships.each do |i|
+      date = Date.today
+      if i.end_date.nil? 
+        c_nulls = c_nulls + 1
+        
+        # si fueron creados hace mas de 6 meses pasan a inactivos
+        if i.created_at < Date.today-188
+          puts "#############"
+          puts i.full_name
+          puts "Start Date: #{i.start_date}"
+          puts "Created at: #{i.created_at}"
+          i.status = 2 #inactivo
+          unless i.save(validate: false)
+            puts "#{i.id} Error! #{i.errors.full_messages}"
+          end
+        end
+      else
+        if i.end_date < Date.today-188
+          c_date   = c_date + 1
+
+          i.status= 1  #finalizado
+          unless i.save(validate: false)
+            puts "#{i.id} Error! #{i.errors.full_messages}"
+          end
+        end
+      end
+
+    end
+    puts "Servicios: #{internships.size} Con fecha final de 6 meses: #{c_date}  Nulls: #{c_nulls}"
+  end ## task search_and_finalize_internships
+  
+  ##################################################################################################################################
+  # search_and_finalize_internships: finaliza los servicios que por alguna razón se quedaron abiertos
+  ##################################################################################################################################
+  task :search_and_finalize_if_certificate => :environment do
+    c_num = 0
+    internships = Internship.where(:status=>0)
+    internships.each do |i|
+      if i.end_date.nil?
+        certificates = Certificate.where(:attachable_type=>i.class.to_s,:attachable_id=>i.id,:type_id=>9)
+        certificates.each do |c|
+          c_num = c_num + 1
+          puts "Certificado: #{c.created_at}"
+          break
+        end
+      end
+    end
+
+    puts "Servicios: #{internships.size} Con certificado: #{c_num}"
+  end ## task search_and_finalize_if_certificate
 end ## namespace
 
 ################################################################### METODOS #################################################
