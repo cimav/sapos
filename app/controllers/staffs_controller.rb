@@ -870,7 +870,7 @@ class StaffsController < ApplicationController
         options[:internships] = Internship.where(staff_id:@staff.id,status: 1).order(:start_date)
       end
      
-    ################################ CONSTANCIA DE INDIVIDUAL ##################################
+    ################################ CONSTANCIA INDIVIDUAL ##################################
     elsif params[:type] == "individual"
       options[:cert_type]  = Certificate::STAFF_INDIVIDUAL
       options[:start_date] = params[:start_date].to_date
@@ -892,10 +892,18 @@ class StaffsController < ApplicationController
         as_co_director = Student.includes(:program).where(:co_supervisor=>@staff.id).where("status in (1,6)  AND programs.level !=3")
         as_co_director = as_co_director + Student.includes(:program).where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5) AND programs.level !=3",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students_co] = as_co_director
- 
         # cursos impartidos
         options[:term_course_schedules] = TermCourseSchedule.where(:staff_id=>@staff.id,:status=>1).select(:term_course_id).uniq
 
+        # comites tutorales
+        tutors   = "(tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id)"
+        ranges   = "(advance_date between :start_date and :end_date)"
+        where    = "#{tutors} AND #{ranges}"
+        dates    = {:staff_id=>@staff.id,:start_date=>start_date,:end_date=>end_date}
+        order    = "first_name,last_name,advance_date desc"
+        advances =  Advance.select("distinct student_id").where(:status=>'C').where(where,dates).order(order)
+        logger.info "############################ #{advances.size}"
+        options[:advances] = advances
       else
         options[:ranges]= false
         #director
@@ -1350,35 +1358,36 @@ class StaffsController < ApplicationController
 
         end##students.size
        
-       
-        #cursos impartidos
+        ##########################################
+        #cursos impartidos INDIVIDUAL
         @term_course_schedules = options[:term_course_schedules]
-        pdf.start_new_page
-        @consecutivo = get_consecutive(@staff, time, options[:cert_type])
-        pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  <b>PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
 
-        pdf.font_size 11
-        y = y - 70
-        x = 10
-        h = 50
+        if @term_course_schedules.size > 0
+          pdf.start_new_page
+          @consecutivo = get_consecutive(@staff, time, options[:cert_type])
+          pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  <b>PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
 
-        pdf.text "\nA quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+          pdf.font_size 11
+          y = y - 70
+          x = 10
+          h = 50
 
-        docente =  "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
+          pdf.text "\nA quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+
+          docente =  "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
         
-         start_year = options[:start_date].year rescue "N.D"
-         end_year   = options[:end_date].year rescue "N.D"
+           start_year = options[:start_date].year rescue "N.D"
+           end_year   = options[:end_date].year rescue "N.D"
          
-         texto = "#{docente} quien participó impartiendo las siguientes asignaturas en el periodo #{start_year}-#{end_year}:"
-         y = y - 60
-         h = 220
-         w = 500
-         pdf.text "\n"
-         pdf.text texto, :align=>:justify, :inline_format=>true              
-         pdf.text "\n"
+           texto = "#{docente} quien participó impartiendo las siguientes asignaturas en el periodo #{start_year}-#{end_year}:"
+           y = y - 60
+           h = 220
+           w = 500
+           pdf.text "\n"
+           pdf.text texto, :align=>:justify, :inline_format=>true              
+           pdf.text "\n"
        
 
-         if @term_course_schedules.size > 0
            data = []
            data << [{:content => "<b>Curso</b>", :align => :center}, {:content => "<b>Inicio</b>", :align => :center}, {:content => "<b>Fin</b>", :align => :center}, {:content => "<b>Horas Impartidas</b>", :align => :center}]
     
@@ -1437,8 +1446,9 @@ class StaffsController < ApplicationController
                logger.info "################# No se que pasa aquí"  
                #data << [tcs.id.to_s,"######","######"]
              end
+          end # @term_course_schedules.size
 
-           end # @term_course_schedules.size
+   
 
            tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 127,127,56])
            tabla.draw
@@ -1451,6 +1461,36 @@ class StaffsController < ApplicationController
            #pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
          end
  
+         ##########################################
+         # comite tutoral INDIVIDUAL
+         @advances = options[:advances]
+
+         adv_size = @advances.size
+         if adv_size>0
+
+           pdf.font_size 11
+
+           @advances.each_with_index do |advance,index|
+             @consecutivo = get_consecutive(@staff, time, options[:cert_type])
+             pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  <b>PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
+
+             pdf.text "\n\n\nA quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
+
+             docente =  "\nPor medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} <b>#{@staff.title} #{@staff.full_name}</b>"
+             texto = "#{docente} quien participó como parte del comité tutoral del alumno <b>#{advance.student.full_name}</b> alumno inscrito en nuestro programa de <b>#{advance.student.program.name}</b>."
+             
+             pdf.text texto, :align=>:justify, :inline_format=>true           
+        
+             pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar.", :align=>:justify
+             ############################## FIRMA ##############################
+             @atentamente = "\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
+             pdf.text @atentamente, :align=>:center,:inline_format=>true
+
+             unless adv_size.eql? index+1
+               pdf.start_new_page
+             end
+           end #@advances.each do |advance|
+         end#@advances.size>0
            
       end#elsif
 
