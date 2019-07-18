@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20190605152403) do
+ActiveRecord::Schema.define(:version => 20190619232519) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -125,6 +125,12 @@ ActiveRecord::Schema.define(:version => 20190605152403) do
     t.string   "curp"
     t.integer  "country_id"
     t.integer  "state_id"
+  end
+
+  create_table "ar_internal_metadata", :primary_key => "key", :force => true do |t|
+    t.string   "value"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "areas", :force => true do |t|
@@ -652,6 +658,34 @@ ActiveRecord::Schema.define(:version => 20190605152403) do
 
   add_index "seminars", ["staff_id"], :name => "index_seminars_on_staff_id"
 
+  create_table "sep_certificate_signers", :force => true do |t|
+    t.string   "email"
+    t.string   "curp"
+    t.string   "abr_title"
+    t.string   "first_name"
+    t.string   "last_name1"
+    t.string   "last_name2"
+    t.integer  "status"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "sep_certificates", :force => true do |t|
+    t.integer  "status"
+    t.string   "folio"
+    t.integer  "student_id",                :limit => 8
+    t.integer  "sep_certificate_signer_id", :limit => 8
+    t.text     "original_string"
+    t.text     "signer_cer"
+    t.text     "signer_signature"
+    t.text     "xml",                       :limit => 2147483647
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
+  end
+
+  add_index "sep_certificates", ["sep_certificate_signer_id"], :name => "index_sep_certificates_on_sep_certificate_signer_id"
+  add_index "sep_certificates", ["student_id"], :name => "index_sep_certificates_on_student_id"
+
   create_table "staff_files", :force => true do |t|
     t.integer  "staff_id"
     t.string   "description"
@@ -746,12 +780,12 @@ ActiveRecord::Schema.define(:version => 20190605152403) do
 
   create_table "students", :force => true do |t|
     t.integer  "program_id"
-    t.string   "card",                     :limit => 20
-    t.string   "previous_card",            :limit => 20
+    t.string   "card",                       :limit => 20
+    t.string   "previous_card",              :limit => 20
     t.integer  "consecutive"
-    t.string   "first_name",               :limit => 50,                :null => false
-    t.string   "last_name",                :limit => 50,                :null => false
-    t.string   "gender",                   :limit => 1
+    t.string   "first_name",                 :limit => 50,                :null => false
+    t.string   "last_name",                  :limit => 50,                :null => false
+    t.string   "gender",                     :limit => 1
     t.date     "date_of_birth"
     t.string   "city"
     t.integer  "state_id"
@@ -779,14 +813,14 @@ ActiveRecord::Schema.define(:version => 20190605152403) do
     t.string   "accident_phone"
     t.string   "passport"
     t.string   "image"
-    t.integer  "status",                                 :default => 1
+    t.integer  "status",                                   :default => 1
     t.text     "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "campus_id"
     t.string   "email_cimav"
     t.string   "domain_password"
-    t.integer  "deleted",                                :default => 0
+    t.integer  "deleted",                                  :default => 0
     t.datetime "deleted_at"
     t.integer  "studies_plan_id"
     t.integer  "external_supervisor"
@@ -794,6 +828,7 @@ ActiveRecord::Schema.define(:version => 20190605152403) do
     t.integer  "student_time"
     t.date     "definitive_inactive_date"
     t.string   "last_name2"
+    t.date     "previous_degree_start_date"
   end
 
   add_index "students", ["campus_id"], :name => "index_students_on_campus_id"
