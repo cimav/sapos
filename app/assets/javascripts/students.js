@@ -45,14 +45,7 @@ $('#order_by').live("change", function() {
 });
 
 $('#genero').live("change", function() {
-  $("#items-list").html("<img src=\"\/images\/ajax-load2.gif\">");
-  
-  valor = $(this).val();
-  h = {"command": null, "data": null};
-  if(valor!=0){h = {"command": "gender", "data": valor}}
-  
-  searchByCommand(h);  
-  setItems(items);
+    liveSearch({json: true});
 });
 
 $('.div-config').live({
@@ -78,21 +71,10 @@ $("#search-config").live("click",function(){
   }
 });
 
-
-// ** Xls
 $('#to_excel').live('click', function() {
-  url = location.pathname + "/set/xls";
-  var order_by = $("#order_by").val();
-  data = "items="+items_found+"order_by="+order_by
-  $.post(url,data)
-    .done(function(data){
-      url = location.pathname + "/get/xls/"+data;
-      $("#downloads_iframe").attr("src",url);
-    })
-    .fail(function(data){
-      alert("Hubo un error en la generacion del xls");
-    });
+  window.location = location.pathname + "/busqueda.xls?" + $("#live-search").serialize();
 });
+
 
 $('#diploma-link').live('click', function() {
   var html = $("#book-page").html();

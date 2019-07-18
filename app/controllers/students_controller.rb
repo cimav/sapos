@@ -37,27 +37,30 @@ class StudentsController < ApplicationController
 
   def live_search
     order_by = params[:order_by] || "last_name"
-    my_select = "student.id as id, first_name,last_name,last_name2,program_id,card,gender"
+    my_select = "student.id as id, first_name,last_name,last_name2,program_id,card,gender,image"
 
     includers  = nil
     joiners    = nil
     where      = nil
     where_text = nil
    
-    if current_user.program_type==Program::ALL
+    logger.info "######################## PROGRAM TYPE ####################### #{current_user.program_type}"
+    if current_user.program_type.to_i.eql? Program::ALL
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
-      (joiners.nil?)   ? (joiners = nil) : (joiners = nil)
-      (where.nil?)     ? (where = nil) : (where = nil)
     else
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
-      (joiners.nil?)   ? (joiners = {:program=> permission_user}) : (joiners[:program]= premission_user)
+      (joiners.nil?)   ? (joiners = {:program=> :permission_user}) : (joiners[:program]= :permission_user)
       (where.nil?)     ? (where = {:permission_users=>{:user_id=>current_user.id}}) : (where[:permission_users]={:user=>current_user.id})
     end
 
     if params[:program_type] != '0' then
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
-      (joiners.nil?)   ? (joiners = {:program=> :permission_user}) : (joiners[:program]= :permission_user)
       (where.nil?)     ? (where = {:programs=>{:program_type=>params[:program_type]}}) : (where[:programs]= {:program_type=>params[:program_type]})
+    end
+
+    if params[:program] != '0' then
+      (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
+      (where.nil?)     ? (where = {:programs=>{:id=>params[:program]}}) : (where[:programs]= {:id=>params[:program]})
     end
 
     if current_user.campus_id != 0
@@ -69,7 +72,19 @@ class StudentsController < ApplicationController
     end
 
     if params[:supervisor] != '0' then
-      (where.nil?) ? (where = ["(supervisor = :supervisor OR co_supervisor = :supervisor)", {:supervisor => params[:supervisor]}]) : (where)
+      (where.nil?) ? (where = {:supervisor=>params[:supervisor]}) : (where[:supervisor]= params[:supervisor])
+    end
+
+    if params[:scholarship_type] != '10' then
+      (where.nil?) ? (where = {:scholarship_type=>params[:scholarship_type]}) : (where[:scholarship_type]= params[:scholarship_type])
+    end
+
+    if params[:student_time] != '10' then
+      (where.nil?) ? (where = {:student_time => params[:student_time]}) : (where[:student_time] = params[:student_time])
+    end
+    
+    if params[:genero] != '0' then
+      (where.nil?) ? (where = {:gender => params[:genero]}) : (where[:gender] = params[:genero])
     end
 
     if params[:status] == 'todos_activos' then
@@ -112,15 +127,6 @@ class StudentsController < ApplicationController
       (where.nil?) ? (where = {:status => Student::PENROLLMENT}) : (where[:status] = Student::PENROLLMENT)
     end
 
-    # filtrar por beca
-    if params[:scholarship_type] != "10" then
-      (where.nil?) ? (where = {:scholarship_type => params[:scholarship_type]}) : (where[:scholarship_type] = params[:scholarship_type])
-    end
-
-    # filtrar por tiempo de estudio
-    if params[:student_time] != "10" then
-      (where.nil?) ? (where = {:student_time => params[:student_time]}) : (where[:student_time] = params[:student_time])
-    end
 
    s = []
 
@@ -150,18 +156,28 @@ class StudentsController < ApplicationController
       (where.nil?) ? (where = {:status => s}) : (where[:status] = s)
     end
 
-    @students = Student.select(my_select).joins(joiners).where(where).where(where_text).order(order_by).includes(includers)
-
     # Descartamos los que tienen status de borrado
     #@students = @students.where("status<>0")
 
     respond_with do |format|
       format.html do
-         render json: @students.select("id,first_name,last_name,last_name2,program_id,card,image")
+         @students = Student.select(my_select).includes(joiners).where(where).where(where_text).order(order_by).includes(includers)
+         render json: @students
       end
       format.xls do
         rows = Array.new
         now = Time.now.utc
+
+
+        (includers.nil?) ? (includers = Array.new; includers.push(:thesis)) : (includers.push(:thesis))
+        @students = Student.select(my_select).includes(joiners).where(where).where(where_text).order(order_by).includes(includers)
+
+        institutions = Institution.all
+        states       = State.all
+        countries    = Country.all
+        campuses     = Campus.all
+        staffs       = Staff.all
+
         @students.collect do |s|
 	  if s.status == Student::GRADUATED || s.status == Student::FINISH
 	    end_date =  Date.strptime(s.thesis.defence_date.strftime("%m/%d/%Y"), "%m/%d/%Y") rescue ''
@@ -180,48 +196,53 @@ class StudentsController < ApplicationController
           else
             age = now.year - s.date_of_birth.year - (s.date_of_birth.to_time.change(:year => now.year) > now ? 1 : 0)
           end
-          last_advance = s.advance.where(:status=>["P","C"],).order(:advance_date).first
+         
+          #last_advance = s.advance.where(:status=>["P","C"],).order(:advance_date).first
 
 	  rows << {'Matricula' => s.card,
-		   'Nombre' => s.first_name,
-                   'Apellidos' => "#{s.last_name} #{s.last_name2}",
-                   'Correo'  => s.email,
+		   'Nombre' => "#{s.full_name}",
+                   'Correo' =>(s.email_cimav.blank? ? s.email : s.email_cimav),
                    'Sexo' => s.gender,
 		   'Estado' => s.status_type,
 		   "Fecha_Nac" => s.date_of_birth,
                    "Edad(#{now.year})" => age, 
 		   "Ciudad_Nac" => s.city,
-		   "Estado_Nac" => (s.state.name rescue ''),
-		   "Pais_Nac" => (s.country.name rescue ''),
-		   "Institucion_Anterior" => (Institution.find(s.previous_institution).full_name rescue ''),
-		   "Campus" => (s.campus.name rescue ''),
+		   "Estado_Nac" => (states.select{|st| st.id.eql? s.state_id}[0].name rescue ''),
+		   "Pais_Nac" => (countries.select{|cy| cy.id.eql? s.country_id}[0].name rescue ''),
+		   "Institucion_Anterior" => (institutions.select{|i| i.id.eql? s.previous_institution}[0].full_name rescue ''),
+		   "Campus" => (campuses.select{|cs| cs.id.eql? s.campus_id}[0].name rescue ''),
 		   'Programa' => s.program.name,
 		   'Inicio' => s.start_date,
 		   'Fin' => end_date,
 		   'Meses' => months,
-		   'Asesor' => (Staff.find(s.supervisor).full_name rescue ''),
-		   'Coasesor' => (Staff.find(s.co_supervisor).full_name rescue ''),
-       'Ubicacion' => s.location,
+		   'Asesor' => (staffs.select{|stf| stf.id.eql? s.supervisor}[0].full_name rescue ''),
+		   'Coasesor' =>  (staffs.select{|stf| stf.id.eql? s.co_supervisor}[0].full_name rescue ''),
+                   'Ubicacion' => s.location,
 		   'Tesis' => s.thesis.title,
-		   'Sinodal1' => (Staff.find(s.thesis.examiner1).full_name rescue ''),
-		   'Sinodal2' => (Staff.find(s.thesis.examiner2).full_name rescue ''),
-		   'Sinodal3' => (Staff.find(s.thesis.examiner3).full_name rescue ''),
-		   'Sinodal4' => (Staff.find(s.thesis.examiner4).full_name rescue ''),
-		   'Sinodal5' => (Staff.find(s.thesis.examiner5).full_name rescue ''),
+                   'Sinodal1' => (staffs.select{|stf| stf.id.eql? s.thesis.examiner1}[0].full_name rescue ''), 
+                   'Sinodal2' => (staffs.select{|stf| stf.id.eql? s.thesis.examiner2}[0].full_name rescue ''), 
+                   'Sinodal3' => (staffs.select{|stf| stf.id.eql? s.thesis.examiner3}[0].full_name rescue ''), 
+                   'Sinodal4' => (staffs.select{|stf| stf.id.eql? s.thesis.examiner4}[0].full_name rescue ''), 
+                   'Sinodal5' => (staffs.select{|stf| stf.id.eql? s.thesis.examiner5}[0].full_name rescue ''), 
+=begin
                    'Fecha_Avance' => (last_advance.advance_date rescue ''),
-                   'Tutor1' => (Staff.find(last_advance.tutor1).full_name rescue ''),
-                   'Tutor2' => (Staff.find(last_advance.tutor2).full_name rescue ''),
-                   'Tutor3' => (Staff.find(last_advance.tutor3).full_name rescue ''),
-                   'Tutor4' => (Staff.find(last_advance.tutor4).full_name rescue ''),
-                   'Tutor5' => (Staff.find(last_advance.tutor5).full_name rescue ''),
+                   'Tutor1' => (staffs.select{|stf| stf.id.eql? last_advance.tutor1}[0].full_name rescue ''), 
+                   'Tutor2' => (staffs.select{|stf| stf.id.eql? last_advance.tutor2}[0].full_name rescue ''), 
+                   'Tutor3' => (staffs.select{|stf| stf.id.eql? last_advance.tutor3}[0].full_name rescue ''), 
+                   'Tutor4' => (staffs.select{|stf| stf.id.eql? last_advance.tutor4}[0].full_name rescue ''), 
+                   'Tutor5' => (staffs.select{|stf| stf.id.eql? last_advance.tutor5}[0].full_name rescue ''), 
+=end
+                   'Fecha_baja_definitiva' => (s.definitive_inactive_date rescue ''),
+                   'Fecha_baja_temporal'   => (s.inactive_date rescue '')
 		   }
              
 	end
-	column_order = ["Matricula", "Nombre", "Apellidos","Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5","Fecha_Avance","Tutor1","Tutor2","Tutor3","Tutor4","Tutor5"]
-	to_excel(rows, column_order, "Estudiantes", "Estudiantes")
+        column_order = ["Matricula", "Nombre", "Correo", "Sexo", "Estado", "Fecha_Nac", "Edad(#{now.year})", "Ciudad_Nac", "Estado_Nac", "Pais_Nac", "Institucion_Anterior", "Campus", "Programa", "Inicio", "Fecha_baja_temporal", "Fecha_baja_definitiva", "Fin", "Meses", "Asesor", "Coasesor","Ubicacion", "Tesis", "Sinodal1", "Sinodal2", "Sinodal3", "Sinodal4", "Sinodal5"]
+        to_excel(rows, column_order, "Estudiantes", "Estudiantes")
       end
     end
   end
+
 
   def set_xls
     rows = Array.new

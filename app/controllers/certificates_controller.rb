@@ -196,7 +196,16 @@ class CertificatesController < ApplicationController
              my_select_topics_codes.shift
           end 
 
+          ## para las materias optativas de otros programas
           if !(tcs.term_course.course.program_id.eql? t.student.program_id)
+            code = my_select_topics_codes.shift
+            msts = my_select_topics.select{|x| x[:code].eql? code}
+            tcs.term_course.course.code = msts[0][:code]
+            tcs.term_course.course.name = msts[0][:name]
+          end
+
+          ## para las materias complementarioas
+          if tcs.term_course.course.term.to_i.eql? 101
             code = my_select_topics_codes.shift
             msts = my_select_topics.select{|x| x[:code].eql? code}
             tcs.term_course.course.code = msts[0][:code]

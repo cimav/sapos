@@ -10,11 +10,14 @@
       = "[XLS]"
     %li
       %br
-      = link_to 'Evaluación docente al momento', {:controller=>"staffs", :action=>"evaluation",:format=>:xls}, :id=>"link_evaluation"
+      = link_to 'Evaluación docente al momento', {:controller=>"staffs", :action=>"evaluation",:format=>:xls}, :id=>"link_evaluation",:onclick=>"this.href = this.href.split('?')[0]+'?evaluation_type='+$('input:radio[name=radio_evaluation_type]:checked').val();"
       = "[XLS]"
-      =#{}"&nbsp;".html_safe
-      =# check_box_tag "check_numeric_evaluation"
-      =# " Numérico "
+      = "&nbsp;".html_safe
+      = radio_button_tag "radio_evaluation_type",TeacherEvaluation::INTERMEDIATE, true
+      = TeacherEvaluation::TEACHER_EVALUATION_TYPE[TeacherEvaluation::INTERMEDIATE]
+      = "&nbsp;".html_safe
+      = radio_button_tag "radio_evaluation_type",TeacherEvaluation::FINAL
+      = TeacherEvaluation::TEACHER_EVALUATION_TYPE[TeacherEvaluation::FINAL]
 
   #teacherEvaluationReport
     %p Evaluación docente

@@ -1,4 +1,4 @@
-# coding: utf-8
+#[6~ coding: utf-8
 namespace :admin do
   desc "System Administrator Scripts"
   ADMIN_MAIL        = ""
@@ -227,4 +227,158 @@ namespace :admin do
     end
     p "#{counter} registros cambiados"
   end #task fill_end_date
+
+  ############################################################################################################################
+  # search_and_purify_students: busca los espacios en blanco sobrantes de los registros y los purifica de tabla estudiantes
+  ############################################################################################################################
+  task :search_and_purify_students => :environment do
+    students  = Student.all
+    counter = 0
+    
+    students.each do |s|
+      puts "##### ID: #{s.id}"
+      full_name = String.new
+  
+      first_name = purifier(s.first_name) if !s.first_name.blank?
+      last_name  = purifier(s.last_name) if !s.last_name.blank?
+      last_name2 = purifier(s.last_name2) if !s.last_name2.blank?
+
+      s.first_name = first_name if !first_name.nil?
+      s.last_name = last_name if !last_name.nil?
+      s.last_name2 = last_name2 if !last_name2.nil?
+
+
+      full_name = "#{first_name.to_s.gsub(" ","")}#{last_name.to_s.gsub(" ","")}#{last_name2.to_s.gsub(" ","")}"
+
+      if full_name.size>0
+        puts "|#{first_name}|#{last_name}|#{last_name2}|"
+        counter = counter + 1
+      
+        if s.save(validate: false)
+          puts "Save!!"
+        else
+          puts "Errors: #{s.errors.full_messages}"
+        end
+      end
+    end # students.each
+    puts "Estudiantes: #{students.size} Blancos: #{counter}"
+  end ## task search_and_purify
+
+  ##################################################################################################################################
+  # search_and_purify_internships: busca los espacios en blanco sobrantes de los registros y los purifica de tabla servicios CIMAV
+  ##################################################################################################################################
+  task :search_and_purify_internships => :environment do
+    internships  = Internship.all
+    counter = 0
+    internships.each do |i|
+      puts "##### ID: #{i.id}"
+      full_name = String.new
+ 
+      first_name = purifier(i.first_name) if !i.first_name.blank?
+      last_name  = purifier(i.last_name) if !i.last_name.blank?
+   
+      i.first_name = first_name if !first_name.nil?
+      i.last_name = last_name if !last_name.nil?
+
+      full_name = "#{first_name.to_s.gsub(" ","")}#{last_name.to_s.gsub(" ","")}"
+
+      if full_name.size>0
+        puts "|#{first_name}|#{last_name}"
+        counter = counter + 1
+
+        if i.save(validate: false)
+          puts "Save!!"
+        else
+          puts "Errors: #{i.errors.full_messages}"
+        end
+      end
+    end #internships.each
+    puts "Servicios: #{internships.size} Blancos: #{counter}"
+  end ## task search_and_purify_internships
+
+  ##################################################################################################################################
+  # search_and_finalize_internships: finaliza los servicios que por alguna razón se quedaron abiertos
+  ##################################################################################################################################
+  task :search_and_finalize_internships => :environment do
+    internships = Internship.where(:status=>0)
+    c_num   = 0
+    c_date  = 0
+    c_nulls = 0 
+
+    internships.each do |i|
+      date = Date.today
+      if i.end_date.nil? 
+        c_nulls = c_nulls + 1
+        
+        # si fueron creados hace mas de 6 meses pasan a inactivos
+        if i.created_at < Date.today-188
+          puts "#############"
+          puts i.full_name
+          puts "Start Date: #{i.start_date}"
+          puts "Created at: #{i.created_at}"
+          i.status = 2 #inactivo
+          unless i.save(validate: false)
+            puts "#{i.id} Error! #{i.errors.full_messages}"
+          end
+        end
+      else
+        if i.end_date < Date.today-188
+          c_date   = c_date + 1
+
+          i.status= 1  #finalizado
+          unless i.save(validate: false)
+            puts "#{i.id} Error! #{i.errors.full_messages}"
+          end
+        end
+      end
+
+    end
+    puts "Servicios: #{internships.size} Con fecha final de 6 meses: #{c_date}  Nulls: #{c_nulls}"
+  end ## task search_and_finalize_internships
+  
+  ##################################################################################################################################
+  # search_and_finalize_internships: finaliza los servicios que por alguna razón se quedaron abiertos
+  ##################################################################################################################################
+  task :search_and_finalize_if_certificate => :environment do
+    c_num = 0
+    internships = Internship.where(:status=>0)
+    internships.each do |i|
+      if i.end_date.nil?
+        certificates = Certificate.where(:attachable_type=>i.class.to_s,:attachable_id=>i.id,:type_id=>9)
+        certificates.each do |c|
+          c_num = c_num + 1
+          puts "Certificado: #{c.created_at}"
+          break
+        end
+      end
+    end
+
+    puts "Servicios: #{internships.size} Con certificado: #{c_num}"
+  end ## task search_and_finalize_if_certificate
 end ## namespace
+
+################################################################### METODOS #################################################
+def purifier(string)
+  flag = false
+  
+  if string.match(/^\s+.*/)
+    flag = true
+  end
+
+  if string.match(/.*\s+$/)
+    flag = true
+  end
+
+  if string.match(/\s\s+/)
+    flag = true
+  end
+
+  if flag
+    string          = string.strip
+    string_array    = string.split(" ")
+    string_purified = string_array.join(" ")
+    return string_purified
+  else
+    return nil
+  end
+end

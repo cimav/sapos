@@ -27,6 +27,7 @@ class Internship < ActiveRecord::Base
   validates :health_insurance, :presence => true,:if=>"self.origin.eql? 0"
   validates :health_insurance_number, :presence => true,:if=>"self.origin.eql? 0"
   validates :accident_contact, :presence => true,:if=>"self.origin.eql? 0"
+  validate :start_date_vs_created_at, :if=>"self.origin.eql? 0", :on=>:update
 
   after_create :add_extra
 
@@ -84,7 +85,10 @@ class Internship < ActiveRecord::Base
     @origin || 0
   end
 
-
-
-
+  def start_date_vs_created_at
+    created_at_1 = Date.new(self.created_at.year,self.created_at.month,self.created_at.day)
+    if self.start_date.to_datetime<created_at_1
+      errors.add(:start_date,"La fecha de inicio no puede ser menor a la fecha de registro")
+    end
+  end
 end

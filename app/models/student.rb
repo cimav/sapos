@@ -143,7 +143,11 @@ class Student < ActiveRecord::Base
   end
 
   def full_name
-    "#{first_name.strip} #{last_name.strip} #{last_name2.strip}" rescue ''
+    first_name = self.first_name.strip if !self.first_name.blank?
+    last_name  = self.last_name.strip if !self.last_name.blank?
+    last_name2 = self.last_name2.strip if !self.last_name2.blank?
+
+    "#{first_name} #{last_name} #{last_name2}"
   end
   
   def full_name_upcase

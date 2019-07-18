@@ -19,6 +19,9 @@ class Certificate < ActiveRecord::Base
   STAFF_SINODAL     = 14
   STAFF_RH          = 15
   STAFF_INDIVIDUAL  = 16
+  PROTOCOL          = 17
+  SEMINAR           = 18
+
 
   TYPE = {STUDIES           => 'Constancia de estudios',
           ENROLLMENT        => 'Constancia de inscripcion',
@@ -36,5 +39,7 @@ class Certificate < ActiveRecord::Base
           STAFF_SINODAL     => 'Constancia como sinodal',
           STAFF_RH          => 'Constancia formación de RH',
           STAFF_INDIVIDUAL  => 'Constancia individual',
+          PROTOCOL          => 'Protocolo',
+          SEMINAR           => 'Seminario'
           }
 end
