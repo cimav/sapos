@@ -882,20 +882,20 @@ class StaffsController < ApplicationController
      
       if !start_date.blank?
         options[:ranges]=true  
-        # director
+        # director individual
         as_director = Student.includes(:program).where(:supervisor=>@staff.id).where("status in (1,6) AND programs.level !=3")
         as_director = as_director + Student.includes(:program).where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5) AND programs.level !=3",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students] = as_director
         options[:staff_id] = @staff.id
             
-        # co-director
+        # co-director individual
         as_co_director = Student.includes(:program).where(:co_supervisor=>@staff.id).where("status in (1,6)  AND programs.level !=3")
         as_co_director = as_co_director + Student.includes(:program).where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5) AND programs.level !=3",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students_co] = as_co_director
-        # cursos impartidos
+        # cursos impartidos individual
         options[:term_course_schedules] = TermCourseSchedule.where(:staff_id=>@staff.id,:status=>1).select(:term_course_id).uniq
 
-        # comites tutorales
+        # comites tutorales individual
         tutors   = "(tutor1=:staff_id OR tutor2=:staff_id OR tutor3=:staff_id OR tutor4=:staff_id OR tutor5=:staff_id)"
         ranges   = "(advance_date between :start_date and :end_date)"
         where    = "#{tutors} AND #{ranges}"
@@ -906,10 +906,10 @@ class StaffsController < ApplicationController
         options[:advances] = advances
       else
         options[:ranges]= false
-        #director
+        #director individual sin fechas
         options[:active_students] = Student.where(:supervisor=>@staff.id).where("status not in (1,2,5,6)").order(:status)
         
-        #cursos impartidos
+        #cursos impartidos individual sin fechas
         options[:term_course_schedules] = TermCourseSchedule.where(:staff_id=>@staff.id,:status=>1).select(:term_course_id).uniq
       end
        
@@ -1459,6 +1459,7 @@ class StaffsController < ApplicationController
            ############################## ###### ##############################
 
            #pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
+           pdf.start_new_page
          end
  
          ##########################################
@@ -1486,9 +1487,9 @@ class StaffsController < ApplicationController
              @atentamente = "\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
              pdf.text @atentamente, :align=>:center,:inline_format=>true
 
-             unless adv_size.eql? index+1
+             #unless adv_size.eql? index+1
                pdf.start_new_page
-             end
+             #end
            end #@advances.each do |advance|
          end#@advances.size>0
            
