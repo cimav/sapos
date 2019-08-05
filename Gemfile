@@ -43,3 +43,5 @@ gem 'zipruby'
 
 gem 'config', '1.0.0'
 gem 'file_validators'
+
+gem 'net-scp', '1.2.2.rc2'
