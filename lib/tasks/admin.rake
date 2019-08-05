@@ -343,7 +343,7 @@ namespace :admin do
     c_num = 0
     internships = Internship.where(:status=>0)
     internships.each do |i|
-      if i.end_date.nil?
+      unless i.end_date.nil?
         certificates = Certificate.where(:attachable_type=>i.class.to_s,:attachable_id=>i.id,:type_id=>9)
         certificates.each do |c|
           c_num = c_num + 1
