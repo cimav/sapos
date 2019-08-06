@@ -405,7 +405,11 @@ class StudentsController < ApplicationController
     else
       @campus = Campus.order('name')
     end
-    render :layout => false
+    if params[:edit].to_i == 1
+      render :layout => 'standalone-edit'
+    else
+      render :layout => false
+    end
   end
 
   def contact

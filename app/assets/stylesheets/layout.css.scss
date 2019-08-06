@@ -383,6 +383,60 @@
   }
 }
 
+#standalone-edit {
+  .resource-header {
+    padding: 10px;
+    height: 100px;
+    background-color: #fff;
+    min-width: 500px;
+    .resource-picture {
+      float: left; 
+      font-size: 80%;
+      text-align: center;
+      a {
+        display: none;
+        position: relative;
+        top: -50px;
+        background: #fff;
+        padding: 4px;
+      }
+      &:hover a {
+        display: inline;
+      }
+    }
+    .resource-card {
+      float: left;
+      font-size: 80%;
+      text-align: center;
+    }
+    .resource-title {
+      float: left;
+      padding-top: 0px;
+      margin-left: 20px;
+    }
+    .resource-save {
+      float: right;
+      text-align: right;
+      padding-top: 20px;
+      width: 110px;
+    }
+    .comment { 
+      font-size: 90%;
+      color: $grey;
+    }
+  }
+  #resource-tabs {
+    position: relative;
+    top: -27px;
+    .ui-tabs-panel {
+      margin-right: 10px;
+    }
+    .ui-tabs-nav li.first-tab { 
+      margin-left: 140px;
+    }
+  }
+}
+
 .programs-main .resource-header {
   height: 70px;
 }
