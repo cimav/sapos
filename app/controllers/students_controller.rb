@@ -8,7 +8,6 @@ class StudentsController < ApplicationController
   PASS  = Digest::MD5.hexdigest(["dap",REALM,"53cr3t"].join(":"))
   USERS = {"u1"=>PASS}
   before_filter :auth_required,:except=>[:student_exists]
-
   before_filter :set_current_user
   respond_to :html, :xml, :json, :csv
 

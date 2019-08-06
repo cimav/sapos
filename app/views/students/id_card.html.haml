@@ -33,7 +33,9 @@
                   - else
                     - if @student.program.program_type.eql? 4 ## propedeuticos
                       -# Vigencia: Febrero 8, 2019"
-                      - vigencia = Date.new(2019,2,8)
+                      -# vigencia = Date.new(2019,2,8)
+                      -# Vigencia: Julio 19, 2019"
+                      - vigencia = Date.new(2019,7,19)
                     - else                                    ## resto de programas
                       - vigencia = "N.D."
                       - if @student.program.level.to_i.eql? 2 ## doctorado

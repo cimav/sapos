@@ -7,7 +7,7 @@ namespace :general do
   filep     = "#{Rails.root}/log/inscripciones.log"  ## log file route
   @f        = File.open(filep,'a')               
   @env      = Rails.env
-  SEND_MAIL         = 2                              ## Posible values: Nobody(0), All(1), Only Admin(2), All&Admin(3) 
+  SEND_MAIL         = 1                             ## Posible values: Nobody(0), All(1), Only Admin(2), All&Admin(3) 
   STATUS_CHANGE     = true                           ## False for disable any update
   ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx" ## Administrator Email
   CICLO             = "2018-2"                       ## PREVIOUS TERM
@@ -140,7 +140,7 @@ namespace :general do
   task :alarm => :environment do
     set_line("Iniciando script en alarm")
     ## advances.status = 'P' (PRogramado), term.status=3 (Calificando) y progams.levels 1 y 2 (maestria y doctorado) 
-   advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.title !=''",['P'],[3],[1,2],[1]).select("advances.*,terms.id as terms_id")
+   advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.title !=''",['P'],[3],[1,2],[2]).select("advances.*,terms.id as terms_id")
 
 ## advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.student_id in (?)",['P'],[3],[1,2],[1],[1168,1739,1667,1616,1617,1647,1615,1614,1613,1619,1618,1646,1645]).select("advances.*,terms.id as terms_id")
 
@@ -243,11 +243,12 @@ namespace :general do
   end
 
   advances_status = ['P']  
-  advance_type    = [1] 
+  advance_type    = [2]    ### 1. avance 2.Protocolo 3.seminario
   terms_status    = [3]
   programs_level  = [1,2]
+  student_status  = [1]
     
-  advances = Advance.select("advances.*,terms.id as terms_id").joins(:student=>[:term_students=>:term]).joins(:student=>:program).where(:status=>advances_status,:advance_type=>advance_type).where("terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date",terms_status,programs_level)
+  advances = Advance.select("advances.*,terms.id as terms_id").joins(:student=>[:term_students=>:term]).joins(:student=>:program).where(:status=>advances_status,:advance_type=>advance_type).where("terms.status in (?) AND programs.level in (?) AND students.status in (?) AND advances.advance_date between terms.start_date and terms.end_date",terms_status,programs_level,student_status)
   puts advances.size
   #advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.title !=''",['P'],[3],[1,2],[1]).select("advances.*,terms.id as terms_id")
   advances.each do |a|

@@ -18,10 +18,12 @@ namespace :summer do
         puts "#{t.id} #{t.token} #{t.expires} #{t.status}"
       end #Tokens
      
+=begin
       puts "##### contacts #####"
       p.contacts.each do |c|
          puts "#{c.id} #{c.created_at}"
       end
+=end
      
     end #Internship.where
   end #task check

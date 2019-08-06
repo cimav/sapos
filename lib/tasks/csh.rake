@@ -2,8 +2,10 @@
 namespace :csh do
   desc "Conexiones con el Curso de Seguridad e Higiene"
   task :search => :environment do 
-  	where_hash = {:internships=>{:status=>3,:applicant_status=>3}}
-  	where      = "internships.created_at > DATE_SUB(now(),INTERVAL 6 MONTH)"
+  	#where_hash = {:internships=>{:status=>3,:applicant_status=>3}}
+  	#where_hash = {:internships=>{:status=>[0,3]}}
+  	where_hash = {:internships=>{:status=>3}}
+  	where      = "internships.created_at > DATE_SUB(now(),INTERVAL 3 MONTH)"
     internships = Internship.includes(:internship_file).where(where_hash).where(where).order(:created_at)  ## todos los aspirantes (status:3) con estatus de autorizado(3)
     without_course    = 0
     approveds_counter = 0
