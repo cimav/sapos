@@ -1,0 +1,42 @@
+!!!
+%html
+  %head
+    %title= @page_title || 'CIMAV'
+    = stylesheet_link_tag "https://fonts.googleapis.com/icon?family=Material+Icons"
+    = stylesheet_link_tag    "application"
+    - if !@include_css.nil?
+      = stylesheet_link_tag @include_css
+    = javascript_include_tag "application"
+    = javascript_include_tag "jquery.ui.datepicker.js"
+    = javascript_include_tag "jquery.ui.datepicker-es.js"
+    - if !@include_js.nil?
+      = javascript_include_tag @include_js, :charset=>"UTF-8"
+    - if !@include2_js.nil?
+      = javascript_include_tag @include2_js, :charset=>"UTF-8"
+    - if !@include3_js.nil?
+      = javascript_include_tag @include3_js, :charset=>"UTF-8"
+    - if !@include4_js.nil?
+      = javascript_include_tag @include4_js, :charset=>"UTF-8"
+    = csrf_meta_tag
+    - reports_access = false
+    - if current_user.access.in? [User::ADMINISTRATOR, User::MANAGER, User::OPERATOR_READER]
+      - reports_access = true
+  %body
+    #top-bar
+      #logo
+        = image_tag "logo.png"
+      #nav-select
+        ="Posgrado CIMAV"
+      - if Rails.env.development?
+        #announce
+          %span= "Sitio de pruebas"
+      #account
+        = current_user.email
+        = link_to "[salir]", "/logout"
+
+      
+    #flash-notice
+
+    #main
+      #standalone-edit
+        = yield

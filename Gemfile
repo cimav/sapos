@@ -2,7 +2,7 @@
 
 source 'http://rubygems.org'
 
-gem 'rails', '~> 3.2.14'
+gem 'rails', '~> 3.2.22.5'
 #gem 'mysql2'
 gem 'mysql2', '~> 0.3.10'
 gem 'json'
@@ -15,7 +15,7 @@ group :assets do
 end
 
 gem 'therubyracer'
-gem 'haml'
+gem 'haml', '4.0.7'
 
 gem 'omniauth-google-oauth2'
 gem 'google-api-client'
@@ -43,3 +43,5 @@ gem 'zipruby'
 
 gem 'config', '1.0.0'
 gem 'file_validators'
+
+gem 'net-scp', '1.2.2.rc2'
