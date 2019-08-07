@@ -170,16 +170,19 @@ class CertificatesController < ApplicationController
         tcss = tcss1 + tcss2 + tcss3 + tcss4
       else
         order = "terms.end_date"
+        #order = "courses.code"
         if t.student.program.level.to_i.eql? 2 ## Doctorado
-          #where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=? AND courses.program_id=?"
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
-          #tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70,t.student.program_id).order(order)
-          tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)
+          #tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)
+          tcss  = TermCourseStudent.includes(:term_student=>:term).includes(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)
         else
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
-          tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
+          #tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
+          tcss  = TermCourseStudent.includes(:term_student=>:term).includes(:term_course=>:course).where(:status=>1).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
         end
       end
+
+      #tcss = tcss.to_a
 
       if t.student.studies_plan_id.eql? 15 ## DCM - 2014 Actualizacion del plan de estudios
         my_select_topics_codes = ["101","201","301","401","501","601"]
@@ -211,8 +214,9 @@ class CertificatesController < ApplicationController
             tcs.term_course.course.code = msts[0][:code]
             tcs.term_course.course.name = msts[0][:name]
           end
-        end
-      end
+
+        end #tcss.each 
+      end #if t.student.studies_plan_id.eql? 15
 
       #pdf.font "Arial"
       if tcss.size >= 14
@@ -314,6 +318,10 @@ class CertificatesController < ApplicationController
       end
 
       counter = 0
+
+      tcss = tcss.to_a.sort_by {|tcs| tcs.term_course.course.code}
+      tcss = tcss.to_a.sort_by {|tcs| tcs.term_course.term.name}
+
       tcss.each_with_index do |tcs,index|
         ## SET CODE
         if @template_mode
