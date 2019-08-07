@@ -1492,14 +1492,26 @@ class StudentsController < ApplicationController
     x = 0
     y = 690
     size = 14
-    pdf.text_box "Acta de Examen de Grado",:at=>[x,y],:style=>:bold, :align=>:center,:size=>size
+
+    if @thesis.student.campus_id.eql? 1
+      pdf.text_box "\nActa de Examen de Grado",:at=>[x,y],:style=>:bold, :align=>:center,:size=>size
+    else
+      pdf.text_box "Acta de Examen de Grado",:at=>[x,y],:style=>:bold, :align=>:center,:size=>size
+    end
+
     # SET HOUR AND DAY
     @hora = "%02d:%02d horas, del día %02d" % [@thesis.defence_date.hour,@thesis.defence_date.min,@thesis.defence_date.day]
     x = 230   #388
+    
+
     y = 676  #629
     w = 310   #150
     h = 40    #11
     size = 12 #10
+    
+    if @thesis.student.campus_id.eql? 1 ## Solo campus chihuahua
+      y = 662
+    end
 
     # SET MONTH AND YEAR
     month = get_month_name(@thesis.defence_date.month)
@@ -1547,6 +1559,12 @@ class StudentsController < ApplicationController
     # SET  THESIS EXAMINERS
     x = 235
     y = 618
+
+    if @thesis.student.campus_id.eql? 1 ## Solo campus chihuahua
+      y = y - 14
+    end
+    
+
     size = 12
     if (@level.to_i.eql? 1)||(@level.to_i.eql? 2)
       text = "#{@examiner1.title.to_s.mb_chars} #{@examiner1.full_name.mb_chars}"
