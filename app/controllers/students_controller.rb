@@ -696,7 +696,13 @@ class StudentsController < ApplicationController
     if advance.advance_type.eql? 2
       pdf_route = "#{filename}/protocol-#{advance.id}-#{staff_id}.pdf"
     elsif advance.advance_type.eql? 3
-      pdf_route = "#{filename}/seminar-#{advance.id}-#{staff_id}.pdf"
+      protocol  = Protocol.where(:advance_id=>advance.id,:staff_id=>staff_id)
+
+      if protocol[0].grade_status.eql? 3 ## con recomendaciones
+        pdf_route = "#{filename}/seminar-#{advance.id}-#{staff_id}-recom.pdf"
+      else
+        pdf_route = "#{filename}/seminar-#{advance.id}-#{staff_id}.pdf"
+      end 
     end
     send_file pdf_route, :x_sendfile=>true
   end
