@@ -97,6 +97,7 @@ class CertificatesController < ApplicationController
         text = "Hace constar que #{t.student.full_name.mb_chars}"
       end
 
+     
       pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
       # SET PROGRAM NAME
       y = y - 14
@@ -169,7 +170,7 @@ class CertificatesController < ApplicationController
 
         tcss = tcss1 + tcss2 + tcss3 + tcss4
       else
-        order = "terms.end_date"
+        order   = "terms.end_date"
         #order = "courses.code"
         if t.student.program.level.to_i.eql? 2 ## Doctorado
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
@@ -178,11 +179,10 @@ class CertificatesController < ApplicationController
         else
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
           #tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
-          tcss  = TermCourseStudent.includes(:term_student=>:term).includes(:term_course=>:course).where(:status=>1).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
+          tcss  = TermCourseStudent.includes(:term_student=>:term).includes(:term_course=>:course).where(:status=>1).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)
         end
       end
 
-      #tcss = tcss.to_a
 
       if t.student.studies_plan_id.eql? 15 ## DCM - 2014 Actualizacion del plan de estudios
         my_select_topics_codes = ["101","201","301","401","501","601"]
@@ -194,13 +194,14 @@ class CertificatesController < ApplicationController
             {:code=>"501",:name=>"Temas Selectos de Ciencia de Materiales 5"},
             {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"},
           ]
+       
         tcss.each do |tcs|        
           if tcs.term_course.course.code.in? my_select_topics_codes
              my_select_topics_codes.shift
           end 
 
           ## para las materias optativas de otros programas
-          if !(tcs.term_course.course.program_id.eql? t.student.program_id)
+          if !(tcs.term_course.course.program_id.eql? t.student.program_id)            
             code = my_select_topics_codes.shift
             msts = my_select_topics.select{|x| x[:code].eql? code}
             tcs.term_course.course.code = msts[0][:code]
@@ -219,7 +220,39 @@ class CertificatesController < ApplicationController
       end #if t.student.studies_plan_id.eql? 15
 
       #pdf.font "Arial"
-      if tcss.size >= 14
+      if tcss.size >= 16
+        offset = 8
+        # CODE INITIAL DATA
+        x = 63
+        y = 210 + offset
+        w = 20
+        h = 9
+        size = 8
+        # COURSE NAME INITIAL DATA
+        x_1 = 107
+        y_1 = y + 8 + offset
+        w_1 = 106
+        h_1 = 25
+        size_1 = 8
+        # TERMS INITIAL DATA
+        x_2 = 220
+        y_2 = y + offset - 10
+        w_2 = 45
+        h_2 = 9
+        size_2 = 8
+        # GRADE INITIAL DATA
+        x_3 = 273
+        y_3 = y + offset - 10
+        w_3 = 38
+        h_3 = 9
+        size_3 = 8
+        # GRADE ON TEXT INITIAL DATA
+        x_4 = 317
+        y_4 = y + offset -4
+        w_4 = 82
+        h_4 = 20
+        size_4 = 8
+      elsif tcss.size >= 14
         offset = 5
         # CODE INITIAL DATA
         x = 63
@@ -434,7 +467,16 @@ class CertificatesController < ApplicationController
         #text = "#{tcss.size}|#{index}"
         #pdf.text_box text , :at=>[x_4 + 80,y_4], :width => w_4, :height=> h_4, :size=>size_4, :style=> :bold, :align=> :center, :valign=> :center
 
-        if ((tcss.size.in? [14,15,16]) && (index==4))
+        if ((tcss.size.in? [17,18]) && (index==5))
+          pdf.start_new_page
+          set_lines(pdf,648,235)
+          #pdf.font "Arial"
+          y   = 580
+          y_1 = y + 14
+          y_2 = y 
+          y_3 = y
+          y_4 = y + 6          
+        elsif ((tcss.size.in? [14,15,16]) && (index==4))
           pdf.start_new_page
           set_lines(pdf,648,235)
           #pdf.font "Arial"
