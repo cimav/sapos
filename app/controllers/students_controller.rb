@@ -1459,7 +1459,11 @@ class StudentsController < ApplicationController
       pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
       filename = "constancia-sinodal-externo-#{@student.id}.pdf"
        
-      send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
+      if Rails.env.production?
+        send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'attachment')
+      else
+       send_data(pdf.render, :filename => filename, :type => 'application/pdf', disposition:'inline')
+      end
     end
   end
 
@@ -1828,7 +1832,12 @@ class StudentsController < ApplicationController
     end
 
     # RENDER
-    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "constancia-grado-#{@thesis.student.id}.pdf"
+    if Rails.env.production?
+      send_data pdf.render, type: "application/pdf", disposition: "attachment", filename: "constancia-grado-#{@thesis.student.id}.pdf"
+    else
+      send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "constancia-grado-#{@thesis.student.id}.pdf"
+    end
+
   end ## def grade_certificates
 
   def total_studies_certificate
@@ -2485,7 +2494,11 @@ class StudentsController < ApplicationController
     text = "Dr. Alejandro López Ortiz\nDirector Académico"
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
-    send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{libro}-#{foja}"
+    if Rails.env.production?
+      send_data pdf.render, type: "application/pdf", disposition: "attachment", filename: "diploma-#{libro}-#{foja}"
+    else
+      send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{libro}-#{foja}"
+    end
   end ## def diploma
 
   def substring(filename,regexp,replacestring)
@@ -2744,8 +2757,11 @@ private
       end
 
       filename = options[:filename]
-      send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
-      #send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      if Rails.env.production?
+        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
+      else
+        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
+      end
     end
   end
 

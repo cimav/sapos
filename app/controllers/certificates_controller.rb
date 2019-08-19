@@ -551,7 +551,13 @@ class CertificatesController < ApplicationController
 
       set_general_director_sign(pdf,16,71)
       set_academic_director_sign(pdf,250,71)
-      send_data pdf.render, type: "application/pdf", disposition: "inline"
+       
+      if Rails.env.production?
+       send_data pdf.render, type: "application/pdf", disposition: "attachment"
+      else
+       send_data pdf.render, type: "application/pdf", disposition: "inline"
+      end
+      
       return
     end
   end
