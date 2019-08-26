@@ -649,7 +649,7 @@ class CommitteeSessionsController < ApplicationController
           mtype = "Miembro del Comité Tutoral"
         end
         ## PRESENTACION
-        cabecera(pdf, "C. #{staff.full_name}")
+        cabecera(pdf, "C. #{staff.full_name}",@type)
 
         # CONTENIDO
         pdf.text "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado lo ha nombrado #{mtype rescue "N.D"} del alumno #{student.full_name rescue "N.D"} adscrito al programa de #{student.program.name rescue "N.D"}.\n\n Lo anterior con base en la normatividad aplicable, articulo 11 del Reglamento de Estudios de Posgrado.", :align=>:justify,:inline_format=>true
@@ -668,7 +668,7 @@ class CommitteeSessionsController < ApplicationController
         notes       = @c_a.committee_agreement_note[0].notes rescue nil
 
         ## PRESENTACION
-        cabecera(pdf,"</b>C. #{staff.full_name}</b>") 
+        cabecera(pdf,"</b>C. #{staff.full_name}</b>",@type) 
        
         # CONTENIDO
         text = "Por este conducto me permito informar a Usted que el Comité de Estudios de Posgrado"
