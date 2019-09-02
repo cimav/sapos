@@ -1,4 +1,12 @@
 # coding: utf-8
+
+require 'rails/generators'
+#require 'toads'
+
+Dir["lib/**/*.rb"].each do |path|
+   require_dependency  path
+end
+
 class ApplicationController < ActionController::Base
   protect_from_forgery
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
@@ -247,9 +255,9 @@ class ApplicationController < ActionController::Base
 
   def send_email(to,subject,content,object)
     mail    = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
+   
     if mail.save
-      SystemMailer.system_email(mail).deliver
-      mail.status= 1;
+      mail.status= 0;
       mail.save
     else
       ActivityLog.new({:user_id=>object.id,:activity=>"{:user_object=>'#{object.class}',:activity=>'Error al guardar email <#{to}>'}"}).save

@@ -234,7 +234,7 @@ class ApplicantsController < ApplicationController
       send_email(@applicant.email,"Solicitud nuevo ingreso CIMAV",content,@applicant)
       content = "{:applicant_id=>\"#{@applicant.id}\",:view=>2}"
       send_email(Settings.school_services1,"Un aspirante ha solicitado password",content,@applicant)
-      send_email(Settings.school_services2,"Un aspirante ha solicitado password",content,@applicant)
+      #send_email(Settings.school_services2,"Un aspirante ha solicitado password",content,@applicant)
     else
       flash[:error] = "Error al crear aspirante."
       respond_with do |format|

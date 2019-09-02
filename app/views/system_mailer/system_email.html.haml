@@ -14,6 +14,15 @@
   = "Para continuar con su proceso de registro de su solicitud debe ingresar a la siguiente página http://posgrado.cimav.edu.mx/aspirantes/registro/datos"
   %br
   %br
+  = "El temario para el exámen de admisión lo puede descargar de la siguiente liga:"
+  
+  - if @applicant.program_id.in? [3,4]
+    = "https://cimav.edu.mx/wp-content/uploads/2015/11/temario-ambiental.pdf"
+  - elsif @applicant.program_id.in? [1,2]
+    = "https://cimav.edu.mx/wp-content/uploads/2015/11/temario-materiales.pdf"
+  
+  %br
+  %br
   = "El formato de registro le solicitará información personal y datos del programa que desea cursar. Al guardar la información solicitada, se despliega una pantalla donde se deberán subir los documentos que sustentan su solicitud. El sistema acepta documentos en pdf y no mayores 6 megabytes."
   %br
   %br
@@ -43,9 +52,18 @@
   = "Password: #{@applicant.password}"
   %br
   %br
-  = "To continue the process, please go to the link:"
+  = "To continue the process, please go to the link: http://posgrado.cimav.edu.mx/aspirantes/registro/datos"
   %br
   %br
+  = "The admision test study guide can be download from:"
+  
+  - if @applicant.program_id.in? [3,4]
+    = "https://cimav.edu.mx/wp-content/uploads/2015/11/temario-ambiental.pdf"
+  - elsif @applicant.program_id.in? [1,2]
+    = "https://cimav.edu.mx/wp-content/uploads/2015/11/temario-materiales.pdf"
+  %br
+  %br
+ 
   = "The application form wil ask you to complete personal information. After these, you should upload the documents that complete your application. The documents must be uploaded in pdf format and no more of 6 megabytes each document."
   %br
   %br
