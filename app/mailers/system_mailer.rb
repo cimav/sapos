@@ -10,11 +10,13 @@ class SystemMailer < ActionMailer::Base
     @uri       = hash[:uri] rescue ""
     @text      = hash[:text] rescue ""
 
+=begin
    if @reply_to.empty?
      mail(:to=> @to,:subject=>object.subject)
    else
      mail(:to=> @to,:subject=>object.subject,:reply_to=>@reply_to)
    end
+=end
  end
 
  def system_email(object)
@@ -22,10 +24,12 @@ class SystemMailer < ActionMailer::Base
    @to         = object.to
    @reply_to  = hash[:reply_to] rescue nil
 
+=begin
    if @reply_to.nil?
      mail(:to=> @to,:subject=>object.subject)
    else
      mail(:to=> @to,:subject=>object.subject,:reply_to=>@reply_to)
    end
+=end
  end
 end

@@ -230,9 +230,9 @@ class ApplicantsController < ApplicationController
         end
       end
 
-      content = "{:applicant_id=>\"#{@applicant.id}\",:view=>1}"
+      content = "{:applicant_id=>\"#{@applicant.id}\",:view=>29}"
       send_email(@applicant.email,"Solicitud nuevo ingreso CIMAV",content,@applicant)
-      content = "{:applicant_id=>\"#{@applicant.id}\",:view=>2}"
+      content = "{:applicant_id=>\"#{@applicant.id}\",:view=>30}"
       send_email(Settings.school_services1,"Un aspirante ha solicitado password",content,@applicant)
       #send_email(Settings.school_services2,"Un aspirante ha solicitado password",content,@applicant)
     else
@@ -399,7 +399,7 @@ class ApplicantsController < ApplicationController
       if @applicant_file.save
         a.status = 8
         a.save
-        content = "{:applicant_id=>\"#{a.id}\",:view=>3}"
+        content = "{:applicant_id=>\"#{a.id}\",:view=>31}"
         send_email(Settings.school_services1,"Un aspirante ha generado su solicitud",content,a)
         send_email(Settings.school_services2,"Un aspirante ha generado su solicitud",content,a)
       else
