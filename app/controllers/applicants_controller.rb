@@ -401,7 +401,7 @@ class ApplicantsController < ApplicationController
         a.save
         content = "{:applicant_id=>\"#{a.id}\",:view=>31}"
         send_email(Settings.school_services1,"Un aspirante ha generado su solicitud",content,a)
-        send_email(Settings.school_services2,"Un aspirante ha generado su solicitud",content,a)
+        #send_email(Settings.school_services2,"Un aspirante ha generado su solicitud",content,a)
       else
         logger.info "############## #{@applicant_file.errors}"
       end
