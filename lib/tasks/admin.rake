@@ -1,4 +1,4 @@
-#[6~ coding: utf-8
+# coding: utf-8
 namespace :admin do
   desc "System Administrator Scripts"
   ADMIN_MAIL        = ""
@@ -111,8 +111,7 @@ namespace :admin do
         
         puts "Linea #{counter+1}: #{first_name.chomp}|#{last_name.chomp}"
 
- 
-=begin       
+=begin
         student =  Student.where("concat(TRIM(last_name),' ',TRIM(last_name2)) LIKE :a AND first_name LIKE :b",  {:a => "%#{last_name}%", :b => "%#{first_name}%"}).order(:id).last
 
         if !student.nil?
@@ -355,6 +354,20 @@ namespace :admin do
 
     puts "Servicios: #{internships.size} Con certificado: #{c_num}"
   end ## task search_and_finalize_if_certificate
+
+  ##################################################################################################################################
+  # send_applicants_email
+  ##################################################################################################################################
+  task :send_applicants_email => :environment do
+    applicants = Applicant.where(:id=>[1248,1249,1250,1251,1252,1253,1254,1255,1256])
+    applicants.each do |a|
+      puts "#{a.full_name} #{a.email}"
+      content = "{:applicant_id=>\"#{a.id}\",:view=>29}"
+      send_email(a.email,"Solicitud nuevo ingreso CIMAV",content,a)
+      #content = "{:applicant_id=>\"#{a.id}\",:view=>30}"
+      #send_email(Settings.school_services1,"Un aspirante ha solicitado password",content,a)
+    end
+  end ## task send_applicants_email
 end ## namespace
 
 ################################################################### METODOS #################################################
@@ -381,4 +394,16 @@ def purifier(string)
   else
     return nil
   end
+end ## def purifier
+
+def send_email(to,subject,content,object)
+  mail    = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
+
+  if mail.save
+    mail.status= 0;
+    mail.save
+  else
+    ActivityLog.new({:user_id=>object.id,:activity=>"{:user_object=>'#{object.class}',:activity=>'Error al guardar email <#{to}>'}"}).save
+  end
 end
+
