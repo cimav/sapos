@@ -132,7 +132,9 @@ class InternshipsController < ApplicationController
         rows = Array.new
 
         @internships.collect do |s|
-          rows << {'Nombre' => s.first_name,
+          rows << {
+                   'Id'     => s.id,
+                   'Nombre' => s.first_name,
                    'Apellidos' => s.last_name,
                    'Sexo' => s.gender,
                    'Email' => s.email,
@@ -147,7 +149,7 @@ class InternshipsController < ApplicationController
                    'Fecha registro' => (s.created_at.to_date.strftime("%Y.%m.%d") rescue '')
                    }
         end
-        column_order = ["Nombre", "Apellidos", "Sexo","Email", "Fecha de Nacimiento", "Tipo", "Institucion", "Inicio", "Fin", "Asesor", "Tesis", "Actividades","Fecha registro"]
+        column_order = ["Id","Nombre", "Apellidos", "Sexo","Email", "Fecha de Nacimiento", "Tipo", "Institucion", "Inicio", "Fin", "Asesor", "Tesis", "Actividades","Fecha registro"]
         to_excel(rows, column_order, "ServiciosCIMAV", "ServiciosCIMAV")
       end #format.xls
    end #respond_with
