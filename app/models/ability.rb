@@ -12,7 +12,7 @@ class Ability
     end 
 
     if user.access == User::ADMINISTRATOR
-        can :manage, [Student ,Staff, Program, Internship, Institution, Classroom, Laboratory, Department, Graduate, Scholarship, CommitteeSession, CommitteeAgreement, Seminar]
+        can :manage, [Student ,Staff, Program, Internship, Institution, Classroom, Laboratory, Department, Graduate, Scholarship, CommitteeSession, CommitteeAgreement, Seminar,TermCourseStudent]
         can :manage, User
         cannot [:create,:destroy,:update], User
         cannot [:create,:destroy], Student
