@@ -1,4 +1,5 @@
 # coding: utf-8
+
 class StaffsController < ApplicationController
   load_and_authorize_resource
   before_filter :auth_required
@@ -727,33 +728,6 @@ class StaffsController < ApplicationController
       @puesto  = "#{job}"
     end
 
-    ##### GENERO GRAMATICAL #####
-
-    if @staff.gender == 'F'
-      @genero   = "a"
-      @genero2  = "la"
-      @sgenero3 = "a la"
-    elsif @staff.gender == 'H'
-      @genero   = "o"
-      @genero2  = "el"
-      @sgenero3 = "al"
-    else
-      @genero   = "x"
-      @genero2  = "x"
-      @sgenero3 = "x"
-    end
-
-   
-    if @sgender == "F"
-      @sgenero  = "a"
-      @sgenero2 = "la"
-    elsif @sgender == "M"
-      @sgenero  = "o"
-      @sgenero2 = "el"
-    else
-      @sgenero  = "x"
-      @sgenero2 = "x"
-    end
 
     ################################ CONSTANCIA DE DIRECTOR DE TESIS ##################################
     if params[:type] == "dir_tesis"
@@ -765,7 +739,9 @@ class StaffsController < ApplicationController
       options[:filename]  =  "constancia-director-tesis-#{@staff.id}.pdf"
 
       if !start_date.blank?
+        
         options[:students] = Student.where(:supervisor=>@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
+        logger.info "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA#{options[:students].size}|#{options[:students].class}"
       else  
         options[:students] = Student.where(:supervisor=>@staff.id)
       end
@@ -774,7 +750,7 @@ class StaffsController < ApplicationController
       start_date = params[:start_date]
       end_date   = params[:end_date]
       options[:cert_type] = Certificate::STAFF_THESIS_DIR
-      options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
+      options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} <b>#{@staff.title} #{@staff.full_name}</b>"
       options[:text]      << " quien participó como Co-Director de tesis de los siguientes estudiantes:"
       options[:filename]  =  "constancia-director-tesis-#{@staff.id}.pdf"
       options[:co_director] = true
@@ -790,7 +766,7 @@ class StaffsController < ApplicationController
       start_date = params[:start_date]
       end_date   = params[:end_date]
       options[:cert_type] = Certificate::STAFF_SINODAL
-      options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
+      options[:text]      = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} <b>#{@staff.title} #{@staff.full_name}</b>"
       options[:text]      << " quien participó como sinodal de tesis de los siguientes estudiantes:"
       options[:filename]  =  "constancia-sinodal-tesis-#{@staff.id}.pdf"
 
@@ -806,7 +782,7 @@ class StaffsController < ApplicationController
       options[:start_date] = params[:start_date].to_date
       options[:end_date] = params[:end_date].to_date
      
-      options[:text]  = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
+      options[:text]  = "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} <b>#{@staff.title} #{@staff.full_name}</b>"
 
 
       options[:cert_type] = Certificate::STAFF_RH
@@ -886,12 +862,19 @@ class StaffsController < ApplicationController
         as_director = Student.includes(:program).where(:supervisor=>@staff.id).where("status in (1,6) AND programs.level !=3")
         as_director = as_director + Student.includes(:program).where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5) AND programs.level !=3",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students] = as_director
+        
         options[:staff_id] = @staff.id
             
         # co-director individual
         as_co_director = Student.includes(:program).where(:co_supervisor=>@staff.id).where("status in (1,6)  AND programs.level !=3")
         as_co_director = as_co_director + Student.includes(:program).where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5) AND programs.level !=3",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
         options[:active_students_co] = as_co_director
+
+        # director externo individual
+        as_external_director = Student.where(:external_supervisor=>@staff.id)
+        as_external_director = as_external_director + Student.where(:external_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        options[:active_students_external] = as_external_director        
+
         # cursos impartidos individual
         options[:term_course_schedules] = TermCourseSchedule.where(:staff_id=>@staff.id,:status=>1).select(:term_course_id).uniq
 
@@ -913,7 +896,7 @@ class StaffsController < ApplicationController
         options[:term_course_schedules] = TermCourseSchedule.where(:staff_id=>@staff.id,:status=>1).select(:term_course_id).uniq
       end
        
-      options[:filename]  =  "constancia-individual-#{@staff.id}.pdf"      
+      options[:filename]   =  "constancia-individual-#{@staff.id}.pdf"      
     end
 
     generate_certificate(options)
@@ -934,600 +917,31 @@ class StaffsController < ApplicationController
     year = time.year.to_s
 
     background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
-   
-    if !(options[:cert_type].eql? Certificate::STAFF_INDIVIDUAL)
-      @consecutivo = get_consecutive(@staff, time, options[:cert_type])
-    end
-   
+      
     @rails_root  = "#{Rails.root}"
-    @year_s      = year[2,4]
-    @year        = year
-    @days        = time.day.to_s
-    @month       = get_month_name(time.month)
-
-    Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[140,55,60,55] ) do |pdf|
-      pdf.font_families.update(
-          "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
-                            :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
-                            :bold_italic => Rails.root.join("app/assets/fonts/montserrat/Montserrat-BoldItalic.ttf"),
-                            :normal      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Regular.ttf") })
-      pdf.font "Montserrat"
-      pdf.font_size 11
-      x = 232
-      y = 590 #664
-      w = 255
-      h = 50
- 
-      if !(options[:cert_type].eql? Certificate::STAFF_INDIVIDUAL)
-        pdf.text "<b>Coordinación de estudios de Posgrado\nOficio PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
-
-        pdf.font_size 11
-        y = y - 70
-        x = 10
-        h = 50
-
-        pdf.text "\n\n\n\nA quien corresponda\n", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-        pdf.text "<b>Presente.</b>", :align=>:left, :character_spacing=>4,:inline_format=>true
-
-
-        y = y - 60
-        h = 220
-        w = 500
-
-        pdf.text "\n"
-        pdf.text options[:text], :align=>:justify, :inline_format=>true              
-        pdf.text "\n"
-      end
-   
-      ################################ CONSTANCIA DE DIRECTOR DE TESIS ##################################
-      if options[:cert_type].eql? Certificate::STAFF_THESIS_DIR
-        @students = options[:students]
-         
-        data = []
-        data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center},{:content=>"<b>ESTATUS</b>",:align=>:center}]
-
-        @students.each do |s|
-          data << [s.full_name,s.program.name,s.thesis.title,Student::STATUS[s.status]]
-        end
-
-        if options[:co_director]
-          text = "<b>Participación como co-director de tesis</b>\n"
-        else
-          text = "<b>Participación como director de tesis</b>\n"
-        end
-        pdf.text text, :align=>:center, :inline_format=>true              
-        
-        tabla = pdf.make_table(data,:width=>510,:cell_style=>{:size=>10,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [100,100,240,70])
-        tabla.draw
-      ################################ CONSTANCIA COMO SINODAL ##################################
-      elsif options[:cert_type].eql? Certificate::STAFF_SINODAL
-        @theses = options[:theses]
-        data = []
-        get_month_name(time.month)
-        data << [{:content=>"<b>NOMBRE</b>",:align=>:center},{:content=>"<b>PROGRAMA</b>",:align=>:center},{:content=>"<b>TESIS</b>",:align=>:center},{:content=>"<b>FECHA DE DEFENSA</b>",:align=>:center}]
-
-        @theses.each do |t|
-          defence_month = get_month_name(t.defence_date.month)
-          data << [t.student.full_name ,t.student.program.name,t.title,t.defence_date.strftime("%-d de #{defence_month} de %Y")]
-        end
-        
-        pdf.text "<b>Participación como sinodal</b>\n", :align=>:center, :inline_format=>true              
-        tabla = pdf.make_table(data,:width=>500,:cell_style=>{:size=>8,:padding=>2,:inline_format => true,:border_width=>1},:position=>:center,:column_widths => [100,95,200,105])
-        tabla.draw
-      ##################################### CONSTANCIA FORMACIÓN DE RH ################################################################
-      elsif options[:cert_type].eql? Certificate::STAFF_RH
-
-        # Alumnos como director de tesis
-        @students = options[:active_students]
-        @graduate_students = options[:graduate_students]
-        if @students.size > 0
-          data = []
-          data_helper = []
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
-
-          @students.each do |s|
-            if s.status.eql? 5 ##  Para que Egresado No Graduado salga como Egresado
-              data_helper << [s.full_name, s.program.name, "Egresado"]
-            else
-              data << [s.full_name, s.program.name, Student::STATUS[s.status]]
-            end
-          end
-
-          pdf.text "<b>Participación como director de tesis</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
-          tabla.draw
-        end
-
-        # Alumnos como co-director de tesis
-        @students = options[:active_students_co]
-        @graduate_students = options[:graduate_students_co]
-        if @students.size > 0
-          data = []
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
-
-          @students.each do |s|
-            data << [s.full_name, s.program.name, Student::STATUS[s.status]]
-          end
-
-          pdf.text "\n<b>Participación como co-director de tesis</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
-          tabla.draw
-        end
-
-        # Alumnos como director externo
-        @students = options[:active_students_external]
-        @graduate_students = options[:active_students_external]
-        if @students.size > 0
-          data = []
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
-
-          @students.each do |s|
-            data << [s.full_name, s.program.name, Student::STATUS[s.status]]
-          end
-
-          pdf.text "\n<b>Participación como director externo</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
-          tabla.draw
-        end
-
-
-        # tesis como sinodal
-        @theses = options[:theses]
-
-        if @theses.size > 0
-          data = []
-          get_month_name(time.month)
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE DEFENSA</b>", :align => :center}]
-
-          @theses.each do |t|
-            defence_month = get_month_name(t.defence_date.month)
-            data << [t.student.full_name, t.student.program.name, t.defence_date.strftime("%-d de #{defence_month} de %Y")]
-          end
-
-          pdf.text "\n<b>Participación como sinodal</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 190, 120])
-          tabla.draw
-        end
-
-        # avances como comité tutoral de Avance Programático
-        active_advances = []
-        active_advances = options[:advances]
-      
-        if active_advances.size > 0
-          data = []
-          get_month_name(time.month)
-
-
-          approved = false
-          nombre_anterior = nil
-          program_id_anterior = nil
-
-          active_advances.each do |a|
-            if ((nombre_anterior.eql? a.student.full_name_cap)&(program_id_anterior.eql? a.student.program_id))
-              approved = false
-            else
-              approved = true
-            end
-
-            if approved
-              advance_month = get_month_name(a.advance_date.month)
-              data << [a.student.full_name_cap, a.student.program.name, a.advance_date.strftime("%-d de #{advance_month} de %Y"), a.advance_date]
-            
-              nombre_anterior     = a.student.full_name_cap
-              program_id_anterior = a.student.program_id
-            end
-          end 
-
-          ## ordenando por la tercera fila que es la fecha directo de db
-          data.sort!{|x,y|x[3]<=>y[3]}
-          ## eliminando el registro de fecha de cada fila porque sino truena la tabla
-          data.each do |d|
-            d.delete_at(3)
-          end
-
-          ## insertando cabecera con unshift
-          data.unshift([{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE AVANCE</b>", :align => :center}])
-
-          pdf.text "\n<b>Participación como comité tutoral</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 185, 125])
-          tabla.draw
-        end
-
-        # Seminaros departamentales como comité tutoral         
-        @seminars = options[:seminars]
-        
-        if @seminars.size > 0
-          data = []
-          get_month_name(time.month)
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE AVANCE</b>", :align => :center}]
-
-          @seminars.each do |s|
-            advance_month = get_month_name(s.advance_date.month)
-            data << [s.student.full_name, s.student.program.name, s.advance_date.strftime("%-d de #{advance_month} de %Y")]
-          end
-
-          pdf.text "\n<b>Seminarios departamentales</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 185, 125])
-          tabla.draw
-        end
-
-        # clases impartidas
-        @term_course_schedules = options[:term_course_schedules]
-
-        if @term_course_schedules.size > 0
-          data = []
-          data << [{:content => "<b>CLASE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}]
-
-          @term_course_schedules.each do |tcs|
-            term_course = tcs.term_course
-
-            if !term_course.nil?
-              if term_course.status != TermCourse::DELETED
-                if options[:ranges]
-                  if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
-                    term_month = get_month_name(term_course.term.start_date.month)
-                    data << ["#{term_course.course.name}", term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
-                  end
-                else
-                  term_month = get_month_name(term_course.term.start_date.month)
-                  data << [term_course.course.name, term_course.term.program.name, term_course.term.start_date.strftime("%-d de #{term_month} de %Y")]
-                end
-              end
-            else
-              logger.info "################# No se que pasa aquí"  
-              #data << [tcs.id.to_s,"######","######"]
-            end
-
-          end
-
-          pdf.text "\n<b>Clases impartidas</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [200, 195, 105])
-          tabla.draw
-        end
-
-        # Cursos o talleres
-        @external_courses = options[:external_courses]
-
-        if @external_courses.size > 0
-          data = []
-          data << [{:content => "<b>TÍTULO</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}, {:content => "<b>TIPO</b>", :align => :center}]
-
-          @external_courses.each do |e|
-            course_month = get_month_name(e.start_date.month)
-            data << [e.title, e.start_date.strftime("%-d de #{course_month} de %Y"), e.get_type]
-          end
-
-          pdf.text "\n<b>Cursos o talleres</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [300, 100, 100])
-          tabla.draw
-        end
-
-        # Prácticas de laboratorio
-        @lab_practices = options[:lab_practices]
-
-        if @lab_practices.size > 0
-          data = []
-          get_month_name(time.month)
-          data << [{:content => "<b>Título</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}, {:content => "<b>TIEMPO DE PRÁCTICA</b>", :align => :center}]
-
-          @lab_practices.each do |l|
-            practice_month = get_month_name(l.start_date.month)
-            data << [l.title, l.start_date.strftime("%-d de #{practice_month} de %Y"), l.hours]
-          end
-
-          pdf.text "\n<b>Prácticas de laboratorio</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [280, 100, 120])
-          tabla.draw
-
-        end
-
-        # Servicios CIMAV
-        @internships= options[:internships]
-        
-        if @internships.size > 0
-          data = []
-          data << [{:content => "<b>Nombre</b>", :align => :center}, {:content => "<b>Tipo de Servicio</b>", :align => :center}]          
-
-          approved = false
-          nombre_anterior = nil
-          i_type_anterior = nil
-          @internships.each do |i|
-            if ((i_type_anterior.eql? i.internship_type_id)&&(nombre_anterior.eql? i.full_name_cap))
-              approved = false
-            else
-              approved = true
-            end
-
-            if approved
-              data << [i.full_name_cap, i.internship_type.name]
-            
-              nombre_anterior = i.full_name_cap
-              i_type_anterior = i.internship_type_id
-            end
-          end 
-
-          pdf.text "\n<b>Servicios CIMAV</b>\n", :align => :center, :inline_format => true
-          tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [280, 220])
-          tabla.draw
-        end
-       
-      ##################################### CONSTANCIA INDIVIDUAL ################################################################
-      elsif options[:cert_type].eql? Certificate::STAFF_INDIVIDUAL
-      
-        # Alumnos como director de tesis
-        @students  = options[:active_students]
-        @students  = @students + options[:active_students_co]
-        staff_id  = options[:staff_id]
-
-        
-        if @students.size > 0
-          data = []
-          data_helper = []
-      
-          @students.each_with_index do |s,index|
-           
-            if s.gender == 'F'
-              stgenero   = "a"
-              stgenero2  = "la"
-              stgenero3 = "a la"
-              stgenero4 = "de la"
-            elsif s.gender == 'H'
-              stgenero   = "o"
-              stgenero2  = "el"
-              stgenero3 = "al"
-              stgenero4 = "del"
-            else
-              stgenero   = "x"
-              stgenero2  = "x"
-              stsgenero3 = "x"
-            end
-                      
-            @consecutivo = get_consecutive(@staff, time, options[:cert_type])
-            pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  <b>PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
-
-            pdf.font_size 11
-            y = y - 70
-            x = 10
-            h = 50
-
-            pdf.text "\n\n\nA quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-
-            docente =  "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
-      
-            if staff_id.eql? s.supervisor
-              description = "<b>Director de Tesis</b>"
-            elsif staff_id.eql? s.co_supervisor
-              description = "<b>Co-Director de Tesis</b>"
-            else
-              description = "<b>INDEFINITUM</b>"
-            end         
-            
-              if s.status.eql? 1 #activo
-                if s.program.level.to_i.eql? 2 #doctorado
-                  if s.thesis.title.blank?
-                    texto = "\n\n<font size='20'><b>El sistema ha detectado el título vacío de la tesis del alumno: #{s.full_name.lstrip.rstrip}</b></font>"
-                  else
-                    periodo      =  "quien desde el <b> #{s.start_date.day} de #{get_month_name(s.start_date.month)} del #{s.start_date.year}</b> funge como"
-                    alumno_tesis = "#{stgenero4} alumn#{stgenero} <b>#{s.full_name.lstrip.rstrip}</b> matricula #{s.card} de nuestro programa de #{s.program.name}, con la Tesis: \"#{s.thesis.title.lstrip.rstrip rescue ""}\"."
-                    texto = "#{docente} #{periodo} #{description} #{alumno_tesis}"
-                  end # blank?
-                else # maestria u otro
-                   if is_first_grade(s)
-                     periodo =  "quien desde el <b> #{s.start_date.day} de #{get_month_name(s.start_date.month)} del #{s.start_date.year}</b> funge como"
-                     alumno_tesis = "#{stgenero4} alumn#{stgenero} <b>#{s.full_name.lstrip.rstrip}</b> matricula #{s.card} de nuestro programa de #{s.program.name}."
-                     texto = "#{docente} #{periodo} #{description} #{alumno_tesis}"
-                   else
-                     periodo      =  "quien desde el <b> #{s.start_date.day} de #{get_month_name(s.start_date.month)} del #{s.start_date.year}</b> funge como"
-                     alumno_tesis = "#{stgenero4} alumn#{stgenero} <b>#{s.full_name.lstrip.rstrip}</b> matricula #{s.card} de nuestro programa de #{s.program.name}, con la Tesis: \"#{s.thesis.title.lstrip.rstrip rescue ""}\"."
-                     texto = "#{docente} #{periodo} #{description} #{alumno_tesis}"
-                   end
-                end # level
-                
-              else ## otro status 2= graduado, 5= terminado
-                end_date = s.thesis.defence_date
-                if end_date ## forzosamente debe tener fecha de terminacion sino hay error
-                  periodo = ", quien durante el periodo del <b> #{s.start_date.day} de #{get_month_name(s.start_date.month)} del #{s.start_date.year}</b> al <b>#{end_date.day} de #{get_month_name(end_date.month)} del #{end_date.year}</b> fungió como"
-                 
-                  alumno_tesis = "#{stgenero4} alumn#{stgenero} <b>#{s.full_name.lstrip.rstrip}</b> matricula #{s.card} de nuestro programa de #{s.program.name}, con la Tesis: \"#{s.thesis.title.lstrip.rstrip}\"."
-                 
-                  texto = "#{docente} #{periodo} #{description} #{alumno_tesis}"
-                else
-                  texto = "\n\n<font size='20'><b>El sistema no encuentra la fecha de defensa de tesis del alumno: #{s.full_name.lstrip.rstrip}</b></font>"
-                end              
-              end
-                                  
-              y = y - 60
-              h = 220
-              w = 500
-              pdf.text "\n"
-              pdf.text texto, :align=>:justify, :inline_format=>true              
-              pdf.text "\n"
-
-              pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
-
-              ############################## FIRMA ##############################
-              @atentamente = "\n\n\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
-              pdf.text @atentamente, :align=>:center,:inline_format=>true
-              ############################## ###### ##############################
-
-            if index!=(@students.size-1)
-              pdf.start_new_page
-            end
-            
-          end## students.each
-
-        end##students.size
-       
-        ##########################################
-        #cursos impartidos INDIVIDUAL
-        @term_course_schedules = options[:term_course_schedules]
-
-        if @term_course_schedules.size > 0
-          pdf.start_new_page
-          @consecutivo = get_consecutive(@staff, time, options[:cert_type])
-          pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  <b>PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
-
-          pdf.font_size 11
-          y = y - 70
-          x = 10
-          h = 50
-
-          pdf.text "\nA quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-
-          docente =  "Por medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} #{@staff.title} #{@staff.full_name}"
-        
-           start_year = options[:start_date].year rescue "N.D"
-           end_year   = options[:end_date].year rescue "N.D"
-         
-           texto = "#{docente} quien participó impartiendo las siguientes asignaturas en el periodo #{start_year}-#{end_year}:"
-           y = y - 60
-           h = 220
-           w = 500
-           pdf.text "\n"
-           pdf.text texto, :align=>:justify, :inline_format=>true              
-           pdf.text "\n"
-       
-
-           data = []
-           data << [{:content => "<b>Curso</b>", :align => :center}, {:content => "<b>Inicio</b>", :align => :center}, {:content => "<b>Fin</b>", :align => :center}, {:content => "<b>Horas Impartidas</b>", :align => :center}]
     
-           @term_course_schedules.each_with_index do |tcsch,index|
-             if tcsch.term_course.nil?
-               ## si el term_course ya no existe es que hay registros colgados
-               ## simplemente los ignoramos y pasamos al siguiente
-               next
-             end
-            
-             term_course = tcsch.term_course
-             # El conteo se hace en un hash {k,v} donde k es el docente y v son las horas impartidas
-             staff_hours = Hash.new(0)
-             
-             TermCourseSchedule.where(:staff_id=>@staff.id,:term_course_id=>tcsch.term_course_id,:status=>1).each do |tcs2|
-                hours_per_day = tcs2.end_hour.strftime("%H").to_i - tcs2.start_hour.strftime("%H").to_i 
-
-                if staff_hours[@staff.id].eql? 0
-                  @tcs2_sd = tcs2.start_date
-                end 
-
-                @tcs2_ed = tcs2.end_date
-
-                days = (tcs2.start_date..@tcs2_ed).to_a.select {|k| [tcs2.day].include?(k.wday)}.size
-                staff_hours[@staff.id] += hours_per_day * days
-             end
-
-             if !tcsch.nil?
-               if !tcsch.nil?
-                 if options[:ranges]
-                   if (term_course.term.start_date.between?(options[:start_date],options[:end_date]))||(term_course.term.end_date.between?(options[:start_date],options[:end_date]))
-                    term_month = get_month_name(@tcs2_sd.month)
-                    
-                    course_name = "#{term_course.course.name}"
-                    start_date  = {:content=>@tcs2_sd.strftime("%-d de #{term_month} de %Y"), :align=>:center}
-                    
-
-                    term_month = get_month_name(@tcs2_ed.month)
-                    end_date    = {:content=>@tcs2_ed.strftime("%-d de #{term_month} de %Y"), :align=>:center}
-
-                    hours       = {:content=>staff_hours[@staff.id].to_s, :align=>:center}
-                    
-                    data << [course_name, start_date, end_date , hours]
-                   end
-                 else
-                    course_name = term_course.course.name
-                    start_date  = {:content=>term_course.term.start_date.strftime("%-d de #{term_month} de %Y"),:align=>:center}
-                    end_date    = {:content=>term_course.term.end_date.strftime("%-d de #{term_month} de %Y"),:align=>:center}
-        
-                    hours       = ""
-                    
-                    data << [course_name, start_date, end_date , hours]
-                 end
-               end
-             else
-               logger.info "################# No se que pasa aquí"  
-               #data << [tcs.id.to_s,"######","######"]
-             end
-          end # @term_course_schedules.size
-
-   
-
-           tabla = pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 127,127,56])
-           tabla.draw
-           pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
-           ############################## FIRMA ##############################
-           @atentamente = "\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
-           pdf.text @atentamente, :align=>:center,:inline_format=>true
-           ############################## ###### ##############################
-
-           #pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
-           pdf.start_new_page
-         end
- 
-         ##########################################
-         # comite tutoral INDIVIDUAL
-         @advances = options[:advances]
-
-         adv_size = @advances.size
-         if adv_size>0
-
-           pdf.font_size 11
-
-           @advances.each_with_index do |advance,index|
-             @consecutivo = get_consecutive(@staff, time, options[:cert_type])
-             pdf.text "Coordinación de estudios de Posgrado\nNo° de Oficio  <b>PO - #{@consecutivo}/#{@year}</b>\n#{options[:city]}, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right, :width=>w, :height=>h
-
-             pdf.text "\n\n\nA quien corresponda\nPresente:", :align=>:left,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
-
-             docente =  "\nPor medio de la presente tengo el agrado de extender la presente constancia #{@sgenero3} <b>#{@staff.title} #{@staff.full_name}</b>"
-             texto = "#{docente} quien participó como parte del comité tutoral del alumno <b>#{advance.student.full_name}</b> alumno inscrito en nuestro programa de <b>#{advance.student.program.name}</b>."
-             
-             pdf.text texto, :align=>:justify, :inline_format=>true           
-        
-             pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar.", :align=>:justify
-             ############################## FIRMA ##############################
-             @atentamente = "\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
-             pdf.text @atentamente, :align=>:center,:inline_format=>true
-
-             #unless adv_size.eql? index+1
-               pdf.start_new_page
-             #end
-           end #@advances.each do |advance|
-         end#@advances.size>0
-           
-      end#elsif
-
-      if !(options[:cert_type].eql? Certificate::STAFF_INDIVIDUAL)
-        pdf.text "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
-
-        ############################## FIRMA ##############################
-        @atentamente = "\n\n<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
-        pdf.text @atentamente, :align=>:center,:inline_format=>true
-        ############################## ###### ##############################
-
-        pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
-      end
-
-      filename = options[:filename]
-      if Rails.env.production?
-        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "attachment"
-      else
-        ## linea para desarrollo (es más productivo actualizar la página que estar descargando archivos)
-        send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
-      end
-      
-      
-    end
-  end
-     
-  ## solo para alumnos de maestria
-  def is_first_grade(s)
-    if s.program.level.eql? 1
-      if s.term_students.size.eql? 1
-        return true
-      end
+    options[:year_s] = year[2,4]
+    options[:year]   = year
+    options[:days]   = time.day.to_s
+    options[:month]  = t(:date)[:month_names][time.month]
+    options[:firma]  = @firma
+    options[:puesto] = @puesto
+    options[:staff]  = @staff
+    
+    if options[:cert_type].eql? Certificate::STAFF_INDIVIDUAL
+       certificate = Toads::StaffCertificates::Individual::Basic.new(options)
+    elsif options[:cert_type].eql? Certificate::STAFF_SINODAL
+       certificate = Toads::StaffCertificates::Sinodal.new(options)
+    elsif options[:cert_type].eql? Certificate::STAFF_RH
+       certificate = Toads::StaffCertificates::RH.new(options)
+    elsif options[:cert_type].eql? Certificate::STAFF_THESIS_DIR
+       certificate = Toads::StaffCertificates::ThesisDirector.new(options)
     end
    
-    return false
-  end # def is_first_grade
+    filename = options[:filename]
+    send_data certificate.render, filename: filename, type: "application/pdf", disposition: "inline"
+   
+  end #def generate_certificate(options)
      
   def get_consecutive(object, time, type)
     maximum = Certificate.where(:year => time.year).maximum("consecutive")

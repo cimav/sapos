@@ -222,4 +222,50 @@ class Student < ActiveRecord::Base
     activity_log.activity = "Student changes status: #{self.id},#{STATUS[self.status]}"
     activity_log.save
   end
+ 
+   ## solo para alumnos de maestria
+  def is_first_grade
+    if self.program.level.eql? 1
+      if self.term_students.size.eql? 1
+        return true
+      end
+    end
+   
+    return false
+  end # def is_first_grade
+ 
+ 
+  def ggender(option)
+    if self.gender == 'F'
+      genero   = "a"
+      genero2  = "la"
+      genero3  = "a la"
+      genero4  = "de la"
+    elsif self.gender == 'H'
+      genero   = "o"
+      genero2  = "el"
+      genero3  = "al"
+      genero4  = "del"
+    else
+      genero   = "[género no especificado]"
+      genero2  = "[género no especificado]"
+      genero3  = "[género no especificado]"
+      genero4  = "[género no especificado]"
+    end
+   
+    if option.eql? "genero"
+      return genero
+    elsif option.eql? "genero2"
+      return genero2
+    elsif option.eql? "genero3"
+      return genero3
+    elsif option.eql? "genero4"
+      return genero4
+    else
+      return "Unknown Option"
+    end
+  end #ggender
+ 
+
+ 
 end

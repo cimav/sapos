@@ -119,4 +119,31 @@ class Staff < ActiveRecord::Base
     end
     active_items
   end
+
+ 
+   def ggender(option)
+    if self.gender == 'F'
+      genero   = "a"
+      genero2  = "la"
+      genero3 = "a la"
+    elsif self.gender == 'H'
+      genero   = "o"
+      genero2  = "el"
+      genero3 = "al"
+    else
+      genero   = "[género no especificado]"
+      genero2  = "[género no especificado]"
+      genero3 = "[género no especificado]"
+    end
+    
+    if option.eql? "genero"
+      return genero
+    elsif option.eql? "genero2"
+      return genero2
+    elsif option.eql? "genero3"
+      return genero3
+    else
+      return "Unknown Option"
+    end
+  end ##ggender
 end

@@ -143,7 +143,8 @@ namespace :admin do
   #  get_reprobated: obtiene alos alumnos que tengan mas de una materia reprobada de todos los tiempos en orden descendente
   ############################################################################################################################
   task :get_reprobated => :environment do 
-     reprobated = TermCourseStudent.select("distinct students.id as id, count(*) as counter").joins(:term_student=>:student).where("grade < 70 AND students.status in (?)",[1,6]).group("students.id").order("counter desc").having("counter > 1").map {|i| [i.id,i.counter] }
+     #reprobated = TermCourseStudent.select("distinct students.id as id, count(*) as counter").joins(:term_student=>:student).where("grade < 70 AND students.status in (?)",[1,6]).group("students.id").order("counter desc").having("counter > 1").map {|i| [i.id,i.counter] }
+     reprobated = TermCourseStudent.select("distinct students.id as id, count(*) as counter").joins(:term_student=>:student).where("grade < 70 AND students.status in (?)",[1,6]).group("students.id").order("counter desc").map {|i| [i.id,i.counter] }
 
      reprobated.each do |r|
        s = Student.find(r[0])
@@ -368,6 +369,15 @@ namespace :admin do
       #send_email(Settings.school_services1,"Un aspirante ha solicitado password",content,a)
     end
   end ## task send_applicants_email
+ 
+   ##################################################################################################################################
+  # Show libs
+  ##################################################################################################################################
+  task :show_libs => :environment do
+    Dir["lib/toads/**/*.rb"].each do |path|
+      puts  path
+    end # Dir
+  end  ## task show_libs
 end ## namespace
 
 ################################################################### METODOS #################################################

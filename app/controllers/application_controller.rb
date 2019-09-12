@@ -1,11 +1,11 @@
 # coding: utf-8
 
 require 'rails/generators'
-#require 'toads'
+require 'toads'
 
-Dir["lib/**/*.rb"].each do |path|
-   require_dependency  path
-end
+#Dir["lib/**/*.rb"].each do |path|
+#   require_dependency  path
+#end
 
 class ApplicationController < ActionController::Base
   protect_from_forgery
