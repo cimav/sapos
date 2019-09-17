@@ -26,9 +26,33 @@ $(document).ready(function() {
   $('#recom-send').click(function(){
     if($('#auth_1').prop("checked"))
     {
-       start_date = $('#start_date').val();
-       end_date   = $('#end_date').val();
-       activity   = $('#activity_area').val();
+       start_date_val = $('#start_date').val();
+       end_date_val   = $('#end_date').val();
+       activity       = $('#activity_area').val();
+
+       start_date_splitted = start_date_val.split("-");
+       year  = Number(start_date_splitted[0]);
+       month = Number(start_date_splitted[1]);
+       day   = Number(start_date_splitted[2]);
+       
+       
+       end_date_splitted = end_date_val.split("-");
+       year  = Number(end_date_splitted[0]);
+       month = Number(end_date_splitted[1]);
+       day   = Number(end_date_splitted[2]);
+
+       start_date = new Date(start_date_splitted[0],start_date_splitted[1],start_date_splitted[2]);
+       end_date   = new Date(end_date_splitted[0],end_date_splitted[1],end_date_splitted[2]);
+
+
+       if(start_date.getTime() >= end_date.getTime())
+       {
+         alert("La fecha inicial no puede ser mayor o igual que la inicial");
+         return false;
+       }
+
+       //alert(start_date.getFullYear()+'|'+start_date.getMonth()+'|'+start_date.getDate());
+
        if((start_date=='')||(end_date=='')||(activity==''))
        {
           alert("Todos los campos son obligatorios")

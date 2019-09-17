@@ -1122,7 +1122,8 @@ class InternshipsController < ApplicationController
     json[:status]= 1
     render :json=> json
   end#applicant_interview
-  
+ 
+###################################################################################### 
   def applicant_interview_qualify
 
     @save  = false
