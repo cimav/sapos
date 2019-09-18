@@ -370,7 +370,7 @@ namespace :admin do
     end
   end ## task send_applicants_email
  
-   ##################################################################################################################################
+  ##################################################################################################################################
   # Show libs
   ##################################################################################################################################
   task :show_libs => :environment do
@@ -378,6 +378,32 @@ namespace :admin do
       puts  path
     end # Dir
   end  ## task show_libs
+
+  ##################################################################################################################################
+  # Unsubscribe: elimina materias y deja al alumno como si nunca se hubiera inscrito, para pruebas
+  ##################################################################################################################################
+  task :unsubscribe => :environment do 
+    s_id = 2201
+    term = '2019-2 Chihuahua' 
+    s = Student.find(s_id)
+    term_student = nil 
+
+    puts s.full_name
+    s.term_students.each do |ts| 
+      if ts.term.name.eql? term
+        term_student = ts
+        ts.term_course_student.each do |tcs|
+          puts tcs.destroy
+        end
+      end
+    end
+    
+    puts term_student.destroy
+
+    s.status = 6
+    puts s.save(:validation=>false)
+  end ## task unsubscribe
+
 end ## namespace
 
 ################################################################### METODOS #################################################
