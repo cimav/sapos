@@ -844,7 +844,7 @@ class InternshipsController < ApplicationController
     end
    
     if vars[:exam1] && vars[:exam2] && vars[:exam3]
-      i = Internship.where(:email=>vars[:email],:internship_type_id=>11) ## grupo academico
+      i = Internship.where(:email=>vars[:email],:internship_type_id=>11,:status=>0) ## grupo academico
       
       if i.size>0
         json = Hash.new
