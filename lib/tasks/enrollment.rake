@@ -10,9 +10,10 @@ namespace :enrollment do
     set_line("===== Iniciando script enrollment:check =====")
     ## nos traemos todos los ciclos que estan finalizados
     if args[:option].eql? "terms"
+      puts "#####################{CICLO}"
       terms = Term.joins(:program).where("programs.level in (1,2) AND terms.name like '%#{CICLO}%'")
       terms.each do |t|
-        set_line("#{t.status} |#{(t.status.to_i.in? [3,4]) ? 'OK!' : 'XXX'} | #{t.name} | #{t.program.name}")
+        puts "#{t.status} |#{(t.status.to_i.in? [3,4]) ? 'OK!' : 'XXX'} | #{t.name} | #{t.program.name}"
       end
     end
     
@@ -49,7 +50,7 @@ def set_enrollment(terms)
      set_line("====== #{t.name}")
      
      ## estudiantes inscritos en el nuevo ciclo, metemos los ids en un array
-     s_nciclo = TermStudent.select("students.id as id").joins(:student).joins(:term).joins(:term=>:program).where(:students=>{:status=>1}).where("terms.name like '%2019-1%'").where("programs.level in (?)",[1,2]).map {|i| i.id}
+     s_nciclo = TermStudent.select("students.id as id").joins(:student).joins(:term).joins(:term=>:program).where(:students=>{:status=>1}).where("terms.name like '%#{NCICLO}%'").where("programs.level in (?)",[1,2]).map {|i| i.id}
 
      ## Alumnos activos en ese ciclo y que no esten activos en el otro
      tss = TermStudent.joins(:student).where(:term_id=>t.id,:students=>{:status=>1}).where("students.id not in (?)",s_nciclo)
