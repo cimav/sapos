@@ -82,6 +82,7 @@ $("#searchy").live("keyup", function(e){
 
 function search(e){
   var searchField = $('#searchy').val();
+  searchField = searchField.toLowerCase();
   
   var command = "";
   command = searchCommand(searchField);
@@ -149,6 +150,7 @@ function searchCommand(searchField){
 }
 
 function searchByCommand(command,searchField){
+  searchField = searchField.replace(/ /g,".*")
   var regex   = new RegExp(searchField, "i");
   var counter = 0;
   items       = [];
