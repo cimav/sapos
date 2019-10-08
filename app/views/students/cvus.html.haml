@@ -16,8 +16,10 @@
   .icon-delete { cursor: pointer; }
   .icon-delete:hover { color: #505050; } 
   .hidden-message { display: none; }
+
   .div-center { text-align: center; }
   
+  .enrollment-answer{ margin: auto; }
   .enrollment-button-group{ margin: auto; width: 300px; heigth: 32px; padding-top:20px;}
   .button-yes{ float: right; }
   .button-no{ float: left; }
@@ -30,6 +32,7 @@
     clear:both;
   }
   
+  .file-row {margin: auto;}
 .container#content-panel
   .enrollment-message
     = "#{params[:message]}"
@@ -37,13 +40,14 @@
   .enrollment-files
     - if @enrollment_files.size > 0
       - @enrollment_files.each do |file|
-        %b= file.term.name
-        = "&nbsp".html_safe
-        %a{:id=>"file_description_#{file.id}",:href=>"/estudiantes/archivos/cvus/file/#{file.id}"}= file.description
-        %i.material-icons.icon-delete{:file_id=>file.id,:student_id=>file.student_id}= "delete"
-        %br
+        .file-row
+          %b= file.term.name
+          = "&nbsp".html_safe
+          %a{:id=>"file_description_#{file.id}",:href=>"/estudiantes/archivos/cvus/file/#{file.id}"}= file.description
+          %i.material-icons.icon-delete{:file_id=>file.id,:student_id=>file.student_id}= "delete"
     - else
-      = "No se ha encontrado ningún archivo"
+      .file-row
+        = "No se ha encontrado ningún archivo"
 
   .enrollment-upload
     %i.material-icons.md-48.icon-upload{:student_id=>@student_id}= "cloud_upload"
@@ -58,28 +62,6 @@
       %button.button-no.delete-button{:choice=>"no"}
         ="No"
         
-#enrollment-upload.hidden-message
-  = form_for(EnrollmentFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-1", :multipart=> true,:target=>'files_iframe2'}) do |f|
-  
-    .div-center
-      .enrollment-file-term
-        = "Ciclo escolar"
-        = f.hidden_field :student_id, :value=>@student_id
-        = f.hidden_field :enrollment_type_id, :value=>1
-        = f.select :term_id, options_from_collection_for_select(@terms,:id,:name), :prompt=>"-- Elija un ciclo escolar --", :class=>"select-with-terms",:id=>"select_with_terms_xidx"
-        .upload-btn-wrapper
-          %button.btn{:style=>"display: none;"}= "Seleccionar Archivo"
-          = f.file_field :file,:class=>"inputfile2"
-          %br
-          =# label_tag "enrollment_file[file]","Eliga un archivo"
-          = label_tag "file","Selecciona un archivo"
-
-        .enrollment-button-group
-          %button.button-yes.upload-button{:choice=>"si"}
-            ="Continuar"
-          %button.button-no.upload-button{:choice=>"no"}
-            ="Cancelar"
- 
 :javascript
   my_id = 0;
   
@@ -89,34 +71,11 @@
       student_id  = $(this).attr("student_id");
       
       var description = $("#file_description_"+my_id).html();
-      $('#delete_file_name').html(description);
-            
-      var html        = $("#alerta").html();
-
-      $("#new-advance-dialog").remove();
-      $('#content-panel').append('<div title="" id="new-advance-dialog">'+html+'</div>');
-      $("#new-advance-dialog").dialog({ autoOpen: false, width: 450, height: 200, modal:true });
-      $("#new-advance-dialog").dialog('open');
-      
-      $(".delete-button").click(function(){
-        var attr_id = $(this).attr("choice");
-               
-        if(attr_id=='si')
-        {
-          console.log("Click: "+attr_id);
-          console.log(my_id+"|"+student_id);
-          window.location= "/estudiantes/"+student_id+"/archivos/cvu/eliminar/"+my_id;
-        }
-        else if(attr_id=='no')
-        {
-          console.log("Click: "+attr_id);
-          $("#new-advance-dialog").dialog('close');
-        }
-        else
-        {
-          console.log("Opcion desconocida");
-        }
-      });
+      //$('#delete_file_name').html(description);
+        
+      if(confirm("Esta seguro de que desea eliminar el archivo "+description)){
+        window.location= "/estudiantes/"+student_id+"/archivos/cvu/eliminar/"+my_id;
+      }
       
     }); // fin icon-delete
     
