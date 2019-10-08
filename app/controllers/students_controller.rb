@@ -187,7 +187,8 @@ class StudentsController < ApplicationController
 	      months = months_between(s.start_date,end_date)
 	    end
 	  else
-	    end_date = ''
+	    end_date = Date.today
+	    months = months_between(s.start_date,end_date)
 	  end
 
           if s.date_of_birth.nil?
