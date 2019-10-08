@@ -1,7 +1,59 @@
-%h2 Archivos
-%iframe{"name" => "submit_iframe", "id" => "files_iframe_1", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/expediente", "scrolling" => "yes"}
--# %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250px", "src" => "/estudiantes/#{@student.id}/archivos", "scrolling" => "yes", "onLoad" => "calcFrameHeight(this.id);" }
-%iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250px", "src" => "/estudiantes/#{@student.id}/archivos", "scrolling" => "yes" }
-%h2 Archivos avances
-%iframe{"name" => "submit_iframe_2", "id" => "files_iframe_2", "width" => "900px", "height" => "300px", "src" => "/estudiantes/archivos/avances/#{@student.id}", "scrolling" => "yes"}
+:css
+  .my-accordion-header{
+    color: #707070;
+    cursor: pointer;
+    background-color: #f6f6f6;
+    position: relative;
+    padding: 8px 8px 8px 8px;
+    border: 1px solid #C0C0C0;
+    
+    border-radius:  3px;
+  }
+  
+  .my-arrow{
+    vertical-align: text-bottom;
+  }
+
+#accordion
+  %h3.my-accordion-header <i class="material-icons my-arrow" id="arrow_1">arrow_right</i>Archivos
+  %div
+    %iframe{"name" => "submit_iframe", "id" => "files_iframe", "width" => "100%", "height" => "250px", "src" => "/estudiantes/#{@student.id}/archivos", "scrolling" => "yes" }
+  %h3.my-accordion-header <i class="material-icons my-arrow" id="arrow_1">arrow_right</i>Avances
+  %div
+    %iframe{"name" => "submit_iframe_2", "id" => "files_iframe_2", "width" => "100%", "height" => "300px", "src" => "/estudiantes/archivos/avances/#{@student.id}", "scrolling" => "yes"}
+  %h3.my-accordion-header <i class="material-icons my-arrow" id="arrow_1">arrow_right</i>CVUs
+  %div
+    %iframe{"name" => "submit_iframe_3", "id" => "files_iframe_3", "width" => "100%", "height" => "300px", "src" => "/estudiantes/archivos/cvus/#{@student.id}", "scrolling" => "yes"}
+  %h3.my-accordion-header <i class="material-icons my-arrow" id="arrow_1">arrow_right</i>Expediente
+  %div
+    %iframe{"name" => "submit_iframe", "id" => "files_iframe_1", "width" => "100%", "height" => "250", "src" => "/estudiantes/#{@student.id}/expediente", "scrolling" => "yes"}
+
+:javascript
+  $(document).ready(function(){
+    $("#accordion").accordion({
+      collapsible:  true,
+      active: false
+    }); //fin accordion accordion
+    
+    $(".my-accordion-header").click(function(){  
+      var h3s = $("#accordion").find("h3");
+      
+      h3s.each(function(index){
+        if($(this).hasClass("ui-state-active")){
+          $(this).find("i").html("arrow_drop_down");
+          $(this).css("background-color","#007FFF");
+          $(this).css("color","white");
+        }
+        else
+        {
+          $(this).find("i").html("arrow_right");
+          $(this).css("background-color","#f6f6f6");
+          $(this).css("color","#707070");
+        }
+      });
+      
+    });// fin accordion click
+    
+  });
+
 

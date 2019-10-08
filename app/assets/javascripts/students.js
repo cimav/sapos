@@ -80,7 +80,7 @@ $('#diploma-link').live('click', function() {
   var html = $("#book-page").html();
   $("#new-advance-dialog").remove();
   $('#content-panel').append('<div title="Datos del diploma" id="new-advance-dialog">'+html+'</div>');
-  $("#new-advance-dialog").dialog({ autoOpen: false, width: 450, height: 215, modal:true });
+  $("#new-advance-dialog").dialog({ autoOpen: false, width: 500, height: 215, modal:true });
   $("#new-advance-dialog").dialog('open');
 
   $("#button_mine").live("click", function(){

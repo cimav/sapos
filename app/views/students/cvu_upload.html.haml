@@ -1,0 +1,98 @@
+= javascript_include_tag "jquery"
+
+
+:css  
+  .inputfile {
+     width: 0.1px;
+     height: 0.1px;
+     opacity: 0;
+     overflow: hidden;
+     position: absolute;
+     z-index: -1;
+  }
+  
+  .inputfile + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+    background-color: black;
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .inputfile:focus + label,
+  .inputfile + label:hover{
+    background-color: red;
+  }
+  
+  .inputfile:focus + label{
+    outline: 1px dotted #000;
+    outline: -webkit-focus-ring-color auto 5px;
+  }
+
+  .file-label {
+    border: 1px solid gray;
+    padding: 4px;
+    border-radius: 4px;
+    color: black;
+    background-color: lightgray;Continuar
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .file-label:hover{
+    opacity: 0.7;
+  }
+  
+= "#{params[:message]}"
+
+= form_for(EnrollmentFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-1", :multipart=> true}) do |f|
+  = f.hidden_field :student_id, :value=>@student_id
+  = f.hidden_field :enrollment_type_id, :value=>1
+  = f.file_field :file, :class=>'inputfile'
+  = f.select :term_id, options_from_collection_for_select(@terms,:id,:name), :prompt=>"-- Elegir un ciclo escolar --"
+
+  = label_tag "enrollment_file_file","Elegir un archivo",:class=>"file-label"
+  
+  =button_tag "Subir Archivo", :type=>"button",:class=>"subir"
+  =button_tag "Volver", :type=>"button",:class=>"volver"
+
+:javascript
+  $(document).ready(function(){
+     $('.volver').click(volver)
+     $('.inputfile').change(cambia)
+     $('.subir').click(subir)
+  });//document.ready
+  
+  function volver(){
+    window.location="/estudiantes/archivos/cvus/#{@student.id}"
+  }
+  
+  function cambia(){
+    filename = $(this).val().split('\\').pop();
+    $('.file-label').html(filename);
+  }
+  
+  function subir(){
+    var valor = $('.inputfile').val()
+    var myRe  = /(\.pdf$)/i;
+    
+    if(myRe.test(valor)){
+       select_value = $('#enrollment_file_term_id option:selected').val();
+       if(select_value==''){
+         alert("Debe elegir un ciclo escolar")
+         return false;
+       }else if(select_value==undefined)
+       {
+         alert("Valor indefinido")
+         return false;
+       }
+        
+       $('#reqdoc-form-1').submit();
+       
+    }else{
+      alert("Solo puedes subir archivos pdf")
+    }
+    
+    return false;
+  }
