@@ -1,0 +1,2 @@
+module EnrollmentFilesHelper
+end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20190619232519) do
+ActiveRecord::Schema.define(:version => 20190923184245) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -377,6 +377,19 @@ ActiveRecord::Schema.define(:version => 20190619232519) do
     t.datetime "updated_at",                :null => false
   end
 
+  create_table "enrollment_files", :force => true do |t|
+    t.integer  "enrollment_type_id"
+    t.integer  "student_id"
+    t.integer  "term_id"
+    t.string   "description"
+    t.string   "file"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+  end
+
+  add_index "enrollment_files", ["student_id"], :name => "index_enrollment_files_on_student_id"
+  add_index "enrollment_files", ["term_id"], :name => "index_enrollment_files_on_term_id"
+
   create_table "error_monterreu_quimica_materiales", :id => false, :force => true do |t|
     t.integer  "id",         :default => 0, :null => false
     t.integer  "term_id"
@@ -658,6 +671,16 @@ ActiveRecord::Schema.define(:version => 20190619232519) do
 
   add_index "seminars", ["staff_id"], :name => "index_seminars_on_staff_id"
 
+  create_table "sep_certificate_logs", :force => true do |t|
+    t.integer  "sep_certificate_id", :limit => 8
+    t.text     "message"
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+    t.integer  "user_id"
+  end
+
+  add_index "sep_certificate_logs", ["sep_certificate_id"], :name => "index_sep_certificate_logs_on_sep_certificate_id"
+
   create_table "sep_certificate_signers", :force => true do |t|
     t.string   "email"
     t.string   "curp"
@@ -681,6 +704,7 @@ ActiveRecord::Schema.define(:version => 20190619232519) do
     t.text     "xml",                       :limit => 2147483647
     t.datetime "created_at",                                      :null => false
     t.datetime "updated_at",                                      :null => false
+    t.string   "lote"
   end
 
   add_index "sep_certificates", ["sep_certificate_signer_id"], :name => "index_sep_certificates_on_sep_certificate_signer_id"

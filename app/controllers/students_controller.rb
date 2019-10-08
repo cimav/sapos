@@ -187,7 +187,7 @@ class StudentsController < ApplicationController
 	      months = months_between(s.start_date,end_date)
 	    end
 	  else
-	    end_date = Date.today
+            end_date = Date.today
 	    months = months_between(s.start_date,end_date)
 	  end
 
@@ -1467,6 +1467,65 @@ class StudentsController < ApplicationController
       end
     end
   end
+      
+      
+  def cvus
+   #render :layout=>false, :template=>"students/cvus2"
+
+    @student_id       = params[:id] 
+    @enrollment_files = EnrollmentFile.where(:student_id=>@student_id)
+    @student          = Student.find(@student_id) 
+   
+    campus = @student.campus.short_name
+    where  = "name like '%#{campus}%'"
+    @terms = Term.where(:program_id=>@student.program_id,:status=>1).where(where)
+   
+    
+    render :layout=>'standalone'
+  end 
+      
+  def cvu_upload
+    @student_id = params[:id] 
+    @student    = Student.find(@student_id)
+    campus      = @student.campus.short_name
+    where       = "name like '%#{campus}%'" 
+   
+    @terms = Term.where(:program_id=>@student.program_id,:status=>1).where(where)
+
+    render :layout=>false
+  end
+      
+  def destroy_cvu
+    @ef = EnrollmentFile.find(params[:file_id])
+   
+    if @ef.destroy
+      message = "Archivo eliminado"
+    else
+      message = "Error al eliminar el archivo: #{@ef.errors_full}"
+    end
+      
+    redirect_to :action=>"cvus", :message=>message, :id=>params[:id]
+  end
+      
+  def upload_file_register
+    f = params[:enrollment_file]['file']
+    @enrollment_file = EnrollmentFile.new   
+    @enrollment_file.student_id = params[:enrollment_file][:student_id]
+    @enrollment_file.term_id    = params[:enrollment_file][:term_id]
+    @enrollment_file.enrollment_type_id = params[:enrollment_file][:enrollment_type_id]
+    @enrollment_file.file = f
+    @enrollment_file.description = f.original_filename
+   
+    if @enrollment_file.save
+      message = "Archivo cargado correctamente"
+    else
+      message = "#{@enrollment_file.errors.full_messages}"
+    end
+   
+    redirect_to :action=>"cvus", :message=>message, :id=>@enrollment_file.student_id
+
+  end
+  
 
   def grade_certificates
     @r_root     = Rails.root.to_s

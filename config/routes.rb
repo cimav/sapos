@@ -66,6 +66,13 @@ Sapos::Application.routes.draw do
   match 'inscripciones/pagos' => 'students#payments'
 
   match 'estudiantes/archivos/avances/:id' => 'student_advances_file#index'
+ 
+  match 'estudiantes/archivos/cvus/:id' => 'students#cvus'
+  match 'estudiantes/archivos/cvus/file/:id' => 'enrollment_files#download'
+  match 'estudiantes/:id/archivos/cvu/upload/file' => 'students#cvu_upload'
+  match 'estudiantes/:id/archivos/cvu/eliminar/:file_id' => 'students#destroy_cvu'
+  match 'estudiantes/archivos/cvu/upload/' => 'students#upload_file_register'
+ 
 
   match '/avances/borrar/:id' => 'student_advances_file#destroy'
   match '/avances/subir_archivo' => 'student_advances_file#upload_file'

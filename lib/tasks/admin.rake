@@ -382,10 +382,10 @@ namespace :admin do
   ##################################################################################################################################
   # Unsubscribe: elimina materias y deja al alumno como si nunca se hubiera inscrito, para pruebas
   ##################################################################################################################################
-  task :unsubscribe => :environment do 
-    s_id = 2201
+  task :unsubscribe, [:first]=> :environment do |t,args|
     term = '2019-2 Chihuahua' 
-    s = Student.find(s_id)
+
+    s = Student.find(args[:first])
     term_student = nil 
 
     puts s.full_name
