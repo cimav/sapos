@@ -25,11 +25,11 @@ class StaffsController < ApplicationController
       @staffs = Staff.order("first_name").where(:area_id=>@aareas)
     elsif current_user.access == User::MANAGER
       @staffs = Staff.order("first_name")
+    elsif current_user.access == User::OPERATOR_READER
+      @staffs = Staff.order("first_name")
     else
       @staffs = Staff.order("first_name").where(:area_id=>@aareas)
     end
-
-
 
     if params[:staff_type] != '' then
       @staffs = @staffs.where(:staff_type => params[:staff_type])
