@@ -28,7 +28,7 @@ class Ability
         can :manage, Internship
         cannot [:create], Internship
 
-        can :read, [Student ,Staff, Program, Internship, Institution, Classroom, Laboratory, Department, Graduate, Scholarship,User, CommitteeSession, CommitteeAgreement, Seminar, Program]
+        can :read, [Student, EnrollmentFile, Staff, StaffFile, Program, Internship, Institution, Classroom, Laboratory, Department, Graduate, Scholarship,User, CommitteeSession, CommitteeAgreement, Seminar, Program]
          
         can [:seminars_table, :lab_practices_table, :external_courses_table, :admission_exams_table, :schedule_table, :files, :id_card], Staff
       end

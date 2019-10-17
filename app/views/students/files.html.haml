@@ -48,9 +48,13 @@
   = hidden_field_tag :id, @student.id
   = f.hidden_field :student_id, {:value => @student.id }
   #upload-box
-    = f.file_field :file, {"multiple" => "multiple"}
-    .upload Subir archivos
-    .upload-msg Puedes seleccionar varios archivos a la vez para subir.
+    - if can? :create, File
+      = f.file_field :file, {"multiple" => "multiple"}
+      .upload Subir archivos
+      .upload-msg Puedes seleccionar varios archivos a la vez para subir.
+    - else
+      .upload{:style=>"opacity: 0.4; cursor: default;"} Subir archivos
+      .upload-msg No tiene permisos para subir archivos.
 #files-area
   %table{'class' => 'files-table'}
     - @student.student_file.each do |student_file|
@@ -68,6 +72,10 @@
           %br
           %span.file-details= ext.upcase + ", " + number_to_human_size(File.size(student_file.file.to_s))
           %span.file-edit
-            = link_to_function 'Editar descripción', "edit_description(#{student_file.id})"
+            - if can? :update, File
+              = link_to_function 'Editar descripción', "edit_description(#{student_file.id})"
             |
-            = link_to 'Eliminar archivo', [@students, student_file], :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
+            - if can? :destroy, File
+              = link_to 'Eliminar archivo', [@students, student_file], :confirm => '¿Estás seguro?', :method => 'delete', :remote => true, :class => 'delete-file'
+
+

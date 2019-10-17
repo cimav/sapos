@@ -44,13 +44,15 @@
           %b= file.term.name
           = "&nbsp".html_safe
           %a{:id=>"file_description_#{file.id}",:href=>"/estudiantes/archivos/cvus/file/#{file.id}"}= file.description
-          %i.material-icons.icon-delete{:file_id=>file.id,:student_id=>file.student_id}= "delete"
+          - if can? :destroy, EnrollmentFile
+            %i.material-icons.icon-delete{:file_id=>file.id,:student_id=>file.student_id}= "delete"
     - else
       .file-row
         = "No se ha encontrado ningún archivo"
 
   .enrollment-upload
-    %i.material-icons.md-48.icon-upload{:student_id=>@student_id}= "cloud_upload"
+    - if can? :create, EnrollmentFile
+      %i.material-icons.md-48.icon-upload{:student_id=>@student_id}= "cloud_upload"
        
 #alerta.hidden-message
   .div-center
