@@ -1,6 +1,6 @@
 # coding: utf-8
 class StudentFilesController < ApplicationController
-  before_filter :auth_required
+  before_filter :auth_required, :except => ["download"]
   respond_to :html, :xml, :json
 
   def destroy
