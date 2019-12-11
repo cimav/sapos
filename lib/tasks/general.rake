@@ -10,8 +10,8 @@ namespace :general do
   SEND_MAIL         = 1                             ## Posible values: Nobody(0), All(1), Only Admin(2), All&Admin(3) 
   STATUS_CHANGE     = true                           ## False for disable any update
   ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx" ## Administrator Email
-  CICLO             = "2018-2"                       ## PREVIOUS TERM
-  NCICLO            = "2019-1"                       ## NEW TERM
+  CICLO             = "2019-1"                       ## PREVIOUS TERM
+  NCICLO            = "2019-2"                       ## NEW TERM
   
   ############################################## TASK CHECK ########################################################################
   ##################################################################################################################################
