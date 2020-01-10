@@ -1400,6 +1400,7 @@ class StudentsController < ApplicationController
     @asesor      = Staff.find(params[:staff_id]).full_name rescue ""
     @institution = Staff.find(params[:staff_id]).institution.name
     @thesis_title= @student.thesis.title
+    @thesis_date = @student.thesis.defence_date
 
     scholarship = @student.scholarship.where("status = 'ACTIVA' AND start_date<=CURDATE() AND end_date>=CURDATE()")
 
@@ -1429,14 +1430,14 @@ class StudentsController < ApplicationController
       w = 300
       h = 50
 
-      pdf.text "\n\n\n\n\n\n\n\n\n\nCoordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right 
+      pdf.text "\n\n\n\n\n\n\n\n\n\n<b>Coordinación de estudios de Posgrado\nNo° de Oficio  PO - #{@consecutivo}/#{@year}\n</b> Chihuahua, Chih, a #{@days} de #{@month} de #{@year}.", :inline_format=>true, :align=>:right 
 
       x = 20
       y -= 70
       w = 300
       pdf.font_size 12
       
-      @a_quien_corr = "A quien corresponda\n\n <b>Presente.</b>\n"
+      @a_quien_corr = "\nA quien corresponda\n <b>Presente.</b>\n"
 
       pdf.text @a_quien_corr, :align=>:justify, :inline_format=>true
 
@@ -1444,10 +1445,14 @@ class StudentsController < ApplicationController
       y -= 160
       w = 300
 
-      @parrafo1 = "\nPor medio de la presente tengo el agrado de extender la constancia a <b>#{@asesor}</b> de <b>#{@institution}</b> quien fungio como sinodal externo del examen de Grado presentado el día de hoy, por #{@genero2} alumn#{@genero2} <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> de nuestro programa de <b>#{@programa}</b> con la tesis titulada: <b>#{@thesis_title}</b>\n"
+      month = get_month_name(@thesis_date.month)
+      day   = @thesis_date.day
+      year  = @thesis_date.year
+
+      @parrafo1 = "\nPor medio de la presente tengo el agrado de extender la constancia a <b>#{@asesor}</b> de <b>#{@institution}</b> quien fungio como sinodal externo del examen de Grado presentado el día <b>#{day} de #{month} del #{year}</b>, por #{@genero2} alumn#{@genero} <b>#{@nombre}</b> de matrícula <b>#{@matricula}</b> de nuestro programa de <b>#{@programa}</b> con la tesis titulada: <b>#{@thesis_title}</b>\n"
 
       pdf.text @parrafo1, :align=>:justify, :inline_format=>true
-      @parrafo2 = "\nSe extiende la presente constancia en la ciudad de Chihuahua, Chihuahua el dia #{@days} del mes de #{@month} de #{@year}, para los fines legales a que haya lugar."
+      @parrafo2 = "\nSe extiende la presente constancia para los fines legales a que haya lugar."
       y -= 40
       x = 20
       pdf.text @parrafo2, :align=>:justify,:inline_format=>true
@@ -1456,7 +1461,7 @@ class StudentsController < ApplicationController
       h = 155
       x = 98
 
-      @atentamente = "\n\n\n\n<b>A t e n t a m e n t e\n\n\n\n#{@firma}\n#{@puesto}</b>"
+      @atentamente = "<b>A t e n t a m e n t e\n\n\n#{@firma}\n#{@puesto}</b>"
       pdf.text_box @atentamente, :at=>[x,y], :align=>:center,:valign=>:top, :width=>w, :height=>h,:inline_format=>true
       filename = "constancia-sinodal-externo-#{@student.id}.pdf"
        
@@ -2702,8 +2707,17 @@ class StudentsController < ApplicationController
       send_data pdf.render, filename: filename, type: "application/pdf", disposition: "inline"
     end #Prawn
   end
+ 
+  def mobility
+    @mobilities = StudentMobility.where(:student_id=>params[:id])
+    render :layout => false
+  end    
      
-     
+  def mobilities
+    @mobilities = StudentMobility.where(:student_id=>params[:id])
+    render :layout => 'standalone'
+  end
+
 private
   def auth_digest
     authenticate_or_request_with_http_digest(REALM) do |username|
