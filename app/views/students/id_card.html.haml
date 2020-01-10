@@ -37,7 +37,7 @@
                       -# Vigencia: Julio 19, 2019"
                       -# vigencia = Date.new(2019,7,19)
                       -# Vigencia: Febrero 14, 2020"
-                      - vigencia = Date.new(2019,2,14)
+                      - vigencia = Date.new(2020,2,14)
                     - else                                    ## resto de programas
                       - vigencia = "N.D."
                       - if @student.program.level.to_i.eql? 2 ## doctorado
@@ -80,7 +80,10 @@
                 %td= @student.blood_type
               %tr
                 %td= "Correo:"
-                %td= @student.email_cimav
+                - if @student.email_cimav.blank?
+                  %td= @student.email
+                - else
+                  %td= @student.email_cimav
               %tr
                 %td= "Teléfono:"
                 %td= @student.contact.home_phone

@@ -92,10 +92,10 @@ es:
   directory:
     center: "Centro de Investigación\n en Materiales Avanzados, S.C."
     general_director:
-      title:  "Dr."
-      name: "Juan Méndez Nonell"
+      title:  "Dra."
+      name: "Leticia Myriam Torres Guerra"
       job: "Director General"
-      gender: "M"
+      gender: "F"
     academic_director:
       title:  "Dr."
       name: "Alejandro López Ortiz"

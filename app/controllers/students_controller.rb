@@ -1870,12 +1870,12 @@ class StudentsController < ApplicationController
     if @level.to_i.eql? 1 ## Master
       x = 202
       y = 140
-      w = 160
+      w = 190 #160
       h = 40
     elsif @level.to_i.eql? 2 ## Doctor
-      x = 200
+      x = 185
       y = 110
-      w = 160
+      w = 190 #160
       h = 40
     end
  
@@ -1885,7 +1885,7 @@ class StudentsController < ApplicationController
 
     # SET CIMAV DIRECTOR
     if params[:sign]
-      x     = 202
+      #x     = 202
       y     = 57
       dir   = t(:directory)
       title = dir[:general_director][:title].mb_chars
@@ -2457,8 +2457,14 @@ class StudentsController < ApplicationController
     w = 277
     h = size
     y = 38 #50
-    x = x_right_top - w - 40
-    text = "Dr. Juan Méndez Nonell"
+    x = x_right_top - w - (40+30)
+    
+    dir   = t(:directory)
+    title = dir[:general_director][:title].mb_chars
+    name  = dir[:general_director][:name].mb_chars
+    job   = dir[:general_director][:job].mb_chars
+    text  = "#{title} #{name}"
+
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
     
@@ -2467,10 +2473,9 @@ class StudentsController < ApplicationController
     w    = 277
     h    = size
     y    = y - 27 #27
-    x    = x_right_top - w - 38
-    text = "Director General" 
+    x    = x_right_top - w - (38+10) 
     if @rectangles then pdf.stroke_rectangle [x,y], w, h end
-    pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
+    pdf.text_box job, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:center, :valign=>:top
 
     pdf.start_new_page
 
@@ -2556,13 +2561,19 @@ class StudentsController < ApplicationController
     y    = 212
     h    = 45
     x    = x_right_top - w - 2
-    text = "Dr. Alejandro López Ortiz\nDirector Académico"
+
+    dir   = t(:directory)
+    title = dir[:academic_director][:title].mb_chars
+    name  = dir[:academic_director][:name].mb_chars
+    job   = dir[:academic_director][:job].mb_chars
+    text  = "#{title} #{name}\n#{job}"
+
     pdf.text_box text, :at=>[x,y], :size=>size, :width=>w,:height=>h, :align=>:right, :valign=>:top
      
     if Rails.env.production?
-      send_data pdf.render, type: "application/pdf", disposition: "attachment", filename: "diploma-#{libro}-#{foja}"
+      send_data pdf.render, type: "application/pdf", disposition: "attachment", filename: "diploma-#{libro}-#{foja}.pdf"
     else
-      send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{libro}-#{foja}"
+      send_data pdf.render, type: "application/pdf", disposition: "inline", filename: "diploma-#{libro}-#{foja}.pdf"
     end
   end ## def diploma
 
