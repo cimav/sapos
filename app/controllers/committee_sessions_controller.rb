@@ -460,7 +460,7 @@ class CommitteeSessionsController < ApplicationController
           # CCP
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
         elsif @c_a.auth.to_i.eql? 3 ############ RENUNCIA EXPLICITA #############
           # CABECERA
           people = "C. #{student.full_name}"
@@ -480,8 +480,9 @@ class CommitteeSessionsController < ApplicationController
           w = 350
           h = 25
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
+          y = y - 10
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
       end
       ############################### CAMBIO DE PROGRAMA ###################################
       elsif @type.eql? 3
@@ -546,7 +547,7 @@ class CommitteeSessionsController < ApplicationController
         h = 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "c.c.p #{student.full_name}\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=> size-2
+        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=> size-2
       ############################### DESIGNACION DE SINODALES ###################################
       elsif @type.eql? 5
         @render_pdf  = true
@@ -580,7 +581,7 @@ class CommitteeSessionsController < ApplicationController
         h = 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "c.c.p #{supervisor.title} #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
         #pdf.number_pages texto, [pdf.bounds.right - 50, 0 ]
       ############################### DESIGNACION DE COMITE TUTORAL ###################################
       elsif @type.eql? 6
@@ -627,7 +628,7 @@ class CommitteeSessionsController < ApplicationController
           h = 25
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
           if !(tutors.size.eql? counter)
             pdf.start_new_page
           end
@@ -903,7 +904,7 @@ class CommitteeSessionsController < ApplicationController
           w = 350
           h = 25
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+25], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
           if !(tutors.size.eql? counter)
             pdf.start_new_page
           end
@@ -978,7 +979,7 @@ class CommitteeSessionsController < ApplicationController
             #  FIRMA
             pdf.text atentamente, :align=>:center,:valign=>:top,:inline_format=>true
             # FOOTER
-            pdf.number_pages "Página <page> de <total>", :at=>[pdf.bounds.left ,15], :align=>:right, :size=>size-3,:inline_format=>true
+            pdf.number_pages "Página <page> de <total>", :at=>[pdf.bounds.left ,25], :align=>:right, :size=>size-3,:inline_format=>true
           else
             @render_pdf = false
           end
