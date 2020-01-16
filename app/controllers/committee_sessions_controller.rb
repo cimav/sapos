@@ -375,7 +375,8 @@ class CommitteeSessionsController < ApplicationController
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     #Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>60 ) do |pdf|
-    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[140,60,60,60] ) do |pdf|
+    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[160,60,60,57] ) do |pdf|
+
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                             :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -460,7 +461,7 @@ class CommitteeSessionsController < ApplicationController
           # CCP
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+50], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
         elsif @c_a.auth.to_i.eql? 3 ############ RENUNCIA EXPLICITA #############
           # CABECERA
           people = "C. #{student.full_name}"
@@ -482,7 +483,7 @@ class CommitteeSessionsController < ApplicationController
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           y = y - 10
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+50], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
       end
       ############################### CAMBIO DE PROGRAMA ###################################
       elsif @type.eql? 3
@@ -547,7 +548,7 @@ class CommitteeSessionsController < ApplicationController
         h = 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "c.c.p #{student.full_name}\n #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp} #{@nbsp}Expediente."
-        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=> size-2
+        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+50], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=> size-2
       ############################### DESIGNACION DE SINODALES ###################################
       elsif @type.eql? 5
         @render_pdf  = true
@@ -581,7 +582,7 @@ class CommitteeSessionsController < ApplicationController
         h = 25
         if @rectangles then pdf.stroke_rectangle [x,y], w, h end
         texto = "c.c.p #{supervisor.title} #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+        pdf.text_box texto, :at=>[x,pdf.bounds.bottom+50], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
         #pdf.number_pages texto, [pdf.bounds.right - 50, 0 ]
       ############################### DESIGNACION DE COMITE TUTORAL ###################################
       elsif @type.eql? 6
@@ -628,7 +629,7 @@ class CommitteeSessionsController < ApplicationController
           h = 25
           if @rectangles then pdf.stroke_rectangle [x,y], w, h end
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+50], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
           if !(tutors.size.eql? counter)
             pdf.start_new_page
           end
@@ -904,7 +905,7 @@ class CommitteeSessionsController < ApplicationController
           w = 350
           h = 25
           texto = "c.c.p #{supervisor.title}. #{supervisor.full_name} - Director de Tesis.\n #{student.full_name} - Estudiante"
-          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+35], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
+          pdf.text_box texto, :at=>[x,pdf.bounds.bottom+50], :align=>:left, :valign=>:top, :width=>w, :height=>h, :inline_format=>true, :size=>size-2
           if !(tutors.size.eql? counter)
             pdf.start_new_page
           end
@@ -920,7 +921,7 @@ class CommitteeSessionsController < ApplicationController
       else
         ## sin text_box, solo text infinito # [arriba, izquierda, abajo, derecha]
         #Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[120,60,80,60] ) do |pdf|
-        Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[140,60,60,60] ) do |pdf|
+        Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[160,60,60,60] ) do |pdf|
           pdf.font_families.update(
               "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                                 :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
@@ -979,7 +980,8 @@ class CommitteeSessionsController < ApplicationController
             #  FIRMA
             pdf.text atentamente, :align=>:center,:valign=>:top,:inline_format=>true
             # FOOTER
-            pdf.number_pages "Página <page> de <total>", :at=>[pdf.bounds.left ,25], :align=>:right, :size=>size-3,:inline_format=>true
+            #pdf.number_pages "Página <page> de <total>", :at=>[pdf.bounds.left ,25], :align=>:right, :size=>size-3,:inline_format=>true
+            pdf.number_pages "Página <page> de <total>", :at=>[0,-23], :align=>:center, :size=>size-3,:inline_format=>true
           else
             @render_pdf = false
           end
