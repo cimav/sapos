@@ -155,9 +155,10 @@ module Toads
           data << [{:content => "<b>CLASE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE INICIO</b>", :align => :center}]
 
           @term_course_schedules.each do |tcs|
+            puts "####### TERM_COURSE_SCHEDULE:#{tcs}|#{tcs.id}"
             term_course = tcs.term_course
-
             if !term_course.nil?
+              puts "####### TERM COURSE: #{term_course.id}"
               if term_course.status != TermCourse::DELETED
                 if @options[:ranges]
                   if (term_course.term.start_date.between?(@options[:start_date],@options[:end_date]))||(term_course.term.end_date.between?(@options[:start_date],@options[:end_date]))
@@ -170,7 +171,7 @@ module Toads
                 end
               end
             else
-              logger.info "################# No se que pasa aquí"  
+              puts "################# TERM COURSE ESTA EN NIL!!"  
               #data << [tcs.id.to_s,"######","######"]
             end
 

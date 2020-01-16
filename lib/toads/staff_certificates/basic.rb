@@ -6,7 +6,7 @@ module Toads
       def initialize(options)
         @options          = options
         @background       = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
-        @margin           = options[:margin]      || [110,55,60,55]
+        @margin           = options[:margin]      || [130,55,110,55]
         @background_scale = 0.36
         @options[:line_breaks] = {:begining=>0,:correspondence=>1,:content=>2,:carefully=>2,:sign=>2} 
         #@line_breaks      = options[:line_breaks] || {:begining=>0,:correspondence=>1,:content=>2,:carefully=>2,:sign=>2}
@@ -79,7 +79,7 @@ module Toads
       end
      
       def pie
-        @pdf.number_pages "Página <page> de <total>", {:at=>[0, 0],:align=>:right,:size=>8}
+        @pdf.number_pages "Página <page> de <total>", {:at=>[0, -73],:align=>:center,:size=>8,:color=>"d4b48f"}
       end
      
       def order
