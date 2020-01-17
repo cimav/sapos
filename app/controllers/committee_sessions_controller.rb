@@ -1017,7 +1017,7 @@ class CommitteeSessionsController < ApplicationController
 
     filename = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
     #Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[150,60,80,60] ) do |pdf|
-    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[90,60,60,60] ) do |pdf|
+    Prawn::Document.new(:background => filename, :background_scale=>0.36, :margin=>[140,60,115,60] ) do |pdf|
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                             :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
