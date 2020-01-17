@@ -55,13 +55,16 @@ module Toads
         end ##def contenido
        
         ## sobreescribimos order sin pie porque se supone que son de una sola página
+        #
+
         def order
           self.cabecera
           self.correspondencia
           self.contenido
           self.final
         end
-
+        
+      
 
       end #class ThesisDirector
     end #module Individual

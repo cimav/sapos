@@ -20,6 +20,7 @@ module Toads
                              })
         @pdf.font "Montserrat"
         @pdf.font_size 11
+        @pdf.fill_color "000000"
       end # initialize
      
       def consecutivo(time)

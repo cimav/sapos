@@ -47,7 +47,7 @@ module Toads
         ####################################################################
         # cursos impartidos INDIVIDUAL
         def courses           
-          margin                = [110,55,60,55]
+          margin                = [130,55,60,55]
           @options[:margin]     = margin
           term_course_schedules = @options[:term_course_schedules]
           @options[:pdf]        = @pdf
@@ -143,6 +143,7 @@ module Toads
 
         ####################################################################
         # sobreescribimos pie y order
+        #
         def render
           self.courses
           self.dir_tesis
