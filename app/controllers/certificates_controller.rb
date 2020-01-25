@@ -184,44 +184,50 @@ class CertificatesController < ApplicationController
       end
 
 
-      if t.student.studies_plan_id.eql? 15 ## DCM - 2014 Actualizacion del plan de estudios
-        my_select_topics_codes = ["101","201","301","401","501","601"]
-        my_select_topics = [
-            {:code=>"101",:name=>"Temas Selectos de Ciencia de Materiales 1"},
-            {:code=>"201",:name=>"Temas Selectos de Ciencia de Materiales 2"},
-            {:code=>"301",:name=>"Temas Selectos de Ciencia de Materiales 3"},
-            {:code=>"401",:name=>"Temas Selectos de Ciencia de Materiales 4"},
-            {:code=>"501",:name=>"Temas Selectos de Ciencia de Materiales 5"},
-            {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"},
-          ]
+      # if t.student.studies_plan_id.eql? 15 ## DCM - 2014 Actualizacion del plan de estudios
+      #   my_select_topics_codes = ["101","201","301","401","501","601"]
+      #   my_select_topics = [
+      #       {:code=>"101",:name=>"Temas Selectos de Ciencia de Materiales 1"},
+      #       {:code=>"201",:name=>"Temas Selectos de Ciencia de Materiales 2"},
+      #       {:code=>"301",:name=>"Temas Selectos de Ciencia de Materiales 3"},
+      #       {:code=>"401",:name=>"Temas Selectos de Ciencia de Materiales 4"},
+      #       {:code=>"501",:name=>"Temas Selectos de Ciencia de Materiales 5"},
+      #       {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"},
+      #     ]
        
-        tcss.each do |tcs|        
-          #if tcs.term_course.course.code.in? my_select_topics_codes
-          #   my_select_topics_codes.shift
-          #end 
+      #   tcss.each do |tcs|        
+      #     #if tcs.term_course.course.code.in? my_select_topics_codes
+      #     #   my_select_topics_codes.shift
+      #     #end 
+          
 
-          ## para las materias optativas de otros programas
-          if !(tcs.term_course.course.program_id.eql? t.student.program_id)            
-            code = my_select_topics_codes.shift
-            if !code.nil?
-              msts = my_select_topics.select{|x| x[:code].eql? code}
-              tcs.term_course.course.code = msts[0][:code]
-              tcs.term_course.course.name = msts[0][:name]
-            else
-              tcss.reject!{|object| object == tcs }
-            end
-          end
 
-          ## para las materias complementarioas
-          if tcs.term_course.course.term.to_i.eql? 101
-            code = my_select_topics_codes.shift
-            msts = my_select_topics.select{|x| x[:code].eql? code}
-            tcs.term_course.course.code = msts[0][:code]
-            tcs.term_course.course.name = msts[0][:name]
-          end
+      #     ## para las materias optativas de otros programas
+      #     if !(tcs.term_course.course.program_id.eql? t.student.program_id)  
+      #       puts tcs.term_course.course.name
+      #       puts "-----------"          
+      #       code = my_select_topics_codes.shift
+      #       if !code.nil?
+      #         msts = my_select_topics.select{|x| x[:code].eql? code}
+      #         tcs.term_course.course.code = msts[0][:code]
+      #         tcs.term_course.course.name = msts[0][:name]
+      #         puts tcs.term_course.course.name
+      #         puts "xxxxxxxxx" 
+      #       else
+      #         tcss.reject!{|object| object == tcs }
+      #       end
+      #     end
 
-        end #tcss.each 
-      end #if t.student.studies_plan_id.eql? 15
+      #     ## para las materias complementarioas
+      #     if tcs.term_course.course.term.to_i.eql? 101
+      #       code = my_select_topics_codes.shift
+      #       msts = my_select_topics.select{|x| x[:code].eql? code}
+      #       tcs.term_course.course.code = msts[0][:code]
+      #       tcs.term_course.course.name = msts[0][:name]
+      #     end
+
+      #   end #tcss.each 
+      # end #if t.student.studies_plan_id.eql? 15
 
       #pdf.font "Arial"
       if tcss.size >= 16
@@ -358,8 +364,61 @@ class CertificatesController < ApplicationController
 
       tcss = tcss.to_a.sort_by {|tcs| tcs.term_course.course.code}
       tcss = tcss.to_a.sort_by {|tcs| tcs.term_course.term.name}
-
+#----------------------
+      my_select_topics_codes = ["101","201","301","401","501","601"]
+      my_select_topics = [
+            {:code=>"101",:name=>"Temas Selectos de Ciencia de Materiales 1"},
+            {:code=>"201",:name=>"Temas Selectos de Ciencia de Materiales 2"},
+            {:code=>"301",:name=>"Temas Selectos de Ciencia de Materiales 3"},
+            {:code=>"401",:name=>"Temas Selectos de Ciencia de Materiales 4"},
+            {:code=>"501",:name=>"Temas Selectos de Ciencia de Materiales 5"},
+            {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"},
+          ]
+#----------------------
       tcss.each_with_index do |tcs,index|
+        
+
+
+        if t.student.studies_plan_id.eql? 15 ## DCM - 2014 Actualizacion del plan de estudios
+          # HACK PARA NO MOSTRAR 501 SI ESTA DADA DE ALTA
+          next if tcs.term_course.course.code == "501"
+            
+          #----------------------     
+            if tcs.term_course.course.code.in? my_select_topics_codes
+              my_select_topics_codes.shift
+            end 
+            
+
+
+            ## para las materias optativas de otros programas
+            if !(tcs.term_course.course.program_id.eql? t.student.program_id)  
+              puts tcs.term_course.course.name
+              puts "-----------"          
+              code = my_select_topics_codes.shift
+              if !code.nil?
+                msts = my_select_topics.select{|x| x[:code].eql? code}
+                tcs.term_course.course.code = msts[0][:code]
+                tcs.term_course.course.name = msts[0][:name]
+                puts tcs.term_course.course.name
+                puts "xxxxxxxxx" 
+              else
+                tcss.reject!{|object| object == tcs }
+              end
+            end
+
+            ## para las materias complementarioas
+            if tcs.term_course.course.term.to_i.eql? 101
+              code = my_select_topics_codes.shift
+              msts = my_select_topics.select{|x| x[:code].eql? code}
+              tcs.term_course.course.code = msts[0][:code]
+              tcs.term_course.course.name = msts[0][:name]
+            end
+
+
+        end #if t.student.studies_plan_id.eql? 15
+        #----------------------
+
+
         ## SET CODE
         if @template_mode
           text = tcs.code
