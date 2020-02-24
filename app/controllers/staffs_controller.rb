@@ -802,7 +802,7 @@ class StaffsController < ApplicationController
         options[:active_students] = as_director
 
         as_co_director = Student.where(:co_supervisor=>@staff.id).where("status in (1,6)")
-        as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("theses.defence_date,students.status")
         options[:active_students_co] = as_co_director
 
         as_external_director = Student.where(:external_supervisor=>@staff.id).where("status in (1,6)")

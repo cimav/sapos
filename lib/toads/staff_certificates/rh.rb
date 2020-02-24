@@ -21,7 +21,7 @@ module Toads
         if @students.size > 0
           data = []
           data_helper = []
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE TITULACION</b>", :align => :center}]
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE TITULACIÓN</b>", :align => :center}]
 
           @students.each do |s|
             if s.status.in? [2,5] ## para egresados mostramos fecha de defensa
@@ -33,7 +33,7 @@ module Toads
           end
 
           @pdf.text extra_newline
-          @pdf.text "<b>Participación como director de tesis</b>\n", :align => :center, :inline_format => true
+          @pdf.text "\n<b>Participación como director de tesis</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
           tabla.draw
         end
@@ -43,10 +43,15 @@ module Toads
         @graduate_students = @options[:graduate_students_co]
         if @students.size > 0
           data = []
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE TITULACIÓN</b>", :align => :center}]
 
           @students.each do |s|
-            data << [s.full_name, s.program.name, Student::STATUS[s.status]]
+            if s.status.in? [2,5] ## para egresados mostramos fecha de defensa
+              defence_month = self.get_month_name(s.thesis.defence_date.month)
+              data << [s.full_name, s.program.name, s.thesis.defence_date.strftime("%-d de #{defence_month} de %Y")]
+            else
+              data << [s.full_name, s.program.name,Student::STATUS[s.status]]
+            end
           end
 
           @pdf.text extra_newline
