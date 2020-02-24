@@ -381,7 +381,7 @@ class CertificatesController < ApplicationController
 
         if t.student.studies_plan_id.eql? 15 ## DCM - 2014 Actualizacion del plan de estudios
           # HACK PARA NO MOSTRAR 501 SI ESTA DADA DE ALTA
-          next if tcs.term_course.course.code == "501"
+          #next if tcs.term_course.course.code == "501"
             
           #----------------------     
             if tcs.term_course.course.code.in? my_select_topics_codes
