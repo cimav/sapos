@@ -176,7 +176,7 @@ class CertificatesController < ApplicationController
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
           #tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)
           tcss  = TermCourseStudent.includes(:term_student=>:term).includes(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)
-        else
+        else ## Maestria y otros
           where = "term_students.student_id=? AND term_course_students.status=? AND term_course_students.grade>=?"
           #tcss  = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)  
           tcss  = TermCourseStudent.includes(:term_student=>:term).includes(:term_course=>:course).where(:status=>1).where(where,t.student.id,TermCourseStudent::ACTIVE,70).order(order)
@@ -361,51 +361,96 @@ class CertificatesController < ApplicationController
       end
 
       counter = 0
+      
+      my_final_classes = Array.new
 
-      tcss = tcss.to_a.sort_by {|tcs| tcs.term_course.course.code}
-      tcss = tcss.to_a.sort_by {|tcs| tcs.term_course.term.name}
-#----------------------
-      my_select_topics_codes = ["101","201","301","401","501","601"]
-      my_select_topics = [
+      if t.student.studies_plan_id.eql? 15  ##dcm15
+        my_select_topics_codes = ["101","201","301","401","501","601","701"]
+        my_select_topics = [
             {:code=>"101",:name=>"Temas Selectos de Ciencia de Materiales 1"},
             {:code=>"201",:name=>"Temas Selectos de Ciencia de Materiales 2"},
             {:code=>"301",:name=>"Temas Selectos de Ciencia de Materiales 3"},
             {:code=>"401",:name=>"Temas Selectos de Ciencia de Materiales 4"},
             {:code=>"501",:name=>"Temas Selectos de Ciencia de Materiales 5"},
             {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"},
+            {:code=>"701",:name=>"Temas Selectos de Ciencia de Materiales 7"},
           ]
-#----------------------
-      tcss.each_with_index do |tcs,index|
-        
+        puts "ARRAY: #{my_select_topics.to_s}"
+        s_program_id = t.student.program_id
+        # ---------------------
+        ## Primero limpiamos los temas selectos que y a estén en la base de datos
+        tcss.each_with_index do |tcs,index|
+          program_id  = tcs.term_course.course.program_id
+          code =  tcs.term_course.course.code.mb_chars
+          name =  tcs.term_course.course.name.mb_chars
+          puts "CODE: #{code} #{name} #{program_id}|#{s_program_id}"
+          if code.in? my_select_topics_codes
+            my_select_topics_codes.delete(code)
+            my_select_topics.delete_if { |a| a[:code]==code}
+          end
 
+        end
+        puts "ARRAY2: #{my_select_topics.to_s}"
+        puts "------------------------------"
 
-        if t.student.studies_plan_id.eql? 15 ## DCM - 2014 Actualizacion del plan de estudios
-          # HACK PARA NO MOSTRAR 501 SI ESTA DADA DE ALTA
-          next if tcs.term_course.course.code == "501"
+        ## volvemos a recorrer para asignar cada materia optativa como tema selecto
+        tcss.each_with_index do |tcs,index|
+          my_final_class  = Hash.new
+          program_id      = tcs.term_course.course.program_id
+          code =  tcs.term_course.course.code.mb_chars
+          name =  tcs.term_course.course.name.mb_chars
+          puts "CODE: #{code} #{name} #{program_id}|#{s_program_id}"
+ 
+          ## si no es del mismo programa entonces es una optativa
+          if program_id != s_program_id
+            topic = my_select_topics.shift
+            my_final_class[:code] = topic[:code]
+            my_final_class[:name] = topic[:name]
+            puts "TOPIC: #{topic}"
+          else
             
-          #----------------------     
-            if tcs.term_course.course.code.in? my_select_topics_codes
-              my_select_topics_codes.shift
-            end 
-            
+            my_final_class[:code] = code
+            my_final_class[:name] = name
+          end
 
+          my_final_class[:term_name] = tcs.term_course.term.name
+          my_final_class[:tcs_grade] = tcs.grade
 
-            ## para las materias optativas de otros programas
-            if !(tcs.term_course.course.program_id.eql? t.student.program_id)  
-              puts tcs.term_course.course.name
-              puts "-----------"          
-              code = my_select_topics_codes.shift
-              if !code.nil?
-                msts = my_select_topics.select{|x| x[:code].eql? code}
-                tcs.term_course.course.code = msts[0][:code]
-                tcs.term_course.course.name = msts[0][:name]
-                puts tcs.term_course.course.name
-                puts "xxxxxxxxx" 
-              else
-                tcss.reject!{|object| object == tcs }
-              end
-            end
+          my_final_classes << my_final_class
+        end
 
+      else
+        tcss.each_with_index do |tcs,index|
+          my_final_class  = Hash.new
+          code            =  tcs.term_course.course.code.mb_chars
+          name            =  tcs.term_course.course.name.mb_chars
+
+          my_final_class[:code] = code
+          my_final_class[:name] = name
+          my_final_class[:term_name] = tcs.term_course.term.name
+          my_final_class[:tcs_grade] = tcs.grade
+
+          my_final_classes << my_final_class
+        end
+      end #if t.student.studies_plan_id.eql? 15
+      
+      ## ordenamos tocho morocho
+      my_final_classes.sort_by! {|obj| [obj[:term_name],obj[:code]]}
+
+=begin
+        if t.student.studies_plan_id.eql? 15  ##dcm15
+          program_id  = tcs.term_course.course.program_id
+          code =  tcs.term_course.course.code
+          name =  tcs.term_course.course.name
+          puts "CODE: #{code} #{name} #{program_id}|#{s_program_id}"
+          if program_id != s_program_id
+            topic = my_select_topics.shift
+            tcs.term_course.course.code = topic[:code]
+            tcs.term_course.course.name = topic[:name]
+            puts "TOPIC: #{topic}"
+          end
+        end
+=begin
             ## para las materias complementarioas
             if tcs.term_course.course.term.to_i.eql? 101
               code = my_select_topics_codes.shift
@@ -414,25 +459,24 @@ class CertificatesController < ApplicationController
               tcs.term_course.course.name = msts[0][:name]
             end
 
-
         end #if t.student.studies_plan_id.eql? 15
         #----------------------
-
-
+=end
+   my_final_classes.each_with_index do |mfc,index|
         ## SET CODE
         if @template_mode
-          text = tcs.code
+          text = mfc[:code]
         else
-          text= tcs.term_course.course.code
+          text= mfc[:code]
         end
 
         pdf.fill_color @text_color
         pdf.text_box text , :at=>[x,y], :width => w, :height=> h, :size=>size, :style=> :bold, :align=> :left, :valign=> :center
         ## SET COURSE NAME
         if @template_mode
-          text = tcs.name.mb_chars
+          text = mfc[:name]
         else
-          text= tcs.term_course.course.name.mb_chars
+          text = mfc[:name]
         end
 
         pdf.fill_color @text_color
@@ -465,7 +509,7 @@ class CertificatesController < ApplicationController
         if @template_mode
           term = ""
         else
-          term = tcs.term_course.term.name
+          term = mfc[:term_name]
         end
      
         year = term.at(2..3)
@@ -486,8 +530,8 @@ class CertificatesController < ApplicationController
         if @template_mode
           text = ""
         else
-          sum  = sum + tcs.grade.to_f
-          text = tcs.grade.to_s
+          sum  = sum + mfc[:tcs_grade].to_f
+          text = mfc[:tcs_grade].to_s
         end
 
         pdf.fill_color "ffffff"
@@ -499,7 +543,7 @@ class CertificatesController < ApplicationController
         if @template_mode
           text = ""
         else
-          text = get_cardinal_name(tcs.grade.to_i)
+          text = get_cardinal_name(mfc[:tcs_grade].to_i)
         end
 
         pdf.fill_color "ffffff"
@@ -569,7 +613,7 @@ class CertificatesController < ApplicationController
         end
         counter = index
       end
-
+ 
       #pdf.font "Times"
       x    = 33
       y    = 202

@@ -2,7 +2,8 @@ module Toads
   module StaffCertificates
     class RH < Toads::StaffCertificates::Basic
       def initialize(options)
-        options[:line_breaks] = {:correspondence=>0,:content=>2,:carefully=>2,:sign=>1}
+        options[:margin]      = [120,55,115,55]
+        options[:line_breaks] = {:begining=>2,:correspondence=>1,:content=>1,:carefully=>2,:sign=>2}
         super(options)
       end
      
@@ -11,27 +12,28 @@ module Toads
        end_date   = @options[:end_date]
        staff      = @options[:staff]
 
-       text = "Por medio de la presente tengo el agrado de extender la presente constancia #{staff.ggender("genero3")} <b>#{staff.title} #{staff.full_name}</b> quien participó en la formación de recursos humanos en el periodo del <b>#{start_date.day} de #{get_month_name(start_date.month)} del #{start_date.year}</b> al <b>#{end_date.day} de #{get_month_name(end_date.month)} del #{end_date.year}</b> de los siguientes estudiantes:"
+       text = "\nPor medio de la presente tengo el agrado de extender la presente constancia #{staff.ggender("genero3")} <b>#{staff.title} #{staff.full_name}</b> quien participó en la formación de recursos humanos en el periodo del <b>#{start_date.day} de #{get_month_name(start_date.month)} del #{start_date.year}</b> al <b>#{end_date.day} de #{get_month_name(end_date.month)} del #{end_date.year}</b> de los siguientes estudiantes:"
        @pdf.text text, :align=>:justify, :inline_format=>true
-       @pdf.text "\n"
-       
+       extra_newline = ""
         # Alumnos como director de tesis
         @students = @options[:active_students]
         @graduate_students = @options[:graduate_students]
         if @students.size > 0
           data = []
           data_helper = []
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE TITULACIÓN</b>", :align => :center}]
 
           @students.each do |s|
-            if s.status.eql? 5 ##  Para que Egresado No Graduado salga como Egresado
-              data_helper << [s.full_name, s.program.name, "Egresado"]
+            if s.status.in? [2,5] ## para egresados mostramos fecha de defensa
+              defence_month = self.get_month_name(s.thesis.defence_date.month)
+              data << [s.full_name, s.program.name, s.thesis.defence_date.strftime("%-d de #{defence_month} de %Y")]
             else
-              data << [s.full_name, s.program.name, Student::STATUS[s.status]]
+              data << [s.full_name, s.program.name,Student::STATUS[s.status]]
             end
           end
 
-          @pdf.text "<b>Participación como director de tesis</b>\n", :align => :center, :inline_format => true
+          @pdf.text extra_newline
+          @pdf.text "\n<b>Participación como director de tesis</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
           tabla.draw
         end
@@ -41,12 +43,18 @@ module Toads
         @graduate_students = @options[:graduate_students_co]
         if @students.size > 0
           data = []
-          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>ESTATUS</b>", :align => :center}]
+          data << [{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE TITULACIÓN</b>", :align => :center}]
 
           @students.each do |s|
-            data << [s.full_name, s.program.name, Student::STATUS[s.status]]
+            if s.status.in? [2,5] ## para egresados mostramos fecha de defensa
+              defence_month = self.get_month_name(s.thesis.defence_date.month)
+              data << [s.full_name, s.program.name, s.thesis.defence_date.strftime("%-d de #{defence_month} de %Y")]
+            else
+              data << [s.full_name, s.program.name,Student::STATUS[s.status]]
+            end
           end
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Participación como co-director de tesis</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
           tabla.draw
@@ -63,6 +71,7 @@ module Toads
             data << [s.full_name, s.program.name, Student::STATUS[s.status]]
           end
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Participación como director externo</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center)
           tabla.draw
@@ -81,6 +90,7 @@ module Toads
             data << [t.student.full_name, t.student.program.name, t.defence_date.strftime("%-d de #{defence_month} de %Y")]
           end
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Participación como sinodal</b>\n", :align => :center, :inline_format => true
           #@pdf.text "<b>Participación como sinodal</b>\n", :align => :center, :inline_format => true
 
@@ -125,6 +135,7 @@ module Toads
           ## insertando cabecera con unshift
           data.unshift([{:content => "<b>NOMBRE</b>", :align => :center}, {:content => "<b>PROGRAMA</b>", :align => :center}, {:content => "<b>FECHA DE AVANCE</b>", :align => :center}])
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Participación como comité tutoral</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 190, 120])
           tabla.draw
@@ -142,6 +153,7 @@ module Toads
             data << [s.student.full_name, s.student.program.name, s.advance_date.strftime("%-d de #{advance_month} de %Y")]
           end
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Seminarios departamentales</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 190, 120])
           tabla.draw
@@ -177,6 +189,7 @@ module Toads
 
           end #@term_course_schedules.each
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Clases impartidas</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [190, 190, 120])
           tabla.draw
@@ -194,6 +207,7 @@ module Toads
             data << [e.title, e.start_date.strftime("%-d de #{course_month} de %Y"), e.get_type]
           end
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Cursos o talleres</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [300, 100, 100])
           tabla.draw
@@ -212,6 +226,7 @@ module Toads
             data << [l.title, l.start_date.strftime("%-d de #{practice_month} de %Y"), l.hours]
           end
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Prácticas de laboratorio</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [280, 100, 120])
           tabla.draw
@@ -243,6 +258,7 @@ module Toads
             end
           end 
 
+          @pdf.text extra_newline
           @pdf.text "\n<b>Servicios CIMAV</b>\n", :align => :center, :inline_format => true
           tabla = @pdf.make_table(data, :width => 500, :cell_style => {:size => 9, :padding => 2, :inline_format => true, :border_width => 1}, :position => :center, :column_widths => [280, 220])
           tabla.draw

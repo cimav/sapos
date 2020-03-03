@@ -798,11 +798,11 @@ class StaffsController < ApplicationController
         options[:ranges]=true  
         
         as_director = Student.where(:supervisor=>@staff.id).where("status in (1,6)")
-        as_director = as_director + Student.where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        as_director = as_director + Student.where(:supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("theses.defence_date, students.status")
         options[:active_students] = as_director
 
         as_co_director = Student.where(:co_supervisor=>@staff.id).where("status in (1,6)")
-        as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("students.status")
+        as_co_director = as_co_director + Student.where(:co_supervisor=>@staff.id).joins(:thesis).where("end_date >= :start_date  AND end_date <= :end_date AND students.status in (2,5)",{:start_date=>start_date,:end_date=>end_date}).order("theses.defence_date,students.status")
         options[:active_students_co] = as_co_director
 
         as_external_director = Student.where(:external_supervisor=>@staff.id).where("status in (1,6)")
@@ -825,6 +825,7 @@ class StaffsController < ApplicationController
         options[:seminars] = Advance.includes(:student).where(tutors,:staff_id=>@staff.id).where(ranges,dates).where(:advance_type=>3).where("advances.status != 'X'").order(order)
 
         options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
+        #options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select("id,term_course_id")
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id).where(status:[nil,ExternalCourse::ACTIVE]).where("(start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id).where("(start_date <= :start_date AND :start_date <= end_date) OR (start_date <= :end_date AND :end_date <= end_date) OR (start_date > :start_date AND :end_date > end_date)",{:start_date=>start_date,:end_date=>end_date})
         
@@ -837,6 +838,7 @@ class StaffsController < ApplicationController
         options[:active_students] = Student.where(:supervisor=>@staff.id).where("status not in (0,4)").order(:status)
         options[:active_students_co] = Student.where(:co_supervisor=>@staff.id).where("status not in (0,4)").order(:status)
         options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select(:term_course_id).uniq
+        #options[:term_course_schedules] = TermCourseSchedule.where(staff_id:@staff.id).select("id,term_course_id")
         options[:term_courses] = TermCourse.where(staff_id:@staff.id)
         options[:external_courses] = ExternalCourse.where(staff_id:@staff.id)
         options[:lab_practices] = LabPractice.where(staff_id:@staff.id)
