@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20190923184245) do
+ActiveRecord::Schema.define(:version => 20200303171820) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -453,11 +453,46 @@ ActiveRecord::Schema.define(:version => 20190923184245) do
   add_index "external_courses", ["institution_id"], :name => "index_external_courses_on_institution_id"
   add_index "external_courses", ["staff_id"], :name => "index_external_courses_on_staff_id"
 
+  create_table "grad2020", :id => false, :force => true do |t|
+    t.string "c"
+  end
+
   create_table "grades_logs", :force => true do |t|
     t.integer  "staff_id"
     t.integer  "term_course_student_id"
     t.datetime "created_at",             :null => false
     t.datetime "updated_at",             :null => false
+  end
+
+  create_table "graduated_poll2020s", :force => true do |t|
+    t.integer  "student_id"
+    t.string   "email"
+    t.string   "token"
+    t.date     "sent_date"
+    t.string   "situacion_actual"
+    t.string   "estudiante_institucion"
+    t.string   "empleado_lugar"
+    t.string   "empleado_sector"
+    t.string   "empleado_actividad_posgrado"
+    t.string   "empleado_mejora_situacion"
+    t.string   "sni"
+    t.string   "posgrado_satisfaccion"
+    t.string   "posgrado_contenidos_teoricos"
+    t.string   "posgrado_contenidos_metodologicos"
+    t.string   "posgrado_contenidos_practicos"
+    t.text     "posgrado_comentarios"
+    t.string   "infraestructura_aulas"
+    t.string   "infraestructura_laboratorios"
+    t.string   "infraestructura_biblioteca"
+    t.string   "infraestructura_tic"
+    t.string   "infraestructura_cafeteria"
+    t.string   "infraestructura_espacios"
+    t.text     "infraestructura_comentarios"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.string   "home_phone"
+    t.string   "mobile_phone"
+    t.string   "work_phone"
   end
 
   create_table "graduates", :force => true do |t|
