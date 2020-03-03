@@ -25,6 +25,8 @@ class Student < ActiveRecord::Base
   belongs_to :state
   belongs_to :country
 
+  has_one :graduated_poll_2020
+
   has_one :contact, :as => :attachable
   accepts_nested_attributes_for :contact
   

@@ -151,6 +151,7 @@ function searchCommand(searchField){
 
 function searchByCommand(command,searchField){
   searchField = searchField.replace(/ /g,".*")
+  console.log(searchField)
   var regex   = new RegExp(searchField, "i");
   var counter = 0;
   items       = [];

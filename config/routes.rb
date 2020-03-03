@@ -347,4 +347,8 @@ Sapos::Application.routes.draw do
   match '/auth/failure' => 'sessions#failure'
   match "/logout" => 'sessions#destroy'
   match '/login' => 'login#index'
+
+  match '/encuesta/gracias' => 'graduated_poll2020#thanks'
+  match '/encuesta/:token' => 'graduated_poll2020#show_with_token'
+  resources :graduated_poll2020
 end

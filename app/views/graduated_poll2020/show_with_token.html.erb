@@ -1,0 +1,334 @@
+<html>
+<head>
+	<title>Encuesta Egresados CIMAV</title>
+	<style>
+		body {
+			font-family: sans-serif;	
+			font-size: 10pt;	
+		}
+		h1 {
+			text-align: center;
+			font-size: 1.3em;
+		}
+
+		h2 {
+			color: #fff;
+			background-color: #001967;
+			font-size: 1.2em;
+			padding: 0.5em;
+		}
+		button {
+			color: #fff;
+			background-color: #001967;
+			font-size: 1.5em;
+			padding: 0.5em;
+			margin: 1em 0 5em 0;
+		}
+		#container {
+			margin: 0 auto;
+			width: 800px;
+		}
+		#logo {
+			text-align: center;
+		}
+		#logo img {
+			width: 120px;
+		}
+
+		select, input {
+			font-size: 12pt;
+			border: 1px solid #ddd;
+		}
+		input[type="text"] {
+			width: 100%;
+			padding: 0.2em;
+		}
+		table.preguntas {
+			width: 100%;
+		}
+		table.preguntas td {
+			padding: 0.5em 0 1.5em 0;
+		}
+		table.preguntas {
+			width: 100%;
+		}
+		table.tabla-pregunta {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 1em 0;
+		}
+		table.tabla-pregunta th {
+			border-bottom: 1px solid #ddd;
+		}
+		table.tabla-pregunta td {
+			padding: 0.5em;
+		}
+		.centered {
+			text-align: center;
+		}
+		textarea {
+			width: 100%;
+			border: 1px solid #ddd;
+			margin: 1em 0;
+		}
+		table.multiple td {
+			padding: 0 1em;
+		}
+		.situacion-estudiante,
+		.situacion-empleado {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+<div id="container">
+	<%= form_for @poll do |f| %>
+	<div id="logo"><img src="http://posgrado.cimav.edu.mx/images/institution/image/1/cimav.jpg"></div>
+	<h1>Encuesta de Seguimiento de Egresados de Posgrado</h1>
+	<h2>I. Datos Generales</h2>
+	<table>
+		<tr><td class="label">Nombre:</td><td><%= @poll.student.full_name %></td></tr>
+		<tr><td class="label">Sexo:</td><td><%= @poll.student.gender %></td></tr>
+		<tr><td class="label">Fecha de nacimiento:</td><td><%= @poll.student.date_of_birth %></td></tr>
+		<tr><td class="label">Correo Electrónico:</td><td><%= f.text_field :email %></td></tr>
+		<tr><td class="label">Telefono Casa:</td><td><%= f.text_field :home_phone %></td></tr>
+		<tr><td class="label">Teléfono Celular:</td><td><%= f.text_field :mobile_phone %></td></tr>
+		<tr><td class="label">Telefono Trabajo</td><td><%= f.text_field :work_phone %></td></tr>
+	</table>
+	<h2>II. Trayectoria y Ubicación en el Mercado Laboral</h2>
+	<table class="preguntas">
+		<tr>
+			<td>
+				Situacion actual:<br/>
+				<table class="multiple">
+                   <td><%= f.radio_button :situacion_actual, "Estudiante", id:"situacion_actual_1", onclick: "changeSituacion(this);" %> <label for="situacion_actual_1"> Estudiante</label></td>
+                	<td><%= f.radio_button :situacion_actual, "Empleado", id:"situacion_actual_2", onclick: "changeSituacion(this);" %> <label for="situacion_actual_2"> Empleado</label></td>
+                	<td><%= f.radio_button :situacion_actual, "Negocio Propio", id:"situacion_actual_3", onclick: "changeSituacion(this);" %> <label for="situacion_actual_3"> Negocio Propio</label></td>
+                	<td><%= f.radio_button :situacion_actual, "Desempleado", id:"situacion_actual_4", onclick: "changeSituacion(this);" %> <label for="situacion_actual_4"> Desempleado</label></td>
+                </table>
+		    </td>
+		</tr>
+		<tr class="situacion-estudiante">
+			<td>
+				Nombre de la institución<br>
+				<%= f.text_field :estudiante_institucion, placeholder: "Nombre de la institución"%>
+			</td>
+		</tr>
+		<tr class="situacion-empleado">
+			<td>
+				Lugar de trabajo<br>
+				<%= f.text_field :empleado_lugar, placeholder: "Lugar de Trabajo"%>
+			</td>
+		</tr>
+		<tr class="situacion-empleado">
+			<td>Sector al cual pertenece la empresa<br>
+			    <table class="multiple">
+					<td><%= f.radio_button :empleado_sector, "Empresarial", id:"empleado_sector_Empresarial" %><label for="empleado_sector_Empresarial"> Empresarial</label></td>
+					<td><%= f.radio_button :empleado_sector, "Educativo", id:"empleado_sector_Educativo" %><label for="empleado_sector_Educativo"> Educativo</label></td>
+					<td><%= f.radio_button :empleado_sector, "Gubernamental", id:"empleado_sector_Gubernamental" %><label for="empleado_sector_Gubernamental"> Gubernamental</label></td>
+				</table>
+		   </td>
+		</tr>
+		<tr class="situacion-empleado">
+			<td>
+				¿En que medida coincide su actividad laboral con los estudios de posgrado?<br/>
+                <table class="multiple">
+                  <td><%= f.radio_button :empleado_actividad_posgrado, "0", id:"empleado_actividad_posgrado_0" %><label for="empleado_actividad_posgrado_0"> 0%</label></td>
+                  <td><%= f.radio_button :empleado_actividad_posgrado, "20", id:"empleado_actividad_posgrado_20" %><label for="empleado_actividad_posgrado_20"> 20%</label></td>
+                  <td><%= f.radio_button :empleado_actividad_posgrado, "40", id:"empleado_actividad_posgrado_40" %><label for="empleado_actividad_posgrado_40"> 40%</label></td>
+                  <td><%= f.radio_button :empleado_actividad_posgrado, "60", id:"empleado_actividad_posgrado_60" %><label for="empleado_actividad_posgrado_60"> 60%</label></td>
+                  <td><%= f.radio_button :empleado_actividad_posgrado, "80", id:"empleado_actividad_posgrado_80" %><label for="empleado_actividad_posgrado_80"> 80%</label></td>
+                  <td><%= f.radio_button :empleado_actividad_posgrado, "100", id:"empleado_actividad_posgrado_100" %><label for="empleado_actividad_posgrado_100"> 100%</label></td>	
+                </table>
+            </td>
+        </tr>
+        <tr class="situacion-empleado">
+			<td>
+				¿De qué manera incidió en su situación laboral <i>(empleo, puesto, nivel de ingresos)</i> realizar los estudios de posgrado?<br/>
+                <table class="multiple">
+                   <td><%= f.radio_button :empleado_mejora_situacion, "Mejoró", id:"empleado_mejora_situacion_1" %><label for="empleado_mejora_situacion_1"> Mejoró</label></td>
+                	<td><%= f.radio_button :empleado_mejora_situacion, "Sigue Igual", id:"empleado_mejora_situacion_2" %> <label for="empleado_mejora_situacion_2"> Sigue Igual</label></td>
+                </table>
+            </td>
+        </tr>
+        <tr class="situacion-empleado">
+			<td>
+				¿Pertenece al Sistema Nacional de Investigadores?<br/>
+                <table class="multiple">
+                   <td><%= f.radio_button :sni, "No", id:"empleado_sni_no" %><label for="empleado_sni_no"> No</label></td>
+                   <td><%= f.radio_button :sni, "Candidato", id:"empleado_sni_candidato" %> <label for="empleado_sni_candidato"> Candidato</label></td>
+                   <td><%= f.radio_button :sni, "SNI I", id:"empleado_sni_1" %> <label for="empleado_sni_1"> SNI I</label></td>
+                   <td><%= f.radio_button :sni, "SNI II", id:"empleado_sni_2" %> <label for="empleado_sni_2"> SNI II</label></td>
+                   <td><%= f.radio_button :sni, "SNI III", id:"empleado_sni_3" %> <label for="empleado_sni_3"> SNI III</label></td>
+                </table>
+            </td>
+        </tr>
+	</table>
+	<h2>III. Opinión acerca del posgrado</h2>
+	<table class="preguntas">
+		<tr>
+			<td>
+				¿Qué tan satisfecho está con el programa de posgrado que usted curso?<br/>
+                <table class="multiple">
+                   <td><%= f.radio_button :posgrado_satisfaccion, "Totalmente", id:"posgrado_satisfaccion_totalmente" %><label for="posgrado_satisfaccion_totalmente"> Totalmente satisfaccion</label></td>
+                   <td><%= f.radio_button :posgrado_satisfaccion, "Medianamente", id:"posgrado_satisfaccion_medianamente" %> <label for="posgrado_satisfaccion_medianamente"> Medianamente satisfaccion</label></td>
+                   <td><%= f.radio_button :posgrado_satisfaccion, "Nada", id:"posgrado_satisfaccion_nada" %> <label for="posgrado_satisfaccion_nada"> Nada Satisfecho</label></td>
+                </table>
+            </td>
+        </tr>
+        <tr>
+			<td>
+				Para mejorar el perfil de <strong>formación profesional</strong> ¿Qué modificaciones sugeriría al plan de estudios? <br/>
+				<table class="tabla-pregunta">
+					<tr>
+						<th>Concepto</th>
+						<th>Ampliar</th>
+						<th>Mantener</th>
+						<th>Reducir</th>
+					</tr>
+					<tr>
+						<td>a) Contenidos teóricos</td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_teoricos, "Ampliar" %></td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_teoricos, "Mantener" %></td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_teoricos, "Reducir" %></td>
+					</tr>
+					<tr>
+						<td>b) Contenidos metodológicos</td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_metodologicos, "Ampliar" %></td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_metodologicos, "Mantener" %></td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_metodologicos, "Reducir" %></td>
+					</tr>
+					<tr>
+						<td>a) Contenidos prácticos</td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_practicos, "Ampliar" %></td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_practicos, "Mantener" %></td>
+						<td class="centered"><%= f.radio_button :posgrado_contenidos_practicos, "Reducir" %></td>
+					</tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+        	<td>Observaciones / Comentarios acerca del posgrado<br/>
+               <textarea rows="10" name="posgrado_comentarios"></textarea>
+        	</td>
+        </tr>		
+     </table>
+     <h2>III. Opinión acerca de la infraestructura</h2>
+	<table class="preguntas">
+		<tr>
+			<td>
+				Indicar del 1 al 5 el grado de satisfacción donde 1 es muy bajo y 5 es muy alto 
+				<table class="tabla-pregunta">
+					<tr>
+						<th></th>
+						<th>1</th>
+						<th>2</th>
+						<th>3</th>
+						<th>4</th>
+						<th>5</th>
+					</tr>
+					<tr>
+						<td>a) Aulas (Espacios y equipamiento)</td>
+						<td class="centered"><%= f.radio_button :infraestructura_aulas, "1" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_aulas, "2" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_aulas, "3" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_aulas, "4" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_aulas, "5" %></td>
+					</tr>
+					<tr>
+						<td>b) Laboratorios (Materiales, Suministros, Equipos)</td>
+						<td class="centered"><%= f.radio_button :infraestructura_laboratorios, "1" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_laboratorios, "2" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_laboratorios, "3" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_laboratorios, "4" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_laboratorios, "5" %></td>
+					</tr>
+					<tr>
+						<td>c) Biblioteca (Acervo, servicio, Bases de Datos)</td>
+						<td class="centered"><%= f.radio_button :infraestructura_biblioteca, "1" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_biblioteca, "2" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_biblioteca, "3" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_biblioteca, "4" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_biblioteca, "5" %></td>
+					</tr>
+					<tr>
+						<td>d) Tecnologías de información y comunicación (Equipo, redes)</td>
+						<td class="centered"><%= f.radio_button :infraestructura_tic, "1" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_tic, "2" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_tic, "3" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_tic, "4" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_tic, "5" %></td>
+					</tr>
+					<tr>
+						<td>e) Cafetería</td>
+						<td class="centered"><%= f.radio_button :infraestructura_cafeteria, "1" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_cafeteria, "2" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_cafeteria, "3" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_cafeteria, "4" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_cafeteria, "5" %></td>
+					</tr>
+					<tr>
+						<td>f) Espacios de Esparcimiento</td>
+						<td class="centered"><%= f.radio_button :infraestructura_espacios, "1" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_espacios, "2" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_espacios, "3" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_espacios, "4" %></td>
+						<td class="centered"><%= f.radio_button :infraestructura_espacios, "5" %></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+        	<td>Observaciones / Comentarios acerca de la infraestructura<br/>
+               <textarea rows="10" name="infraestructura_comentarios"></textarea>
+        	</td>
+        </tr>	
+    </table>
+    <div class="centered">
+    	<button type="submit">Enviar encuesta</button>
+    </div>
+    <% end %>
+</div>
+<script>
+	function changeSituacion(s) {
+		if (s.value == 'Estudiante') {
+			var x = document.getElementsByClassName("situacion-empleado");
+			console.log(x);
+			var i;
+			for (i = 0; i < x.length; i++) {
+				console.log('yyy')
+  				x[i].style.display = "none";
+			}
+			var x = document.getElementsByClassName("situacion-estudiante");
+			var i;
+			for (i = 0; i < x.length; i++) {
+  				x[i].style.display = "table-row";
+			}
+		
+		} else if (s.value == 'Empleado') {
+			var x = document.getElementsByClassName("situacion-empleado");
+			var i;
+			for (i = 0; i < x.length; i++) {
+  				x[i].style.display = "table-row";
+			}
+			var x = document.getElementsByClassName("situacion-estudiante");
+			var i;
+			for (i = 0; i < x.length; i++) {
+  				x[i].style.display = "none";
+			}
+		} else {
+			var x = document.getElementsByClassName("situacion-empleado");
+			var i;
+			for (i = 0; i < x.length; i++) {
+  				x[i].style.display = "none";
+			}
+			var x = document.getElementsByClassName("situacion-estudiante");
+			var i;
+			for (i = 0; i < x.length; i++) {
+  				x[i].style.display = "none";
+			}
+		}
+	}
+</script>
+</body>
+</html>
