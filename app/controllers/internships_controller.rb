@@ -742,7 +742,7 @@ class InternshipsController < ApplicationController
       @page_title  = 'Solicitud de Verano CIMAV'
       @page_note   = 'Una vez llena la solicitud de solicitará la carga de documentos'
       now          = Time.now
-      limit        = Time.new(2019,4,10,23,59,59,"-06:00")
+      limit        = Time.new(2020,4,16,23,59,59,"-06:00")
       @closed      = false
       @warning     = false
       
