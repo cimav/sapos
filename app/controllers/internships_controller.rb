@@ -904,6 +904,14 @@ class InternshipsController < ApplicationController
         token.expires           = Date.today + 1
         token.save
 
+	# Un vez guardado, envÃa los correos en vez de irse a subir documentos
+        if @internship.internship_type_id.to_i.eql? 11 #Grupo Academico
+           send_mail(@internship,'',9,'') ## correo al contacto posgrado
+        else
+           send_mail(@internship,'',7,'') ## correo al solicitante
+           send_mail(@internship,'',8,'') ## correo al contacto posgrado
+        end
+
         json = {}
         json[:flash] = flash
         json[:uniq]  = @internship.id

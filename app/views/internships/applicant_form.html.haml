@@ -183,6 +183,11 @@
                 = text_field_tag :text_institution_id, '', :size=>75,:placeholder=>"¿Cual?"
 
           .row
+            .form-group.col-4#field_internship_chosen_campus
+              = f.label :chosen_campus, 'Sede destino'
+              = f.select :chosen_campus,  ['Chihuahua', 'Monterrey'],{} ,class:'form-control', required:true
+
+          .row
             - if @summer && @academic.nil?
               = f.hidden_field :internship_type_id, :value=>8 ## verano CIMAV
             - elsif @summer && @academic
