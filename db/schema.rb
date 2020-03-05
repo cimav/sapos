@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20200303171820) do
+ActiveRecord::Schema.define(:version => 20200304200429) do
 
   create_table "academic_degrees", :force => true do |t|
     t.integer  "student_id"
@@ -453,10 +453,6 @@ ActiveRecord::Schema.define(:version => 20200303171820) do
   add_index "external_courses", ["institution_id"], :name => "index_external_courses_on_institution_id"
   add_index "external_courses", ["staff_id"], :name => "index_external_courses_on_staff_id"
 
-  create_table "grad2020", :id => false, :force => true do |t|
-    t.string "c"
-  end
-
   create_table "grades_logs", :force => true do |t|
     t.integer  "staff_id"
     t.integer  "term_course_student_id"
@@ -579,6 +575,7 @@ ActiveRecord::Schema.define(:version => 20200303171820) do
     t.string   "accident_contact"
     t.string   "password"
     t.string   "curp"
+    t.string   "chosen_campus"
   end
 
   add_index "internships", ["contact_id"], :name => "index_internships_on_contact_id"
@@ -655,6 +652,19 @@ ActiveRecord::Schema.define(:version => 20200303171820) do
     t.text     "question"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+  end
+
+  create_table "safety_courses", :force => true do |t|
+    t.integer  "safety_course_type"
+    t.string   "name"
+    t.string   "email"
+    t.integer  "score_needed"
+    t.integer  "score_obtained"
+    t.boolean  "approved"
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
   end
 
   create_table "scholarship_categories", :force => true do |t|
@@ -755,6 +765,21 @@ ActiveRecord::Schema.define(:version => 20200303171820) do
 
   add_index "staff_files", ["staff_id"], :name => "index_staff_files_on_staff_id"
 
+  create_table "staff_mobilities", :force => true do |t|
+    t.integer  "student_id"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.string   "place"
+    t.integer  "institution_id"
+    t.text     "title"
+    t.text     "activities"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "staff_mobilities", ["institution_id"], :name => "index_staff_mobilities_on_institution_id"
+  add_index "staff_mobilities", ["student_id"], :name => "index_staff_mobilities_on_student_id"
+
   create_table "staffs", :force => true do |t|
     t.integer  "employee_number"
     t.string   "title",           :limit => 10
@@ -829,6 +854,23 @@ ActiveRecord::Schema.define(:version => 20200303171820) do
   end
 
   add_index "student_files", ["student_id"], :name => "index_student_files_on_student_id"
+
+  create_table "student_mobilities", :force => true do |t|
+    t.integer  "student_id"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.string   "place"
+    t.integer  "institution_id"
+    t.integer  "staff_id"
+    t.text     "title"
+    t.text     "activities"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "student_mobilities", ["institution_id"], :name => "index_student_mobilities_on_institution_id"
+  add_index "student_mobilities", ["staff_id"], :name => "index_student_mobilities_on_staff_id"
+  add_index "student_mobilities", ["student_id"], :name => "index_student_mobilities_on_student_id"
 
   create_table "student_teacher_evaluations", :force => true do |t|
     t.integer "student_id"

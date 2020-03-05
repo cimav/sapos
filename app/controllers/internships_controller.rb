@@ -745,7 +745,8 @@ class InternshipsController < ApplicationController
       limit        = Time.new(2020,4,16,23,59,59,"-06:00")
       @closed      = false
       @warning     = false
-      
+      @campus      = Campus.order('name')
+
       diff = limit - now
       
       if diff < 0  ## cuando la diferencia devuelve nÃºmeros negativos es porque ya nos pasamos
@@ -785,6 +786,7 @@ class InternshipsController < ApplicationController
     else    
       @areas  = Area.where("id not in (1,2)").order('name') 
     end
+
     render :layout => 'bootstrap_layout'
   end
 ###########################################################################
@@ -903,6 +905,15 @@ class InternshipsController < ApplicationController
         token.status            = 1
         token.expires           = Date.today + 1
         token.save
+
+        # Un vez guardado, envÃa los correos en vez de irse a subir documentos
+	if @internship.internship_type_id.to_i.eql? 11 #Grupo Academico
+         send_mail(@internship,'',9,'') ## correo al contacto posgrado
+        else
+         send_mail(@internship,'',7,'') ## correo al solicitante
+         send_mail(@internship,'',8,'') ## correo al contacto posgrado
+        end
+
 
         json = {}
         json[:flash] = flash
