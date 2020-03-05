@@ -204,8 +204,8 @@ function searchByCommand(command,searchField){
 function accent_finder(s)
 {
   var accentMap = {
-      'Ã¡':'a','Ã©':'e','Ã­':'i','Ã³':'o','Ãº':'u', 'Ã ':'a','Ã¨':'e','Ã¬':'i','Ã²':'o','Ã¹':'u','Ã¤':'a','Ã«':'e','Ã¯':'i','Ã¶':'o','Ã¼':'u',
-      'Ã':'A','Ã':'E','Ã':'I','Ã':'O','Ã':'U', 'Ã':'A','Ã':'E','Ã':'I','Ã':'O','Ã':'U','Ã':'A','Ã':'E','Ã':'I','Ã':'O','Ã':'U'
+      'á':'a','é':'e','í':'i','ó':'o','ú':'u', 'à':'a','è':'e','ì':'i','ò':'o','ù':'u','ä':'a','ë':'e','ï':'i','ö':'o','ü':'u',
+      'Á':'A','É':'E','Í':'I','Ó':'O','Ú':'U', 'À':'A','É':'E','Ì':'I','Ò':'O','Ù':'U','Ä':'A','Ë':'E','Ï':'I','Ö':'O','Ü':'U'
   };
 
 
@@ -449,25 +449,14 @@ $('#item-new-internship-applicant-form')
         var res    = $.parseJSON(xhr.responseText);
         var html   = ''
         if(res['uniq']!=0){
-          if(res['internship_type_id']==8){
-            var uri = "/internados/documentos/grupo/"+res['token']+"/"+res['uniq'];
-            // window.location.replace(uri);
-            // return false;
-       
-	    /* En vez de irse a documentos, despliega la despedida  */	
-	    html = "<h1 class='text-secondary' style='font-size:1.9em; padding:1em;' >Gracias por tu registro al Verano de la Investigación Científica del CIMAV </h1> \
-			 <div class='alert alert-primary col-12 col-sm-12-col-md-12 alert-dismissible fade show' role='alert'>No olvides mandar la siguiente documentación al correo repositorio@cimav.edu.mx, antes del 15 de abril</div> \
-			<ul> \
-                                 <li>Constancia oficial de inscripción al semestre actual, emitida por el Departamento de Servicios Escolares o equivalente, en su institución educativa </li> \
-                                 <li>Documento que acredite contar con un promedio general de 8.0 o superior</li> \
-                                 <li>Identificación oficial con fotografía</li> \
-                                 <li>Comprobante de algún servicio médico vigente. Para los derechohabientes del IMSS, este documento puede generarse en línea</li> \
-                                 <li>Carta de recomendación de algún profesor</li> \
-                                 <li>Carta de exposición de motivos, para participar en el 16° Verano de la Investigación</li> \
-			 </ul> \
-			 <span style='display: none;' >registro: <a href=" + uri + ">Descargar</a></span> ";
-
-          }else if(res['internship_type_id']==11){
+          if(res['internship_type_id']==8)
+          {
+            var uri = "/internados/aspirantes/verano/"+res['token']+"/"+res['uniq'];
+            
+            window.location.replace(uri);
+            return false;
+          }
+          else if(res['internship_type_id']==11){
             var uri = "/internados/documentos/grupo/"+res['token']+"/"+res['uniq'];
            
             window.location.replace(uri);
@@ -527,7 +516,7 @@ $('#item-edit-form')
   
   /*****************  MENU SYSTEM EVENTS ****************/
   
-  /** cuando damos click en cualquier parte excepto el menÃº, reseteamos el menÃº **/
+  /** cuando damos click en cualquier parte excepto el menú, reseteamos el menú **/
   $("html:not(#nav-system-menu ul.main-nav)").click(function(){
     $("#nav-system-menu ul.body-nav").css("display","none");
     $("#nav-system-menu ul.body-nav").css("position","");
@@ -537,7 +526,7 @@ $('#item-edit-form')
     $("#nav-system-menu ul li ul").css("position","");
   });
 
-  /** Cuando damos click en la cabecera del menÃº **/
+  /** Cuando damos click en la cabecera del menú **/
   $("#nav-system-menu ul.main-nav").click(function(e){
     if (!e) var e = window.event;
     // ie

@@ -1,5 +1,5 @@
 class Internship < ActiveRecord::Base
-  attr_accessible :id,:internship_type_id,:curp,:first_name,:last_name,:gender,:date_of_birth,:start_date,:end_date,:location,:email,:institution_id,:contact_id,:staff_id,:thesis_title,:activities,:status,:image,:notes,:created_at,:updated_at,:blood_type,:campus_id,:contact_attributes,:career,:office,:total_hours,:schedule, :control_number, :grade, :applicant_status, :area_id, :country_id, :state_id, :phone, :health_insurance, :health_insurance_number,:accident_contact, :chosen_campus
+  attr_accessible :id,:internship_type_id,:curp,:first_name,:last_name,:gender,:date_of_birth,:start_date,:end_date,:location,:email,:institution_id,:contact_id,:staff_id,:thesis_title,:activities,:status,:image,:notes,:created_at,:updated_at,:blood_type,:campus_id,:contact_attributes,:career,:office,:total_hours,:schedule, :control_number, :grade, :applicant_status, :area_id, :country_id, :state_id, :phone, :health_insurance, :health_insurance_number,:accident_contact
  
   belongs_to :institution
   belongs_to :staff

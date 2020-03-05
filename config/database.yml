@@ -36,7 +36,6 @@ production:
   pool: 5
   username: root
   password: 
-  host: 10.0.0.25
   #socket: /var/run/mysqld/mysqld.sock
 
 cimavnetmultix:
