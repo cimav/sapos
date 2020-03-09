@@ -894,6 +894,10 @@ class InternshipsController < ApplicationController
         ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud de Verano CIMAV por internet'}"}).save
        
         @internship.applicant_status= 99; ## estatus de pendiente, faltan los documentos
+
+	# status_solicitudes=3 para que aparezca en el filtro de 'solicitudes' sin necesidad de los documentos
+	@internship.applicant_status= 3;
+
         @internship.save
           
         token = Token.new
