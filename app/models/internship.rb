@@ -89,9 +89,11 @@ class Internship < ActiveRecord::Base
   end
 
   def start_date_vs_created_at
+	puts "*****************************************************************************************************"
+	puts "self.start_date > #{self.start_date}"
     if ((self.origin.eql? 0) && (self.status.eql? 3) && (self.applicant_status.in? [1,3]))
       created_at_1 = Date.new(self.created_at.year,self.created_at.month,self.created_at.day)
-      if self.start_date.to_datetime<created_at_1
+      if !self.start_date || self.start_date.to_datetime<created_at_1
         errors.add(:start_date,"La fecha de inicio no puede ser menor a la fecha de registro")
       end
     end
