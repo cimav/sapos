@@ -375,7 +375,6 @@ class CertificatesController < ApplicationController
             {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"},
             {:code=>"701",:name=>"Temas Selectos de Ciencia de Materiales 7"},
             {:code=>"801",:name=>"Temas Selectos de Ciencia de Materiales 8"}
-            {:code=>"801",:name=>"Temas Selectos de Ciencia de Materiales 8"},
           ]
         puts "ARRAY: #{my_select_topics.to_s}"
         s_program_id = t.student.program_id

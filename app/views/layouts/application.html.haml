@@ -49,7 +49,7 @@
               - if can? :read, Student
                 %li= link_to "Estudiantes", students_path
               - if can? :read, Graduate
-                %li= link_to "Seguimiento de Egresados", exstudents_path         
+                %li= link_to "Seguimiento de Egresados", "/encuesta"        
              
               %li.li-tree-nav
                 %a.tree-nav{:menu_counter=>0}
