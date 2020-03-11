@@ -365,7 +365,7 @@ class CertificatesController < ApplicationController
       my_final_classes = Array.new
 
       if t.student.studies_plan_id.eql? 15  ##dcm15
-        my_select_topics_codes = ["101","201","301","401","501","601","701"]
+        my_select_topics_codes = ["101","201","301","401","501","601","701","801"]
         my_select_topics = [
             {:code=>"101",:name=>"Temas Selectos de Ciencia de Materiales 1"},
             {:code=>"201",:name=>"Temas Selectos de Ciencia de Materiales 2"},
@@ -375,6 +375,7 @@ class CertificatesController < ApplicationController
             {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"},
             {:code=>"701",:name=>"Temas Selectos de Ciencia de Materiales 7"},
             {:code=>"801",:name=>"Temas Selectos de Ciencia de Materiales 8"}
+            {:code=>"801",:name=>"Temas Selectos de Ciencia de Materiales 8"},
           ]
         puts "ARRAY: #{my_select_topics.to_s}"
         s_program_id = t.student.program_id
@@ -400,14 +401,23 @@ class CertificatesController < ApplicationController
           program_id      = tcs.term_course.course.program_id
           code =  tcs.term_course.course.code.mb_chars
           name =  tcs.term_course.course.name.mb_chars
-          puts "CODE: #{code} #{name} #{program_id}|#{s_program_id}"
+          #puts "CODE: #{code} #{name} #{program_id}|#{s_program_id}"
  
           ## si no es del mismo programa entonces es una optativa
           if program_id != s_program_id
             topic = my_select_topics.shift
-            my_final_class[:code] = topic[:code]
-            my_final_class[:name] = topic[:name]
-            puts "TOPIC: #{topic}"
+            puts "------------------------"
+            puts "CODE: #{code} #{name} #{program_id}|#{s_program_id}"
+            puts "TOPIC"
+            puts topic
+            puts "FINAL CLASS"
+            puts my_final_class
+            puts "------------------------"
+            #if topic[:code]
+              my_final_class[:code] = topic[:code]
+              my_final_class[:name] = topic[:name]
+            #end
+            #puts "TOPIC: #{topic}"
           else
             
             my_final_class[:code] = code
