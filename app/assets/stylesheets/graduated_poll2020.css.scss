@@ -1,3 +1,28 @@
 // Place all the styles related to the GraduatedPoll2020 controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.poll-area {
+  .contestada {
+    background-color: #0b0;
+    color: #fff;
+    width: 1em;
+    text-align: center;
+  }
+  padding-top: 60px;
+  table {
+    margin: 1em;
+    border-collapse: collapse;
+    tr {
+      th {
+        font-weight: bold;
+        border: 1px solid #ddd;
+        padding: 0.5em;
+      }
+      td {
+        border: 1px solid #ddd;
+        padding: 0.5em;
+      }
+    }
+  }
+}

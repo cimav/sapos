@@ -350,5 +350,5 @@ Sapos::Application.routes.draw do
 
   match '/encuesta/gracias' => 'graduated_poll2020#thanks'
   match '/encuesta/:token' => 'graduated_poll2020#show_with_token'
-  resources :graduated_poll2020
+  resources :graduated_poll2020, :path => "encuesta"
 end

@@ -1,0 +1,76 @@
+<div class="poll-area">
+<table>
+<tr><td>Total de encuestas:</td><td><%= @polls.count %></tr>
+<tr><td>Encuestas contestadas:</td><td><%= @contestadas.count %></td></tr>
+<tr><td>Encuestas pendientes:</td><td><%= @polls.count - @contestadas.count %>  </td></tr>
+<table>
+  <tr>
+  <td></td>
+  <td>Programa</td>
+  <td>Nombre:</td>
+  <td>Sexo:</td>
+  <td>Fecha Nac.:</td>
+  <th>Correo</th>
+  <th>Tel. Casa</th>
+  <th>Tel. Celular</th>
+  <th>Tel. Trabajo</th>
+  <th>Fecha Envio</th>
+  <th>Situación Actual</th>
+  <th>Institución</th>
+  <th>Empleo</th>
+  <th>Sector</th>
+  <th>% Posgrado</th>
+  <th>Mejora Situación</th>
+  <th>SNI</th>
+  <th>Satisfacción Posgrado</th>
+  <th>Contenidos Teoricos</th>
+  <th>Contenidos Metodológicos</th>
+  <th>Contenidos Prácticos</th>
+  <th>Comentarios Posgrado</th>
+  <th>Aulas</th>
+  <th>Laboratorios</th>
+  <th>Biblioteca</th>
+  <th>TIC</th>
+  <th>Cafeteria</th>
+  <th>Espacios</th>
+  <th>Comentarios Infraestructura</th>
+  </tr>
+<% @polls.each do |p| %>
+  <tr>
+  <% if !p.situacion_actual.blank? %>
+    <td class="contestada">✔</td>
+  <% else %>
+    <td></td>
+  <% end %>
+  <td><%= p.student.program.name %></td>
+  <td><%= p.student.full_name %></td>
+  <td><%= p.student.gender %></td>
+  <td><%= p.student.date_of_birth %></td>
+  <td><%= p.email %></td>
+  <td><%= p.home_phone %></td>
+  <td><%= p.mobile_phone %></td>
+  <td><%= p.work_phone %></td>
+  <td><%= p.sent_date %></td>
+  <td><%= p.situacion_actual %></td>
+  <td><%= p.estudiante_institucion %></td>
+  <td><%= p.empleado_lugar %></td>
+  <td><%= p.empleado_sector %></td>
+  <td><%= p.empleado_actividad_posgrado %></td>
+  <td><%= p.empleado_mejora_situacion %></td>
+  <td><%= p.sni %></td>
+  <td><%= p.posgrado_satisfaccion %></td>
+  <td><%= p.posgrado_contenidos_teoricos %></td>
+  <td><%= p.posgrado_contenidos_metodologicos %></td>
+  <td><%= p.posgrado_contenidos_practicos %></td>
+  <td><%= p.posgrado_comentarios %></td>
+  <td><%= p.infraestructura_aulas %></td>
+  <td><%= p.infraestructura_laboratorios %></td>
+  <td><%= p.infraestructura_biblioteca %></td>
+  <td><%= p.infraestructura_tic %></td>
+  <td><%= p.infraestructura_cafeteria %></td>
+  <td><%= p.infraestructura_espacios %></td>
+  <td><%= p.infraestructura_comentarios %></td>
+  </tr>
+<% end %>
+</table>
+</div>
