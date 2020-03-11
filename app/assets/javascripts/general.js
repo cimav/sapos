@@ -451,10 +451,23 @@ $('#item-new-internship-applicant-form')
         if(res['uniq']!=0){
           if(res['internship_type_id']==8)
           {
-            var uri = "/internados/aspirantes/verano/"+res['token']+"/"+res['uniq'];
-            
-            window.location.replace(uri);
-            return false;
+            // var uri = "/internados/aspirantes/verano/"+res['token']+"/"+res['uniq'];
+            // window.location.replace(uri);
+            // return false;
+
+	    /* En vez de irse a documentos, despliega la despedida  */
+            html = "<h1 class='text-secondary' style='font-size:1.9em; padding:1em;' >Gracias por tu registro al Verano de la Investigación Científica del CIMAV </h1> \
+              <div class='alert alert-primary col-12 col-sm-12-col-md-12 alert-dismissible fade show' role='alert'>No olvides mandar la siguiente documentación al correo repositorio@cimav.edu.mx, antes del 15 de abril</div> \
+                        <ul> \
+                                 <li>Constancia oficial de inscripción al semestre actual, emitida por el Departamento de Servicios Escolares o equivalente, en su institución educativa </li> \
+                                 <li>Documento que acredite contar con un promedio general de 8.0 o superior</li> \
+                                 <li>Identificación oficial con fotografía</li> \
+                                 <li>Comprobante de algún servicio médico vigente. Para los derechohabientes del IMSS, este documento puede generarse en línea</li> \
+                                 <li>Carta de recomendación de algún profesor</li> \
+                                 <li>Carta de exposición de motivos, para participar en el 16° Verano de la Investigación</li> \
+                         </ul> \
+                         <span style='display: none;' >registro: <a href=" + uri + ">Descargar</a></span> ";
+		
           }
           else if(res['internship_type_id']==11){
             var uri = "/internados/documentos/grupo/"+res['token']+"/"+res['uniq'];

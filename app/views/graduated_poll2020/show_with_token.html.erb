@@ -93,7 +93,8 @@
 		<tr><td class="label">Correo Electrónico:</td><td><%= f.text_field :email %></td></tr>
 		<tr><td class="label">Telefono Casa:</td><td><%= f.text_field :home_phone %></td></tr>
 		<tr><td class="label">Teléfono Celular:</td><td><%= f.text_field :mobile_phone %></td></tr>
-		<tr><td class="label">Telefono Trabajo</td><td><%= f.text_field :work_phone %></td></tr>
+		<tr><td class="label">Telefono Trabajo:</td><td><%= f.text_field :work_phone %></td></tr>
+		<tr><td class="label">Programa:</td><td><%= @poll.student.program.name %></td></tr>
 	</table>
 	<h2>II. Trayectoria y Ubicación en el Mercado Laboral</h2>
 	<table class="preguntas">
@@ -209,7 +210,7 @@
         </tr>
         <tr>
         	<td>Observaciones / Comentarios acerca del posgrado<br/>
-               <textarea rows="10" name="posgrado_comentarios"></textarea>
+                <%= f.text_area :posgrado_comentarios, rows: 10 %>
         	</td>
         </tr>		
      </table>
@@ -280,7 +281,7 @@
 		</tr>
 		<tr>
         	<td>Observaciones / Comentarios acerca de la infraestructura<br/>
-               <textarea rows="10" name="infraestructura_comentarios"></textarea>
+                <%= f.text_area :infraestructura_comentarios, rows: 10 %>
         	</td>
         </tr>	
     </table>

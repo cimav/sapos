@@ -742,7 +742,7 @@ class InternshipsController < ApplicationController
       @page_title  = 'Solicitud de Verano CIMAV'
       @page_note   = 'Una vez llena la solicitud de solicitará la carga de documentos'
       now          = Time.now
-      limit        = Time.new(2019,4,10,23,59,59,"-06:00")
+      limit        = Time.new(2020,4,16,23,59,59,"-06:00")
       @closed      = false
       @warning     = false
       
@@ -894,6 +894,10 @@ class InternshipsController < ApplicationController
         ActivityLog.new({:user_id=>0,:activity=>"{:internship_id=>#{@internship.id},:activity=>'El usuario hace una solicitud de Verano CIMAV por internet'}"}).save
        
         @internship.applicant_status= 99; ## estatus de pendiente, faltan los documentos
+
+	# status_solicitudes=3 para que aparezca en el filtro de 'solicitudes' sin necesidad de los documentos
+	@internship.applicant_status= 3;
+
         @internship.save
           
         token = Token.new
@@ -903,6 +907,14 @@ class InternshipsController < ApplicationController
         token.status            = 1
         token.expires           = Date.today + 1
         token.save
+
+	# Un vez guardado, envÃa los correos en vez de irse a subir documentos
+        if @internship.internship_type_id.to_i.eql? 11 #Grupo Academico
+           send_mail(@internship,'',9,'') ## correo al contacto posgrado
+        else
+           send_mail(@internship,'',7,'') ## correo al solicitante
+           send_mail(@internship,'',8,'') ## correo al contacto posgrado
+        end
 
         json = {}
         json[:flash] = flash

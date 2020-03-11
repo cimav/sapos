@@ -1,4 +1,3 @@
-use sapos_development;
 
 DROP TRIGGER IF EXISTS failing_grade;
 
