@@ -13,6 +13,20 @@
 - counter_grade = 0
 - sum = 0
 - avg = 0
+
+- if @student.studies_plan_id.eql? 15  ##dcm15
+  - my_select_topics_codes = ["101","201","301","401","501","601","701","801"]
+  - my_select_topics = [{:code=>"101",:name=>"Temas Selectos de Ciencia de Materiales 1"},{:code=>"201",:name=>"Temas Selectos de Ciencia de Materiales 2"},{:code=>"301",:name=>"Temas Selectos de Ciencia de Materiales 3"},{:code=>"401",:name=>"Temas Selectos de Ciencia de Materiales 4"}, {:code=>"501",:name=>"Temas Selectos de Ciencia de Materiales 5"}, {:code=>"601",:name=>"Temas Selectos de Ciencia de Materiales 6"}, {:code=>"701",:name=>"Temas Selectos de Ciencia de Materiales 7"}, {:code=>"801",:name=>"Temas Selectos de Ciencia de Materiales 8"} ]
+  - @student.term_students.each do |te|
+    - te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
+      - program_id  = tcs.term_course.course.program_id
+      - code =  tcs.term_course.course.code.mb_chars
+      - name =  tcs.term_course.course.name.mb_chars
+      - if code.in? my_select_topics_codes
+        - my_select_topics_codes.delete(code)
+        - my_select_topics.delete_if { |a| a[:code]==code}
+
+
 %table#grades_table  
   %tr
     %th.centered= "Nombre de la Materia"
@@ -20,6 +34,14 @@
     %th.centered= "Calificación"
     - @student.term_students.each do |te|
       - te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
+
+        - if tcs.term_course.course.program_id != @student.program_id &&  (@student.studies_plan_id.eql? 15)
+          - topic = my_select_topics.shift
+          - extra = "[#{topic[:code]}] #{topic[:name]}"
+        - else
+          - extra = ""
+
+
         -if !tcs.term_course.nil?
           - counter += 1
           - if counter % 2 == 0
@@ -28,7 +50,11 @@
             - klass = 'row-odd'
 
           %tr{:class  => klass}
-            %td= tcs.term_course.course.name
+            %td
+              = tcs.term_course.course.name 
+              - if extra != ''
+                %br
+                %span{:style=>"font-size: 90%; color: #666;"}= "(#{extra})"
             %td.centered= tcs.term_course.term.name
             - if !(tcs.grade.nil?)
               - if !(tcs.grade<70)
