@@ -2746,7 +2746,10 @@ private
       @op_asesor = 0
     end
 
+    # XXXX: QUITAR FECHA
+    # time = Time.new(2020, 3, 18)
     time = Time.new
+
     year = time.year.to_s
 
     background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
