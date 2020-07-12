@@ -85,6 +85,8 @@
           = "Formato:"
           = link_to 'Estudiante', "/estudiantes/seminario/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
           = link_to 'Comité', "/estudiantes/seminario/#{adv.id}/#{adv.tutor3}/cep", :target=> "_blank"
+        - elsif adv.advance_type.eql? 2 #protocol
+          = link_to 'Formato', "/estudiantes/protocolo/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
 
       %div{:id => "field_student_advance_#{index}_tutor4", :class => 'field'}
         = fields.label :tutor4, 'Comite Tutoral 4'
