@@ -34,7 +34,7 @@ module Toads
                 text = "\n\n<font size='20'><b>El sistema ha detectado el título vacío de la tesis del alumno: #{student.full_name.lstrip.rstrip}</b></font>"
               else
                 periodo = "quien desde el <b>#{student.start_date.day} de #{get_month_name(student.start_date.month)} de #{student.start_date.year}</b> funge como"
-                alumno_tesis = "#{student.ggender("genero4")} alumn#{student.ggender("genero")} <b>#{student.full_name.lstrip.rstrip}</b>"
+	alumno_tesis = "#{student.ggender("genero4")} alumn#{student.ggender("genero")} <b>#{student.full_name.lstrip.rstrip}</b> matricula <b>#{student.card}</b> de nuestro programa de  <b>#{student.program.name}</b>, con la Tesis: \"#{student.thesis.title.lstrip.rstrip rescue ""}\"."
               
                 text = "#{docente} #{periodo} #{description} #{alumno_tesis}."
               end # if tesis en blanco
