@@ -61,6 +61,13 @@ module Toads
       end
      
       def final
+
+	# @pdf.stroke_axis
+	# @pdf.move_cursor_to 124
+	if @pdf.cursor < 124
+	  @pdf.start_new_page
+	end
+
         text = "\nSe extiende la presente constancia a petición del interesado, para los fines legales que haya lugar."
         @pdf.text text
         ############################## FIRMA ##############################
