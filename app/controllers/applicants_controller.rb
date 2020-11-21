@@ -180,6 +180,8 @@ class ApplicantsController < ApplicationController
       @campus = Campus.select("id,name").find([1,4])
     elsif program_id.to_i.eql? 10 ## DN
       @campus = Campus.select("id,name").find([2])
+    elsif program_id.to_i.eql? 15 ## MCM DOBLE
+      @campus = Campus.select("id,name").find([1,2])
     end
     render :layout => 'standalone'
   end
@@ -198,6 +200,8 @@ class ApplicantsController < ApplicationController
       @campus = Campus.select("id,name").find([1,4])
     elsif program_id.to_i.eql? 10 ## DN
       @campus = Campus.select("id,name").find([2])
+    elsif program_id.to_i.eql? 15 ## MCM Doble
+      @campus = Campus.select("id,name").find([1,2])
     end
     json[:campus] = @campus
     #render :layout => 'standalone'
@@ -480,13 +484,24 @@ class ApplicantsController < ApplicationController
     @student.start_date           = Time.now
  
     if applicant.status.eql? 5
-      if applicant.program_id.eql? 1
-        @student.program_id = 6
-      elsif applicant.program_id.eql? 3
-        @student.program_id = 7
+      # 5 = Aceptado a propedeutico
+
+      #if applicant.program_id.eql? 1
+      #  @student.program_id = 6
+      #elsif applicant.program_id.eql? 3
+      #  @student.program_id = 7
+      #else
+      #  @student.program_id           = applicant.program_id
+      #end
+      
+      # Nov 2020. Todos los programas de doctorado requieren propedeutico		
+      if applicant.program_id.eql? 3
+	# Si es MCTA, se va a PCTA
+	@student.program_id = 7
       else
-        @student.program_id           = applicant.program_id
-      end
+	# Todos los demas programas se van a PCM
+	@student.program_id = 6
+      end 	
     else
       @student.program_id           = applicant.program_id
     end
