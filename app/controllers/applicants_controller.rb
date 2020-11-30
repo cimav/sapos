@@ -495,8 +495,8 @@ class ApplicantsController < ApplicationController
       #end
       
       # Nov 2020. Todos los programas de doctorado requieren propedeutico		
-      if applicant.program_id.eql? 3
-	# Si es MCTA, se va a PCTA
+      if applicant.program_id.eql? 3 ||  applicant.program_id.eql? 4
+	# Si es MCTA o DCTA, se va a PCTA
 	@student.program_id = 7
       else
 	# Todos los demas programas se van a PCM
