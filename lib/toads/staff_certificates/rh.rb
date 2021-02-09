@@ -2,7 +2,7 @@ module Toads
   module StaffCertificates
     class RH < Toads::StaffCertificates::Basic
       def initialize(options)
-        options[:margin]      = [120,55,115,55]
+        options[:margin]      = [120,55,134,55]  #[120,55,115,55]
         options[:line_breaks] = {:begining=>2,:correspondence=>1,:content=>1,:carefully=>2,:sign=>2}
         super(options)
       end

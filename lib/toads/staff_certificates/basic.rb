@@ -6,9 +6,9 @@ module Toads
       def initialize(options)
         @options          = options
         @background       = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
-        @margin           = options[:margin]      || [130,55,110,55]
+        @margin           = options[:margin]      || [130,55,134,55]
         @background_scale = 0.36
-        @options[:line_breaks] = {:begining=>0,:correspondence=>1,:content=>2,:carefully=>2,:sign=>2} 
+        @options[:line_breaks] = {:begining=>0,:correspondence=>1,:content=>2,:carefully=>2,:sign=>4} 
         #@line_breaks      = options[:line_breaks] || {:begining=>0,:correspondence=>1,:content=>2,:carefully=>2,:sign=>2}
         @first_page_clean = true
         @pdf              = options[:pdf] || Prawn::Document.new(:background => @background, :background_scale=>@background_scale, :margin=>@margin )
@@ -28,11 +28,12 @@ module Toads
       end
      
       def cabecera
+
         w = 255
         h = 50
-       
+        
         time = Time.new
-        #@pdf.text "#### #{@options[:line_breaks][:begining]}"
+        #@pdf.text "#### #{@options[:margin]}"
 
         @options[:line_breaks][:begining].times do 
           @pdf.text "\n"
@@ -62,9 +63,9 @@ module Toads
      
       def final
 
-	# @pdf.stroke_axis
+	#@pdf.stroke_axis
 	# @pdf.move_cursor_to 124
-	if @pdf.cursor < 124
+	if @pdf.cursor < 140 #124
 	  @pdf.start_new_page
 	end
 
