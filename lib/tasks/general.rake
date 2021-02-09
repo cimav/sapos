@@ -9,17 +9,18 @@ namespace :general do
   @env      = Rails.env
   SEND_MAIL         = 1                             ## Posible values: Nobody(0), All(1), Only Admin(2), All&Admin(3) 
   STATUS_CHANGE     = true                           ## False for disable any update
-  ADMIN_MAIL        = "enrique.turcott@cimav.edu.mx" ## Administrator Email
-  CICLO             = "2019-2"                       ## PREVIOUS TERM
-  NCICLO            = "2020-1"                       ## NEW TERM
+  ADMIN_MAIL        = "juan.calderon@cimav.edu.mx" ## Administrator Email
+  CICLO             = "2020-2" #"2020-1"                       ## PREVIOUS TERM
+  NCICLO            = "2021-1" #"2020-2"                       ## NEW TERM
   
   ############################################## TASK CHECK ########################################################################
   ##################################################################################################################################
   task :check => :environment do
     @yaenciclo= false
     #### Descomentar las 2 lineas siguientes para ver la salida de sql del task
-    #Rails.logger.level = Logger::DEBUG
-    #ActiveRecord::Base.logger = Logger.new(STDOUT)
+    # Rails.logger.level = Logger::DEBUG
+    # ActiveRecord::Base.logger = Logger.new(STDOUT)
+
     set_line("Iniciando script en check")
     #### NIVELES:
     ## level (1) maestria, (2) doctorado, (3) propedeutico
@@ -54,7 +55,7 @@ namespace :general do
           ## Ahora vamos revisando cada materia del alumno
           ## Se deben confirmar las materias calificadas, independientemente si han sido aprobadas o no
           ## Revisando cada materia con estatus 1 o sea activa
-          set_line("<<<<< - alumno - >>>>>")
+          set_line("<<<<< - alumnox - >>>>>")
           @counter_alumnos = @counter_alumnos + 1
 
           snc = TermStudent.joins(:term).where("terms.name like '%#{NCICLO}%' AND student_id=? AND term_students.status in (?)",ts.student.id,[1,2,6])
@@ -139,8 +140,12 @@ namespace :general do
   ##################################################################################################################################
   task :alarm => :environment do
     set_line("Iniciando script en alarm")
-    ## advances.status = 'P' (PRogramado), term.status=3 (Calificando) y progams.levels 1 y 2 (maestria y doctorado) 
-   advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.title !=''",['P'],[3],[1,2],[2]).select("advances.*,terms.id as terms_id")
+    ## advances.status = 'P' (PRogramado), term.status=3 (Calificando) y progams.levels 1 y 2 (maestria y doctorado)  , agregar advances in (2426) para debug en advance especifico
+   ## advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.title !=''",['P'],[3],[1,2],[1]).select("advances.*,terms.id as term_id, terms.code as t_code, students.email_cimav as email").order(:id)
+
+	####### avance personalizado al estudiante y al avancer
+  advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.id in (2518) AND students.id = 2116").select("advances.*,terms.id as term_id, terms.code as t_code, students.email_cimav as email").order(:id)
+
 
 ## advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date AND advances.advance_type in (?) AND advances.student_id in (?)",['P'],[3],[1,2],[1],[1168,1739,1667,1616,1617,1647,1615,1614,1613,1619,1618,1646,1645]).select("advances.*,terms.id as terms_id")
 
@@ -149,11 +154,12 @@ namespace :general do
    ## advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date and students.id=1714",['P'],[1,2,3],[1,2]).select("advances.*,terms.id as terms_id")
     ## advances = Advance.joins(:student=>[:term_students=>:term]).joins(:student=>:program).where("advances.status in (?) AND terms.status in (?) AND programs.level in (?) AND advances.advance_date between terms.start_date and terms.end_date and students.id=?",['P'],[3],[1,2],1486).select("advances.*,terms.id as terms_id")
 
-=begin
-    advances.each do |a|
-     puts "#{a.id} #{a.student_id} #{a.status} #{a.title}"
-    end
-=end
+puts "Avances: #{advances.count}"
+
+   # advances.each do |a|
+   #   puts "#{a.id} #{a.student_id} #{a.status} #{a.email}"
+   # end
+
 
 =begin
   HELPER
@@ -163,7 +169,7 @@ namespace :general do
       set_line("No hay fechas de avances abiertas")
     else
       advances.each do |a|
-        #puts "#{counter} #{a.student.full_name}"
+        puts "#{counter} #{a.student.email_cimav}"
         t1 = Staff.find(a.tutor1) rescue nil
         t2 = Staff.find(a.tutor2) rescue nil
         t3 = Staff.find(a.tutor3) rescue nil
@@ -182,6 +188,7 @@ namespace :general do
               puts "EXTER: #{t.id} #{t.full_name}"
             end
           end
+	end
 =end
 
 =begin
@@ -189,25 +196,33 @@ namespace :general do
 =end
         t_array.each do |t|
           if !t.nil?
-            ## puts t.full_name rescue "N.D"
+             puts t.full_name rescue "N.D"
             ## DEV
-            #if t.id.eql? 511
+             puts ">>> #{t.id} #{t.email}"
+            if true # t.id.eql? 932 # 915 #904 #915 #904 # 977 #976 or t.id.eql? 865 #870  # id del staff
+		 puts "<<< #{t.id} #{t.email}"
               if t.institution_id.eql? 1
                 content = "{:advance=>\"#{a.id}\",:view=>3,:staff=>\"#{t.id}\"}"
               else
+		puts "}}}}}}}}}}}}}}}}} #{a.id}-#{a.student_id}-#{t.id}-- #{t.class.to_s}"	
                 token = Token.new
                 token.attachable_id     = t.id
                 token.attachable_type   = t.class.to_s
                 token.token             = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
                 token.status            = 1
-                token.expires           = Term.find(a.terms_id).grade_end_date
+                token.expires           = Term.find(a.term_id).grade_end_date
                 token.save
                 content = "{:advance=>\"#{a.id}\",:staff=>\"#{t.id}\",:token=>\"#{token.token}\",:view=>4}"
               end  ## end id-else
               ## PROD
-              send_mail(t.email,"Alerta Calificaciones",content)
-              ##send_mail("enrique.turcott@cimav.edu.mx","Alerta Calificaciones",content)
-            #end  ## if t.id.eql
+              if !t.email.blank? 
+	         puts "send_email-> #{t.email} | Alertando.... | #{content}"
+                 send_mail(t.email,"Alerta Calificaciones",content)
+                 # send_mail("juan.calderon@cimav.edu.mx","Copia Admin - Alerta Calificaciones",content)
+	      end 
+
+              #send_mail("juan.calderon@cimav.edu.mx","Alerta Calificaciones",content)
+            end  ## if t.id.eql
           end ## end nil?
 ########################################### aqui va el =end
         end ## end t_array.each
