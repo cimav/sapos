@@ -2,6 +2,10 @@
 namespace :advances do
   desc "Include closing advances tasks"
 
+  task :ver => :environment do 
+     set_line("Var ciclo  #{CICLO} --- #{SEND_MAIL} ---  #{ADMIN_MAIL}")		
+  end
+
   ############################### CHECK ############################
   task :check => :environment do
     @yaenciclo= false
@@ -52,7 +56,7 @@ namespace :advances do
 
            ## si tiene fallas acumuladas no se hizo el proceso
            if alumnos[:acumulado] > 0
-             set_line("FAIL !!")
+             set_line("FAIL !!!")
              alumnos[:faltantes] += 1
            ## si no todo esta bien
            else

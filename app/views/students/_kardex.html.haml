@@ -37,7 +37,7 @@
 
         - if tcs.term_course.course.program_id != @student.program_id &&  (@student.studies_plan_id.eql? 15)
           - topic = my_select_topics.shift
-          - extra = "[#{topic[:code]}] #{topic[:name]}"
+          - extra = "[#{topic[:code]}] #{topic[:name]}" rescue ""
         - else
           - extra = ""
 
