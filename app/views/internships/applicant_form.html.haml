@@ -185,7 +185,7 @@
           .row
             .form-group.col-4#field_internship_chosen_campus
               = f.label :chosen_campus, 'Sede destino'
-              = f.select :chosen_campus,  ['Chihuahua', 'Monterrey'],{} ,class:'form-control', required:true
+              = f.select :chosen_campus,  ['Chihuahua', 'Monterrey', 'Durango'],{} ,class:'form-control', required:true
 
           .row
             - if @summer && @academic.nil?
