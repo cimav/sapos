@@ -101,6 +101,16 @@ es:
       name: "Alfredo Aguilar Elguézabal"
       job: "Director Académico"
       gender: "M"
+    #general_director:
+    #  title:  "Dr."
+    #  name: "Juan Méndez Nonell"
+    #  job: "Director General"
+    #  gender: "F"
+    #academic_director:
+    #  title:  "Dr."
+    #  name: "Alejandro López Ortiz"
+    #  job: "Director Académico"
+    #  gender: "M"
     posgrado_chief:
       title: "Lic."
       name: "Emilio Pascual Domínguez Lechuga"
@@ -214,6 +224,7 @@ es:
       default: "%a, %d %b %Y %H:%M:%S %z"
       short: "%b %d %Y %H:%M"
       long: "%B %d, %Y %H:%M"
+      short_date: "%b %d %Y"
     am: "am"
     pm: "pm"
 

@@ -171,7 +171,7 @@ class StaffsController < ApplicationController
   def evaluation
     evaluation_type = params[:evaluation_type]
 
-    @tcsch = TermCourseSchedule.select("distinct term_course_schedules.staff_id, term_course_schedules.term_course_id").joins(:term_course=>:term).where("terms.name like '%2019-1%'")
+    @tcsch = TermCourseSchedule.select("distinct term_course_schedules.staff_id, term_course_schedules.term_course_id").joins(:term_course=>:term).where("terms.name like '%2020-2%'")
     
     rows = Array.new
     
@@ -481,6 +481,71 @@ class StaffsController < ApplicationController
     @staff = Staff.find(params[:id])
     render :layout => false
   end
+
+  def mobilities_table
+    @staff = Staff.find(params[:id])
+    render :layout => false
+  end    
+
+  def new_mobility
+    @staff = Staff.find(params[:id])
+    render :layout => 'standalone'
+  end
+
+  def create_mobility
+    flash = {}
+    @staff = Staff.find(params[:staff_id])
+    if @staff.update_attributes(params[:staff])
+      flash[:notice] = "Nueva movilidad creada."
+    else
+      flash[:error] = "Error al crear la movilidad."
+    end
+    render :layout => 'standalone'
+  end
+
+  def edit_mobility
+    @staff = Staff.find(params[:id])
+    @mobility = Mobility.find(params[:mobility_id])
+    render :layout => false   
+  end
+
+  def delete_mobility
+    flash = {}
+    @mobility = Mobility.find(params[:mobility_id])
+    @mobility.status = 2
+    if @mobility.save
+      flash[:notice] = "Movilidad eliminada"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Mobility: #{@mobility.id}"}).save
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:mobility_id] = params[:mobility_id]
+            render :json => json
+          else
+            redirect_to @staff
+          end
+         end
+       end
+    else
+      flash[:error] = "Error al eliminar mobilidad"
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:errors] = @mobility.errors
+            json[:errors_full] = @mobility.errors.full_messages
+            render :json => json, :status => :unprocessable_entity
+          else
+            redirect_to @staff
+          end
+        end
+      end
+    end
+  end
+
 
   def new_external_course
     @staff = Staff.find(params[:id])

@@ -46,6 +46,7 @@
       %li= link_to "Archivos", "#archivos"
       %li= link_to "Constancias", "#constancias"
       %li= link_to "Exámenes de admisión", "#examenes_admision"
+      %li= link_to "Movilidad", "#movilidad"	
 
     #detalles
       %h2 Detalles
@@ -109,6 +110,9 @@
 
     #seminarios
       = render :partial => 'seminars', :locals => {:staff => @staff, :f => f}
+
+    #movilidad
+      = render :partial => 'mobilities', :locals => {:staff => @staff, :f => f}
 
     #cursos
       = render :partial => 'external_courses', :locals => {:staff => @staff, :f => f}

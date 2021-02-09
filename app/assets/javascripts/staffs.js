@@ -48,6 +48,7 @@ $(document).ready(function(){
 $('#item-edit-form')
   .live("ajax:beforeSend", function(evt, xhr, settings) {
     hideCurrentSeminar();
+    hideCurrentMobility();	
     hideCurrentExternalCourse();
     hideCurrentLabPractice();
     hideCurrentAdmissionExam();
@@ -55,10 +56,74 @@ $('#item-edit-form')
   .live('ajax:success', function(evt, data, status, xhr) {
     var r = $.parseJSON(xhr.responseText);
     loadSeminarsTable();
+    loadMobilitiesTable();
     loadExternalCoursesTable();
     loadLabPracticesTable();
     loadAdmissionExamsTable();
   });
+
+
+// Mobilities
+var current_mobility_edit = 0;
+function loadMobilitiesTable() {
+   staff_id = $('#staff_id').val();
+   url = location.pathname + '/' + staff_id + '/movilidad';
+   $.get(url, {}, function(html) {
+      $("#mobilities-area").html(html);
+   });
+   $("#new-mobility-dialog").remove();
+   $('#content-panel').append('<div title="Nueva movilidad" id="new-mobility-dialog"><iframe width="550" height="440" src="/docentes/' + staff_id + '/nueva_movilidad" scrolling="no"></iframe></div>');
+   $("#new-mobility-dialog").dialog({ autoOpen: false, width: 640, height: 550, modal:true });
+   $("#a-new-mobility").live("click", function() {
+     $("#new-mobility-dialog").dialog('open');
+   });
+}
+
+function hideCurrentMobility() {
+  if (current_mobility_edit != 0) {
+    $("#div_"+current_mobility_edit).slideUp("fast", function() {
+      $('#tr_seminar_'+current_mobility_edit).animate({ backgroundColor: "white" }, 1000, function() {
+        $('#tr_seminar_'+current_mobility_edit).removeClass("selected");
+      });
+    });
+  }
+}
+
+$(".mobility-item").live("click", function() {
+  staff_id = $('#staff_id').val();
+  var mobility_id = $('#'+this.id).attr('mobility_id');
+  var tr_mobility_id = this.id;
+  if (current_mobility_edit != mobility_id) {
+    if (current_mobility_edit != 0) {
+      current_mobility_edit2 = current_seminar_edit;
+      $("#div_"+current_mobility_edit).slideUp("fast", function() {
+        $("#edit-mobility_"+current_mobility_edit2).remove();
+        $('#tr_mobility_'+current_mobility_edit2).animate({ backgroundColor: "white" }, 1000, function() {
+          $('#tr_mobility_'+current_mobility_edit2).removeClass("selected");
+        });
+      });
+    }
+
+    url = location.pathname + '/' + staff_id + '/movilidad/' + mobility_id;
+    $("<tr class=\"edit-mobility\" id=\"edit-mobility_" + mobility_id + "\"><td colspan=\"5\"><div class=\"edit-mobility-div\" id=\"div_"+mobility_id+"\"></div></td></tr>").insertAfter($('#'+this.id));
+    $.get(url, {}, function(html) {
+      $('#'+tr_mobility_id).animate({ backgroundColor: "#dddddd" }, 1000);
+      $("#div_"+mobility_id).hide().html(html).slideDown("fast", function() {
+        $('#'+tr_mobility_id).addClass("selected");
+      });
+    });
+    current_mobility_edit = mobility_id;
+  } else {
+    $("#div_"+mobility_id).slideUp("fast", function() {
+      $(".edit-mobility").remove();
+      $('#'+tr_mobility_id).animate({ backgroundColor: "white" }, 1000, function() {
+        $('#'+tr_mobility_id).removeClass("selected");
+      });
+    });
+    current_mobility_edit = 0;
+  }
+});
+
 
 
 // Seminars

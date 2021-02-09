@@ -87,6 +87,12 @@ Sapos::Application.routes.draw do
   match 'docentes/busqueda' => 'staffs#live_search'
   match 'docentes/:id/cambiar_foto' => 'staffs#change_image'
   match 'docentes/upload_image' => 'staffs#upload_image'
+  match 'docentes/:id/movilidad' =>  'staffs#mobilities_table'
+  match 'docentes/:id/nueva_movilidad' => 'staffs#new_mobility'  
+  match 'docentes/create_mobility' => 'staffs#create_mobility'
+  #match 'docentes/update_mobility' => 'staffs#update_mobility'
+  match 'docentes/:id/movilidad/:mobility_id' => 'staffs#edit_mobility'
+  match 'docentes/:id/delete_mobility/:mobility_id' => 'staffs#delete_mobility'
   match 'docentes/:id/seminarios' => 'staffs#seminars_table'
   match 'docentes/:id/nuevo_seminario' => 'staffs#new_seminar'
   match 'docentes/create_seminar' => 'staffs#create_seminar'
@@ -350,5 +356,5 @@ Sapos::Application.routes.draw do
 
   match '/encuesta/gracias' => 'graduated_poll2020#thanks'
   match '/encuesta/:token' => 'graduated_poll2020#show_with_token'
-  resources :graduated_poll2020, :path => "encuesta"
+  resources :graduated_poll2020, :path => "encuesta-egresados"
 end

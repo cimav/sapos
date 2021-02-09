@@ -5,6 +5,7 @@
 .external_courses,
 .admission_exams,
 .seminars,
+.mobilities,
 .lab_practices,
 .tc-students {
   width: 100%;
@@ -41,6 +42,7 @@
     &.tc-students-item:hover td,
     &.enrollment-item:hover td,
     &.seminar-item:hover td,
+    &.mobility-item:hover td,
     &.external-course-item:hover td,
     &.lab-practice-item:hover td,
     &.course:hover td {
@@ -62,6 +64,7 @@
 #enrollment-status-note,
 #add-student-to-course,
 #a-new-seminar,
+#a-new-mobility,
 #a-new-external-course,
 #a-new-admission-exam,
 #a-new-lab-practice,
@@ -80,6 +83,7 @@
 }
 
 .edit-seminar-div,
+.edit-mobility-div,
 .edit-course-div,
 .edit-term-div {
   background-color: $white;
