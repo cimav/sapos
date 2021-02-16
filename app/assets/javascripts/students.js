@@ -75,6 +75,9 @@ $('#to_excel').live('click', function() {
   window.location = location.pathname + "/busqueda.xls?" + $("#live-search").serialize();
 });
 
+$('#actives_to_excel').live('click', function() {
+  window.location = location.pathname + "/busqueda.xls?utf8=%E2%9C%93&program_type=0&program=0&campus=0&supervisor=0&status=todos_activos&scholarship_type=10&student_time=10&genero=0&order_by=last_name"
+});
 
 $('#diploma-link').live('click', function() {
   var html = $("#book-page").html();

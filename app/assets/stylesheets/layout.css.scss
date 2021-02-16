@@ -325,6 +325,15 @@
     font-size: 8px;
     padding: 2px 8px;
   }
+  #actives_to_excel {
+    background-color: #090;
+    cursor: pointer;
+    color: $white;
+    float: left;
+    font-weight: bold;
+    font-size: 8px;
+    padding: 2px 8px;
+  } 
 }
 
 .main-panel {
