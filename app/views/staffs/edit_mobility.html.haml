@@ -1,0 +1,27 @@
+= fields_for "staff[mobilities_attributes][0]", @mobility do |fields|
+  = hidden_field_tag 'staff_id', @staff.id
+  = hidden_field_tag 'id', @staff.id
+  = hidden_field_tag 'staff[mobilities_attributes][0][staff_id]', @staff.id
+
+  = fields.hidden_field :id
+
+  %div{:id => "field_staff_mobilities_0_institution", :class => 'field'}
+    = fields.label :institution, 'Institución'
+    = fields.text_field :institution
+
+  %div{:id => "field_staff_mobilities_0_start_date", :class => 'field'}
+    = fields.label :start_date, 'Inicio'
+    = fields.date_select :start_date
+
+  %div{:id => "field_staff_mobilities_0_end_date", :class => 'field'}
+    = fields.label :end_date, 'Fin'
+    = fields.date_select :end_date
+
+  %div{:id => "field_staff_mobilities_0_activities", :class => 'field'}
+    = fields.label :activities, 'Actividades'
+    = fields.text_area :activities
+
+  #dialog-submit-button-area
+    = fields.submit "Actualizar  movilidad"
+
+

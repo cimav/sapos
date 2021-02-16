@@ -1,0 +1,19 @@
+-if @staff.mobilities.count <= 0
+  %h3 Sin registros
+-if @staff.mobilities.count > 0
+  %table.mobilities
+    %tbody
+      %tr.header
+        %th Institución
+        %th Inicia
+        %th Termina
+        %th Acciones
+    - @staff.mobilities.where("status is null or status<>2").order("start_date DESC").each_with_index do |mobility, index|
+      %tr.mobility-item{:id=>"tr_mobility_#{mobility.id}", :mobility_id=>mobility.id}
+        %td= mobility.institution
+        %td.centered= l mobility.start_date, :format => :short_date
+        %td.centered= l mobility.end_date, :format => :short_date
+        %td
+          - if can? :delete, Mobility
+            = link_to 'Eliminar',"docentes/#{@staff.id}/delete_mobility/#{mobility.id}",:confirm => '¿Estás seguro?', :method => 'post', :remote => true, :class => 'delete-file'
+
