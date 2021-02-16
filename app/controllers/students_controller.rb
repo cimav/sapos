@@ -32,6 +32,11 @@ class StudentsController < ApplicationController
 
     @supervisors = Staff.find_by_sql "SELECT id, first_name, last_name FROM staffs WHERE id IN (SELECT supervisor FROM students UNION SELECT co_supervisor FROM students) ORDER BY first_name, last_name"
     @programs_json = @programs.select("programs.id, programs.name").all
+
+    min               = Student.minimum(:created_at)
+    max               = Student.maximum(:created_at)
+    @years            = (min.year..max.year).to_a
+
   end
 
   def live_search
@@ -156,12 +161,26 @@ class StudentsController < ApplicationController
     end
 
     # Descartamos los que tienen status de borrado
-    #@students = @students.where("status<>0")
+#@students = @students.where("status<>0")
+
+    years_where = ""
+    if params[:year].to_i !=0
+      if params[:year].to_i == 1
+        max = Student.maximum(:created_at)
+        years_where << " YEAR(start_date) in (#{max.year},#{max.year-1}) "
+      else
+        years_where << " YEAR(start_date)=#{params[:year]} "
+      end
+    end
 
     respond_with do |format|
       format.html do
-         @students = Student.select(my_select).includes(joiners).where(where).where(where_text).order(order_by).includes(includers)
-         render json: @students
+        if !years_where.empty?
+          @students = Student.select(my_select).includes(joiners).where(where).where(years_where).where(where_text).order(order_by).includes(includers)
+        else
+          @students = Student.select(my_select).includes(joiners).where(where).where(where_text).order(order_by).includes(includers)
+        end
+       render json: @students
       end
       format.xls do
         rows = Array.new

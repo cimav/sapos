@@ -48,6 +48,11 @@ $('#genero').live("change", function() {
     liveSearch({json: true});
 });
 
+$('#year').live("change", function() {
+    liveSearch({json: true});
+});
+
+
 $('.div-config').live({
     mouseenter: function(){
       $("#search-config").css("visibility","visible");
