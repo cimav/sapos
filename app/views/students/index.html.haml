@@ -21,7 +21,7 @@
 
 #items-panel.side-panel 
 
-  .panel-search{:style=>"height: 264px"}
+  .panel-search{:style=>"height: 272px"}
     .invisible-options
       - program_options = Array.new
       - program_options.push(["Todos los programas","0"])
@@ -43,6 +43,10 @@
         - campus_options[camp.name] = camp.id
       = select_tag "campus", options_for_select(campus_options)
 
+      - area_options = "<option value=\"0\">Todas las areas</option>"
+      - @areas.each do |area|
+        - area_options += "<option value=\"#{area.id}\">#{area.name}</option>"
+      = select_tag "area_s", area_options.html_safe
 
       - supervisor_options = "<option value=\"0\">Cualquier asesor</option>"
       - @supervisors.each do |supervisor|
@@ -86,12 +90,12 @@
 
       = select_tag 'order_by', options_for_select(order_by_options)
 
-  .panel-mark{:style=>"top: 250px;"}
+  .panel-mark{:style=>"top: 264px;"}
     = text_field_tag "searchy","", :placeholder=>"Busqueda ...", "data-toggle"=>"hideseek", "data-list"=>".panel-list", :size=>29, :disabled=>true
     .div-config
       = image_tag "/images/config2.png" , :id => "search-config", :width=>'25px', :style=>"visibility:hidden;"
   
-  #items-list.panel-items{:style=>"top: 285px;"}
+  #items-list.panel-items{:style=>"top: 294px;"}
   
   .panel-add
     %a{'id' => 'actives_to_excel'} ACTIVOS

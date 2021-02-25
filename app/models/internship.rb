@@ -31,6 +31,7 @@ class Internship < ActiveRecord::Base
   validate :start_date_vs_created_at, :on=>:update
   #validate :start_date_vs_created_at, :if=>"((self.origin.eql? 0) && (self.status.eql? 3) && (self.applicant_status.in? [1,3,4]))", :on=>:update
   #validate :start_date_vs_created_at, :if=>"((self.origin.eql? 0) && (self.status.eql? 3) && (self.applicant_status.in? [1,3,4]))", :on=>:update
+  validates :staff_id,:presence => true,:if=>"self.origin.eql? 0"
 
   after_create :add_extra
 

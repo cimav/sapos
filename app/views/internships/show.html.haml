@@ -108,7 +108,8 @@
         = f.date_select :end_date
 
       .field#field_internship_staff_id
-        = f.label :staff_id, 'Docente responsable'
+        -# = f.label :staff_id, 'Docente responsable'
+        = f.label :staff_id, mark_required(@internship, :staff_id) + 'Docente responsable'
         = f.select :staff_id, options_from_collection_for_select(@staffs,:id,:full_name_upcase_origin,@internship.staff_id),:prompt=>"Selecciona al responsable"
 
       .field#field_internship_campus

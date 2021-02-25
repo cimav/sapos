@@ -131,6 +131,11 @@
       .field#field_student_studies_plan
         = f.label :studies_plan_id, 'Plan de Estudios'
         = f.collection_select :studies_plan_id, @student.program.studies_plan,:id,:name, options = {:prompt => "Selecciona un plan de estudios"}
+
+      .field#field_student_area_id
+        = f.label :area_id, 'Area'
+        = f.collection_select :area_id, @areas, :id, :name, options = {:prompt => "Selecciona el area"}
+
       .field#field_student_supervisor
         = f.label :supervisor, 'Director'
         = f.select :supervisor, options_from_collection_for_select(@staffs, :id, :full_name_upcase_origin, @student.supervisor), :prompt => "Selecciona al Director"

@@ -33,6 +33,15 @@ class StudentsController < ApplicationController
     @supervisors = Staff.find_by_sql "SELECT id, first_name, last_name FROM staffs WHERE id IN (SELECT supervisor FROM students UNION SELECT co_supervisor FROM students) ORDER BY first_name, last_name"
     @programs_json = @programs.select("programs.id, programs.name").all
 
+    @aareas   = get_areas(current_user)
+    if current_user.access == User::OPERATOR
+      @areas  = Area.where(:id=> @aareas).order('name')
+    elsif current_user.access == User::MANAGER
+      @areas  = Area.order('name')
+    else
+      @areas  = Area.where(:id=> @aareas).order('name')
+    end
+
     min               = Student.minimum(:created_at)
     max               = Student.maximum(:created_at)
     @years            = (min.year..max.year).to_a
@@ -48,6 +57,8 @@ class StudentsController < ApplicationController
     where      = nil
     where_text = nil
    
+    @aareas = get_areas(current_user)
+
     logger.info "######################## PROGRAM TYPE ####################### #{current_user.program_type}"
     if current_user.program_type.to_i.eql? Program::ALL
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
@@ -55,6 +66,10 @@ class StudentsController < ApplicationController
       (includers.nil?) ? (includers = Array.new; includers.push(:program)) : (includers.push(:program))
       (joiners.nil?)   ? (joiners = {:program=> :permission_user}) : (joiners[:program]= :permission_user)
       (where.nil?)     ? (where = {:permission_users=>{:user_id=>current_user.id}}) : (where[:permission_users]={:user=>current_user.id})
+    end
+
+    if params[:area_s] != '0' then
+      (where.nil?) ? (where = {:area_id=>params[:area_s]}) : (where[:area_id]= params[:area_s])
     end
 
     if params[:program_type] != '0' then
@@ -419,6 +434,15 @@ class StudentsController < ApplicationController
       @text_month = "meses"
     end
 
+    @aareas       = get_areas(current_user)
+    if current_user.access == User::OPERATOR
+      @areas        = Area.where(:id=> @aareas).order('name')
+    elsif current_user.access == User::MANAGER
+      @areas  = Area.order('name')
+    else
+      @areas        = Area.where(:id=> @aareas).order('name')
+    end
+
     if current_user.access == User::OPERATOR
       @campus = Campus.order('name').where(:id=> current_user.campus_id)
     else
@@ -514,6 +538,17 @@ class StudentsController < ApplicationController
     else
       @programs     = Program.joins(:permission_user).where(:permission_users=>{:user_id=>current_user.id}).order('name')
     end
+
+    @aareas       = get_areas(current_user)
+    if current_user.access == User::OPERATOR
+      @areas        = Area.where(:id=> @aareas).order('name')
+    elsif current_user.access == User::MANAGER
+      @areas  = Area.order('name')
+    else
+      @areas        = Area.where(:id=> @aareas).order('name')
+    end
+
+
     render :layout => false
   end
 
@@ -724,7 +759,8 @@ class StudentsController < ApplicationController
         pdf_route = "#{filename}/seminar-#{advance.id}-#{staff_id}.pdf"
       end 
     end
-    send_file pdf_route, :x_sendfile=>true
+    # send_file pdf_route, :x_sendfile=>true
+    send_file pdf_route, :x_sendfile=>true, type: "application/pdf", disposition: "inline"
   end
 
   def get_protocol_cep
@@ -749,7 +785,11 @@ class StudentsController < ApplicationController
 
     created = "#{advance.created_at.day} de #{get_month_name(advance.created_at.month)} de #{advance.created_at.year}"
 
-    pdf = Prawn::Document.new(:margin=>[20,43,43,43])
+    #pdf = Prawn::Document.new(:margin=>[20,43,43,43])
+    
+    background_membretada = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
+    pdf = Prawn::Document.new(:background => background_membretada, :background_scale=>0.36, :margin=>[80,55,120,55] )
+    
     size = 14
 
     if advance.advance_type.eql? 2
@@ -765,6 +805,8 @@ class StudentsController < ApplicationController
       text = "SEMINARIO FINAL"
       pdf.text text ,:size=>size, :style=> :bold, :align=> :center
     end
+
+    #pdf.stroke_axis
 
     size = 11
 
@@ -819,7 +861,13 @@ class StudentsController < ApplicationController
         tabla.draw
     end  ## end protocol.answeers
 
-    pdf.move_down 10
+    if pdf.cursor < 124
+      pdf.start_new_page
+    end 
+    
+    pdf.move_down 30 
+    
+
     data = []
     data << [{:content=>"<b>Resultado</b>",:colspan=>2}]
 
@@ -858,6 +906,8 @@ class StudentsController < ApplicationController
     tabla.draw
 
     pdf.text "\nCon promedio de #{protocol.grade}"
+
+    #pdf.stroke_axis
 
     send_data pdf.render, type: "application/pdf", disposition: "inline"
   end#get_protocol_cep
@@ -2683,10 +2733,11 @@ class StudentsController < ApplicationController
   
   def advance_print
     advance = Advance.find(params[:id])
-    #background = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"
-    #Prawn::Document.new(:background => background, :background_scale=>0.36, :margin=>[150,60,60,60] ) do |pdf|
     estatus = {'C'=>'Concluida','P'=>'Programada','X'=>'Cancelada'}
-    Prawn::Document.new(:margin=>[60,60,60,60] ) do |pdf|
+
+    background_membretada = "#{Rails.root.to_s}/private/prawn_templates/membretada.png"    
+    # Prawn::Document.new(:margin=>[60,60,60,60] ) do |pdf|
+    Prawn::Document.new(:background => background_membretada, :background_scale=>0.36, :margin=>[110,55,120,55]) do |pdf|  
       pdf.font_families.update(
           "Montserrat" => { :bold        => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Bold.ttf"),
                             :italic      => Rails.root.join("app/assets/fonts/montserrat/Montserrat-Italic.ttf"),
