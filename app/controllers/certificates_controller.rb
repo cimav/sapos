@@ -442,10 +442,16 @@ class CertificatesController < ApplicationController
 
           my_final_classes << my_final_class
         end
+
       end #if t.student.studies_plan_id.eql? 15
       
       ## ordenamos tocho morocho
-      my_final_classes.sort_by! {|obj| [obj[:term_name],obj[:code]]}
+      # my_final_classes.sort_by! {|obj| [obj[:term_name],obj[:code]]}
+      # my_final_classes.sort_by! {|obj| [obj[:term_name]]}
+
+	my_final_classes.each do |it|
+          logger.info "Sort <<<<<<<<<<  #{it[:code]} - #{it[:name]} - #{it[:term_name]} "  
+        end
 
 =begin
         if t.student.studies_plan_id.eql? 15  ##dcm15
