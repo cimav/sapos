@@ -11,6 +11,11 @@ if(!getCookie("the_first")){
   document.cookie="the_first=0";
 }
 
+// ** On change Area
+$('#area_s').live("change", function() {
+   liveSearch({json: true});
+});
+
 $('#program_type').live("change", function() {
   modifyProgram();
   liveSearch({json: true});

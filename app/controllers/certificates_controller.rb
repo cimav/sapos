@@ -2,7 +2,7 @@
 class CertificatesController < ApplicationController
   load_and_authorize_resource
   before_filter :auth_required
-  respond_to :html, :xml, :json
+  respond_to :html, :xml, :json, :pdf
 
   def total_studies_certificate
 =begin 
@@ -449,9 +449,9 @@ class CertificatesController < ApplicationController
       # my_final_classes.sort_by! {|obj| [obj[:term_name],obj[:code]]}
       # my_final_classes.sort_by! {|obj| [obj[:term_name]]}
 
-	my_final_classes.each do |it|
-          logger.info "Sort <<<<<<<<<<  #{it[:code]} - #{it[:name]} - #{it[:term_name]} "  
-        end
+	#my_final_classes.each do |it|
+        #  logger.info "Sort <<<<<<<<<<  #{it[:code]} - #{it[:name]} - #{it[:term_name]} "  
+        #end
 
 =begin
         if t.student.studies_plan_id.eql? 15  ##dcm15
@@ -675,11 +675,12 @@ class CertificatesController < ApplicationController
       set_general_director_sign(pdf,16,71)
       set_academic_director_sign(pdf,250,71)
        
-      if Rails.env.production?
-       send_data pdf.render, type: "application/pdf", disposition: "attachment"
-      else
-       send_data pdf.render, type: "application/pdf", disposition: "inline"
-      end
+      #if Rails.env.production?
+      # send_data pdf.render, type: "application/pdf", disposition: "attachment"
+      #else
+      # send_data pdf.render, type: "application/pdf", disposition: "inline"
+      #end
+      send_data pdf.render, type: "application/pdf", disposition: "inline"
       
       return
     end
