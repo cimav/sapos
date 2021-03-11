@@ -742,7 +742,7 @@ class InternshipsController < ApplicationController
       @page_title  = 'Solicitud de Verano CIMAV'
       @page_note   = 'Una vez llena la solicitud de solicitará la carga de documentos'
       now          = Time.now
-      limit        = Time.new(2020,4,16,23,59,59,"-06:00")
+      limit        = Time.new(2021,4,18,23,59,59,"-06:00")
       @closed      = false
       @warning     = false
       
@@ -785,6 +785,7 @@ class InternshipsController < ApplicationController
     else    
       @areas  = Area.where("id not in (1,2)").order('name') 
     end
+
     render :layout => 'bootstrap_layout'
   end
 ###########################################################################
@@ -863,7 +864,10 @@ class InternshipsController < ApplicationController
     flash = {}
     @internship = Internship.new(params[:internship])
     @internship.status=3
-   
+ 
+    if @internship.internship_type_id.eql? 8
+      @internship.origin = 2
+    end  
    
     if @internship.internship_type_id.eql? 11
       @internship.origin = 2
@@ -1419,7 +1423,9 @@ private
 
   def analize_line(line,vars)
     if vars[:counter]>0
-      if line.upcase.include? vars[:email].upcase
+      logger.info ">>> #{line} <<<< #{vars} <<<<<<<<<<<| "
+      email = !vars[:email].blank? ? vars[:email].upcase : "SIN@EMAIL"
+      if line.upcase.include? email #  vars[:email].upcase
       	vars[:row] << line
       	vars[:counter] = vars[:counter] + 1
       elsif line.include? "Quiz title"

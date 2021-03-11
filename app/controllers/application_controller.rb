@@ -254,6 +254,9 @@ class ApplicationController < ActionController::Base
   end
 
   def send_email(to,subject,content,object)
+
+    logger "SendEmail>>>>>  >>to>#{to} >>subjetc>#{subject} >>content>#{content}"
+
     mail    = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
    
     if mail.save

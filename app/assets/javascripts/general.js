@@ -457,7 +457,7 @@ $('#item-new-internship-applicant-form')
 
 	    /* En vez de irse a documentos, despliega la despedida  */
             html = "<h1 class='text-secondary' style='font-size:1.9em; padding:1em;' >Gracias por tu registro al Verano de la Investigación Científica del CIMAV </h1> \
-              <div class='alert alert-primary col-12 col-sm-12-col-md-12 alert-dismissible fade show' role='alert'>No olvides mandar la siguiente documentación al correo repositorio@cimav.edu.mx, antes del 15 de abril</div> \
+              <div class='alert alert-primary col-12 col-sm-12-col-md-12 alert-dismissible fade show' role='alert'>No olvides mandar la siguiente documentación al correo repositorio@cimav.edu.mx, antes del 18 de abril</div> \
                         <ul> \
                                  <li>Constancia oficial de inscripción al semestre actual, emitida por el Departamento de Servicios Escolares o equivalente, en su institución educativa </li> \
                                  <li>Documento que acredite contar con un promedio general de 8.0 o superior</li> \

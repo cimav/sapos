@@ -3,6 +3,9 @@ Sapos::Application.routes.draw do
 
   root :to => 'welcome#index'
 
+  match 'events/show_all' => 'events#show_all'
+   
+
   match 'areas/busqueda' => 'areas#live_search'
 
   match 'egresados/busqueda' => 'exstudents#live_search'
@@ -58,7 +61,13 @@ Sapos::Application.routes.draw do
   match 'estudiantes/datos/:id' => 'students#students_data'
   match 'estudiantes/publico/' => 'students#public'
   match 'estudiantes/publico/csv' => 'students#public_csv'
-  
+
+  match 'estudiantes/:id/movilidad' =>  'students#student_mobilities_table'
+  match 'estudiantes/:id/nueva_movilidad' => 'students#new_student_mobility'
+  match 'estudiantes/create_mobility' => 'students#create_student_mobility'
+  match 'estudiantes/:id/movilidad/:mobility_id' => 'students#edit_student_mobility'
+  match 'estudiantes/:id/delete_student_mobility/:mobility_id' => 'students#delete_student_mobility'
+
   match 'estudiantes/destroy_file/:id' => 'student_files#destroy_file'
   match 'estudiantes/file/:id' => 'student_files#download'
 

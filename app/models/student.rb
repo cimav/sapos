@@ -12,7 +12,7 @@ class EmailValidator < ActiveModel::EachValidator
 end
 
 class Student < ActiveRecord::Base
-  attr_accessible :id,:program_id,:card,:previous_card,:consecutive,:first_name,:last_name, :last_name2,:gender,:date_of_birth,:city,:state_id,:country_id,:email,:previous_institution,:previous_degree_type,:previous_degree_desc,:previous_degree_date,:contact_id,:start_date,:end_date,:graduation_date,:inactive_date,:definitive_inactive_date,:supervisor,:co_supervisor,:department_id,:curp,:ife,:cvu,:location,:ssn,:blood_type,:accident_contact,:accident_phone,:passport,:image,:status,:notes,:created_at,:updated_at,:campus_id,:contact_attributes,:scholarship_attributes,:thesis_attributes,:email_cimav,:domain_password,:advance_attributes,:deleted,:deleted_at,:studies_plan_id,:external_supervisor,:student_time,:scholarship_type, :previous_degree_start_date, :num_beca_conacyt, :area_id
+  attr_accessible :id,:program_id,:card,:previous_card,:consecutive,:first_name,:last_name, :last_name2,:gender,:date_of_birth,:city,:state_id,:country_id,:email,:previous_institution,:previous_degree_type,:previous_degree_desc,:previous_degree_date,:contact_id,:start_date,:end_date,:graduation_date,:inactive_date,:definitive_inactive_date,:supervisor,:co_supervisor,:department_id,:curp,:ife,:cvu,:location,:ssn,:blood_type,:accident_contact,:accident_phone,:passport,:image,:status,:notes,:created_at,:updated_at,:campus_id,:contact_attributes,:scholarship_attributes,:thesis_attributes,:email_cimav,:domain_password,:advance_attributes,:deleted,:deleted_at,:studies_plan_id,:external_supervisor,:student_time,:scholarship_type, :previous_degree_start_date, :num_beca_conacyt, :area_id, :student_mobilities_attributes
   
   default_scope where(:deleted=>0)
   
@@ -40,6 +40,9 @@ class Student < ActiveRecord::Base
 
   has_many :scholarship
   accepts_nested_attributes_for :scholarship
+
+  has_many :student_mobilities
+  accepts_nested_attributes_for :student_mobilities
 
   has_many :advance
   accepts_nested_attributes_for :advance

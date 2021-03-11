@@ -32,7 +32,7 @@
   = hidden_field :student, :id
 
   :javascript
-    var ftabs = ["#detalles","#notas"];
+    var ftabs = ["#detalles","#notas","#movilidad"];
     $(function() {
       $('#resource-tabs').tabs({
         select: function(event,ui){ 
@@ -94,13 +94,15 @@
       %li= link_to "Avances", "#avances", :data=> {:remote=>"/estudiantes/avance/#{@student.id}"}
       %li= link_to "Tesis", "#tesis", :data=> {:remote=>"/estudiantes/tesis/#{@student.id}"}
       %li= link_to "Archivos", "#archivos", :data=> {:remote=>"/estudiantes/archivos/#{@student.id}"}
-      %li= link_to "Documentos", "#documentos", :data=> {:remote=>"/estudiantes/documentos/#{@student.id}"}
+      - if !@has_files
+        %li= link_to "Documentos", "#documentos", :data=> {:remote=>"/estudiantes/documentos/#{@student.id}"}
       %li= link_to "Horarios", "#horario", :data=> {:remote=>"/estudiantes/horario/#{@student.id}"}
       %li= link_to "Calificaciones", "#calificaciones", :data=> {:remote=>"/estudiantes/calificaciones/#{@student.id}"}
       %li= link_to "Notas", "#notas"
       %li= link_to "Kardex", "#kardex", :data=> {:remote=>"/estudiantes/kardex/#{@student.id}"}
       %li= link_to "Pagos", "#pagos", :data=> {:remote=>"/estudiantes/pagos/#{@student.id}"}
       %li= link_to "Constancias", "#constancias", :data=> {:remote=>"/estudiantes/constancias/#{@student.id}"}
+      %li= link_to "Movilidad", "#movilidad"
 
     #detalles
       %h2 Detalles
@@ -259,6 +261,8 @@
     #kardex
     #pagos
     #constancias
+    #movilidad
+      = render :partial => 'student_mobilities', :locals => {:student => @student, :f => f}
 
 #extension-page{:style => "display:none;"}
   %div{:id => "field_extension_date", :class => 'field'}

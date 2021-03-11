@@ -1,0 +1,11 @@
+%h2 Movilidad
+#mobilities-area
+- if can? :create, StudentMobility
+  = link_to 'Agregar movilidad', '#', :id=>'a-new-mobility'
+
+:javascript
+  $(function() {
+    loadStudentMobilitiesTable();
+  });
+
+

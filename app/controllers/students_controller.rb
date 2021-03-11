@@ -359,6 +359,8 @@ class StudentsController < ApplicationController
     @student = Student.includes(:program, :contact).find(params[:id])
     @applicant_id = 0
 
+    @has_files = StudentFile.where(:student_id => @student.id).length > 0	
+
     program_id  = @student.program_id
     if program_id.to_i.eql? 6
       program_id = 1
@@ -673,6 +675,71 @@ class StudentsController < ApplicationController
       render_error @student,@message, parameters
     end
   end
+
+  def student_mobilities_table
+    @student = Student.find(params[:id])
+    render :layout => false
+  end    
+
+  def new_student_mobility
+    @student = Student.find(params[:id])
+    render :layout => 'standalone'
+  end
+
+  def create_student_mobility
+    flash = {}
+    @student = Student.find(params[:student_id])
+    if @student.update_attributes(params[:student])
+      flash[:notice] = "Nueva movilidad creada."
+    else
+      flash[:error] = "Error al crear la movilidad."
+    end
+    render :layout => 'standalone'
+  end
+
+  def edit_student_mobility
+    @student = Student.find(params[:id])
+    @student_mobility = StudentMobility.find(params[:mobility_id])
+    render :layout => false   
+  end
+
+  def delete_student_mobility
+    flash = {}
+    @student_mobility = StudentMobility.find(params[:mobility_id])
+    @student_mobility.status = 2
+    if @student_mobility.save
+      flash[:notice] = "Movilidad eliminada"
+      ActivityLog.new({:user_id=>current_user.id,:activity=>"Delete Student Mobility: #{@student_mobility.id}"}).save
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:mobility_id] = params[:mobility_id]
+            render :json => json
+          else
+            redirect_to @student
+          end
+         end
+       end
+    else
+      flash[:error] = "Error al eliminar movilidad"
+      respond_with do |format|
+        format.html do
+          if request.xhr?
+            json = {}
+            json[:flash] = flash
+            json[:errors] = @student_mobility.errors
+            json[:errors_full] = @student_mobility.errors.full_messages
+            render :json => json, :status => :unprocessable_entity
+          else
+            redirect_to @student
+          end
+        end
+      end
+    end
+  end
+
 
   def change_image
     @student = Student.find(params[:id])
