@@ -54,12 +54,12 @@
       = select_tag "supervisor", supervisor_options.html_safe
 
       - status_options = "<option value=\"0\">Todos los estados</option>"
-      - status_options += "<option value=\"todos_activos\" selected=\"selected\">Todos los activos</option>"
-      - status_options += "<option value=\"activos_inscritos\">Activos inscritos</option>"
-      - status_options += "<option value=\"activos_no_inscritos\">Activos no inscritos</option>"
-      - status_options += "<option value=\"todos_egresados\">Todos los egresados</option>"
-      - status_options += "<option value=\"egresados_graduados\">Egresados graduados</option>"
-      - status_options += "<option value=\"egresados_no_graduados\">Egresados no graduados</option>"
+      - status_options += "<option value=\"todos_activos\" selected=\"selected\">Activos</option>"
+      -# status_options += "<option value=\"activos_inscritos\">Activos inscritos</option>"
+      -# status_options += "<option value=\"activos_no_inscritos\">Activos no inscritos</option>"
+      - status_options += "<option value=\"todos_egresados\">Egresados</option>"
+      -# status_options += "<option value=\"egresados_graduados\">Egresados graduados</option>"
+      -# status_options += "<option value=\"egresados_no_graduados\">Egresados no graduados</option>"
       - status_options += "<option value=\"baja_temporal\">Baja temporal</option>"
       - status_options += "<option value=\"baja_definitiva\">Baja definitiva</option>"
       - status_options += "<option value=\"preinscritos\">Todos los preinscritos</option>"
